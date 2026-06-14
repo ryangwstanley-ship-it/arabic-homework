@@ -6,245 +6,66 @@
 <title>Arabic Daily</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --ink: #1a1a2e;
-    --blue: #2563eb;
-    --blue-light: #eff6ff;
-    --green: #16a34a;
-    --dot-green: #22c55e;
-    --dot-blue: #3b82f6;
-    --dot-red: #ef4444;
-    --grey: #6b7280;
-    --grey-light: #f3f4f6;
-    --border: #e5e7eb;
-    --card-radius: 16px;
-    --sidebar-w: 200px;
+    --ink: #1a1a2e; --blue: #2563eb; --blue-light: #eff6ff;
+    --green: #16a34a; --dot-green: #22c55e; --dot-blue: #3b82f6;
+    --dot-red: #ef4444; --grey: #6b7280; --grey-light: #f3f4f6;
+    --border: #e5e7eb; --card-radius: 16px; --sidebar-w: 200px;
   }
-
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: #f0f4ff;
-    color: var(--ink);
-    min-height: 100vh;
-  }
-
-  /* ── LOGIN ── */
-  #login-screen {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-    background: linear-gradient(160deg, #1a1a2e 0%, #2563eb 100%);
-  }
-  .login-logo {
-    width: 64px; height: 64px;
-    background: white; border-radius: 18px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 28px; margin-bottom: 20px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f4ff; color: var(--ink); min-height: 100vh; }
+  #login-screen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; background: linear-gradient(160deg, #1a1a2e 0%, #2563eb 100%); }
+  .login-logo { width: 64px; height: 64px; background: white; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 28px; margin-bottom: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
   .login-title { color: white; font-size: 28px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 6px; }
   .login-subtitle { color: rgba(255,255,255,0.6); font-size: 14px; margin-bottom: 40px; }
-  .login-card {
-    background: white; border-radius: var(--card-radius);
-    padding: 28px; width: 100%; max-width: 360px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-  }
-  .login-card label {
-    display: block; font-size: 13px; font-weight: 600;
-    color: var(--grey); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;
-  }
-  .login-card input {
-    width: 100%; padding: 14px 16px; border: 2px solid var(--border);
-    border-radius: 10px; font-size: 18px; letter-spacing: 4px;
-    text-align: center; font-weight: 700; color: var(--ink);
-    outline: none; transition: border-color 0.2s; text-transform: uppercase;
-  }
+  .login-card { background: white; border-radius: var(--card-radius); padding: 28px; width: 100%; max-width: 360px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+  .login-card label { display: block; font-size: 13px; font-weight: 600; color: var(--grey); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .login-card input { width: 100%; padding: 14px 16px; border: 2px solid var(--border); border-radius: 10px; font-size: 18px; letter-spacing: 4px; text-align: center; font-weight: 700; color: var(--ink); outline: none; transition: border-color 0.2s; text-transform: uppercase; }
   .login-card input:focus { border-color: var(--blue); }
-  .login-btn {
-    width: 100%; margin-top: 16px; padding: 14px;
-    background: var(--blue); color: white; border: none;
-    border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer;
-  }
+  .login-btn { width: 100%; margin-top: 16px; padding: 14px; background: var(--blue); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; }
   .login-btn:hover { background: #1d4ed8; }
   .login-error { color: #ef4444; font-size: 13px; margin-top: 10px; text-align: center; display: none; }
-  .demo-hint { color: rgba(255,255,255,0.5); font-size: 12px; margin-top: 20px; text-align: center; }
-
-  /* ── APP SHELL ── */
   #app { display: none; min-height: 100vh; }
-
-  /* Instructor layout: sidebar + main */
-  #app.instructor-mode {
-    display: none;
-    flex-direction: row;
-  }
-  #app.instructor-mode.visible {
-    display: flex;
-  }
-  #app.student-mode.visible {
-    display: block;
-    max-width: 480px;
-    margin: 0 auto;
-  }
-
-  /* ── SIDEBAR ── */
-  #sidebar {
-    width: var(--sidebar-w);
-    min-width: var(--sidebar-w);
-    background: var(--ink);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    overflow: hidden;
-  }
-
-  .sidebar-logo {
-    display: flex; align-items: center; gap: 10px;
-    padding: 20px 16px 16px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-  }
-  .sidebar-logo-icon {
-    width: 32px; height: 32px; background: var(--blue);
-    border-radius: 8px; display: flex; align-items: center;
-    justify-content: center; font-size: 16px; flex-shrink: 0;
-  }
+  #sidebar { width: var(--sidebar-w); min-width: var(--sidebar-w); background: var(--ink); min-height: 100vh; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; overflow: hidden; }
+  .sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 20px 16px 16px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .sidebar-logo-icon { width: 32px; height: 32px; background: var(--blue); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
   .sidebar-logo-text { color: white; font-size: 14px; font-weight: 700; }
-
-  .sidebar-label {
-    font-size: 10px; font-weight: 700; letter-spacing: 1px;
-    text-transform: uppercase; color: rgba(255,255,255,0.35);
-    padding: 16px 16px 8px;
-  }
-
-  .sidebar-students {
-    flex: 1;
-    overflow-y: auto;
-    padding: 0 8px 16px;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(255,255,255,0.1) transparent;
-  }
-
-  .sidebar-student {
-    display: flex; align-items: center; gap: 10px;
-    padding: 10px 10px; border-radius: 10px;
-    cursor: pointer; transition: background 0.15s;
-    margin-bottom: 2px;
-  }
+  .sidebar-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.35); padding: 16px 16px 8px; }
+  .sidebar-students { flex: 1; overflow-y: auto; padding: 0 8px 16px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent; }
+  .sidebar-student { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 10px; cursor: pointer; transition: background 0.15s; margin-bottom: 2px; }
   .sidebar-student:hover { background: rgba(255,255,255,0.08); }
   .sidebar-student.active { background: rgba(255,255,255,0.15); }
-
-  .sidebar-avatar {
-    width: 32px; height: 32px; border-radius: 50%;
-    background: rgba(255,255,255,0.15);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 13px; font-weight: 700; color: white;
-    flex-shrink: 0;
-  }
-
-  .sidebar-name {
-    color: white; font-size: 13px; font-weight: 500;
-    flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  }
-
-  .status-dot {
-    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
-  }
+  .sidebar-avatar { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: white; flex-shrink: 0; }
+  .sidebar-name { color: white; font-size: 13px; font-weight: 500; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
   .status-dot.green { background: var(--dot-green); }
   .status-dot.red { background: var(--dot-red); }
   .status-dot.grey { background: rgba(255,255,255,0.2); }
-
-  .sidebar-bottom {
-    padding: 12px 8px;
-    border-top: 1px solid rgba(255,255,255,0.1);
-  }
-  .sidebar-view-btn {
-    width: 100%; padding: 9px 12px;
-    background: rgba(255,255,255,0.1); border: none;
-    border-radius: 8px; color: rgba(255,255,255,0.7);
-    font-size: 12px; font-weight: 600; cursor: pointer;
-    transition: background 0.2s; text-align: left;
-  }
+  .sidebar-bottom { padding: 12px 8px; border-top: 1px solid rgba(255,255,255,0.1); }
+  .sidebar-view-btn { width: 100%; padding: 9px 12px; background: rgba(255,255,255,0.1); border: none; border-radius: 8px; color: rgba(255,255,255,0.7); font-size: 12px; font-weight: 600; cursor: pointer; transition: background 0.2s; text-align: left; }
   .sidebar-view-btn:hover { background: rgba(255,255,255,0.18); }
-
-  /* ── MAIN CONTENT ── */
-  #main {
-    flex: 1;
-    overflow-y: auto;
-    min-width: 0;
-  }
-
-  /* ── HEADER ── */
-  .header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 16px 20px; background: white;
-    border-bottom: 1px solid var(--border);
-    position: sticky; top: 0; z-index: 10;
-  }
+  #main { flex: 1; overflow-y: auto; min-width: 0; }
+  .header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; background: white; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10; }
   .header-left { display: flex; align-items: center; gap: 10px; }
-  .header-icon {
-    width: 36px; height: 36px; background: var(--blue);
-    border-radius: 10px; display: flex; align-items: center;
-    justify-content: center; font-size: 18px;
-  }
+  .header-icon { width: 36px; height: 36px; background: var(--blue); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
   .header-title { font-size: 17px; font-weight: 700; color: var(--ink); }
   .header-sub { font-size: 12px; color: var(--grey); }
-  .view-toggle {
-    padding: 7px 14px; background: var(--grey-light); border: none;
-    border-radius: 8px; font-size: 13px; font-weight: 600;
-    color: var(--grey); cursor: pointer; transition: all 0.2s; flex-shrink: 0;
-  }
+  .view-toggle { padding: 7px 14px; background: var(--grey-light); border: none; border-radius: 8px; font-size: 13px; font-weight: 600; color: var(--grey); cursor: pointer; transition: all 0.2s; flex-shrink: 0; }
   .view-toggle:hover { background: var(--border); }
-  .view-toggle.active { background: white; color: var(--ink); border: 1.5px solid var(--border); }
-
-  /* ── CONTENT ── */
   .content { padding: 20px; max-width: 600px; }
-  .section-label {
-    font-size: 11px; font-weight: 700; letter-spacing: 1px;
-    text-transform: uppercase; color: var(--grey); margin-bottom: 12px;
-  }
-
-  /* ── CALENDAR ── */
-  .calendar-card {
-    background: white; border-radius: var(--card-radius);
-    padding: 20px; margin-bottom: 20px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-  }
+  .section-label { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--grey); margin-bottom: 12px; }
+  .calendar-card { background: white; border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
   .cal-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-  .cal-nav-btn {
-    width: 32px; height: 32px; border: none; background: none;
-    font-size: 18px; cursor: pointer; color: var(--grey);
-    border-radius: 8px; display: flex; align-items: center; justify-content: center;
-  }
+  .cal-nav-btn { width: 32px; height: 32px; border: none; background: none; font-size: 18px; cursor: pointer; color: var(--grey); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
   .cal-nav-btn:hover { background: var(--grey-light); }
   .cal-month { font-size: 16px; font-weight: 700; direction: rtl; }
   .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
-  .cal-day-header {
-    text-align: center; font-size: 11px; color: var(--grey);
-    font-weight: 600; padding: 4px 0 8px; direction: rtl;
-  }
-  .cal-day {
-    display: flex; flex-direction: column; align-items: center;
-    padding: 6px 2px; border-radius: 10px; cursor: pointer;
-    transition: background 0.15s; min-height: 52px;
-  }
+  .cal-day-header { text-align: center; font-size: 11px; color: var(--grey); font-weight: 600; padding: 4px 0 8px; direction: rtl; }
+  .cal-day { display: flex; flex-direction: column; align-items: center; padding: 6px 2px; border-radius: 10px; cursor: pointer; transition: background 0.15s; min-height: 52px; }
   .cal-day:hover:not(.other-month) { background: var(--grey-light); }
-  .cal-day.today .day-num {
-    background: var(--blue-light); color: var(--blue); font-weight: 700;
-    border-radius: 8px; width: 28px; height: 28px;
-    display: flex; align-items: center; justify-content: center;
-  }
+  .cal-day.today .day-num { background: var(--blue-light); color: var(--blue); font-weight: 700; border-radius: 8px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
   .cal-day.selected { background: var(--blue); }
   .cal-day.selected .day-num { color: white; font-weight: 700; }
-  .day-num {
-    font-size: 14px; color: var(--ink); width: 28px; height: 28px;
-    display: flex; align-items: center; justify-content: center;
-  }
+  .day-num { font-size: 14px; color: var(--ink); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
   .other-month .day-num { color: var(--border); }
   .dots { display: flex; gap: 3px; margin-top: 3px; height: 8px; align-items: center; }
   .dot { width: 6px; height: 6px; border-radius: 50%; }
@@ -252,88 +73,38 @@
   .dot-blue { background: var(--dot-blue); }
   .cal-legend { display: flex; gap: 16px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); }
   .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--grey); }
-
-  /* ── DAY CARD ── */
-  .day-card {
-    border-radius: var(--card-radius); padding: 20px;
-    margin-bottom: 20px; background: var(--blue); color: white;
-  }
+  .day-card { border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; background: var(--blue); color: white; }
   .day-card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; }
   .day-badge { background: rgba(255,255,255,0.2); border-radius: 20px; padding: 4px 10px; font-size: 12px; font-weight: 600; }
   .day-status { font-size: 13px; opacity: 0.85; }
   .day-date { font-size: 22px; font-weight: 700; line-height: 1.2; }
-  .review-btn {
-    padding: 10px 18px; border-radius: 10px; border: none;
-    font-size: 14px; font-weight: 600; cursor: pointer;
-    transition: all 0.2s; white-space: nowrap;
-  }
+  .review-btn { padding: 10px 18px; border-radius: 10px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
   .review-btn.reviewed { background: rgba(255,255,255,0.25); color: white; }
   .review-btn.not-reviewed { background: white; color: var(--blue); }
   .review-btn:hover { opacity: 0.85; }
-
-  /* ── SUBMISSIONS ── */
   .submissions-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 24px; }
-  .submission-thumb {
-    border-radius: 12px; overflow: hidden; position: relative;
-    background: var(--grey-light); aspect-ratio: 3/4; cursor: pointer;
-  }
+  .submission-thumb { border-radius: 12px; overflow: hidden; position: relative; background: var(--grey-light); aspect-ratio: 3/4; cursor: pointer; }
   .submission-thumb img { width: 100%; height: 100%; object-fit: cover; }
-  .submission-badge {
-    position: absolute; top: 8px; left: 8px;
-    color: white; font-size: 11px; font-weight: 700;
-    padding: 3px 8px; border-radius: 6px;
-  }
+  .submission-badge { position: absolute; top: 8px; left: 8px; color: white; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px; }
   .submission-badge.reviewed-badge { background: var(--blue); }
   .submission-badge.uploaded-badge { background: var(--green); }
-
-  /* ── UPLOAD ── */
-  .upload-area {
-    border: 2px dashed var(--border); border-radius: var(--card-radius);
-    padding: 32px; text-align: center; cursor: pointer;
-    transition: all 0.2s; background: white; margin-bottom: 20px;
-  }
+  .upload-area { border: 2px dashed var(--border); border-radius: var(--card-radius); padding: 32px; text-align: center; cursor: pointer; transition: all 0.2s; background: white; margin-bottom: 20px; }
   .upload-area:hover { border-color: var(--blue); background: var(--blue-light); }
   .upload-icon { font-size: 32px; margin-bottom: 8px; }
   .upload-title { font-size: 15px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
   .upload-sub { font-size: 13px; color: var(--grey); }
   #file-input { display: none; }
-
-  /* ── MODAL ── */
-  .modal-overlay {
-    display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0.8); z-index: 100;
-    align-items: center; justify-content: center; padding: 20px;
-  }
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100; align-items: center; justify-content: center; padding: 20px; }
   .modal-overlay.open { display: flex; }
   .modal-img { max-width: 100%; max-height: 80vh; border-radius: 12px; object-fit: contain; }
-  .modal-close {
-    position: absolute; top: 16px; right: 16px;
-    background: white; border: none; border-radius: 50%;
-    width: 36px; height: 36px; font-size: 18px; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-  }
-
-  /* ── TOAST ── */
-  .toast {
-    position: fixed; bottom: 24px; left: 50%;
-    transform: translateX(-50%) translateY(80px);
-    background: var(--ink); color: white;
-    padding: 12px 20px; border-radius: 10px;
-    font-size: 14px; font-weight: 600; z-index: 200;
-    transition: transform 0.3s; white-space: nowrap;
-  }
+  .modal-close { position: absolute; top: 16px; right: 16px; background: white; border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--ink); color: white; padding: 12px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; z-index: 200; transition: transform 0.3s; white-space: nowrap; }
   .toast.show { transform: translateX(-50%) translateY(0); }
-
-  .no-submission-msg {
-    background: white; border-radius: var(--card-radius);
-    padding: 20px; text-align: center; color: var(--grey);
-    font-size: 14px; margin-bottom: 20px;
-  }
+  .no-submission-msg { background: white; border-radius: var(--card-radius); padding: 20px; text-align: center; color: var(--grey); font-size: 14px; margin-bottom: 20px; }
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
 <div id="login-screen">
   <div class="login-logo">🕌</div>
   <div class="login-title">Arabic Daily</div>
@@ -344,13 +115,9 @@
     <div class="login-error" id="login-error">Code not recognised. Try again.</div>
     <button class="login-btn" id="login-btn">Enter</button>
   </div>
-  <div class="demo-hint">Demo codes: RYAN01 (instructor) · STU001 · STU002 · STU003</div>
 </div>
 
-<!-- APP -->
 <div id="app">
-
-  <!-- SIDEBAR (instructor only) -->
   <div id="sidebar" style="display:none">
     <div class="sidebar-logo">
       <div class="sidebar-logo-icon">🕌</div>
@@ -362,12 +129,10 @@
       <button class="sidebar-view-btn" id="sidebar-view-btn">👤 Student view</button>
     </div>
   </div>
-
-  <!-- MAIN -->
   <div id="main">
     <div class="header">
       <div class="header-left">
-        <div class="header-icon" id="header-icon">🕌</div>
+        <div class="header-icon">🕌</div>
         <div>
           <div class="header-title" id="header-title">My Homework</div>
           <div class="header-sub" id="header-sub"></div>
@@ -375,10 +140,8 @@
       </div>
       <button class="view-toggle" id="view-toggle-btn" style="display:none">Student view</button>
     </div>
-
     <div class="content">
       <div class="section-label">Sessions</div>
-
       <div class="calendar-card">
         <div class="cal-nav">
           <button class="cal-nav-btn" id="prev-month-btn">‹</button>
@@ -391,7 +154,6 @@
           <div class="legend-item"><div class="dot dot-blue"></div> Reviewed</div>
         </div>
       </div>
-
       <div class="day-card" id="day-card" style="display:none">
         <div class="day-card-top">
           <div>
@@ -402,9 +164,7 @@
         </div>
         <div class="day-date" id="day-date" style="margin-top:8px"></div>
       </div>
-
       <div id="submissions-area"></div>
-
       <div id="upload-area-wrap" style="display:none">
         <div class="upload-area" id="upload-trigger">
           <div class="upload-icon">📸</div>
@@ -417,12 +177,10 @@
   </div>
 </div>
 
-<!-- Modal -->
-<div class="modal-overlay" id="modal" onclick="closeModal()">
-  <button class="modal-close">✕</button>
+<div class="modal-overlay" id="modal">
+  <button class="modal-close" id="modal-close-btn">✕</button>
   <img class="modal-img" id="modal-img" src="" alt="">
 </div>
-
 <div class="toast" id="toast"></div>
 
 <script type="module">
@@ -442,344 +200,236 @@ const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
 
 const STUDENTS = {
-  'STU001': { name: 'Fatima A.' },
-  'STU002': { name: 'Omar K.' },
-  'STU003': { name: 'Aisha M.' },
+  'FHD001': { name: 'فهد (FHD001)',       display: 'فهد' },
+  'SAD002': { name: 'سعيد (SAD002)',       display: 'سعيد' },
+  'HMZ003': { name: 'حمزة (HMZ003)',       display: 'حمزة' },
+  'AHM004': { name: 'أحمد SN (AHM004)',   display: 'أحمد' },
+  'AMN005': { name: 'أمين DE (AMN005)',    display: 'أمين' },
+  'ALA006': { name: 'علاء (ALA006)',       display: 'علاء' },
+  'ABD007': { name: 'عبد الرحمن (ABD007)', display: 'عبد الرحمن' },
+  'YSF008': { name: 'يوسف (YSF008)',       display: 'يوسف' },
+  'YNS009': { name: 'يونس (YNS009)',       display: 'يونس' },
+  'UBD010': { name: 'عبيد (UBD010)',       display: 'عبيد' },
+  'SBH011': { name: 'صبيحان (SBH011)',     display: 'صبيحان' },
+  'ADM012': { name: 'آدم (ADM012)',        display: 'آدم' },
+  'JST013': { name: 'Justin (JST013)',     display: 'عبد الرحمن' },
+  'IDR014': { name: 'إدريس (IDR014)',      display: 'إدريس' },
+  'KLM015': { name: 'كليم وإدريس (KLM015)', display: 'كليم وإدريس' },
+  'HSM016': { name: 'حسام (HSM016)',       display: 'حسام' },
+  'MHM017': { name: 'محمود (MHM017)',      display: 'محمود' },
+  'HSN018': { name: 'حسن (HSN018)',        display: 'حسن' },
+  'MHD019': { name: 'محمد (MHD019)',       display: 'محمد' },
+  'HDR020': { name: 'هيدر (HDR020)',       display: 'هيدر' },
+  'SHN021': { name: 'شان (SHN021)',        display: 'شان' },
+  'NYZ022': { name: 'نياز (NYZ022)',       display: 'نياز' },
+  'AHK023': { name: 'أحمد HK (AHK023)',   display: 'أحمد' },
+  'ISA024': { name: 'عيسى (ISA024)',       display: 'عيسى' },
+  'ABM025': { name: 'أبو مريم (ABM025)',   display: 'أبو مريم' },
+  'AMK026': { name: 'أمين CA (AMK026)',    display: 'أمين' },
+  'SMR027': { name: 'سمر (SMR027)',        display: 'سمر' },
+  'MMR028': { name: 'محمد 2 (MMR028)',     display: 'محمد' },
+  'GHM029': { name: 'غماد (GHM029)',       display: 'غماد' },
+  'MRJ030': { name: 'معراج (MRJ030)',      display: 'معراج' },
 };
 const INSTRUCTOR_CODE = 'RYAN01';
 
-let currentUser = null;
-let isInstructor = false;
-let viewingStudent = null;
-let isStudentView = false;
-let calYear, calMonth;
-let selectedDate = null;
+let currentUser = null, isInstructor = false, viewingStudent = null;
+let isStudentView = false, calYear, calMonth, selectedDate = null;
 let submissions = {};
 
-// ── UTILS ──
-function dateKey(d) {
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-}
+function dateKey(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 function todayKey() { return dateKey(new Date()); }
 function yesterdayKey() { const d = new Date(); d.setDate(d.getDate()-1); return dateKey(d); }
-
-function formatDateLong(key) {
-  const [y,m,d] = key.split('-').map(Number);
-  return new Date(y, m-1, d).toLocaleDateString('en-GB', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
-}
-function activeStudentCode() {
-  return isInstructor && !isStudentView ? viewingStudent : currentUser;
-}
-function getDayNumber(key) {
-  const code = activeStudentCode();
-  const keys = Object.keys(submissions[code] || {}).sort();
-  const idx = keys.indexOf(key);
-  return idx === -1 ? null : idx + 1;
-}
-
-// Status: green = submitted today or yesterday, red = nothing in 48h, grey = in between
+function formatDateLong(key) { const [y,m,d] = key.split('-').map(Number); return new Date(y,m-1,d).toLocaleDateString('en-GB',{weekday:'long',year:'numeric',month:'long',day:'numeric'}); }
+function activeStudentCode() { return isInstructor && !isStudentView ? viewingStudent : currentUser; }
+function getDayNumber(key) { const code = activeStudentCode(); const keys = Object.keys(submissions[code]||{}).sort(); const idx = keys.indexOf(key); return idx===-1?null:idx+1; }
 function getStudentStatus(code) {
-  const subs = submissions[code] || {};
-  const today = todayKey();
-  const yesterday = yesterdayKey();
-  if (subs[today]?.images?.length > 0 || subs[yesterday]?.images?.length > 0) return 'green';
-  // Check if any submission exists at all
-  const keys = Object.keys(subs).filter(k => subs[k]?.images?.length > 0);
-  if (keys.length === 0) return 'grey';
-  // Last submission more than 48h ago = red
-  return 'red';
+  const subs = submissions[code]||{};
+  if (subs[todayKey()]?.images?.length>0 || subs[yesterdayKey()]?.images?.length>0) return 'green';
+  const keys = Object.keys(subs).filter(k=>subs[k]?.images?.length>0);
+  return keys.length===0 ? 'grey' : 'red';
 }
-
-function getInitials(name) {
-  return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
-}
-
-// Image compression
+function getInitials(name) { return name.trim()[0]||'؟'; }
 function fileToBase64(file) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve,reject) => {
     const reader = new FileReader();
     reader.onload = e => {
       const img = new Image();
       img.onload = () => {
         const canvas = document.createElement('canvas');
-        const MAX = 800;
-        let w = img.width, h = img.height;
-        if (w > h && w > MAX) { h = h * MAX / w; w = MAX; }
-        else if (h > MAX) { w = w * MAX / h; h = MAX; }
-        canvas.width = w; canvas.height = h;
-        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-        resolve(canvas.toDataURL('image/jpeg', 0.7));
+        const MAX=800; let w=img.width,h=img.height;
+        if(w>h&&w>MAX){h=h*MAX/w;w=MAX;}else if(h>MAX){w=w*MAX/h;h=MAX;}
+        canvas.width=w;canvas.height=h;
+        canvas.getContext('2d').drawImage(img,0,0,w,h);
+        resolve(canvas.toDataURL('image/jpeg',0.7));
       };
-      img.src = e.target.result;
+      img.src=e.target.result;
     };
-    reader.onerror = reject;
+    reader.onerror=reject;
     reader.readAsDataURL(file);
   });
 }
 
-// ── FIREBASE ──
 async function loadStudentData(code) {
-  if (submissions[code]) return;
-  submissions[code] = {};
-  try {
-    const snap = await getDocs(collection(db, 'submissions', code, 'days'));
-    snap.forEach(d => { submissions[code][d.id] = d.data(); });
-  } catch(e) { console.error('Load error', e); }
+  if(submissions[code]) return;
+  submissions[code]={};
+  try { const snap=await getDocs(collection(db,'submissions',code,'days')); snap.forEach(d=>{submissions[code][d.id]=d.data();}); }
+  catch(e){console.error('Load error',e);}
 }
+async function saveDay(code,dateStr,data) { await setDoc(doc(db,'submissions',code,'days',dateStr),data); }
 
-async function saveDay(studentCode, dateStr, data) {
-  await setDoc(doc(db, 'submissions', studentCode, 'days', dateStr), data);
-}
-
-// ── LOGIN ──
 async function handleLogin() {
   const code = document.getElementById('code-input').value.trim().toUpperCase();
   const err = document.getElementById('login-error');
-  const btn = document.querySelector('.login-btn');
-  btn.textContent = 'Signing in…'; btn.disabled = true;
-
-  if (code === INSTRUCTOR_CODE) {
-    currentUser = code; isInstructor = true;
-    viewingStudent = Object.keys(STUDENTS)[0];
-    // Load all students for sidebar status dots
-    await Promise.all(Object.keys(STUDENTS).map(c => loadStudentData(c)));
+  const btn = document.getElementById('login-btn');
+  btn.textContent='Signing in…';btn.disabled=true;
+  if(code===INSTRUCTOR_CODE){
+    currentUser=code;isInstructor=true;
+    viewingStudent=Object.keys(STUDENTS)[0];
+    await Promise.all(Object.keys(STUDENTS).map(c=>loadStudentData(c)));
     startApp();
-  } else if (STUDENTS[code]) {
-    currentUser = code; isInstructor = false;
+  } else if(STUDENTS[code]){
+    currentUser=code;isInstructor=false;
     await loadStudentData(code);
     startApp();
   } else {
-    err.style.display = 'block';
-    btn.textContent = 'Enter'; btn.disabled = false;
+    err.style.display='block';btn.textContent='Enter';btn.disabled=false;
   }
 }
 
-// ── START ──
 function startApp() {
-  document.getElementById('login-screen').style.display = 'none';
-  const app = document.getElementById('app');
-  const now = new Date();
-  calYear = now.getFullYear(); calMonth = now.getMonth();
-  selectedDate = todayKey();
-
-  if (isInstructor) {
-    app.style.display = 'flex';
-    document.getElementById('sidebar').style.display = 'flex';
-    document.getElementById('sidebar').style.flexDirection = 'column';
-    buildSidebar();
-    updateHeaderForInstructor();
+  document.getElementById('login-screen').style.display='none';
+  const app=document.getElementById('app');
+  const now=new Date(); calYear=now.getFullYear();calMonth=now.getMonth();selectedDate=todayKey();
+  if(isInstructor){
+    app.style.display='flex';
+    document.getElementById('sidebar').style.display='flex';
+    document.getElementById('sidebar').style.flexDirection='column';
+    buildSidebar();updateHeaderForInstructor();
   } else {
-    app.style.display = 'block';
-    app.style.maxWidth = '480px';
-    app.style.margin = '0 auto';
-    document.getElementById('header-title').textContent = 'My Homework';
-    document.getElementById('header-sub').textContent = STUDENTS[currentUser]?.name || '';
+    app.style.display='block';app.style.maxWidth='480px';app.style.margin='0 auto';
+    document.getElementById('header-title').textContent='My Homework';
+    document.getElementById('header-sub').textContent=STUDENTS[currentUser]?.display||'';
   }
   render();
 }
 
-// ── SIDEBAR ──
 function buildSidebar() {
-  const wrap = document.getElementById('sidebar-students');
-  wrap.innerHTML = '';
-  Object.entries(STUDENTS).forEach(([code, s]) => {
-    const status = getStudentStatus(code);
-    const el = document.createElement('div');
-    el.className = 'sidebar-student' + (code === viewingStudent ? ' active' : '');
-    el.innerHTML = `
-      <div class="sidebar-avatar">${getInitials(s.name)}</div>
-      <div class="sidebar-name">${s.name}</div>
-      <div class="status-dot ${status}"></div>
-    `;
-    el.onclick = async () => {
-      viewingStudent = code;
-      updateHeaderForInstructor();
-      buildSidebar();
-      render();
-    };
+  const wrap=document.getElementById('sidebar-students');wrap.innerHTML='';
+  Object.entries(STUDENTS).forEach(([code,s])=>{
+    const status=getStudentStatus(code);
+    const el=document.createElement('div');
+    el.className='sidebar-student'+(code===viewingStudent?' active':'');
+    el.innerHTML=`<div class="sidebar-avatar">${getInitials(s.display)}</div><div class="sidebar-name">${s.name}</div><div class="status-dot ${status}"></div>`;
+    el.onclick=async()=>{viewingStudent=code;updateHeaderForInstructor();buildSidebar();render();};
     wrap.appendChild(el);
   });
 }
 
 function updateHeaderForInstructor() {
-  const student = STUDENTS[viewingStudent];
-  document.getElementById('header-title').textContent = isStudentView ? 'My Homework' : (student?.name || 'Instructor Review');
-  document.getElementById('header-sub').textContent = isStudentView ? '' : 'Instructor view';
+  const s=STUDENTS[viewingStudent];
+  document.getElementById('header-title').textContent=isStudentView?'My Homework':(s?.name||'Instructor Review');
+  document.getElementById('header-sub').textContent=isStudentView?'':'Instructor view';
 }
 
-// ── VIEW TOGGLE ──
 function toggleView() {
-  isStudentView = !isStudentView;
-  const sidebarBtn = document.getElementById('sidebar-view-btn');
-  sidebarBtn.textContent = isStudentView ? '← Instructor view' : '👤 Student view';
-  updateHeaderForInstructor();
-  render();
+  isStudentView=!isStudentView;
+  document.getElementById('sidebar-view-btn').textContent=isStudentView?'← Instructor view':'👤 Student view';
+  updateHeaderForInstructor();render();
 }
 
-// ── CALENDAR ──
-const AR_MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
-const AR_DAYS   = ['الأحد','السبت','الجمعة','الخميس','الأربعاء','الثلاثاء','الاثنين'];
+const AR_MONTHS=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+const AR_DAYS=['الأحد','السبت','الجمعة','الخميس','الأربعاء','الثلاثاء','الاثنين'];
 
 function renderCalendar() {
-  document.getElementById('cal-month-label').textContent = `${AR_MONTHS[calMonth]} ${calYear}`;
-  const grid = document.getElementById('cal-grid');
-  grid.innerHTML = '';
-  AR_DAYS.forEach(d => {
-    const h = document.createElement('div'); h.className = 'cal-day-header'; h.textContent = d; grid.appendChild(h);
-  });
-  const firstDay = new Date(calYear, calMonth, 1).getDay();
-  const daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
-  const daysInPrev = new Date(calYear, calMonth, 0).getDate();
-  const startOffset = (6 - firstDay + 7) % 7;
-  const code = activeStudentCode();
-  const subs = submissions[code] || {};
-  const today = todayKey();
-
-  for (let i = startOffset - 1; i >= 0; i--) {
-    const cell = document.createElement('div'); cell.className = 'cal-day other-month';
-    const n = document.createElement('div'); n.className = 'day-num'; n.textContent = daysInPrev - i;
-    cell.appendChild(n); grid.appendChild(cell);
+  document.getElementById('cal-month-label').textContent=`${AR_MONTHS[calMonth]} ${calYear}`;
+  const grid=document.getElementById('cal-grid');grid.innerHTML='';
+  AR_DAYS.forEach(d=>{const h=document.createElement('div');h.className='cal-day-header';h.textContent=d;grid.appendChild(h);});
+  const firstDay=new Date(calYear,calMonth,1).getDay();
+  const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+  const daysInPrev=new Date(calYear,calMonth,0).getDate();
+  const startOffset=(6-firstDay+7)%7;
+  const code=activeStudentCode();const subs=submissions[code]||{};const today=todayKey();
+  for(let i=startOffset-1;i>=0;i--){const cell=document.createElement('div');cell.className='cal-day other-month';const n=document.createElement('div');n.className='day-num';n.textContent=daysInPrev-i;cell.appendChild(n);grid.appendChild(cell);}
+  for(let d=1;d<=daysInMonth;d++){
+    const key=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const cell=document.createElement('div');cell.className='cal-day';
+    if(key===today)cell.classList.add('today');
+    if(key===selectedDate)cell.classList.add('selected');
+    const n=document.createElement('div');n.className='day-num';n.textContent=d;cell.appendChild(n);
+    const dots=document.createElement('div');dots.className='dots';
+    const sub=subs[key];
+    if(sub?.images?.length>0){const dg=document.createElement('div');dg.className='dot dot-green';dots.appendChild(dg);if(sub.reviewed){const db=document.createElement('div');db.className='dot dot-blue';dots.appendChild(db);}}
+    cell.appendChild(dots);cell.onclick=()=>{selectedDate=key;render();};grid.appendChild(cell);
   }
-  for (let d = 1; d <= daysInMonth; d++) {
-    const key = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const cell = document.createElement('div'); cell.className = 'cal-day';
-    if (key === today) cell.classList.add('today');
-    if (key === selectedDate) cell.classList.add('selected');
-    const n = document.createElement('div'); n.className = 'day-num'; n.textContent = d; cell.appendChild(n);
-    const dots = document.createElement('div'); dots.className = 'dots';
-    const sub = subs[key];
-    if (sub?.images?.length > 0) {
-      const dg = document.createElement('div'); dg.className = 'dot dot-green'; dots.appendChild(dg);
-      if (sub.reviewed) { const db = document.createElement('div'); db.className = 'dot dot-blue'; dots.appendChild(db); }
-    }
-    cell.appendChild(dots);
-    cell.onclick = () => { selectedDate = key; render(); };
-    grid.appendChild(cell);
-  }
-  const total = startOffset + daysInMonth;
-  const remaining = (7 - (total % 7)) % 7;
-  for (let d = 1; d <= remaining; d++) {
-    const cell = document.createElement('div'); cell.className = 'cal-day other-month';
-    const n = document.createElement('div'); n.className = 'day-num'; n.textContent = d;
-    cell.appendChild(n); grid.appendChild(cell);
-  }
+  const remaining=(7-((startOffset+daysInMonth)%7))%7;
+  for(let d=1;d<=remaining;d++){const cell=document.createElement('div');cell.className='cal-day other-month';const n=document.createElement('div');n.className='day-num';n.textContent=d;cell.appendChild(n);grid.appendChild(cell);}
 }
 
-function prevMonth() { calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; } renderCalendar(); }
-function nextMonth() { calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } renderCalendar(); }
-
-// ── DAY PANEL ──
 function renderDayPanel() {
-  if (!selectedDate) { document.getElementById('day-card').style.display = 'none'; return; }
-  const code = activeStudentCode();
-  const subs = submissions[code] || {};
-  const sub = subs[selectedDate];
-  const hasSubmission = sub?.images?.length > 0;
-  const reviewed = sub?.reviewed;
-  const dayNum = getDayNumber(selectedDate);
-
-  document.getElementById('day-card').style.display = 'block';
-  document.getElementById('day-badge').textContent = dayNum ? `Day ${dayNum}` : 'No submission';
-  document.getElementById('day-date').textContent = formatDateLong(selectedDate);
-  document.getElementById('day-status').textContent = hasSubmission ? (reviewed ? '✓ Reviewed' : '• Uploaded') : '';
-
-  const reviewBtn = document.getElementById('review-btn');
-  if (isInstructor && !isStudentView && hasSubmission) {
-    reviewBtn.style.display = 'block';
-    reviewBtn.className = reviewed ? 'review-btn reviewed' : 'review-btn not-reviewed';
-    reviewBtn.textContent = reviewed ? '✓ Reviewed' : 'Mark reviewed';
-  } else { reviewBtn.style.display = 'none'; }
-
-  const area = document.getElementById('submissions-area');
-  area.innerHTML = '';
-  if (hasSubmission) {
-    const grid = document.createElement('div'); grid.className = 'submissions-grid';
-    sub.images.forEach(src => {
-      const wrap = document.createElement('div'); wrap.className = 'submission-thumb';
-      const img = document.createElement('img'); img.src = src;
-      img.onclick = () => openModal(src);
-      wrap.appendChild(img);
-      const badge = document.createElement('div');
-      badge.className = 'submission-badge ' + (reviewed ? 'reviewed-badge' : 'uploaded-badge');
-      badge.textContent = reviewed ? 'Reviewed' : 'Uploaded';
-      wrap.appendChild(badge); grid.appendChild(wrap);
+  if(!selectedDate){document.getElementById('day-card').style.display='none';return;}
+  const code=activeStudentCode();const subs=submissions[code]||{};const sub=subs[selectedDate];
+  const hasSubmission=sub?.images?.length>0;const reviewed=sub?.reviewed;const dayNum=getDayNumber(selectedDate);
+  document.getElementById('day-card').style.display='block';
+  document.getElementById('day-badge').textContent=dayNum?`Day ${dayNum}`:'No submission';
+  document.getElementById('day-date').textContent=formatDateLong(selectedDate);
+  document.getElementById('day-status').textContent=hasSubmission?(reviewed?'✓ Reviewed':'• Uploaded'):'';
+  const reviewBtn=document.getElementById('review-btn');
+  if(isInstructor&&!isStudentView&&hasSubmission){reviewBtn.style.display='block';reviewBtn.className=reviewed?'review-btn reviewed':'review-btn not-reviewed';reviewBtn.textContent=reviewed?'✓ Reviewed':'Mark reviewed';}
+  else{reviewBtn.style.display='none';}
+  const area=document.getElementById('submissions-area');area.innerHTML='';
+  if(hasSubmission){
+    const grid=document.createElement('div');grid.className='submissions-grid';
+    sub.images.forEach(src=>{
+      const wrap=document.createElement('div');wrap.className='submission-thumb';
+      const img=document.createElement('img');img.src=src;img.onclick=()=>openModal(src);wrap.appendChild(img);
+      const badge=document.createElement('div');badge.className='submission-badge '+(reviewed?'reviewed-badge':'uploaded-badge');badge.textContent=reviewed?'Reviewed':'Uploaded';
+      wrap.appendChild(badge);grid.appendChild(wrap);
     });
     area.appendChild(grid);
   } else {
-    const empty = document.createElement('div'); empty.className = 'no-submission-msg';
-    empty.textContent = 'No homework submitted for this day.';
-    area.appendChild(empty);
+    const empty=document.createElement('div');empty.className='no-submission-msg';empty.textContent='No homework submitted for this day.';area.appendChild(empty);
   }
-
-  const uploadWrap = document.getElementById('upload-area-wrap');
-  const isToday = selectedDate === todayKey();
-  const canUpload = !isInstructor || isStudentView;
-  uploadWrap.style.display = (canUpload && isToday && !hasSubmission) ? 'block' : 'none';
+  const uploadWrap=document.getElementById('upload-area-wrap');
+  uploadWrap.style.display=((!isInstructor||isStudentView)&&selectedDate===todayKey()&&!hasSubmission)?'block':'none';
 }
 
-// ── UPLOAD ──
 async function handleUpload(event) {
-  const files = Array.from(event.target.files);
-  if (!files.length) return;
-  showToast('Uploading…');
-  const code = currentUser;
-  if (!submissions[code]) submissions[code] = {};
-  try {
-    const base64images = [];
-    for (const file of files) { base64images.push(await fileToBase64(file)); }
-    const dayData = { images: base64images, reviewed: false };
-    submissions[code][selectedDate] = dayData;
-    await saveDay(code, selectedDate, dayData);
-    showToast('Homework uploaded ✓');
-    render();
-  } catch(e) { showToast('Upload failed — try again'); console.error(e); }
-  event.target.value = '';
+  const files=Array.from(event.target.files);if(!files.length)return;
+  showToast('Uploading…');const code=currentUser;if(!submissions[code])submissions[code]={};
+  try{
+    const imgs=[];for(const f of files){imgs.push(await fileToBase64(f));}
+    const dayData={images:imgs,reviewed:false};submissions[code][selectedDate]=dayData;
+    await saveDay(code,selectedDate,dayData);showToast('Homework uploaded ✓');render();
+  }catch(e){showToast('Upload failed — try again');console.error(e);}
+  event.target.value='';
 }
 
-// ── REVIEW ──
 async function toggleReview() {
-  const code = viewingStudent;
-  if (!submissions[code]?.[selectedDate]) return;
-  const current = submissions[code][selectedDate].reviewed;
-  submissions[code][selectedDate].reviewed = !current;
-  render();
-  buildSidebar();
-  try {
-    await updateDoc(doc(db, 'submissions', code, 'days', selectedDate), { reviewed: !current });
-    showToast(!current ? 'Marked as reviewed ✓' : 'Unmarked');
-  } catch(e) {
-    showToast('Error — try again');
-    submissions[code][selectedDate].reviewed = current;
-    render();
-  }
+  const code=viewingStudent;if(!submissions[code]?.[selectedDate])return;
+  const current=submissions[code][selectedDate].reviewed;
+  submissions[code][selectedDate].reviewed=!current;render();buildSidebar();
+  try{await updateDoc(doc(db,'submissions',code,'days',selectedDate),{reviewed:!current});showToast(!current?'Marked as reviewed ✓':'Unmarked');}
+  catch(e){showToast('Error — try again');submissions[code][selectedDate].reviewed=current;render();}
 }
 
-// ── MODAL ──
-function openModal(src) { document.getElementById('modal-img').src = src; document.getElementById('modal').classList.add('open'); }
-function closeModal() { document.getElementById('modal').classList.remove('open'); }
-
-// ── TOAST ──
+function openModal(src){document.getElementById('modal-img').src=src;document.getElementById('modal').classList.add('open');}
+function closeModal(){document.getElementById('modal').classList.remove('open');}
 let toastTimer;
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
-}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2500);}
+function render(){renderCalendar();renderDayPanel();}
 
-function render() { renderCalendar(); renderDayPanel(); }
-
-// ── EVENT LISTENERS ──
-document.getElementById('login-btn').addEventListener('click', handleLogin);
-document.getElementById('code-input').addEventListener('keydown', e => { if (e.key === 'Enter') handleLogin(); });
-document.getElementById('sidebar-view-btn').addEventListener('click', toggleView);
-document.getElementById('view-toggle-btn').addEventListener('click', toggleView);
-document.getElementById('prev-month-btn').addEventListener('click', () => { calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; } renderCalendar(); });
-document.getElementById('next-month-btn').addEventListener('click', () => { calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } renderCalendar(); });
-document.getElementById('review-btn').addEventListener('click', toggleReview);
-document.getElementById('upload-trigger').addEventListener('click', () => document.getElementById('file-input').click());
-document.getElementById('file-input').addEventListener('change', handleUpload);
-document.getElementById('modal').addEventListener('click', closeModal);
+document.getElementById('login-btn').addEventListener('click',handleLogin);
+document.getElementById('code-input').addEventListener('keydown',e=>{if(e.key==='Enter')handleLogin();});
+document.getElementById('sidebar-view-btn').addEventListener('click',toggleView);
+document.getElementById('view-toggle-btn').addEventListener('click',toggleView);
+document.getElementById('prev-month-btn').addEventListener('click',()=>{calMonth--;if(calMonth<0){calMonth=11;calYear--;}renderCalendar();});
+document.getElementById('next-month-btn').addEventListener('click',()=>{calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCalendar();});
+document.getElementById('review-btn').addEventListener('click',toggleReview);
+document.getElementById('upload-trigger').addEventListener('click',()=>document.getElementById('file-input').click());
+document.getElementById('file-input').addEventListener('change',handleUpload);
+document.getElementById('modal').addEventListener('click',closeModal);
+document.getElementById('modal-close-btn').addEventListener('click',e=>{e.stopPropagation();closeModal();});
 </script>
 </body>
 </html>
