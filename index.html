@@ -114,13 +114,19 @@
   .cal-day.selected.sel-blue .day-num { color: var(--blue); }
   .day-num { font-size: 14px; color: var(--ink); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
   .other-month .day-num { color: var(--border); }
-  .dots { display: flex; gap: 3px; margin-top: 3px; height: 8px; align-items: center; flex-wrap: wrap; justify-content: center; }
-  .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+  /* Activity squares instead of dots */
+  .dots { display: flex; gap: 2px; margin-top: 3px; height: 8px; align-items: center; flex-wrap: wrap; justify-content: center; }
+  .dot { width: 7px; height: 7px; border-radius: 2px; flex-shrink: 0; }
   .dot-green { background: var(--dot-green); }
   .dot-blue { background: var(--dot-blue); }
   .dot-yellow { background: var(--dot-yellow); }
+  /* Flashcard activity square */
+  .dot-fc { background: #8b5cf6; }
+
   .cal-legend { display: flex; gap: 12px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); flex-wrap: wrap; }
   .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--grey); }
+  .legend-sq { width: 10px; height: 10px; border-radius: 2px; }
 
   /* DAY CARD */
   .day-card { border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; background: var(--grey-light); color: var(--ink); }
@@ -174,6 +180,23 @@
   .fc-stat-num { font-size: 22px; font-weight: 800; color: var(--ink); }
   .fc-stat-label { font-size: 11px; color: var(--grey); margin-top: 2px; }
 
+  /* TIMER PANEL */
+  .fc-timer-panel { background: white; border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .fc-timer-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .fc-timer-display { font-size: 36px; font-weight: 800; color: var(--ink); font-variant-numeric: tabular-nums; letter-spacing: 2px; min-width: 90px; }
+  .fc-timer-display.running { color: var(--green); }
+  .fc-timer-display.done { color: var(--dot-red); }
+  .fc-timer-controls { display: flex; gap: 8px; align-items: center; }
+  .fc-timer-btn { padding: 10px 18px; border-radius: 10px; border: none; font-size: 14px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
+  .fc-timer-start { background: var(--green); color: white; }
+  .fc-timer-stop { background: #fee2e2; color: #b91c1c; }
+  .fc-timer-reset { background: var(--grey-light); color: var(--grey); }
+  .fc-timer-goal { display: flex; align-items: center; gap: 8px; margin-top: 14px; }
+  .fc-timer-goal label { font-size: 12px; color: var(--grey); font-weight: 600; white-space: nowrap; }
+  .fc-timer-goal input[type=range] { flex: 1; accent-color: var(--blue); }
+  .fc-timer-goal-val { font-size: 13px; font-weight: 700; color: var(--blue); min-width: 32px; text-align: right; }
+  .fc-session-result { margin-top: 14px; padding: 12px 14px; background: #f0fdf4; border-radius: 10px; font-size: 14px; font-weight: 600; color: var(--green); display: none; }
+
   .fc-card-wrap { perspective: 1000px; margin-bottom: 20px; }
   .fc-card { background: white; border-radius: var(--card-radius); padding: 48px 28px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.08); min-height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.15s; position: relative; }
   .fc-card:active { transform: scale(0.98); }
@@ -182,6 +205,10 @@
   .fc-english { font-size: 22px; font-weight: 600; color: var(--blue); margin-top: 12px; display: none; }
   .fc-card.revealed .fc-english { display: block; }
   .fc-card.revealed .fc-tap-hint { display: none; }
+
+  /* Delete button on card */
+  .fc-delete-btn { position: absolute; top: 12px; right: 12px; width: 28px; height: 28px; border-radius: 50%; border: none; background: #fee2e2; color: #b91c1c; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0.6; transition: opacity 0.2s; }
+  .fc-delete-btn:hover { opacity: 1; }
 
   .fc-rating-wrap { display: none; gap: 8px; margin-bottom: 20px; }
   .fc-rating-wrap.visible { display: flex; }
@@ -198,6 +225,17 @@
   .fc-done-title { font-size: 20px; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
   .fc-done-sub { font-size: 14px; color: var(--grey); margin-bottom: 20px; }
   .fc-restart-btn { padding: 12px 24px; background: var(--blue); color: white; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; }
+
+  /* ADD CARD */
+  .fc-add-section { background: white; border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; border: 1.5px dashed var(--border); }
+  .fc-add-section h3 { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 14px; }
+  .fc-add-row { display: flex; gap: 10px; align-items: flex-end; }
+  .fc-add-field { flex: 1; }
+  .fc-add-field label { display: block; font-size: 11px; font-weight: 600; color: var(--grey); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .fc-add-field input { width: 100%; padding: 10px 12px; border: 2px solid var(--border); border-radius: 8px; font-size: 15px; color: var(--ink); outline: none; font-family: inherit; transition: border-color 0.2s; }
+  .fc-add-field input:focus { border-color: var(--blue); }
+  .fc-add-field input[dir=rtl] { direction: rtl; font-size: 18px; }
+  .fc-add-submit { padding: 10px 16px; background: var(--blue); color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; }
 
   /* MODAL */
   .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100; align-items: center; justify-content: center; padding: 20px; }
@@ -282,9 +320,10 @@
         </div>
         <div class="cal-grid" id="cal-grid"></div>
         <div class="cal-legend">
-          <div class="legend-item"><div class="dot dot-green"></div> Submitted</div>
-          <div class="legend-item"><div class="dot dot-blue"></div> Reviewed</div>
-          <div class="legend-item"><div class="dot dot-yellow"></div> Made up</div>
+          <div class="legend-item"><div class="legend-sq" style="background:var(--dot-green)"></div> Submitted</div>
+          <div class="legend-item"><div class="legend-sq" style="background:var(--dot-blue)"></div> Reviewed</div>
+          <div class="legend-item"><div class="legend-sq" style="background:var(--dot-yellow)"></div> Made up</div>
+          <div class="legend-item"><div class="legend-sq" style="background:#8b5cf6"></div> Flashcards</div>
         </div>
       </div>
       <div class="day-card" id="day-card" style="display:none">
@@ -306,7 +345,42 @@
       <div class="section-label">Lessons</div>
       <div class="fc-lesson-picker" id="fc-lesson-picker"></div>
       <div class="fc-stats" id="fc-stats"></div>
+
+      <!-- TIMER PANEL -->
+      <div class="fc-timer-panel">
+        <div class="fc-timer-row">
+          <div class="fc-timer-display" id="fc-timer-display">5:00</div>
+          <div class="fc-timer-controls">
+            <button class="fc-timer-btn fc-timer-start" id="fc-timer-start-btn">▶ Start</button>
+            <button class="fc-timer-btn fc-timer-stop" id="fc-timer-stop-btn" style="display:none">⏸ Stop</button>
+            <button class="fc-timer-btn fc-timer-reset" id="fc-timer-reset-btn">↺</button>
+          </div>
+        </div>
+        <div class="fc-timer-goal">
+          <label>Goal</label>
+          <input type="range" id="fc-timer-range" min="1" max="5" step="1" value="5">
+          <span class="fc-timer-goal-val" id="fc-timer-goal-val">5 min</span>
+        </div>
+        <div class="fc-session-result" id="fc-session-result"></div>
+      </div>
+
       <div id="fc-area"></div>
+
+      <!-- ADD CARD -->
+      <div class="fc-add-section">
+        <h3>➕ Add a card to this lesson</h3>
+        <div class="fc-add-row">
+          <div class="fc-add-field">
+            <label>Arabic</label>
+            <input type="text" id="fc-add-ar" dir="rtl" placeholder="عَرَبِيٌّ">
+          </div>
+          <div class="fc-add-field">
+            <label>English</label>
+            <input type="text" id="fc-add-en" placeholder="meaning">
+          </div>
+          <button class="fc-add-submit" id="fc-add-btn">Add</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -333,7 +407,7 @@ const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
 
 // ── FLASHCARD DATA ──
-const LESSONS = {
+const DEFAULT_LESSONS = {
   1: {
     name: 'Lesson 1',
     cards: [
@@ -402,17 +476,32 @@ const STUDENTS = {
 };
 const INSTRUCTOR_CODE = 'RYAN01';
 
+// Runtime lesson data (can be modified per user)
+let LESSONS = JSON.parse(JSON.stringify(DEFAULT_LESSONS));
+
 let currentUser = null, isInstructor = false, viewingStudent = null;
 let isStudentView = false, calYear, calMonth, selectedDate = null;
 let submissions = {}, sidebarCollapsed = false;
 let currentTab = 'homework';
 
 // Flashcard state
-let fcProgress = {}; // fcProgress[lessonNum][cardIndex] = { interval, easeFactor, nextReview, reps }
+let fcProgress = {};
 let fcCurrentLesson = 1;
 let fcQueue = [];
 let fcCurrentIdx = 0;
 let fcRevealed = false;
+let fcDeletedCards = {}; // fcDeletedCards[lessonNum] = Set of card indices deleted
+
+// Timer state
+let fcTimerGoalMinutes = 5;
+let fcTimerSecondsLeft = 300;
+let fcTimerRunning = false;
+let fcTimerInterval = null;
+let fcSessionCardsRead = 0;
+let fcTimerStarted = false; // has session started at least once
+
+// Activity log for flashcards: fcActivity[dateKey] = cardsRead
+let fcActivity = {};
 
 // ── UTILS ──
 function dateKey(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
@@ -527,14 +616,42 @@ async function loadStudentData(code) {
 async function loadFlashcardProgress(code) {
   try {
     const snap = await getDoc(doc(db,'flashcards',code));
-    if (snap.exists()) fcProgress = snap.data();
-    else fcProgress = {};
+    if (snap.exists()) {
+      const data = snap.data();
+      fcProgress = data.progress || data || {};
+      fcActivity = data.activity || {};
+      fcDeletedCards = data.deleted || {};
+      // Restore custom cards
+      if (data.customCards) {
+        Object.entries(data.customCards).forEach(([lessonNum, cards]) => {
+          const num = parseInt(lessonNum);
+          if (LESSONS[num]) {
+            LESSONS[num].cards = [...DEFAULT_LESSONS[num]?.cards || [], ...cards];
+          }
+        });
+      }
+    } else {
+      fcProgress = {}; fcActivity = {}; fcDeletedCards = {};
+    }
   } catch(e) { console.error('FC load error',e); }
 }
 
-async function saveFlashcardProgress(code) {
-  try { await setDoc(doc(db,'flashcards',code), fcProgress); }
-  catch(e) { console.error('FC save error',e); }
+async function saveFlashcardData(code) {
+  try {
+    // Collect custom cards (ones beyond default count)
+    const customCards = {};
+    Object.entries(LESSONS).forEach(([num, lesson]) => {
+      const defaultCount = DEFAULT_LESSONS[num]?.cards.length || 0;
+      const extras = lesson.cards.slice(defaultCount);
+      if (extras.length) customCards[num] = extras;
+    });
+    await setDoc(doc(db,'flashcards',code), {
+      progress: fcProgress,
+      activity: fcActivity,
+      deleted: fcDeletedCards,
+      customCards
+    });
+  } catch(e) { console.error('FC save error',e); }
 }
 
 async function saveDay(code, dateStr, data) { await setDoc(doc(db,'submissions',code,'days',dateStr), data); }
@@ -677,14 +794,18 @@ function renderCalendar() {
       else if(selSub?.images?.length>0||selSub?.text)cell.classList.add('sel-green');
     }
     const n=document.createElement('div');n.className='day-num';n.textContent=d;cell.appendChild(n);
-    const dots=document.createElement('div');dots.className='dots';
+    const squares=document.createElement('div');squares.className='dots';
     const sub=subs[key];
     if(sub){
-      if(sub.makeupFor){const dy=document.createElement('div');dy.className='dot dot-yellow';dots.appendChild(dy);}
-      else if(sub.images?.length>0||sub.text){const dg=document.createElement('div');dg.className='dot dot-green';dots.appendChild(dg);}
-      if(sub.reviewed){const db=document.createElement('div');db.className='dot dot-blue';dots.appendChild(db);}
+      if(sub.makeupFor){const sy=document.createElement('div');sy.className='dot dot-yellow';squares.appendChild(sy);}
+      else if(sub.images?.length>0||sub.text){const sg=document.createElement('div');sg.className='dot dot-green';squares.appendChild(sg);}
+      if(sub.reviewed){const sb=document.createElement('div');sb.className='dot dot-blue';squares.appendChild(sb);}
     }
-    cell.appendChild(dots); cell.onclick=()=>{selectedDate=key;renderDayPanel();renderCalendar();}; grid.appendChild(cell);
+    // Flashcard activity square
+    if(fcActivity[key]){
+      const sf=document.createElement('div');sf.className='dot dot-fc';squares.appendChild(sf);
+    }
+    cell.appendChild(squares); cell.onclick=()=>{selectedDate=key;renderDayPanel();renderCalendar();}; grid.appendChild(cell);
   }
   const remaining=(7-((startOffset+daysInMonth)%7))%7;
   for(let d=1;d<=remaining;d++){const cell=document.createElement('div');cell.className='cal-day other-month';const n=document.createElement('div');n.className='day-num';n.textContent=d;cell.appendChild(n);grid.appendChild(cell);}
@@ -708,6 +829,13 @@ function renderDayPanel() {
   document.getElementById('day-badge').textContent=dayNum?`Day ${dayNum}`:(hasContent?'Make-up':'No submission');
   document.getElementById('day-date').textContent=formatDateLong(selectedDate);
   document.getElementById('day-status').textContent=hasContent?(reviewed?'✓ Reviewed':(isMakeup?'• Made up':'• Uploaded')):'';
+
+  // Show flashcard activity if any
+  const fcCount = fcActivity[selectedDate];
+  if (fcCount) {
+    const existing = document.getElementById('day-status');
+    existing.textContent += (existing.textContent ? ' · ' : '') + `🃏 ${fcCount} cards`;
+  }
 
   const reviewBtn=document.getElementById('review-btn');
   if(isInstructor&&!isStudentView&&hasContent){
@@ -806,7 +934,92 @@ async function toggleReview() {
   catch(e){showToast('Error — try again');submissions[code][selectedDate].reviewed=current;render();}
 }
 
+// ── TIMER ──
+function formatTime(seconds) {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${m}:${String(s).padStart(2,'0')}`;
+}
+
+function updateTimerDisplay() {
+  const el = document.getElementById('fc-timer-display');
+  if (!el) return;
+  el.textContent = formatTime(fcTimerSecondsLeft);
+  el.className = 'fc-timer-display';
+  if (fcTimerRunning) el.classList.add('running');
+  else if (fcTimerStarted && fcTimerSecondsLeft === 0) el.classList.add('done');
+}
+
+function startTimer() {
+  if (fcTimerRunning) return;
+  if (fcTimerSecondsLeft === 0) return;
+  fcTimerRunning = true;
+  fcTimerStarted = true;
+  document.getElementById('fc-timer-start-btn').style.display = 'none';
+  document.getElementById('fc-timer-stop-btn').style.display = 'inline-flex';
+  fcTimerInterval = setInterval(() => {
+    fcTimerSecondsLeft--;
+    updateTimerDisplay();
+    if (fcTimerSecondsLeft <= 0) {
+      clearInterval(fcTimerInterval);
+      fcTimerRunning = false;
+      document.getElementById('fc-timer-start-btn').style.display = 'inline-flex';
+      document.getElementById('fc-timer-stop-btn').style.display = 'none';
+      onTimerEnd();
+    }
+  }, 1000);
+  updateTimerDisplay();
+}
+
+function stopTimer() {
+  if (!fcTimerRunning) return;
+  clearInterval(fcTimerInterval);
+  fcTimerRunning = false;
+  document.getElementById('fc-timer-start-btn').style.display = 'inline-flex';
+  document.getElementById('fc-timer-stop-btn').style.display = 'none';
+  updateTimerDisplay();
+}
+
+function resetTimer() {
+  stopTimer();
+  fcTimerSecondsLeft = fcTimerGoalMinutes * 60;
+  fcSessionCardsRead = 0;
+  fcTimerStarted = false;
+  const resultEl = document.getElementById('fc-session-result');
+  if (resultEl) resultEl.style.display = 'none';
+  updateTimerDisplay();
+}
+
+async function onTimerEnd() {
+  // Log activity
+  const today = todayKey();
+  fcActivity[today] = (fcActivity[today] || 0) + fcSessionCardsRead;
+  const code = currentUser || viewingStudent;
+  await saveFlashcardData(code);
+  renderCalendar();
+
+  const resultEl = document.getElementById('fc-session-result');
+  if (resultEl) {
+    resultEl.style.display = 'block';
+    resultEl.textContent = `✓ Session complete — you read ${fcSessionCardsRead} card${fcSessionCardsRead !== 1 ? 's' : ''} in ${fcTimerGoalMinutes} minute${fcTimerGoalMinutes !== 1 ? 's' : ''}`;
+  }
+}
+
 // ── FLASHCARDS ──
+function isCardDeleted(lessonNum, cardIdx) {
+  return (fcDeletedCards[lessonNum] || []).includes(cardIdx);
+}
+
+function deleteCard(lessonNum, cardIdx) {
+  if (!fcDeletedCards[lessonNum]) fcDeletedCards[lessonNum] = [];
+  if (!fcDeletedCards[lessonNum].includes(cardIdx)) {
+    fcDeletedCards[lessonNum].push(cardIdx);
+  }
+  // Remove from queue if present
+  fcQueue = fcQueue.filter(c => c.idx !== cardIdx);
+  if (fcCurrentIdx >= fcQueue.length) fcCurrentIdx = Math.max(0, fcQueue.length - 1);
+}
+
 function getCardProgress(lessonNum, cardIdx) {
   const key = `${lessonNum}_${cardIdx}`;
   return fcProgress[key] || { interval: 0, easeFactor: 2.5, nextReview: 0, reps: 0 };
@@ -821,15 +1034,13 @@ function getDueCards(lessonNum) {
   const now = Date.now();
   const lesson = LESSONS[lessonNum];
   if (!lesson) return [];
-  return lesson.cards.map((c,i)=>({...c,idx:i})).filter(c => {
-    const p = getCardProgress(lessonNum, c.idx);
-    return p.nextReview <= now;
-  });
+  return lesson.cards
+    .map((c,i) => ({...c, idx: i}))
+    .filter(c => !isCardDeleted(lessonNum, c.idx) && getCardProgress(lessonNum, c.idx).nextReview <= now);
 }
 
 function buildFcQueue() {
   fcQueue = getDueCards(fcCurrentLesson);
-  // Shuffle
   for(let i=fcQueue.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[fcQueue[i],fcQueue[j]]=[fcQueue[j],fcQueue[i]];}
   fcCurrentIdx = 0;
   fcRevealed = false;
@@ -839,7 +1050,6 @@ function buildFcQueue() {
 function applyRating(lessonNum, cardIdx, rating) {
   const p = getCardProgress(lessonNum, cardIdx);
   let { interval, easeFactor, reps } = p;
-
   if (rating === 1) {
     interval = 0; reps = 0;
   } else {
@@ -848,15 +1058,12 @@ function applyRating(lessonNum, cardIdx, rating) {
     else interval = Math.round(interval * easeFactor);
     reps++;
   }
-
   easeFactor = Math.max(1.3, easeFactor + 0.1 - (5 - rating) * (0.08 + (5 - rating) * 0.02));
   const nextReview = Date.now() + interval * 86400000;
   setCardProgress(lessonNum, cardIdx, { interval, easeFactor, nextReview, reps });
 }
 
 function renderFlashcards() {
-  const code = activeStudentCode();
-
   // Lesson picker
   const picker = document.getElementById('fc-lesson-picker');
   picker.innerHTML='';
@@ -870,23 +1077,48 @@ function renderFlashcards() {
 
   // Stats
   const lesson = LESSONS[fcCurrentLesson];
-  const total = lesson.cards.length;
+  const totalActive = lesson.cards.filter((_,i)=>!isCardDeleted(fcCurrentLesson,i)).length;
   const due = getDueCards(fcCurrentLesson).length;
-  const learned = lesson.cards.filter((_,i)=>getCardProgress(fcCurrentLesson,i).reps>0).length;
+  const learned = lesson.cards.filter((_,i)=>!isCardDeleted(fcCurrentLesson,i)&&getCardProgress(fcCurrentLesson,i).reps>0).length;
   const statsEl = document.getElementById('fc-stats');
   statsEl.innerHTML=`
-    <div class="fc-stat"><div class="fc-stat-num">${total}</div><div class="fc-stat-label">Total</div></div>
+    <div class="fc-stat"><div class="fc-stat-num">${totalActive}</div><div class="fc-stat-label">Active cards</div></div>
     <div class="fc-stat"><div class="fc-stat-num" style="color:var(--blue)">${due}</div><div class="fc-stat-label">Due today</div></div>
     <div class="fc-stat"><div class="fc-stat-num" style="color:var(--green)">${learned}</div><div class="fc-stat-label">Learned</div></div>`;
 
-  // If queue empty, rebuild
+  // Timer panel wiring (re-bind after render)
+  updateTimerDisplay();
+  const startBtn = document.getElementById('fc-timer-start-btn');
+  const stopBtn = document.getElementById('fc-timer-stop-btn');
+  const resetBtn = document.getElementById('fc-timer-reset-btn');
+  const rangeEl = document.getElementById('fc-timer-range');
+  const goalValEl = document.getElementById('fc-timer-goal-val');
+
+  if (startBtn) {
+    startBtn.onclick = startTimer;
+    stopBtn.onclick = stopTimer;
+    resetBtn.onclick = resetTimer;
+  }
+
+  if (rangeEl) {
+    rangeEl.value = fcTimerGoalMinutes;
+    goalValEl.textContent = `${fcTimerGoalMinutes} min`;
+    rangeEl.oninput = () => {
+      fcTimerGoalMinutes = parseInt(rangeEl.value);
+      goalValEl.textContent = `${fcTimerGoalMinutes} min`;
+      if (!fcTimerRunning) {
+        fcTimerSecondsLeft = fcTimerGoalMinutes * 60;
+        updateTimerDisplay();
+      }
+    };
+  }
+
   if (!fcQueue.length) buildFcQueue();
 
   const area = document.getElementById('fc-area');
   area.innerHTML='';
 
   if (!fcQueue.length || fcCurrentIdx >= fcQueue.length) {
-    // Done
     area.innerHTML=`<div class="fc-done">
       <div class="fc-done-icon">🎉</div>
       <div class="fc-done-title">All done for now!</div>
@@ -894,10 +1126,11 @@ function renderFlashcards() {
       <button class="fc-restart-btn" id="fc-restart">Review all again</button>
     </div>`;
     document.getElementById('fc-restart').addEventListener('click',()=>{
-      // Reset nextReview for all cards in lesson to force review
       LESSONS[fcCurrentLesson].cards.forEach((_,i)=>{
-        const p=getCardProgress(fcCurrentLesson,i);
-        setCardProgress(fcCurrentLesson,i,{...p,nextReview:0});
+        if (!isCardDeleted(fcCurrentLesson, i)) {
+          const p=getCardProgress(fcCurrentLesson,i);
+          setCardProgress(fcCurrentLesson,i,{...p,nextReview:0});
+        }
       });
       buildFcQueue(); renderFlashcards();
     });
@@ -910,6 +1143,7 @@ function renderFlashcards() {
   cardEl.className='fc-card-wrap';
   cardEl.innerHTML=`
     <div class="fc-card" id="fc-card">
+      <button class="fc-delete-btn" id="fc-delete-btn" title="Remove this card">✕</button>
       <div class="fc-arabic">${card.ar}</div>
       <div class="fc-english">${card.en}</div>
       <div class="fc-tap-hint">Tap to reveal</div>
@@ -932,24 +1166,49 @@ function renderFlashcards() {
   progress.textContent=`${fcCurrentIdx+1} / ${fcQueue.length}`;
   area.appendChild(progress);
 
-  document.getElementById('fc-card').addEventListener('click',()=>{
+  document.getElementById('fc-card').addEventListener('click', (e) => {
+    if (e.target.id === 'fc-delete-btn') return;
     document.getElementById('fc-card').classList.add('revealed');
     document.getElementById('fc-rating-wrap').classList.add('visible');
+  });
+
+  document.getElementById('fc-delete-btn').addEventListener('click', async (e) => {
+    e.stopPropagation();
+    deleteCard(fcCurrentLesson, card.idx);
+    const code = currentUser || viewingStudent;
+    await saveFlashcardData(code);
+    showToast('Card removed ✓');
+    renderFlashcards();
   });
 
   ratingWrap.querySelectorAll('.fc-rating-btn').forEach(btn=>{
     btn.addEventListener('click',async()=>{
       const rating = parseInt(btn.dataset.r);
       applyRating(fcCurrentLesson, card.idx, rating);
-      // If rating 1, put card back in queue
-      if (rating === 1) {
-        fcQueue.push(card);
-      }
+      if (rating === 1) fcQueue.push(card);
       fcCurrentIdx++;
-      await saveFlashcardProgress(currentUser||viewingStudent);
+      fcSessionCardsRead++;
+      const code = currentUser || viewingStudent;
+      await saveFlashcardData(code);
       renderFlashcards();
     });
   });
+
+  // Add card button
+  document.getElementById('fc-add-btn').onclick = async () => {
+    const ar = document.getElementById('fc-add-ar').value.trim();
+    const en = document.getElementById('fc-add-en').value.trim();
+    if (!ar || !en) { showToast('Enter both Arabic and English'); return; }
+    const newIdx = LESSONS[fcCurrentLesson].cards.length;
+    LESSONS[fcCurrentLesson].cards.push({ ar, en });
+    document.getElementById('fc-add-ar').value = '';
+    document.getElementById('fc-add-en').value = '';
+    const code = currentUser || viewingStudent;
+    await saveFlashcardData(code);
+    showToast('Card added ✓');
+    buildFcQueue();
+    renderFlashcards();
+  };
 }
 
 // ── MODAL ──
