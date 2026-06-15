@@ -9,13 +9,16 @@
   :root {
     --ink: #1a1a2e; --blue: #2563eb; --blue-light: #eff6ff;
     --green: #16a34a; --dot-green: #22c55e; --dot-blue: #3b82f6;
-    --dot-red: #ef4444; --grey: #6b7280; --grey-light: #f3f4f6;
-    --border: #e5e7eb; --card-radius: 16px; --sidebar-w: 200px;
+    --dot-red: #ef4444; --dot-yellow: #eab308; --grey: #6b7280;
+    --grey-light: #f3f4f6; --border: #e5e7eb; --card-radius: 16px;
+    --sidebar-w: 220px;
   }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f4ff; color: var(--ink); min-height: 100vh; }
+
+  /* LOGIN */
   #login-screen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; background: linear-gradient(160deg, #1a1a2e 0%, #2563eb 100%); }
   .login-logo { width: 64px; height: 64px; background: white; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 28px; margin-bottom: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
-  .login-title { color: white; font-size: 28px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 6px; }
+  .login-title { color: white; font-size: 28px; font-weight: 700; margin-bottom: 6px; }
   .login-subtitle { color: rgba(255,255,255,0.6); font-size: 14px; margin-bottom: 40px; }
   .login-card { background: white; border-radius: var(--card-radius); padding: 28px; width: 100%; max-width: 360px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
   .login-card label { display: block; font-size: 13px; font-weight: 600; color: var(--grey); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
@@ -24,35 +27,68 @@
   .login-btn { width: 100%; margin-top: 16px; padding: 14px; background: var(--blue); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; }
   .login-btn:hover { background: #1d4ed8; }
   .login-error { color: #ef4444; font-size: 13px; margin-top: 10px; text-align: center; display: none; }
+
+  /* APP */
   #app { display: none; min-height: 100vh; }
-  #sidebar { width: var(--sidebar-w); min-width: var(--sidebar-w); background: var(--ink); min-height: 100vh; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; overflow: hidden; }
-  .sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 20px 16px 16px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+
+  /* SIDEBAR */
+  #sidebar { width: var(--sidebar-w); min-width: var(--sidebar-w); background: var(--ink); min-height: 100vh; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; overflow: hidden; transition: width 0.25s, min-width 0.25s; }
+  #sidebar.collapsed { width: 0; min-width: 0; }
+  .sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 20px 16px 16px; border-bottom: 1px solid rgba(255,255,255,0.1); white-space: nowrap; }
   .sidebar-logo-icon { width: 32px; height: 32px; background: var(--blue); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
   .sidebar-logo-text { color: white; font-size: 14px; font-weight: 700; }
-  .sidebar-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.35); padding: 16px 16px 8px; }
+  .sidebar-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.35); padding: 16px 16px 8px; white-space: nowrap; }
   .sidebar-students { flex: 1; overflow-y: auto; padding: 0 8px 16px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent; }
-  .sidebar-student { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 10px; cursor: pointer; transition: background 0.15s; margin-bottom: 2px; }
+  .sidebar-student { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 10px; cursor: pointer; transition: background 0.15s; margin-bottom: 2px; white-space: nowrap; }
   .sidebar-student:hover { background: rgba(255,255,255,0.08); }
   .sidebar-student.active { background: rgba(255,255,255,0.15); }
   .sidebar-avatar { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: white; flex-shrink: 0; }
-  .sidebar-name { color: white; font-size: 13px; font-weight: 500; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sidebar-info { flex: 1; overflow: hidden; }
+  .sidebar-name { color: white; font-size: 13px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; }
+  .sidebar-streak { color: rgba(255,255,255,0.5); font-size: 11px; }
   .status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
   .status-dot.green { background: var(--dot-green); }
   .status-dot.red { background: var(--dot-red); }
   .status-dot.grey { background: rgba(255,255,255,0.2); }
-  .sidebar-bottom { padding: 12px 8px; border-top: 1px solid rgba(255,255,255,0.1); }
+  .sidebar-bottom { padding: 12px 8px; border-top: 1px solid rgba(255,255,255,0.1); white-space: nowrap; }
   .sidebar-view-btn { width: 100%; padding: 9px 12px; background: rgba(255,255,255,0.1); border: none; border-radius: 8px; color: rgba(255,255,255,0.7); font-size: 12px; font-weight: 600; cursor: pointer; transition: background 0.2s; text-align: left; }
   .sidebar-view-btn:hover { background: rgba(255,255,255,0.18); }
+
+  /* MAIN */
   #main { flex: 1; overflow-y: auto; min-width: 0; }
-  .header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; background: white; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10; }
-  .header-left { display: flex; align-items: center; gap: 10px; }
-  .header-icon { width: 36px; height: 36px; background: var(--blue); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
-  .header-title { font-size: 17px; font-weight: 700; color: var(--ink); }
+
+  /* HEADER */
+  .header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; background: white; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10; gap: 12px; }
+  .header-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .sidebar-toggle { width: 36px; height: 36px; border: none; background: var(--grey-light); border-radius: 10px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .header-icon { width: 36px; height: 36px; background: var(--blue); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .header-title { font-size: 17px; font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .header-sub { font-size: 12px; color: var(--grey); }
-  .view-toggle { padding: 7px 14px; background: var(--grey-light); border: none; border-radius: 8px; font-size: 13px; font-weight: 600; color: var(--grey); cursor: pointer; transition: all 0.2s; flex-shrink: 0; }
-  .view-toggle:hover { background: var(--border); }
+  .view-toggle { padding: 7px 14px; background: var(--grey-light); border: none; border-radius: 8px; font-size: 13px; font-weight: 600; color: var(--grey); cursor: pointer; flex-shrink: 0; }
+
+  /* CONTENT */
   .content { padding: 20px; max-width: 600px; }
   .section-label { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--grey); margin-bottom: 12px; }
+
+  /* STREAK CARD (student) */
+  .streak-card { background: var(--ink); border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; }
+  .streak-left { display: flex; align-items: center; gap: 14px; }
+  .streak-flame { font-size: 36px; }
+  .streak-count { font-size: 32px; font-weight: 800; color: white; line-height: 1; }
+  .streak-label { font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 2px; }
+  .streak-rank { text-align: right; }
+  .streak-rank-num { font-size: 22px; font-weight: 700; color: white; }
+  .streak-rank-label { font-size: 12px; color: rgba(255,255,255,0.5); }
+
+  /* BANNER */
+  .banner { border-radius: var(--card-radius); padding: 16px 18px; margin-bottom: 20px; display: flex; align-items: flex-start; gap: 12px; }
+  .banner.yellow { background: #fefce8; border: 1.5px solid #fde047; }
+  .banner.red { background: #fef2f2; border: 1.5px solid #fca5a5; }
+  .banner-icon { font-size: 22px; flex-shrink: 0; }
+  .banner-title { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 3px; }
+  .banner-sub { font-size: 13px; color: var(--grey); }
+
+  /* CALENDAR */
   .calendar-card { background: white; border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
   .cal-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
   .cal-nav-btn { width: 32px; height: 32px; border: none; background: none; font-size: 18px; cursor: pointer; color: var(--grey); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
@@ -67,40 +103,65 @@
   .cal-day.selected .day-num { color: white; font-weight: 700; }
   .day-num { font-size: 14px; color: var(--ink); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
   .other-month .day-num { color: var(--border); }
-  .dots { display: flex; gap: 3px; margin-top: 3px; height: 8px; align-items: center; }
-  .dot { width: 6px; height: 6px; border-radius: 50%; }
+  .dots { display: flex; gap: 3px; margin-top: 3px; height: 8px; align-items: center; flex-wrap: wrap; justify-content: center; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
   .dot-green { background: var(--dot-green); }
   .dot-blue { background: var(--dot-blue); }
-  .cal-legend { display: flex; gap: 16px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); }
+  .dot-yellow { background: var(--dot-yellow); }
+  .cal-legend { display: flex; gap: 12px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); flex-wrap: wrap; }
   .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--grey); }
+
+  /* DAY CARD */
   .day-card { border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; background: var(--blue); color: white; }
   .day-card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; }
   .day-badge { background: rgba(255,255,255,0.2); border-radius: 20px; padding: 4px 10px; font-size: 12px; font-weight: 600; }
   .day-status { font-size: 13px; opacity: 0.85; }
   .day-date { font-size: 22px; font-weight: 700; line-height: 1.2; }
-  .review-btn { padding: 10px 18px; border-radius: 10px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+  .review-btn { padding: 10px 18px; border-radius: 10px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap; }
   .review-btn.reviewed { background: rgba(255,255,255,0.25); color: white; }
   .review-btn.not-reviewed { background: white; color: var(--blue); }
-  .review-btn:hover { opacity: 0.85; }
-  .submissions-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 24px; }
+
+  /* SUBMISSIONS */
+  .submissions-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px; }
   .submission-thumb { border-radius: 12px; overflow: hidden; position: relative; background: var(--grey-light); aspect-ratio: 3/4; cursor: pointer; }
   .submission-thumb img { width: 100%; height: 100%; object-fit: cover; }
   .submission-badge { position: absolute; top: 8px; left: 8px; color: white; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px; }
   .submission-badge.reviewed-badge { background: var(--blue); }
   .submission-badge.uploaded-badge { background: var(--green); }
-  .upload-area { border: 2px dashed var(--border); border-radius: var(--card-radius); padding: 32px; text-align: center; cursor: pointer; transition: all 0.2s; background: white; margin-bottom: 20px; }
+  .submission-badge.makeup-badge { background: var(--dot-yellow); color: #1a1a2e; }
+
+  /* TEXT SUBMISSION */
+  .text-submission { background: white; border-radius: 12px; padding: 16px; margin-bottom: 16px; border: 1.5px solid var(--border); }
+  .text-submission-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--grey); margin-bottom: 8px; }
+  .text-submission-content { font-size: 15px; color: var(--ink); line-height: 1.6; direction: auto; }
+
+  /* UPLOAD AREA */
+  .upload-section { background: white; border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; border: 1.5px solid var(--border); }
+  .upload-section-title { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 16px; }
+  .upload-area { border: 2px dashed var(--border); border-radius: 12px; padding: 24px; text-align: center; cursor: pointer; transition: all 0.2s; margin-bottom: 12px; }
   .upload-area:hover { border-color: var(--blue); background: var(--blue-light); }
-  .upload-icon { font-size: 32px; margin-bottom: 8px; }
-  .upload-title { font-size: 15px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
-  .upload-sub { font-size: 13px; color: var(--grey); }
+  .upload-icon { font-size: 28px; margin-bottom: 6px; }
+  .upload-title { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+  .upload-sub { font-size: 12px; color: var(--grey); }
   #file-input { display: none; }
+  .text-input-wrap { margin-top: 4px; }
+  .text-input-wrap textarea { width: 100%; padding: 12px 14px; border: 2px solid var(--border); border-radius: 10px; font-size: 15px; color: var(--ink); resize: vertical; min-height: 100px; outline: none; font-family: inherit; transition: border-color 0.2s; direction: auto; }
+  .text-input-wrap textarea:focus { border-color: var(--blue); }
+  .submit-btn { width: 100%; margin-top: 12px; padding: 14px; background: var(--blue); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; }
+  .submit-btn:hover { background: #1d4ed8; }
+  .submit-btn:disabled { background: var(--grey); cursor: not-allowed; }
+
+  /* MODAL */
   .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100; align-items: center; justify-content: center; padding: 20px; }
   .modal-overlay.open { display: flex; }
   .modal-img { max-width: 100%; max-height: 80vh; border-radius: 12px; object-fit: contain; }
   .modal-close { position: absolute; top: 16px; right: 16px; background: white; border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+  /* TOAST */
   .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--ink); color: white; padding: 12px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; z-index: 200; transition: transform 0.3s; white-space: nowrap; }
   .toast.show { transform: translateX(-50%) translateY(0); }
   .no-submission-msg { background: white; border-radius: var(--card-radius); padding: 20px; text-align: center; color: var(--grey); font-size: 14px; margin-bottom: 20px; }
+  .locked-msg { background: #fef2f2; border-radius: var(--card-radius); padding: 16px; text-align: center; color: #b91c1c; font-size: 14px; margin-bottom: 20px; border: 1.5px solid #fca5a5; }
 </style>
 </head>
 <body>
@@ -132,6 +193,7 @@
   <div id="main">
     <div class="header">
       <div class="header-left">
+        <button class="sidebar-toggle" id="sidebar-toggle" style="display:none">☰</button>
         <div class="header-icon">🕌</div>
         <div>
           <div class="header-title" id="header-title">My Homework</div>
@@ -140,8 +202,28 @@
       </div>
       <button class="view-toggle" id="view-toggle-btn" style="display:none">Student view</button>
     </div>
+
     <div class="content">
+      <!-- Streak card (student only) -->
+      <div class="streak-card" id="streak-card" style="display:none">
+        <div class="streak-left">
+          <div class="streak-flame">🔥</div>
+          <div>
+            <div class="streak-count" id="streak-count">0</div>
+            <div class="streak-label">day streak</div>
+          </div>
+        </div>
+        <div class="streak-rank">
+          <div class="streak-rank-num" id="streak-rank">#—</div>
+          <div class="streak-rank-label">your rank</div>
+        </div>
+      </div>
+
+      <!-- Missed day banner -->
+      <div id="missed-banner" style="display:none"></div>
+
       <div class="section-label">Sessions</div>
+
       <div class="calendar-card">
         <div class="cal-nav">
           <button class="cal-nav-btn" id="prev-month-btn">‹</button>
@@ -150,10 +232,12 @@
         </div>
         <div class="cal-grid" id="cal-grid"></div>
         <div class="cal-legend">
-          <div class="legend-item"><div class="dot dot-green"></div> Uploaded</div>
+          <div class="legend-item"><div class="dot dot-green"></div> Submitted</div>
           <div class="legend-item"><div class="dot dot-blue"></div> Reviewed</div>
+          <div class="legend-item"><div class="dot dot-yellow"></div> Made up</div>
         </div>
       </div>
+
       <div class="day-card" id="day-card" style="display:none">
         <div class="day-card-top">
           <div>
@@ -164,15 +248,9 @@
         </div>
         <div class="day-date" id="day-date" style="margin-top:8px"></div>
       </div>
+
       <div id="submissions-area"></div>
-      <div id="upload-area-wrap" style="display:none">
-        <div class="upload-area" id="upload-trigger">
-          <div class="upload-icon">📸</div>
-          <div class="upload-title">Upload today's homework</div>
-          <div class="upload-sub">Tap to choose a photo</div>
-        </div>
-        <input type="file" id="file-input" accept="image/*" multiple>
-      </div>
+      <div id="upload-area-wrap" style="display:none"></div>
     </div>
   </div>
 </div>
@@ -195,63 +273,142 @@ const firebaseConfig = {
   messagingSenderId: "388670650097",
   appId: "1:388670650097:web:1dcb72409b2b6731e41b50"
 };
-
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
 
 const STUDENTS = {
-  'FHD001': { name: 'فهد (FHD001)',       display: 'فهد' },
-  'SAD002': { name: 'سعيد (SAD002)',       display: 'سعيد' },
-  'HMZ003': { name: 'حمزة (HMZ003)',       display: 'حمزة' },
-  'AHM004': { name: 'أحمد SN (AHM004)',   display: 'أحمد' },
-  'AMN005': { name: 'أمين DE (AMN005)',    display: 'أمين' },
-  'ALA006': { name: 'علاء (ALA006)',       display: 'علاء' },
-  'ABD007': { name: 'عبد الرحمن (ABD007)', display: 'عبد الرحمن' },
-  'YSF008': { name: 'يوسف (YSF008)',       display: 'يوسف' },
-  'YNS009': { name: 'يونس (YNS009)',       display: 'يونس' },
-  'UBD010': { name: 'عبيد (UBD010)',       display: 'عبيد' },
-  'SBH011': { name: 'صبيحان (SBH011)',     display: 'صبيحان' },
-  'ADM012': { name: 'آدم (ADM012)',        display: 'آدم' },
-  'JST013': { name: 'Justin (JST013)',     display: 'عبد الرحمن' },
-  'IDR014': { name: 'إدريس (IDR014)',      display: 'إدريس' },
-  'KLM015': { name: 'كليم وإدريس (KLM015)', display: 'كليم وإدريس' },
-  'HSM016': { name: 'حسام (HSM016)',       display: 'حسام' },
-  'MHM017': { name: 'محمود (MHM017)',      display: 'محمود' },
-  'HSN018': { name: 'حسن (HSN018)',        display: 'حسن' },
-  'MHD019': { name: 'محمد (MHD019)',       display: 'محمد' },
-  'HDR020': { name: 'هيدر (HDR020)',       display: 'هيدر' },
-  'SHN021': { name: 'شان (SHN021)',        display: 'شان' },
-  'NYZ022': { name: 'نياز (NYZ022)',       display: 'نياز' },
-  'AHK023': { name: 'أحمد HK (AHK023)',   display: 'أحمد' },
-  'ISA024': { name: 'عيسى (ISA024)',       display: 'عيسى' },
-  'ABM025': { name: 'أبو مريم (ABM025)',   display: 'أبو مريم' },
-  'AMK026': { name: 'أمين CA (AMK026)',    display: 'أمين' },
-  'SMR027': { name: 'سمر (SMR027)',        display: 'سمر' },
-  'MMR028': { name: 'محمد 2 (MMR028)',     display: 'محمد' },
-  'GHM029': { name: 'غماد (GHM029)',       display: 'غماد' },
-  'MRJ030': { name: 'معراج (MRJ030)',      display: 'معراج' },
+  'FHD001': { name: 'Fahad',                display: 'فهد' },
+  'SAD002': { name: 'Saeed',                display: 'سعيد' },
+  'HMZ003': { name: 'Hamza',                display: 'حمزة' },
+  'AHM004': { name: 'Ahmed (Senegal)',       display: 'أحمد' },
+  'AMN005': { name: 'Ameen (Germany)',       display: 'أمين' },
+  'ALA006': { name: 'Alaa',                 display: 'علاء' },
+  'ABD007': { name: 'Abdurrahman',          display: 'عبد الرحمن' },
+  'YSF008': { name: 'Yusuf',               display: 'يوسف' },
+  'YNS009': { name: 'Yunus',               display: 'يونس' },
+  'UBD010': { name: 'Ubaid',               display: 'عبيد' },
+  'SBH011': { name: 'Subayhan',            display: 'صبيحان' },
+  'ADM012': { name: 'Adam',                display: 'آدم' },
+  'JST013': { name: 'Justin',              display: 'عبد الرحمن' },
+  'IDR014': { name: 'Idrees',              display: 'إدريس' },
+  'KLM015': { name: 'Kaleem & Idrees',     display: 'كليم وإدريس' },
+  'HSM016': { name: 'Hussam',              display: 'حسام' },
+  'MHM017': { name: 'Mahmoud',             display: 'محمود' },
+  'HSN018': { name: 'Hassan',              display: 'حسن' },
+  'MHD019': { name: 'Muhammad',            display: 'محمد' },
+  'HDR020': { name: 'Haider',              display: 'هيدر' },
+  'SHN021': { name: 'Shan',               display: 'شان' },
+  'NYZ022': { name: 'Niyaz',              display: 'نياز' },
+  'AHK023': { name: 'Ahmed (Hong Kong)',   display: 'أحمد' },
+  'ISA024': { name: 'Isa',                display: 'عيسى' },
+  'ABM025': { name: 'Abu Mariam',          display: 'أبو مريم' },
+  'AMK026': { name: 'Ameen (Canada)',      display: 'أمين' },
+  'SMR027': { name: 'Samar',              display: 'سمر' },
+  'MMR028': { name: 'Muhammad (Ibn Qurayb)', display: 'محمد' },
+  'GHM029': { name: 'Emad',               display: 'غماد' },
+  'MRJ030': { name: 'Miraj',              display: 'معراج' },
 };
 const INSTRUCTOR_CODE = 'RYAN01';
 
 let currentUser = null, isInstructor = false, viewingStudent = null;
 let isStudentView = false, calYear, calMonth, selectedDate = null;
 let submissions = {};
+let sidebarCollapsed = false;
 
+// ── UTILS ──
 function dateKey(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 function todayKey() { return dateKey(new Date()); }
-function yesterdayKey() { const d = new Date(); d.setDate(d.getDate()-1); return dateKey(d); }
-function formatDateLong(key) { const [y,m,d] = key.split('-').map(Number); return new Date(y,m-1,d).toLocaleDateString('en-GB',{weekday:'long',year:'numeric',month:'long',day:'numeric'}); }
+function formatDateLong(key) { const [y,m,d]=key.split('-').map(Number); return new Date(y,m-1,d).toLocaleDateString('en-GB',{weekday:'long',year:'numeric',month:'long',day:'numeric'}); }
 function activeStudentCode() { return isInstructor && !isStudentView ? viewingStudent : currentUser; }
-function getDayNumber(key) { const code = activeStudentCode(); const keys = Object.keys(submissions[code]||{}).sort(); const idx = keys.indexOf(key); return idx===-1?null:idx+1; }
-function getStudentStatus(code) {
-  const subs = submissions[code]||{};
-  if (subs[todayKey()]?.images?.length>0 || subs[yesterdayKey()]?.images?.length>0) return 'green';
-  const keys = Object.keys(subs).filter(k=>subs[k]?.images?.length>0);
-  return keys.length===0 ? 'grey' : 'red';
+
+function isMidnightPast(dateStr) {
+  // Returns true if midnight of that day has passed in the user's local timezone
+  const [y,m,d] = dateStr.split('-').map(Number);
+  const midnight = new Date(y, m-1, d+1, 0, 0, 0); // midnight end of that day
+  return new Date() > midnight;
 }
-function getInitials(name) { return name.trim()[0]||'؟'; }
+
+function getMissedDays(code) {
+  const subs = submissions[code] || {};
+  const missed = [];
+  const now = new Date();
+  // Go back up to 60 days
+  for (let i = 1; i <= 60; i++) {
+    const d = new Date(now); d.setDate(now.getDate() - i);
+    const key = dateKey(d);
+    if (isMidnightPast(key) && (!subs[key] || (!subs[key].images?.length && !subs[key].text))) {
+      missed.push(key);
+    }
+  }
+  return missed.sort(); // oldest first
+}
+
+function getStreak(code) {
+  const subs = submissions[code] || {};
+  let streak = 0;
+  const now = new Date();
+  // Check from yesterday backwards (today might not be submitted yet)
+  for (let i = 1; i <= 365; i++) {
+    const d = new Date(now); d.setDate(now.getDate() - i);
+    const key = dateKey(d);
+    const sub = subs[key];
+    const hasContent = sub && (sub.images?.length > 0 || sub.text || sub.makeupFor);
+    if (hasContent) { streak++; }
+    else if (isMidnightPast(key)) { break; } // missed day breaks streak
+  }
+  // Also count today if submitted
+  const todaySub = subs[todayKey()];
+  if (todaySub && (todaySub.images?.length > 0 || todaySub.text)) streak++;
+  return streak;
+}
+
+function getConsistency(code) {
+  const subs = submissions[code] || {};
+  const keys = Object.keys(subs).filter(k => {
+    const s = subs[k]; return s && (s.images?.length > 0 || s.text || s.makeupFor);
+  });
+  if (!keys.length) return 0;
+  const sorted = keys.sort();
+  const firstDate = new Date(sorted[0]);
+  const daysSince = Math.max(1, Math.floor((new Date() - firstDate) / 86400000));
+  return keys.length / daysSince;
+}
+
+function getConsecutiveMissed(code) {
+  const subs = submissions[code] || {};
+  let count = 0;
+  const now = new Date();
+  for (let i = 1; i <= 60; i++) {
+    const d = new Date(now); d.setDate(now.getDate() - i);
+    const key = dateKey(d);
+    if (!isMidnightPast(key)) continue;
+    const sub = subs[key];
+    const hasContent = sub && (sub.images?.length > 0 || sub.text || sub.makeupFor);
+    if (!hasContent) count++; else break;
+  }
+  return count;
+}
+
+function getStudentStatus(code) {
+  const subs = submissions[code] || {};
+  const today = todayKey();
+  const d = new Date(); d.setDate(d.getDate()-1); const yesterday = dateKey(d);
+  const todaySub = subs[today]; const yestSub = subs[yesterday];
+  const hasToday = todaySub && (todaySub.images?.length > 0 || todaySub.text);
+  const hasYest = yestSub && (yestSub.images?.length > 0 || yestSub.text || yestSub.makeupFor);
+  if (hasToday || hasYest) return 'green';
+  const keys = Object.keys(subs).filter(k => { const s=subs[k]; return s&&(s.images?.length>0||s.text||s.makeupFor); });
+  return keys.length === 0 ? 'grey' : 'red';
+}
+
+function getRankedStudents() {
+  return Object.keys(STUDENTS).sort((a,b) => getConsistency(b) - getConsistency(a));
+}
+
+function getInitials(name) { return name.trim()[0] || '؟'; }
+
 function fileToBase64(file) {
-  return new Promise((resolve,reject) => {
+  return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = e => {
       const img = new Image();
@@ -270,164 +427,320 @@ function fileToBase64(file) {
   });
 }
 
+// ── FIREBASE ──
 async function loadStudentData(code) {
-  if(submissions[code]) return;
-  submissions[code]={};
-  try { const snap=await getDocs(collection(db,'submissions',code,'days')); snap.forEach(d=>{submissions[code][d.id]=d.data();}); }
-  catch(e){console.error('Load error',e);}
+  if (submissions[code]) return;
+  submissions[code] = {};
+  try {
+    const snap = await getDocs(collection(db,'submissions',code,'days'));
+    snap.forEach(d => { submissions[code][d.id] = d.data(); });
+  } catch(e) { console.error('Load error',e); }
 }
-async function saveDay(code,dateStr,data) { await setDoc(doc(db,'submissions',code,'days',dateStr),data); }
+async function saveDay(code, dateStr, data) { await setDoc(doc(db,'submissions',code,'days',dateStr), data); }
 
+// ── LOGIN ──
 async function handleLogin() {
   const code = document.getElementById('code-input').value.trim().toUpperCase();
   const err = document.getElementById('login-error');
   const btn = document.getElementById('login-btn');
-  btn.textContent='Signing in…';btn.disabled=true;
-  if(code===INSTRUCTOR_CODE){
-    currentUser=code;isInstructor=true;
+  btn.textContent='Signing in…'; btn.disabled=true;
+  if (code === INSTRUCTOR_CODE) {
+    currentUser=code; isInstructor=true;
     viewingStudent=Object.keys(STUDENTS)[0];
     await Promise.all(Object.keys(STUDENTS).map(c=>loadStudentData(c)));
     startApp();
-  } else if(STUDENTS[code]){
-    currentUser=code;isInstructor=false;
+  } else if (STUDENTS[code]) {
+    currentUser=code; isInstructor=false;
     await loadStudentData(code);
     startApp();
   } else {
-    err.style.display='block';btn.textContent='Enter';btn.disabled=false;
+    err.style.display='block'; btn.textContent='Enter'; btn.disabled=false;
   }
 }
 
+// ── START ──
 function startApp() {
   document.getElementById('login-screen').style.display='none';
-  const app=document.getElementById('app');
-  const now=new Date(); calYear=now.getFullYear();calMonth=now.getMonth();selectedDate=todayKey();
-  if(isInstructor){
+  const app = document.getElementById('app');
+  const now = new Date(); calYear=now.getFullYear(); calMonth=now.getMonth(); selectedDate=todayKey();
+  if (isInstructor) {
     app.style.display='flex';
-    document.getElementById('sidebar').style.display='flex';
-    document.getElementById('sidebar').style.flexDirection='column';
-    buildSidebar();updateHeaderForInstructor();
+    const sidebar = document.getElementById('sidebar');
+    sidebar.style.display='flex'; sidebar.style.flexDirection='column';
+    document.getElementById('sidebar-toggle').style.display='flex';
+    document.getElementById('view-toggle-btn').style.display='block';
+    // Collapse sidebar on mobile by default
+    if (window.innerWidth < 600) { sidebarCollapsed=true; sidebar.classList.add('collapsed'); }
+    buildSidebar(); updateHeaderForInstructor();
   } else {
-    app.style.display='block';app.style.maxWidth='480px';app.style.margin='0 auto';
+    app.style.display='block'; app.style.maxWidth='480px'; app.style.margin='0 auto';
     document.getElementById('header-title').textContent='My Homework';
     document.getElementById('header-sub').textContent=STUDENTS[currentUser]?.display||'';
+    document.getElementById('streak-card').style.display='flex';
   }
   render();
 }
 
+// ── SIDEBAR ──
 function buildSidebar() {
-  const wrap=document.getElementById('sidebar-students');wrap.innerHTML='';
-  Object.entries(STUDENTS).forEach(([code,s])=>{
-    const status=getStudentStatus(code);
-    const el=document.createElement('div');
+  const wrap = document.getElementById('sidebar-students');
+  wrap.innerHTML='';
+  const ranked = getRankedStudents();
+  ranked.forEach((code, idx) => {
+    const s = STUDENTS[code];
+    const status = getStudentStatus(code);
+    const streak = getStreak(code);
+    const el = document.createElement('div');
     el.className='sidebar-student'+(code===viewingStudent?' active':'');
-    el.innerHTML=`<div class="sidebar-avatar">${getInitials(s.display)}</div><div class="sidebar-name">${s.name}</div><div class="status-dot ${status}"></div>`;
-    el.onclick=async()=>{viewingStudent=code;updateHeaderForInstructor();buildSidebar();render();};
+    el.innerHTML=`
+      <div class="sidebar-avatar">${idx+1}</div>
+      <div class="sidebar-info">
+        <div class="sidebar-name">${s.name}</div>
+        <div class="sidebar-streak">🔥 ${streak} day streak</div>
+      </div>
+      <div class="status-dot ${status}"></div>`;
+    el.onclick=async()=>{ viewingStudent=code; updateHeaderForInstructor(); buildSidebar(); render(); };
     wrap.appendChild(el);
   });
 }
 
 function updateHeaderForInstructor() {
-  const s=STUDENTS[viewingStudent];
-  document.getElementById('header-title').textContent=isStudentView?'My Homework':(s?.name||'Instructor Review');
-  document.getElementById('header-sub').textContent=isStudentView?'':'Instructor view';
+  const s = STUDENTS[viewingStudent];
+  document.getElementById('header-title').textContent = isStudentView?'My Homework':(s?.name||'Instructor Review');
+  document.getElementById('header-sub').textContent = isStudentView?'':'Instructor view';
+}
+
+function toggleSidebar() {
+  sidebarCollapsed = !sidebarCollapsed;
+  const sidebar = document.getElementById('sidebar');
+  sidebar.classList.toggle('collapsed', sidebarCollapsed);
+  document.getElementById('sidebar-toggle').textContent = sidebarCollapsed ? '☰' : '✕';
 }
 
 function toggleView() {
   isStudentView=!isStudentView;
   document.getElementById('sidebar-view-btn').textContent=isStudentView?'← Instructor view':'👤 Student view';
-  updateHeaderForInstructor();render();
+  updateHeaderForInstructor(); render();
 }
 
+// ── MISSED BANNER ──
+function renderMissedBanner() {
+  const banner = document.getElementById('missed-banner');
+  if (isInstructor && !isStudentView) { banner.style.display='none'; return; }
+  const code = activeStudentCode();
+  const missed = getMissedDays(code);
+  const consecutive = getConsecutiveMissed(code);
+  if (!missed.length) { banner.style.display='none'; return; }
+  banner.style.display='block';
+  if (consecutive >= 2) {
+    banner.innerHTML=`<div class="banner red"><div class="banner-icon">🚨</div><div><div class="banner-title">You've missed ${consecutive} days in a row — your streak has reset!</div><div class="banner-sub">You have ${missed.length} missed day${missed.length>1?'s':''} to make up. Keep uploading today to fill them in.</div></div></div>`;
+  } else {
+    banner.innerHTML=`<div class="banner yellow"><div class="banner-icon">⚠️</div><div><div class="banner-title">You missed ${missed.length} day${missed.length>1?'s':''}!</div><div class="banner-sub">Upload extra submissions today to make up for missed days.</div></div></div>`;
+  }
+}
+
+// ── STREAK CARD ──
+function renderStreakCard() {
+  if (isInstructor && !isStudentView) return;
+  const code = activeStudentCode();
+  const streak = getStreak(code);
+  const consecutive = getConsecutiveMissed(code);
+  const displayStreak = consecutive >= 2 ? 0 : streak;
+  const ranked = getRankedStudents();
+  const rank = ranked.indexOf(code) + 1;
+  document.getElementById('streak-count').textContent = displayStreak;
+  document.getElementById('streak-rank').textContent = `#${rank}`;
+}
+
+// ── CALENDAR ──
 const AR_MONTHS=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
 const AR_DAYS=['الأحد','السبت','الجمعة','الخميس','الأربعاء','الثلاثاء','الاثنين'];
 
 function renderCalendar() {
   document.getElementById('cal-month-label').textContent=`${AR_MONTHS[calMonth]} ${calYear}`;
-  const grid=document.getElementById('cal-grid');grid.innerHTML='';
+  const grid=document.getElementById('cal-grid'); grid.innerHTML='';
   AR_DAYS.forEach(d=>{const h=document.createElement('div');h.className='cal-day-header';h.textContent=d;grid.appendChild(h);});
   const firstDay=new Date(calYear,calMonth,1).getDay();
   const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
   const daysInPrev=new Date(calYear,calMonth,0).getDate();
   const startOffset=(6-firstDay+7)%7;
-  const code=activeStudentCode();const subs=submissions[code]||{};const today=todayKey();
+  const code=activeStudentCode(); const subs=submissions[code]||{}; const today=todayKey();
   for(let i=startOffset-1;i>=0;i--){const cell=document.createElement('div');cell.className='cal-day other-month';const n=document.createElement('div');n.className='day-num';n.textContent=daysInPrev-i;cell.appendChild(n);grid.appendChild(cell);}
   for(let d=1;d<=daysInMonth;d++){
     const key=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const cell=document.createElement('div');cell.className='cal-day';
+    const cell=document.createElement('div'); cell.className='cal-day';
     if(key===today)cell.classList.add('today');
     if(key===selectedDate)cell.classList.add('selected');
     const n=document.createElement('div');n.className='day-num';n.textContent=d;cell.appendChild(n);
     const dots=document.createElement('div');dots.className='dots';
     const sub=subs[key];
-    if(sub?.images?.length>0){const dg=document.createElement('div');dg.className='dot dot-green';dots.appendChild(dg);if(sub.reviewed){const db=document.createElement('div');db.className='dot dot-blue';dots.appendChild(db);}}
-    cell.appendChild(dots);cell.onclick=()=>{selectedDate=key;render();};grid.appendChild(cell);
+    if(sub){
+      if(sub.makeupFor){const dy=document.createElement('div');dy.className='dot dot-yellow';dots.appendChild(dy);}
+      else if(sub.images?.length>0||sub.text){const dg=document.createElement('div');dg.className='dot dot-green';dots.appendChild(dg);}
+      if(sub.reviewed){const db=document.createElement('div');db.className='dot dot-blue';dots.appendChild(db);}
+    }
+    cell.appendChild(dots); cell.onclick=()=>{selectedDate=key;renderDayPanel();renderCalendar();}; grid.appendChild(cell);
   }
   const remaining=(7-((startOffset+daysInMonth)%7))%7;
   for(let d=1;d<=remaining;d++){const cell=document.createElement('div');cell.className='cal-day other-month';const n=document.createElement('div');n.className='day-num';n.textContent=d;cell.appendChild(n);grid.appendChild(cell);}
 }
 
+// ── DAY PANEL ──
 function renderDayPanel() {
   if(!selectedDate){document.getElementById('day-card').style.display='none';return;}
-  const code=activeStudentCode();const subs=submissions[code]||{};const sub=subs[selectedDate];
-  const hasSubmission=sub?.images?.length>0;const reviewed=sub?.reviewed;const dayNum=getDayNumber(selectedDate);
+  const code=activeStudentCode(); const subs=submissions[code]||{}; const sub=subs[selectedDate];
+  const hasImages=sub?.images?.length>0; const hasText=!!sub?.text; const hasContent=hasImages||hasText||!!sub?.makeupFor;
+  const reviewed=sub?.reviewed; const isMakeup=!!sub?.makeupFor;
+  const allKeys=Object.keys(subs).filter(k=>{const s=subs[k];return s&&(s.images?.length>0||s.text||s.makeupFor);}).sort();
+  const dayNum=allKeys.indexOf(selectedDate)+1||null;
+
   document.getElementById('day-card').style.display='block';
-  document.getElementById('day-badge').textContent=dayNum?`Day ${dayNum}`:'No submission';
+  document.getElementById('day-badge').textContent=dayNum?`Day ${dayNum}`:(hasContent?'Make-up':'No submission');
   document.getElementById('day-date').textContent=formatDateLong(selectedDate);
-  document.getElementById('day-status').textContent=hasSubmission?(reviewed?'✓ Reviewed':'• Uploaded'):'';
+  document.getElementById('day-status').textContent=hasContent?(reviewed?'✓ Reviewed':(isMakeup?'• Made up':'• Uploaded')):'';
+
   const reviewBtn=document.getElementById('review-btn');
-  if(isInstructor&&!isStudentView&&hasSubmission){reviewBtn.style.display='block';reviewBtn.className=reviewed?'review-btn reviewed':'review-btn not-reviewed';reviewBtn.textContent=reviewed?'✓ Reviewed':'Mark reviewed';}
-  else{reviewBtn.style.display='none';}
-  const area=document.getElementById('submissions-area');area.innerHTML='';
-  if(hasSubmission){
+  if(isInstructor&&!isStudentView&&hasContent){
+    reviewBtn.style.display='block';
+    reviewBtn.className=reviewed?'review-btn reviewed':'review-btn not-reviewed';
+    reviewBtn.textContent=reviewed?'✓ Reviewed':'Mark reviewed';
+  } else { reviewBtn.style.display='none'; }
+
+  const area=document.getElementById('submissions-area'); area.innerHTML='';
+
+  if(hasText){
+    const tw=document.createElement('div');tw.className='text-submission';
+    tw.innerHTML=`<div class="text-submission-label">Written submission</div><div class="text-submission-content">${sub.text.replace(/\n/g,'<br>')}</div>`;
+    area.appendChild(tw);
+  }
+
+  if(hasImages){
     const grid=document.createElement('div');grid.className='submissions-grid';
     sub.images.forEach(src=>{
       const wrap=document.createElement('div');wrap.className='submission-thumb';
       const img=document.createElement('img');img.src=src;img.onclick=()=>openModal(src);wrap.appendChild(img);
-      const badge=document.createElement('div');badge.className='submission-badge '+(reviewed?'reviewed-badge':'uploaded-badge');badge.textContent=reviewed?'Reviewed':'Uploaded';
+      const badge=document.createElement('div');
+      badge.className='submission-badge '+(reviewed?'reviewed-badge':(isMakeup?'makeup-badge':'uploaded-badge'));
+      badge.textContent=reviewed?'Reviewed':(isMakeup?'Made up':'Uploaded');
       wrap.appendChild(badge);grid.appendChild(wrap);
     });
     area.appendChild(grid);
-  } else {
-    const empty=document.createElement('div');empty.className='no-submission-msg';empty.textContent='No homework submitted for this day.';area.appendChild(empty);
   }
+
+  if(!hasContent){
+    const empty=document.createElement('div');empty.className='no-submission-msg';
+    empty.textContent='No homework submitted for this day.';area.appendChild(empty);
+  }
+
+  // Upload section
   const uploadWrap=document.getElementById('upload-area-wrap');
-  uploadWrap.style.display=((!isInstructor||isStudentView)&&selectedDate===todayKey()&&!hasSubmission)?'block':'none';
+  uploadWrap.innerHTML='';
+  const isToday=selectedDate===todayKey();
+  const canUpload=(!isInstructor||isStudentView)&&isToday&&!isMidnightPast(selectedDate)||(!isInstructor||isStudentView)&&isToday;
+  const todayLocked=isMidnightPast(selectedDate)&&!isToday;
+
+  if(todayLocked&&(!isInstructor||isStudentView)){
+    const lk=document.createElement('div');lk.className='locked-msg';lk.textContent='⛔ This day is locked — midnight has passed.';uploadWrap.appendChild(lk);uploadWrap.style.display='block';return;
+  }
+
+  if((!isInstructor||isStudentView)&&isToday){
+    const missed=getMissedDays(code);
+    const section=document.createElement('div');section.className='upload-section';
+    let title=hasContent?'Add another submission':'Submit today\'s homework';
+    if(missed.length>0&&hasContent)title=`Make up a missed day (${missed.length} remaining)`;
+    section.innerHTML=`<div class="upload-section-title">${title}</div>
+      <div class="upload-area" id="upload-trigger"><div class="upload-icon">📸</div><div class="upload-title">Upload a photo</div><div class="upload-sub">Tap to choose</div></div>
+      <input type="file" id="file-input" accept="image/*" multiple>
+      <div class="text-input-wrap"><textarea id="text-input" placeholder="Or type your Arabic homework here..."></textarea></div>
+      <button class="submit-btn" id="submit-btn">Submit</button>`;
+    uploadWrap.appendChild(section);
+    uploadWrap.style.display='block';
+
+    document.getElementById('upload-trigger').addEventListener('click',()=>document.getElementById('file-input').click());
+    document.getElementById('file-input').addEventListener('change', e=>{
+      if(e.target.files.length>0){ document.getElementById('upload-trigger').style.background='#f0fdf4'; document.getElementById('upload-trigger').style.borderColor='var(--dot-green)'; document.getElementById('upload-trigger').querySelector('.upload-title').textContent=`${e.target.files.length} photo(s) selected`; }
+    });
+    document.getElementById('submit-btn').addEventListener('click', handleSubmit);
+  } else if(!isInstructor||isStudentView) {
+    uploadWrap.style.display='none';
+  } else {
+    uploadWrap.style.display='none';
+  }
 }
 
-async function handleUpload(event) {
-  const files=Array.from(event.target.files);if(!files.length)return;
-  showToast('Uploading…');const code=currentUser;if(!submissions[code])submissions[code]={};
-  try{
-    const imgs=[];for(const f of files){imgs.push(await fileToBase64(f));}
-    const dayData={images:imgs,reviewed:false};submissions[code][selectedDate]=dayData;
-    await saveDay(code,selectedDate,dayData);showToast('Homework uploaded ✓');render();
-  }catch(e){showToast('Upload failed — try again');console.error(e);}
-  event.target.value='';
+// ── SUBMIT ──
+async function handleSubmit() {
+  const code=currentUser;
+  const fileInput=document.getElementById('file-input');
+  const textInput=document.getElementById('text-input');
+  const files=fileInput?Array.from(fileInput.files):[];
+  const text=textInput?textInput.value.trim():'';
+
+  if(!files.length&&!text){showToast('Add a photo or write something first');return;}
+
+  const btn=document.getElementById('submit-btn');
+  btn.textContent='Uploading…';btn.disabled=true;
+  showToast('Uploading…');
+
+  try {
+    const missed=getMissedDays(code);
+    const imgs=[];
+    for(const f of files){imgs.push(await fileToBase64(f));}
+
+    const subs=submissions[code]||{};
+    const todaySub=subs[selectedDate];
+    const hasExisting=todaySub&&(todaySub.images?.length>0||todaySub.text);
+
+    if(hasExisting&&missed.length>0){
+      // This is a makeup submission — fill oldest missed day
+      const missedDay=missed[0];
+      const makeupData={images:imgs,text,reviewed:false,makeupFor:selectedDate};
+      if(!submissions[code])submissions[code]={};
+      submissions[code][missedDay]=makeupData;
+      await saveDay(code,missedDay,makeupData);
+      showToast('Made up '+formatDateLong(missedDay)+' ✓');
+    } else {
+      // Normal submission for today
+      const existing=subs[selectedDate]||{};
+      const allImgs=[...(existing.images||[]),...imgs];
+      const dayData={images:allImgs,text:text||(existing.text||''),reviewed:false};
+      submissions[code][selectedDate]=dayData;
+      await saveDay(code,selectedDate,dayData);
+      showToast('Homework submitted ✓');
+    }
+    render();
+  } catch(e){showToast('Upload failed — try again');console.error(e);btn.textContent='Submit';btn.disabled=false;}
 }
 
+// ── REVIEW ──
 async function toggleReview() {
-  const code=viewingStudent;if(!submissions[code]?.[selectedDate])return;
+  const code=viewingStudent; if(!submissions[code]?.[selectedDate])return;
   const current=submissions[code][selectedDate].reviewed;
-  submissions[code][selectedDate].reviewed=!current;render();buildSidebar();
+  submissions[code][selectedDate].reviewed=!current; render(); buildSidebar();
   try{await updateDoc(doc(db,'submissions',code,'days',selectedDate),{reviewed:!current});showToast(!current?'Marked as reviewed ✓':'Unmarked');}
   catch(e){showToast('Error — try again');submissions[code][selectedDate].reviewed=current;render();}
 }
 
+// ── MODAL ──
 function openModal(src){document.getElementById('modal-img').src=src;document.getElementById('modal').classList.add('open');}
 function closeModal(){document.getElementById('modal').classList.remove('open');}
+
+// ── TOAST ──
 let toastTimer;
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2500);}
-function render(){renderCalendar();renderDayPanel();}
 
+// ── RENDER ──
+function render(){renderCalendar();renderDayPanel();renderMissedBanner();renderStreakCard();if(isInstructor&&!isStudentView)buildSidebar();}
+
+// ── EVENTS ──
 document.getElementById('login-btn').addEventListener('click',handleLogin);
 document.getElementById('code-input').addEventListener('keydown',e=>{if(e.key==='Enter')handleLogin();});
 document.getElementById('sidebar-view-btn').addEventListener('click',toggleView);
 document.getElementById('view-toggle-btn').addEventListener('click',toggleView);
+document.getElementById('sidebar-toggle').addEventListener('click',toggleSidebar);
 document.getElementById('prev-month-btn').addEventListener('click',()=>{calMonth--;if(calMonth<0){calMonth=11;calYear--;}renderCalendar();});
 document.getElementById('next-month-btn').addEventListener('click',()=>{calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCalendar();});
 document.getElementById('review-btn').addEventListener('click',toggleReview);
-document.getElementById('upload-trigger').addEventListener('click',()=>document.getElementById('file-input').click());
-document.getElementById('file-input').addEventListener('change',handleUpload);
 document.getElementById('modal').addEventListener('click',closeModal);
 document.getElementById('modal-close-btn').addEventListener('click',e=>{e.stopPropagation();closeModal();});
 </script>
