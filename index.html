@@ -332,17 +332,19 @@ function getMissedDays(code) {
   const subs = submissions[code] || {};
   const missed = [];
   const now = new Date();
-  // Go back up to 60 days
+  const allKeys = Object.keys(subs).sort();
+  if (!allKeys.length) return []; // no submissions yet, no missed days
+  const firstSubmission = allKeys[0]; // only count missed days after first submission
   for (let i = 1; i <= 60; i++) {
     const d = new Date(now); d.setDate(now.getDate() - i);
     const key = dateKey(d);
+    if (key < firstSubmission) break; // don't go before first submission
     if (isMidnightPast(key) && (!subs[key] || (!subs[key].images?.length && !subs[key].text))) {
       missed.push(key);
     }
   }
-  return missed.sort(); // oldest first
+  return missed.sort();
 }
-
 function getStreak(code) {
   const subs = submissions[code] || {};
   let streak = 0;
