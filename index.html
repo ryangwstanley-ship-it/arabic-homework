@@ -576,7 +576,7 @@ function renderCalendar() {
     const key=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     const cell=document.createElement('div'); cell.className='cal-day';
     if(key===today)cell.classList.add('today');
-    if(key===selectedDate){cell.classList.add('selected');if(sub?.reviewed)cell.classList.add('sel-blue');else if(sub?.makeupFor)cell.classList.add('sel-yellow');else if(sub?.images?.length>0||sub?.text)cell.classList.add('sel-green');}
+    if(key===selectedDate){const selSub=subs[key];cell.classList.add('selected');if(selSub?.reviewed)cell.classList.add('sel-blue');else if(selSub?.makeupFor)cell.classList.add('sel-yellow');else if(selSub?.images?.length>0||selSub?.text)cell.classList.add('sel-green');}
     const n=document.createElement('div');n.className='day-num';n.textContent=d;cell.appendChild(n);
     const dots=document.createElement('div');dots.className='dots';
     const sub=subs[key];
