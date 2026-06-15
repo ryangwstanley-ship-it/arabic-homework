@@ -100,13 +100,13 @@
   .cal-day:hover:not(.other-month) { background: var(--grey-light); }
   .cal-day.today .day-num { background: var(--blue-light); color: var(--blue); font-weight: 700; border-radius: 8px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
   .cal-day.selected { background: var(--grey-light); }
-.cal-day.selected .day-num { color: var(--ink); font-weight: 700; }
-.cal-day.selected.sel-green { background: #dcfce7; }
-.cal-day.selected.sel-green .day-num { color: var(--green); }
-.cal-day.selected.sel-yellow { background: #fef9c3; }
-.cal-day.selected.sel-yellow .day-num { color: #854d0e; }
-.cal-day.selected.sel-blue { background: var(--blue-light); }
-.cal-day.selected.sel-blue .day-num { color: var(--blue); }
+  .cal-day.selected .day-num { color: var(--ink); font-weight: 700; }
+  .cal-day.selected.sel-green { background: #dcfce7; }
+  .cal-day.selected.sel-green .day-num { color: var(--green); }
+  .cal-day.selected.sel-yellow { background: #fef9c3; }
+  .cal-day.selected.sel-yellow .day-num { color: #854d0e; }
+  .cal-day.selected.sel-blue { background: var(--blue-light); }
+  .cal-day.selected.sel-blue .day-num { color: var(--blue); }
   .day-num { font-size: 14px; color: var(--ink); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
   .other-month .day-num { color: var(--border); }
   .dots { display: flex; gap: 3px; margin-top: 3px; height: 8px; align-items: center; flex-wrap: wrap; justify-content: center; }
@@ -338,19 +338,17 @@ function getMissedDays(code) {
   const subs = submissions[code] || {};
   const missed = [];
   const now = new Date();
-  const allKeys = Object.keys(subs).sort();
-  if (!allKeys.length) return []; // no submissions yet, no missed days
-  const firstSubmission = allKeys[0]; // only count missed days after first submission
+  // Go back up to 60 days
   for (let i = 1; i <= 60; i++) {
     const d = new Date(now); d.setDate(now.getDate() - i);
     const key = dateKey(d);
-    if (key < firstSubmission) break; // don't go before first submission
     if (isMidnightPast(key) && (!subs[key] || (!subs[key].images?.length && !subs[key].text))) {
       missed.push(key);
     }
   }
-  return missed.sort();
+  return missed.sort(); // oldest first
 }
+
 function getStreak(code) {
   const subs = submissions[code] || {};
   let streak = 0;
@@ -578,12 +576,7 @@ function renderCalendar() {
     const key=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     const cell=document.createElement('div'); cell.className='cal-day';
     if(key===today)cell.classList.add('today');
-   if(key===selectedDate){
-  if(key===selectedDate){cell.classList.add('selected');if(sub?.reviewed)cell.classList.add('sel-blue');else if(sub?.makeupFor)cell.classList.add('sel-yellow');else if(sub?.images?.length>0||sub?.text)cell.classList.add('sel-green');}
-  if(sub?.reviewed) cell.classList.add('sel-blue');
-  else if(sub?.makeupFor) cell.classList.add('sel-yellow');
-  else if(sub?.images?.length>0||sub?.text) cell.classList.add('sel-green');
-}
+    if(key===selectedDate){cell.classList.add('selected');if(sub?.reviewed)cell.classList.add('sel-blue');else if(sub?.makeupFor)cell.classList.add('sel-yellow');else if(sub?.images?.length>0||sub?.text)cell.classList.add('sel-green');}
     const n=document.createElement('div');n.className='day-num';n.textContent=d;cell.appendChild(n);
     const dots=document.createElement('div');dots.className='dots';
     const sub=subs[key];
