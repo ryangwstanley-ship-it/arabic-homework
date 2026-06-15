@@ -66,11 +66,16 @@
   .header-sub { font-size: 12px; color: var(--grey); }
   .view-toggle { padding: 7px 14px; background: var(--grey-light); border: none; border-radius: 8px; font-size: 13px; font-weight: 600; color: var(--grey); cursor: pointer; flex-shrink: 0; }
 
+  /* TABS */
+  .tabs { display: flex; background: white; border-bottom: 1px solid var(--border); padding: 0 20px; }
+  .tab { padding: 14px 18px; font-size: 14px; font-weight: 600; color: var(--grey); border: none; background: none; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; }
+  .tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+
   /* CONTENT */
   .content { padding: 20px; max-width: 600px; }
   .section-label { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--grey); margin-bottom: 12px; }
 
-  /* STREAK CARD (student) */
+  /* STREAK CARD */
   .streak-card { background: var(--ink); border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; }
   .streak-left { display: flex; align-items: center; gap: 14px; }
   .streak-flame { font-size: 36px; }
@@ -118,9 +123,13 @@
   .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--grey); }
 
   /* DAY CARD */
-  .day-card { border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; background: var(--blue); color: white; }
+  .day-card { border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; background: var(--grey-light); color: var(--ink); }
+  .day-card.card-green { background: #16a34a; color: white; }
+  .day-card.card-yellow { background: #ca8a04; color: white; }
+  .day-card.card-blue { background: var(--blue); color: white; }
   .day-card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; }
-  .day-badge { background: rgba(255,255,255,0.2); border-radius: 20px; padding: 4px 10px; font-size: 12px; font-weight: 600; }
+  .day-badge { background: rgba(0,0,0,0.1); border-radius: 20px; padding: 4px 10px; font-size: 12px; font-weight: 600; }
+  .day-card.card-green .day-badge, .day-card.card-yellow .day-badge, .day-card.card-blue .day-badge { background: rgba(255,255,255,0.2); }
   .day-status { font-size: 13px; opacity: 0.85; }
   .day-date { font-size: 22px; font-weight: 700; line-height: 1.2; }
   .review-btn { padding: 10px 18px; border-radius: 10px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap; }
@@ -141,7 +150,7 @@
   .text-submission-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--grey); margin-bottom: 8px; }
   .text-submission-content { font-size: 15px; color: var(--ink); line-height: 1.6; direction: auto; }
 
-  /* UPLOAD AREA */
+  /* UPLOAD */
   .upload-section { background: white; border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; border: 1.5px solid var(--border); }
   .upload-section-title { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 16px; }
   .upload-area { border: 2px dashed var(--border); border-radius: 12px; padding: 24px; text-align: center; cursor: pointer; transition: all 0.2s; margin-bottom: 12px; }
@@ -150,12 +159,45 @@
   .upload-title { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
   .upload-sub { font-size: 12px; color: var(--grey); }
   #file-input { display: none; }
-  .text-input-wrap { margin-top: 4px; }
   .text-input-wrap textarea { width: 100%; padding: 12px 14px; border: 2px solid var(--border); border-radius: 10px; font-size: 15px; color: var(--ink); resize: vertical; min-height: 100px; outline: none; font-family: inherit; transition: border-color 0.2s; direction: auto; }
   .text-input-wrap textarea:focus { border-color: var(--blue); }
   .submit-btn { width: 100%; margin-top: 12px; padding: 14px; background: var(--blue); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; }
-  .submit-btn:hover { background: #1d4ed8; }
   .submit-btn:disabled { background: var(--grey); cursor: not-allowed; }
+
+  /* ── FLASHCARDS ── */
+  .fc-lesson-picker { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+  .fc-lesson-btn { padding: 8px 16px; border-radius: 20px; border: 2px solid var(--border); background: white; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--grey); transition: all 0.2s; }
+  .fc-lesson-btn.active { background: var(--blue); border-color: var(--blue); color: white; }
+
+  .fc-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+  .fc-stat { background: white; border-radius: 12px; padding: 14px; text-align: center; }
+  .fc-stat-num { font-size: 22px; font-weight: 800; color: var(--ink); }
+  .fc-stat-label { font-size: 11px; color: var(--grey); margin-top: 2px; }
+
+  .fc-card-wrap { perspective: 1000px; margin-bottom: 20px; }
+  .fc-card { background: white; border-radius: var(--card-radius); padding: 48px 28px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.08); min-height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.15s; position: relative; }
+  .fc-card:active { transform: scale(0.98); }
+  .fc-arabic { font-size: 42px; font-weight: 700; color: var(--ink); line-height: 1.3; direction: rtl; margin-bottom: 8px; }
+  .fc-tap-hint { font-size: 13px; color: var(--grey); margin-top: 16px; }
+  .fc-english { font-size: 22px; font-weight: 600; color: var(--blue); margin-top: 12px; display: none; }
+  .fc-card.revealed .fc-english { display: block; }
+  .fc-card.revealed .fc-tap-hint { display: none; }
+
+  .fc-rating-wrap { display: none; gap: 8px; margin-bottom: 20px; }
+  .fc-rating-wrap.visible { display: flex; }
+  .fc-rating-btn { flex: 1; padding: 12px 4px; border: none; border-radius: 10px; font-size: 12px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
+  .fc-rating-btn:hover { opacity: 0.85; }
+  .fc-r1 { background: #fef2f2; color: #b91c1c; }
+  .fc-r2 { background: #fff7ed; color: #c2410c; }
+  .fc-r3 { background: #fefce8; color: #854d0e; }
+  .fc-r4 { background: #f0fdf4; color: #15803d; }
+  .fc-r5 { background: #eff6ff; color: #1d4ed8; }
+
+  .fc-done { background: white; border-radius: var(--card-radius); padding: 40px 28px; text-align: center; margin-bottom: 20px; }
+  .fc-done-icon { font-size: 48px; margin-bottom: 12px; }
+  .fc-done-title { font-size: 20px; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
+  .fc-done-sub { font-size: 14px; color: var(--grey); margin-bottom: 20px; }
+  .fc-restart-btn { padding: 12px 24px; background: var(--blue); color: white; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; }
 
   /* MODAL */
   .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100; align-items: center; justify-content: center; padding: 20px; }
@@ -209,8 +251,14 @@
       <button class="view-toggle" id="view-toggle-btn" style="display:none">Student view</button>
     </div>
 
-    <div class="content">
-      <!-- Streak card (student only) -->
+    <!-- TABS -->
+    <div class="tabs" id="tabs-bar" style="display:none">
+      <button class="tab active" id="tab-homework" onclick="switchTab('homework')">📚 Homework</button>
+      <button class="tab" id="tab-flashcards" onclick="switchTab('flashcards')">🃏 Flashcards</button>
+    </div>
+
+    <!-- HOMEWORK TAB -->
+    <div id="tab-content-homework" class="content">
       <div class="streak-card" id="streak-card" style="display:none">
         <div class="streak-left">
           <div class="streak-flame">🔥</div>
@@ -224,12 +272,8 @@
           <div class="streak-rank-label">your rank</div>
         </div>
       </div>
-
-      <!-- Missed day banner -->
       <div id="missed-banner" style="display:none"></div>
-
       <div class="section-label">Sessions</div>
-
       <div class="calendar-card">
         <div class="cal-nav">
           <button class="cal-nav-btn" id="prev-month-btn">‹</button>
@@ -243,7 +287,6 @@
           <div class="legend-item"><div class="dot dot-yellow"></div> Made up</div>
         </div>
       </div>
-
       <div class="day-card" id="day-card" style="display:none">
         <div class="day-card-top">
           <div>
@@ -254,9 +297,16 @@
         </div>
         <div class="day-date" id="day-date" style="margin-top:8px"></div>
       </div>
-
       <div id="submissions-area"></div>
       <div id="upload-area-wrap" style="display:none"></div>
+    </div>
+
+    <!-- FLASHCARDS TAB -->
+    <div id="tab-content-flashcards" class="content" style="display:none">
+      <div class="section-label">Lessons</div>
+      <div class="fc-lesson-picker" id="fc-lesson-picker"></div>
+      <div class="fc-stats" id="fc-stats"></div>
+      <div id="fc-area"></div>
     </div>
   </div>
 </div>
@@ -269,7 +319,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
-import { getFirestore, doc, setDoc, updateDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBmeQwuWPeuQtdC-7w3SyBb2K5ljvvqBGY",
@@ -281,6 +331,42 @@ const firebaseConfig = {
 };
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
+
+// ── FLASHCARD DATA ──
+const LESSONS = {
+  1: {
+    name: 'Lesson 1',
+    cards: [
+      { ar: 'فِي', en: 'in' },
+      { ar: 'مَعَ', en: 'with' },
+      { ar: 'هَؤُلَاءِ', en: 'these' },
+      { ar: 'أَيْضًا', en: 'also' },
+      { ar: 'هَذِهِ', en: 'this (f)' },
+      { ar: 'لِ', en: 'for' },
+      { ar: 'هَا', en: 'it' },
+      { ar: 'قَبْلَ', en: 'before' },
+      { ar: 'كَثِيرٌ', en: 'many' },
+      { ar: 'جِدًّا', en: 'very' },
+      { ar: 'هُنَاكَ', en: 'there' },
+      { ar: 'وَ', en: 'and' },
+      { ar: 'هَذَا', en: 'this (m)' },
+      { ar: 'لِمَاذَا', en: 'why' },
+      { ar: 'يَوْمٌ / أَيَّامٌ', en: 'day' },
+      { ar: 'مُشْرِكٌ', en: 'polytheist' },
+      { ar: 'كَانَ', en: 'was' },
+      { ar: 'سَكَنَ', en: 'lived' },
+      { ar: 'عَبَدَ', en: 'worshipped' },
+      { ar: 'سَجَدَ', en: 'prostrated' },
+      { ar: 'هُنَا', en: 'here' },
+      { ar: 'رَجُلٌ / رِجَالٌ', en: 'man' },
+      { ar: 'قَرْيَةٌ / قُرىً', en: 'village' },
+      { ar: 'اِسْمٌ / أَسْمَاءٌ', en: 'name' },
+      { ar: 'نَاسٌ', en: 'people' },
+      { ar: 'صَنَمٌ / أَصْنَامٌ', en: 'idol' },
+      { ar: 'عِبَادَةٌ / عِبَادَاتٌ', en: 'worship' },
+    ]
+  }
+};
 
 const STUDENTS = {
   'FHD001': { name: 'Fahad',                display: 'فهد' },
@@ -318,8 +404,15 @@ const INSTRUCTOR_CODE = 'RYAN01';
 
 let currentUser = null, isInstructor = false, viewingStudent = null;
 let isStudentView = false, calYear, calMonth, selectedDate = null;
-let submissions = {};
-let sidebarCollapsed = false;
+let submissions = {}, sidebarCollapsed = false;
+let currentTab = 'homework';
+
+// Flashcard state
+let fcProgress = {}; // fcProgress[lessonNum][cardIndex] = { interval, easeFactor, nextReview, reps }
+let fcCurrentLesson = 1;
+let fcQueue = [];
+let fcCurrentIdx = 0;
+let fcRevealed = false;
 
 // ── UTILS ──
 function dateKey(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
@@ -328,54 +421,47 @@ function formatDateLong(key) { const [y,m,d]=key.split('-').map(Number); return 
 function activeStudentCode() { return isInstructor && !isStudentView ? viewingStudent : currentUser; }
 
 function isMidnightPast(dateStr) {
-  // Returns true if midnight of that day has passed in the user's local timezone
   const [y,m,d] = dateStr.split('-').map(Number);
-  const midnight = new Date(y, m-1, d+1, 0, 0, 0); // midnight end of that day
-  return new Date() > midnight;
+  return new Date() > new Date(y, m-1, d+1, 0, 0, 0);
 }
 
 function getMissedDays(code) {
   const subs = submissions[code] || {};
-  const missed = [];
-  const now = new Date();
-  // Go back up to 60 days
+  const missed = [], now = new Date();
+  const allKeys = Object.keys(subs).sort();
+  if (!allKeys.length) return [];
+  const firstSubmission = allKeys[0];
   for (let i = 1; i <= 60; i++) {
     const d = new Date(now); d.setDate(now.getDate() - i);
     const key = dateKey(d);
-    if (isMidnightPast(key) && (!subs[key] || (!subs[key].images?.length && !subs[key].text))) {
-      missed.push(key);
-    }
+    if (key < firstSubmission) break;
+    if (isMidnightPast(key) && (!subs[key] || (!subs[key].images?.length && !subs[key].text))) missed.push(key);
   }
-  return missed.sort(); // oldest first
+  return missed.sort();
 }
 
 function getStreak(code) {
   const subs = submissions[code] || {};
   let streak = 0;
   const now = new Date();
-  // Check from yesterday backwards (today might not be submitted yet)
   for (let i = 1; i <= 365; i++) {
     const d = new Date(now); d.setDate(now.getDate() - i);
     const key = dateKey(d);
     const sub = subs[key];
-    const hasContent = sub && (sub.images?.length > 0 || sub.text || sub.makeupFor);
-    if (hasContent) { streak++; }
-    else if (isMidnightPast(key)) { break; } // missed day breaks streak
+    const has = sub && (sub.images?.length > 0 || sub.text || sub.makeupFor);
+    if (has) streak++;
+    else if (isMidnightPast(key)) break;
   }
-  // Also count today if submitted
-  const todaySub = subs[todayKey()];
-  if (todaySub && (todaySub.images?.length > 0 || todaySub.text)) streak++;
+  const ts = subs[todayKey()];
+  if (ts && (ts.images?.length > 0 || ts.text)) streak++;
   return streak;
 }
 
 function getConsistency(code) {
   const subs = submissions[code] || {};
-  const keys = Object.keys(subs).filter(k => {
-    const s = subs[k]; return s && (s.images?.length > 0 || s.text || s.makeupFor);
-  });
+  const keys = Object.keys(subs).filter(k => { const s=subs[k]; return s&&(s.images?.length>0||s.text||s.makeupFor); });
   if (!keys.length) return 0;
-  const sorted = keys.sort();
-  const firstDate = new Date(sorted[0]);
+  const firstDate = new Date(keys.sort()[0]);
   const daysSince = Math.max(1, Math.floor((new Date() - firstDate) / 86400000));
   return keys.length / daysSince;
 }
@@ -389,8 +475,8 @@ function getConsecutiveMissed(code) {
     const key = dateKey(d);
     if (!isMidnightPast(key)) continue;
     const sub = subs[key];
-    const hasContent = sub && (sub.images?.length > 0 || sub.text || sub.makeupFor);
-    if (!hasContent) count++; else break;
+    if (sub && (sub.images?.length>0||sub.text||sub.makeupFor)) break;
+    else count++;
   }
   return count;
 }
@@ -399,19 +485,14 @@ function getStudentStatus(code) {
   const subs = submissions[code] || {};
   const today = todayKey();
   const d = new Date(); d.setDate(d.getDate()-1); const yesterday = dateKey(d);
-  const todaySub = subs[today]; const yestSub = subs[yesterday];
-  const hasToday = todaySub && (todaySub.images?.length > 0 || todaySub.text);
-  const hasYest = yestSub && (yestSub.images?.length > 0 || yestSub.text || yestSub.makeupFor);
+  const hasToday = subs[today] && (subs[today].images?.length>0||subs[today].text);
+  const hasYest = subs[yesterday] && (subs[yesterday].images?.length>0||subs[yesterday].text||subs[yesterday].makeupFor);
   if (hasToday || hasYest) return 'green';
-  const keys = Object.keys(subs).filter(k => { const s=subs[k]; return s&&(s.images?.length>0||s.text||s.makeupFor); });
+  const keys = Object.keys(subs).filter(k=>{const s=subs[k];return s&&(s.images?.length>0||s.text||s.makeupFor);});
   return keys.length === 0 ? 'grey' : 'red';
 }
 
-function getRankedStudents() {
-  return Object.keys(STUDENTS).sort((a,b) => getConsistency(b) - getConsistency(a));
-}
-
-function getInitials(name) { return name.trim()[0] || '؟'; }
+function getRankedStudents() { return Object.keys(STUDENTS).sort((a,b)=>getConsistency(b)-getConsistency(a)); }
 
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
@@ -442,6 +523,20 @@ async function loadStudentData(code) {
     snap.forEach(d => { submissions[code][d.id] = d.data(); });
   } catch(e) { console.error('Load error',e); }
 }
+
+async function loadFlashcardProgress(code) {
+  try {
+    const snap = await getDoc(doc(db,'flashcards',code));
+    if (snap.exists()) fcProgress = snap.data();
+    else fcProgress = {};
+  } catch(e) { console.error('FC load error',e); }
+}
+
+async function saveFlashcardProgress(code) {
+  try { await setDoc(doc(db,'flashcards',code), fcProgress); }
+  catch(e) { console.error('FC save error',e); }
+}
+
 async function saveDay(code, dateStr, data) { await setDoc(doc(db,'submissions',code,'days',dateStr), data); }
 
 // ── LOGIN ──
@@ -458,6 +553,7 @@ async function handleLogin() {
   } else if (STUDENTS[code]) {
     currentUser=code; isInstructor=false;
     await loadStudentData(code);
+    await loadFlashcardProgress(code);
     startApp();
   } else {
     err.style.display='block'; btn.textContent='Enter'; btn.disabled=false;
@@ -475,7 +571,6 @@ function startApp() {
     sidebar.style.display='flex'; sidebar.style.flexDirection='column';
     document.getElementById('sidebar-toggle').style.display='flex';
     document.getElementById('view-toggle-btn').style.display='block';
-    // Collapse sidebar on mobile by default
     if (window.innerWidth < 600) { sidebarCollapsed=true; sidebar.classList.add('collapsed'); }
     buildSidebar(); updateHeaderForInstructor();
   } else {
@@ -483,28 +578,30 @@ function startApp() {
     document.getElementById('header-title').textContent='My Homework';
     document.getElementById('header-sub').textContent=STUDENTS[currentUser]?.display||'';
     document.getElementById('streak-card').style.display='flex';
+    document.getElementById('tabs-bar').style.display='flex';
   }
   render();
 }
 
+// ── TABS ──
+window.switchTab = function(tab) {
+  currentTab = tab;
+  document.getElementById('tab-content-homework').style.display = tab==='homework' ? 'block' : 'none';
+  document.getElementById('tab-content-flashcards').style.display = tab==='flashcards' ? 'block' : 'none';
+  document.getElementById('tab-homework').classList.toggle('active', tab==='homework');
+  document.getElementById('tab-flashcards').classList.toggle('active', tab==='flashcards');
+  if (tab==='flashcards') renderFlashcards();
+}
+
 // ── SIDEBAR ──
 function buildSidebar() {
-  const wrap = document.getElementById('sidebar-students');
-  wrap.innerHTML='';
+  const wrap = document.getElementById('sidebar-students'); wrap.innerHTML='';
   const ranked = getRankedStudents();
   ranked.forEach((code, idx) => {
-    const s = STUDENTS[code];
-    const status = getStudentStatus(code);
-    const streak = getStreak(code);
+    const s = STUDENTS[code]; const status = getStudentStatus(code); const streak = getStreak(code);
     const el = document.createElement('div');
     el.className='sidebar-student'+(code===viewingStudent?' active':'');
-    el.innerHTML=`
-      <div class="sidebar-avatar">${idx+1}</div>
-      <div class="sidebar-info">
-        <div class="sidebar-name">${s.name}</div>
-        <div class="sidebar-streak">🔥 ${streak} day streak</div>
-      </div>
-      <div class="status-dot ${status}"></div>`;
+    el.innerHTML=`<div class="sidebar-avatar">${idx+1}</div><div class="sidebar-info"><div class="sidebar-name">${s.name}</div><div class="sidebar-streak">🔥 ${streak} day streak</div></div><div class="status-dot ${status}"></div>`;
     el.onclick=async()=>{ viewingStudent=code; updateHeaderForInstructor(); buildSidebar(); render(); };
     wrap.appendChild(el);
   });
@@ -518,14 +615,14 @@ function updateHeaderForInstructor() {
 
 function toggleSidebar() {
   sidebarCollapsed = !sidebarCollapsed;
-  const sidebar = document.getElementById('sidebar');
-  sidebar.classList.toggle('collapsed', sidebarCollapsed);
+  document.getElementById('sidebar').classList.toggle('collapsed', sidebarCollapsed);
   document.getElementById('sidebar-toggle').textContent = sidebarCollapsed ? '☰' : '✕';
 }
 
 function toggleView() {
   isStudentView=!isStudentView;
   document.getElementById('sidebar-view-btn').textContent=isStudentView?'← Instructor view':'👤 Student view';
+  document.getElementById('tabs-bar').style.display=isStudentView?'flex':'none';
   updateHeaderForInstructor(); render();
 }
 
@@ -545,17 +642,14 @@ function renderMissedBanner() {
   }
 }
 
-// ── STREAK CARD ──
 function renderStreakCard() {
   if (isInstructor && !isStudentView) return;
   const code = activeStudentCode();
   const streak = getStreak(code);
   const consecutive = getConsecutiveMissed(code);
-  const displayStreak = consecutive >= 2 ? 0 : streak;
   const ranked = getRankedStudents();
-  const rank = ranked.indexOf(code) + 1;
-  document.getElementById('streak-count').textContent = displayStreak;
-  document.getElementById('streak-rank').textContent = `#${rank}`;
+  document.getElementById('streak-count').textContent = consecutive >= 2 ? 0 : streak;
+  document.getElementById('streak-rank').textContent = `#${ranked.indexOf(code)+1}`;
 }
 
 // ── CALENDAR ──
@@ -576,7 +670,12 @@ function renderCalendar() {
     const key=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     const cell=document.createElement('div'); cell.className='cal-day';
     if(key===today)cell.classList.add('today');
-    if(key===selectedDate){const selSub=subs[key];cell.classList.add('selected');if(selSub?.reviewed)cell.classList.add('sel-blue');else if(selSub?.makeupFor)cell.classList.add('sel-yellow');else if(selSub?.images?.length>0||selSub?.text)cell.classList.add('sel-green');}
+    if(key===selectedDate){
+      const selSub=subs[key]; cell.classList.add('selected');
+      if(selSub?.reviewed)cell.classList.add('sel-blue');
+      else if(selSub?.makeupFor)cell.classList.add('sel-yellow');
+      else if(selSub?.images?.length>0||selSub?.text)cell.classList.add('sel-green');
+    }
     const n=document.createElement('div');n.className='day-num';n.textContent=d;cell.appendChild(n);
     const dots=document.createElement('div');dots.className='dots';
     const sub=subs[key];
@@ -600,7 +699,12 @@ function renderDayPanel() {
   const allKeys=Object.keys(subs).filter(k=>{const s=subs[k];return s&&(s.images?.length>0||s.text||s.makeupFor);}).sort();
   const dayNum=allKeys.indexOf(selectedDate)+1||null;
 
-  document.getElementById('day-card').style.display='block';
+  const dayCardEl=document.getElementById('day-card');
+  dayCardEl.style.display='block'; dayCardEl.className='day-card';
+  if(reviewed)dayCardEl.classList.add('card-blue');
+  else if(isMakeup)dayCardEl.classList.add('card-yellow');
+  else if(hasContent)dayCardEl.classList.add('card-green');
+
   document.getElementById('day-badge').textContent=dayNum?`Day ${dayNum}`:(hasContent?'Make-up':'No submission');
   document.getElementById('day-date').textContent=formatDateLong(selectedDate);
   document.getElementById('day-status').textContent=hasContent?(reviewed?'✓ Reviewed':(isMakeup?'• Made up':'• Uploaded')):'';
@@ -613,13 +717,11 @@ function renderDayPanel() {
   } else { reviewBtn.style.display='none'; }
 
   const area=document.getElementById('submissions-area'); area.innerHTML='';
-
   if(hasText){
     const tw=document.createElement('div');tw.className='text-submission';
     tw.innerHTML=`<div class="text-submission-label">Written submission</div><div class="text-submission-content">${sub.text.replace(/\n/g,'<br>')}</div>`;
     area.appendChild(tw);
   }
-
   if(hasImages){
     const grid=document.createElement('div');grid.className='submissions-grid';
     sub.images.forEach(src=>{
@@ -632,23 +734,16 @@ function renderDayPanel() {
     });
     area.appendChild(grid);
   }
-
   if(!hasContent){
     const empty=document.createElement('div');empty.className='no-submission-msg';
     empty.textContent='No homework submitted for this day.';area.appendChild(empty);
   }
 
-  // Upload section
-  const uploadWrap=document.getElementById('upload-area-wrap');
-  uploadWrap.innerHTML='';
+  const uploadWrap=document.getElementById('upload-area-wrap'); uploadWrap.innerHTML='';
   const isToday=selectedDate===todayKey();
-  const canUpload=(!isInstructor||isStudentView)&&isToday&&!isMidnightPast(selectedDate)||(!isInstructor||isStudentView)&&isToday;
-  const todayLocked=isMidnightPast(selectedDate)&&!isToday;
-
-  if(todayLocked&&(!isInstructor||isStudentView)){
+  if(isMidnightPast(selectedDate)&&!isToday&&(!isInstructor||isStudentView)){
     const lk=document.createElement('div');lk.className='locked-msg';lk.textContent='⛔ This day is locked — midnight has passed.';uploadWrap.appendChild(lk);uploadWrap.style.display='block';return;
   }
-
   if((!isInstructor||isStudentView)&&isToday){
     const missed=getMissedDays(code);
     const section=document.createElement('div');section.className='upload-section';
@@ -657,21 +752,15 @@ function renderDayPanel() {
     section.innerHTML=`<div class="upload-section-title">${title}</div>
       <div class="upload-area" id="upload-trigger"><div class="upload-icon">📸</div><div class="upload-title">Upload a photo</div><div class="upload-sub">Tap to choose</div></div>
       <input type="file" id="file-input" accept="image/*" multiple>
-      <div class="text-input-wrap"><textarea id="text-input" placeholder="Or type your Arabic homework here..."></textarea></div>
+      <div class="text-input-wrap" style="margin-top:12px"><textarea id="text-input" placeholder="Or type your Arabic homework here..."></textarea></div>
       <button class="submit-btn" id="submit-btn">Submit</button>`;
-    uploadWrap.appendChild(section);
-    uploadWrap.style.display='block';
-
+    uploadWrap.appendChild(section); uploadWrap.style.display='block';
     document.getElementById('upload-trigger').addEventListener('click',()=>document.getElementById('file-input').click());
-    document.getElementById('file-input').addEventListener('change', e=>{
-      if(e.target.files.length>0){ document.getElementById('upload-trigger').style.background='#f0fdf4'; document.getElementById('upload-trigger').style.borderColor='var(--dot-green)'; document.getElementById('upload-trigger').querySelector('.upload-title').textContent=`${e.target.files.length} photo(s) selected`; }
+    document.getElementById('file-input').addEventListener('change',e=>{
+      if(e.target.files.length>0){document.getElementById('upload-trigger').style.background='#f0fdf4';document.getElementById('upload-trigger').style.borderColor='var(--dot-green)';document.getElementById('upload-trigger').querySelector('.upload-title').textContent=`${e.target.files.length} photo(s) selected`;}
     });
-    document.getElementById('submit-btn').addEventListener('click', handleSubmit);
-  } else if(!isInstructor||isStudentView) {
-    uploadWrap.style.display='none';
-  } else {
-    uploadWrap.style.display='none';
-  }
+    document.getElementById('submit-btn').addEventListener('click',handleSubmit);
+  } else { uploadWrap.style.display='none'; }
 }
 
 // ── SUBMIT ──
@@ -681,35 +770,25 @@ async function handleSubmit() {
   const textInput=document.getElementById('text-input');
   const files=fileInput?Array.from(fileInput.files):[];
   const text=textInput?textInput.value.trim():'';
-
   if(!files.length&&!text){showToast('Add a photo or write something first');return;}
-
   const btn=document.getElementById('submit-btn');
-  btn.textContent='Uploading…';btn.disabled=true;
-  showToast('Uploading…');
-
+  btn.textContent='Uploading…';btn.disabled=true; showToast('Uploading…');
   try {
     const missed=getMissedDays(code);
     const imgs=[];
     for(const f of files){imgs.push(await fileToBase64(f));}
-
     const subs=submissions[code]||{};
     const todaySub=subs[selectedDate];
     const hasExisting=todaySub&&(todaySub.images?.length>0||todaySub.text);
-
     if(hasExisting&&missed.length>0){
-      // This is a makeup submission — fill oldest missed day
       const missedDay=missed[0];
       const makeupData={images:imgs,text,reviewed:false,makeupFor:selectedDate};
-      if(!submissions[code])submissions[code]={};
       submissions[code][missedDay]=makeupData;
       await saveDay(code,missedDay,makeupData);
       showToast('Made up '+formatDateLong(missedDay)+' ✓');
     } else {
-      // Normal submission for today
       const existing=subs[selectedDate]||{};
-      const allImgs=[...(existing.images||[]),...imgs];
-      const dayData={images:allImgs,text:text||(existing.text||''),reviewed:false};
+      const dayData={images:[...(existing.images||[]),...imgs],text:text||(existing.text||''),reviewed:false};
       submissions[code][selectedDate]=dayData;
       await saveDay(code,selectedDate,dayData);
       showToast('Homework submitted ✓');
@@ -727,6 +806,152 @@ async function toggleReview() {
   catch(e){showToast('Error — try again');submissions[code][selectedDate].reviewed=current;render();}
 }
 
+// ── FLASHCARDS ──
+function getCardProgress(lessonNum, cardIdx) {
+  const key = `${lessonNum}_${cardIdx}`;
+  return fcProgress[key] || { interval: 0, easeFactor: 2.5, nextReview: 0, reps: 0 };
+}
+
+function setCardProgress(lessonNum, cardIdx, data) {
+  const key = `${lessonNum}_${cardIdx}`;
+  fcProgress[key] = data;
+}
+
+function getDueCards(lessonNum) {
+  const now = Date.now();
+  const lesson = LESSONS[lessonNum];
+  if (!lesson) return [];
+  return lesson.cards.map((c,i)=>({...c,idx:i})).filter(c => {
+    const p = getCardProgress(lessonNum, c.idx);
+    return p.nextReview <= now;
+  });
+}
+
+function buildFcQueue() {
+  fcQueue = getDueCards(fcCurrentLesson);
+  // Shuffle
+  for(let i=fcQueue.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[fcQueue[i],fcQueue[j]]=[fcQueue[j],fcQueue[i]];}
+  fcCurrentIdx = 0;
+  fcRevealed = false;
+}
+
+// SM-2 algorithm
+function applyRating(lessonNum, cardIdx, rating) {
+  const p = getCardProgress(lessonNum, cardIdx);
+  let { interval, easeFactor, reps } = p;
+
+  if (rating === 1) {
+    interval = 0; reps = 0;
+  } else {
+    if (reps === 0) interval = 1;
+    else if (reps === 1) interval = 6;
+    else interval = Math.round(interval * easeFactor);
+    reps++;
+  }
+
+  easeFactor = Math.max(1.3, easeFactor + 0.1 - (5 - rating) * (0.08 + (5 - rating) * 0.02));
+  const nextReview = Date.now() + interval * 86400000;
+  setCardProgress(lessonNum, cardIdx, { interval, easeFactor, nextReview, reps });
+}
+
+function renderFlashcards() {
+  const code = activeStudentCode();
+
+  // Lesson picker
+  const picker = document.getElementById('fc-lesson-picker');
+  picker.innerHTML='';
+  Object.entries(LESSONS).forEach(([num, lesson]) => {
+    const btn = document.createElement('button');
+    btn.className='fc-lesson-btn'+(parseInt(num)===fcCurrentLesson?' active':'');
+    btn.textContent=lesson.name;
+    btn.onclick=()=>{ fcCurrentLesson=parseInt(num); buildFcQueue(); renderFlashcards(); };
+    picker.appendChild(btn);
+  });
+
+  // Stats
+  const lesson = LESSONS[fcCurrentLesson];
+  const total = lesson.cards.length;
+  const due = getDueCards(fcCurrentLesson).length;
+  const learned = lesson.cards.filter((_,i)=>getCardProgress(fcCurrentLesson,i).reps>0).length;
+  const statsEl = document.getElementById('fc-stats');
+  statsEl.innerHTML=`
+    <div class="fc-stat"><div class="fc-stat-num">${total}</div><div class="fc-stat-label">Total</div></div>
+    <div class="fc-stat"><div class="fc-stat-num" style="color:var(--blue)">${due}</div><div class="fc-stat-label">Due today</div></div>
+    <div class="fc-stat"><div class="fc-stat-num" style="color:var(--green)">${learned}</div><div class="fc-stat-label">Learned</div></div>`;
+
+  // If queue empty, rebuild
+  if (!fcQueue.length) buildFcQueue();
+
+  const area = document.getElementById('fc-area');
+  area.innerHTML='';
+
+  if (!fcQueue.length || fcCurrentIdx >= fcQueue.length) {
+    // Done
+    area.innerHTML=`<div class="fc-done">
+      <div class="fc-done-icon">🎉</div>
+      <div class="fc-done-title">All done for now!</div>
+      <div class="fc-done-sub">You've reviewed all due cards. Come back tomorrow for more.</div>
+      <button class="fc-restart-btn" id="fc-restart">Review all again</button>
+    </div>`;
+    document.getElementById('fc-restart').addEventListener('click',()=>{
+      // Reset nextReview for all cards in lesson to force review
+      LESSONS[fcCurrentLesson].cards.forEach((_,i)=>{
+        const p=getCardProgress(fcCurrentLesson,i);
+        setCardProgress(fcCurrentLesson,i,{...p,nextReview:0});
+      });
+      buildFcQueue(); renderFlashcards();
+    });
+    return;
+  }
+
+  const card = fcQueue[fcCurrentIdx];
+
+  const cardEl = document.createElement('div');
+  cardEl.className='fc-card-wrap';
+  cardEl.innerHTML=`
+    <div class="fc-card" id="fc-card">
+      <div class="fc-arabic">${card.ar}</div>
+      <div class="fc-english">${card.en}</div>
+      <div class="fc-tap-hint">Tap to reveal</div>
+    </div>`;
+  area.appendChild(cardEl);
+
+  const ratingWrap = document.createElement('div');
+  ratingWrap.className='fc-rating-wrap';
+  ratingWrap.id='fc-rating-wrap';
+  ratingWrap.innerHTML=`
+    <button class="fc-rating-btn fc-r1" data-r="1">1<br>Again</button>
+    <button class="fc-rating-btn fc-r2" data-r="2">2<br>Hard</button>
+    <button class="fc-rating-btn fc-r3" data-r="3">3<br>Good</button>
+    <button class="fc-rating-btn fc-r4" data-r="4">4<br>Easy</button>
+    <button class="fc-rating-btn fc-r5" data-r="5">5<br>Perfect</button>`;
+  area.appendChild(ratingWrap);
+
+  const progress = document.createElement('div');
+  progress.style.cssText='text-align:center;font-size:12px;color:var(--grey);margin-top:8px';
+  progress.textContent=`${fcCurrentIdx+1} / ${fcQueue.length}`;
+  area.appendChild(progress);
+
+  document.getElementById('fc-card').addEventListener('click',()=>{
+    document.getElementById('fc-card').classList.add('revealed');
+    document.getElementById('fc-rating-wrap').classList.add('visible');
+  });
+
+  ratingWrap.querySelectorAll('.fc-rating-btn').forEach(btn=>{
+    btn.addEventListener('click',async()=>{
+      const rating = parseInt(btn.dataset.r);
+      applyRating(fcCurrentLesson, card.idx, rating);
+      // If rating 1, put card back in queue
+      if (rating === 1) {
+        fcQueue.push(card);
+      }
+      fcCurrentIdx++;
+      await saveFlashcardProgress(currentUser||viewingStudent);
+      renderFlashcards();
+    });
+  });
+}
+
 // ── MODAL ──
 function openModal(src){document.getElementById('modal-img').src=src;document.getElementById('modal').classList.add('open');}
 function closeModal(){document.getElementById('modal').classList.remove('open');}
@@ -736,7 +961,11 @@ let toastTimer;
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2500);}
 
 // ── RENDER ──
-function render(){renderCalendar();renderDayPanel();renderMissedBanner();renderStreakCard();if(isInstructor&&!isStudentView)buildSidebar();}
+function render(){
+  renderCalendar();renderDayPanel();renderMissedBanner();renderStreakCard();
+  if(isInstructor&&!isStudentView)buildSidebar();
+  if(currentTab==='flashcards')renderFlashcards();
+}
 
 // ── EVENTS ──
 document.getElementById('login-btn').addEventListener('click',handleLogin);
