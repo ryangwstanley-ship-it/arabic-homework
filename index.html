@@ -99,8 +99,14 @@
   .cal-day { display: flex; flex-direction: column; align-items: center; padding: 6px 2px; border-radius: 10px; cursor: pointer; transition: background 0.15s; min-height: 52px; }
   .cal-day:hover:not(.other-month) { background: var(--grey-light); }
   .cal-day.today .day-num { background: var(--blue-light); color: var(--blue); font-weight: 700; border-radius: 8px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
-  .cal-day.selected { background: var(--blue); }
-  .cal-day.selected .day-num { color: white; font-weight: 700; }
+  .cal-day.selected { background: var(--grey-light); }
+.cal-day.selected .day-num { color: var(--ink); font-weight: 700; }
+.cal-day.selected.sel-green { background: #dcfce7; }
+.cal-day.selected.sel-green .day-num { color: var(--green); }
+.cal-day.selected.sel-yellow { background: #fef9c3; }
+.cal-day.selected.sel-yellow .day-num { color: #854d0e; }
+.cal-day.selected.sel-blue { background: var(--blue-light); }
+.cal-day.selected.sel-blue .day-num { color: var(--blue); }
   .day-num { font-size: 14px; color: var(--ink); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
   .other-month .day-num { color: var(--border); }
   .dots { display: flex; gap: 3px; margin-top: 3px; height: 8px; align-items: center; flex-wrap: wrap; justify-content: center; }
@@ -572,7 +578,12 @@ function renderCalendar() {
     const key=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     const cell=document.createElement('div'); cell.className='cal-day';
     if(key===today)cell.classList.add('today');
-    if(key===selectedDate)cell.classList.add('selected');
+   if(key===selectedDate){
+  cell.classList.add('selected');
+  if(sub?.reviewed) cell.classList.add('sel-blue');
+  else if(sub?.makeupFor) cell.classList.add('sel-yellow');
+  else if(sub?.images?.length>0||sub?.text) cell.classList.add('sel-green');
+}
     const n=document.createElement('div');n.className='day-num';n.textContent=d;cell.appendChild(n);
     const dots=document.createElement('div');dots.className='dots';
     const sub=subs[key];
@@ -605,7 +616,7 @@ function renderDayPanel() {
   if(isInstructor&&!isStudentView&&hasContent){
     reviewBtn.style.display='block';
     reviewBtn.className=reviewed?'review-btn reviewed':'review-btn not-reviewed';
-    reviewBtn.textContent=reviewed?'✓ Reviewed':'Mark reviewed';
+    reviewBtn.textContent=reviewed?'✓ Reviewed':'Mark as reviewed?';
   } else { reviewBtn.style.display='none'; }
 
   const area=document.getElementById('submissions-area'); area.innerHTML='';
