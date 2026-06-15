@@ -579,7 +579,7 @@ function renderCalendar() {
     const cell=document.createElement('div'); cell.className='cal-day';
     if(key===today)cell.classList.add('today');
    if(key===selectedDate){
-  cell.classList.add('selected');
+  if(key===selectedDate){cell.classList.add('selected');if(sub?.reviewed)cell.classList.add('sel-blue');else if(sub?.makeupFor)cell.classList.add('sel-yellow');else if(sub?.images?.length>0||sub?.text)cell.classList.add('sel-green');}
   if(sub?.reviewed) cell.classList.add('sel-blue');
   else if(sub?.makeupFor) cell.classList.add('sel-yellow');
   else if(sub?.images?.length>0||sub?.text) cell.classList.add('sel-green');
