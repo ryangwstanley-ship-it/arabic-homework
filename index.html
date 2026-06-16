@@ -1663,20 +1663,25 @@ window.backToPicker = backToPicker;
 window.launchExercise = launchExercise;
 window.exSubmitAnswer = exSubmitAnswer;
 window.exSubmitWordOrder = exSubmitWordOrder;
+// ... (Your previous code) ...
 window.exRate = exRate;
 </script>
- document.addEventListener('click', (e) => {
-    const trigger = e.target.closest('.ex-trigger');
-    if (trigger) {
-        const mode = trigger.getAttribute('data-ex');
-        if (mode === 'fillgap') {
-            console.log("Triggering Fill the Gap");
-            startFillGap();
-        } else if (mode === 'wordorder') {
-            console.log("Triggering Word Order");
-            startWordOrder();
+
+<script>
+    document.addEventListener('click', (e) => {
+        const trigger = e.target.closest('.ex-trigger');
+        if (trigger) {
+            const mode = trigger.getAttribute('data-ex');
+            if (mode === 'fillgap') {
+                console.log("Triggering Fill the Gap");
+                startFillGap();
+            } else if (mode === 'wordorder') {
+                console.log("Triggering Word Order");
+                startWordOrder();
+            }
         }
-    }
-});
+    });
+</script>
+
 </body>
 </html>
