@@ -718,7 +718,7 @@ window.switchTab = function(tab) {
   document.getElementById('tab-flashcards').classList.toggle('active', tab==='flashcards');
   document.getElementById('tab-exercises').classList.toggle('active', tab==='exercises');
   if (tab==='flashcards') renderFlashcards();
-  if (tab==='exercises') exShowPicker();
+ if (tab==='exercises' && typeof exShowPicker === 'function') exShowPicker();
 }
 
 
@@ -1601,7 +1601,7 @@ async function exEndSession() {
   }
 }
 
-
+window.exShowPicker = exShowPicker;
 </script>
 </body>
 </html>
