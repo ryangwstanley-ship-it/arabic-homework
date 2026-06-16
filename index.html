@@ -1372,48 +1372,8 @@ document.getElementById('modal-close-btn').addEventListener('click',e=>{e.stopPr
   #done-screen { display: none; flex-direction: column; align-items: center; justify-content: center; height: 100vh; gap: 16px; text-align: center; }
   #done-screen h2 { font-size: 2em; }
   #restart-btn { font-size: 1.1em; padding: 12px 32px; background: #2563eb; color: white; border: none; border-radius: 8px; cursor: pointer; }
-</style>
 
 
-  <h1>تمرين: أكمل الفراغ</h1>
-  <label for="timer-select">اختر وقت التمرين:</label>
-  <select id="timer-select">
-    <option value="60">1 دقيقة</option>
-    <option value="120">2 دقيقة</option>
-    <option value="180">3 دقائق</option>
-    <option value="300" selected>5 دقائق</option>
-    <option value="600">10 دقائق</option>
-    <option value="900">15 دقيقة</option>
-    <option value="1200">20 دقيقة</option>
-  </select>
-  <button onclick="startExercise()">ابدأ</button>
-</div>
-
-
-  <div id="timer-bar">
-    <div id="timer-display">5:00</div>
-    <div id="progress">السؤال 1</div>
-  </div>
-  <div id="question-card">
-    <div id="sentence"></div>
-    <div id="input-area">
-      <input id="answer-input" type="text" placeholder="اكتب الجواب...">
-      <button id="submit-btn" onclick="submitAnswer()">تحقق</button>
-    </div>
-    <div id="answer-reveal"></div>
-    <div id="rating-area">
-      <button class="rating-btn" id="btn-hard" onclick="rate()">صعب</button>
-      <button class="rating-btn" id="btn-medium" onclick="rate()">متوسط</button>
-      <button class="rating-btn" id="btn-easy" onclick="rate()">سهل</button>
-    </div>
-  </div>
-</div>
-
-
-  <h2>انتهى الوقت!</h2>
-  <p id="done-score"></p>
-  <button id="restart-btn" onclick="location.reload()">تمرين جديد</button>
-</div>
 
 <script>
 const FILL_GAP_QUESTIONS = [
