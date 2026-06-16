@@ -297,7 +297,7 @@
     <div class="tabs" id="tabs-bar" style="display:none">
       <button class="tab active" id="tab-homework" onclick="switchTab('homework')">📚 Homework</button>
       <button class="tab" id="tab-flashcards" onclick="switchTab('flashcards')">🃏 Flashcards</button>
-<button class="tab" id="tab-exercises" id="tab-exercises">✏️ Exercises</button>
+<button class="tab" id="tab-exercises" onclick="switchTab('exercises')">✏️ Exercises</button>
     </div>
 
     <!-- HOMEWORK TAB -->
@@ -718,6 +718,7 @@ window.switchTab = function(tab) {
   document.getElementById('tab-flashcards').classList.toggle('active', tab==='flashcards');
   document.getElementById('tab-exercises').classList.toggle('active', tab==='exercises');
   if (tab==='flashcards') renderFlashcards();
+  if (tab==='exercises') exShowPicker();
 }
 
 
@@ -1600,15 +1601,7 @@ async function exEndSession() {
   }
 }
 
-// ── BOOT: wire up tab switch to initialise exercises ──
-const _origSwitchTab = window.switchTab;
-window.switchTab = function(tab) {
-  _origSwitchTab(tab);
-  if (tab === 'exercises') exShowPicker();
-};
 
-// Also fix the tab button click since it lost its onclick in CHANGE 1
-document.getElementById('tab-exercises').onclick = () => window.switchTab('exercises');
 </script>
 </body>
 </html>
