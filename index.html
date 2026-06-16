@@ -392,13 +392,13 @@
   <div id="ex-picker" style="display:block">
     <div class="section-label">Choose an exercise</div>
     <div style="display:flex;flex-direction:column;gap:14px;margin-top:8px">
-      <div onclick="startFillGap()" style="background:white;border-radius:16px;padding:24px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.08);border:2px solid transparent;transition:border 0.2s" onmouseover="this.style.borderColor='#2563eb'" onmouseout="this.style.borderColor='transparent'">
+      <div id="ex-card-fillgap" style="background:white;border-radius:16px;padding:24px;cursor:pointer;
         <div style="font-size:28px;margin-bottom:8px">📝</div>
         <div style="font-size:16px;font-weight:700;color:#1a1a2e;margin-bottom:4px">Fill the Gap</div>
         <div style="font-size:13px;color:#6b7280">A word is missing from a sentence. Type what you think it is, then see the answer.</div>
         <div style="margin-top:12px;font-size:12px;color:#2563eb;font-weight:600">⏱ Earns a calendar dot after 15 min</div>
       </div>
-      <div onclick="startWordOrder()" style="background:white;border-radius:16px;padding:24px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.08);border:2px solid transparent;transition:border 0.2s" onmouseover="this.style.borderColor='#2563eb'" onmouseout="this.style.borderColor='transparent'">
+      <div id="ex-card-wordorder" style="background:white;border-radius:16px;padding:24px;cursor:pointer;round:white;border-radius:16px;padding:24px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.08);border:2px solid transparent;transition:border 0.2s" onmouseover="this.style.borderColor='#2563eb'" onmouseout="this.style.borderColor='transparent'">
         <div style="font-size:28px;margin-bottom:8px">🔀</div>
         <div style="font-size:16px;font-weight:700;color:#1a1a2e;margin-bottom:4px">Word Order</div>
         <div style="font-size:13px;color:#6b7280">Scrambled words are shown. Click them in the correct order to build the sentence.</div>
@@ -1376,6 +1376,7 @@ document.getElementById('modal-close-btn').addEventListener('click',e=>{e.stopPr
 
 
 <script>
+<script>
 const FILL_GAP_QUESTIONS = [
   { sentence: "وَ كَانَ هَؤُلَاءِ ________ مُشْرِكِينَ أَيْضًا", answer: "النَّاسُ" },
   { sentence: "صَنَمٌ هُنَا، ________ صَنَمٌ هُنَاكَ أَصْنَامٌ كَثِيرَةٌ جِدًّا", answer: "وَ" },
@@ -1446,4 +1447,209 @@ const WORD_ORDER_QUESTIONS = [
   { words: ["الرَّجُلُ","وَ","يَسْكُنُ","كَانَ","قَرْيَةٍ","فِي","هَذَا"], answer: "وَ كَانَ هَذَا الرَّجُلُ يَسْكُنُ فِي قَرْيَةٍ" },
   { words: ["هَذَا","اسْمُ","آزَرَ","وَ","الرَّجُلِ","كَانَ"], answer: "وَ كَانَ اسْمُ هَذَا الرَّجُلِ آزَرَ" },
   { words: ["كَانَ","مُشْرِكًا","وَ","آزَرُ"], answer: "وَ كَانَ آزَرُ مُشْرِكًا" },
-  { words:
+  { words: ["آزَرَ","نَاسٌ","وَ","مَعَ","كَثِيرُونَ","كَانَ"], answer: "وَ كَانَ مَعَ آزَرَ نَاسٌ كَثِيرُونَ" },
+  { words: ["النَّاسُ","أَيْضًا","مُشْرِكِينَ","كَانَ","هَؤُلَاءِ","وَ"], answer: "وَ كَانَ هَؤُلَاءِ النَّاسُ مُشْرِكِينَ أَيْضًا" },
+  { words: ["هَذِهِ","يَسْكُنُ","وَ","كَانَ","الْقَرْيَةِ","مَعَ","آزَرُ","الْمُشْرِكِينَ","فِي"], answer: "وَ كَانَ آزَرُ يَسْكُنُ مَعَ الْمُشْرِكِينَ فِي هَذِهِ الْقَرْيَةِ" },
+  { words: ["الْقَرْيَةِ","فِي","أَصْنَامٌ","هَذِهِ","جِدًّا","كَثِيرَةٌ","وَ","كَانَ"], answer: "وَ كَانَ فِي هَذِهِ الْقَرْيَةِ أَصْنَامٌ كَثِيرَةٌ جِدًّا" },
+  { words: ["وَ","كَانَ","يَعْبُدُونَ","هَذِهِ","الْأَصْنَامَ","النَّاسُ"], answer: "وَ كَانَ النَّاسُ يَعْبُدُونَ هَذِهِ الْأَصْنَامَ" },
+  { words: ["النَّاسُ","كَانَ","لَهَا","يَسْجُدُونَ","وَ"], answer: "وَ كَانَ النَّاسُ يَسْجُدُونَ لَهَا" },
+  { words: ["لَهَا","أَيْضًا","يَسْجُدُ","يَعْبُدُ","وَ","أَيْضًا","وَ","آزَرُ","كَانَ","الْأَصْنَامَ","كَانَ","آزَرُ"], answer: "وَ كَانَ آزَرُ يَعْبُدُ الْأَصْنَامَ أَيْضًا وَ كَانَ آزَرُ يَسْجُدُ لَهَا أَيْضًا" },
+  { words: ["وَ","هُنَا،","صَنَمٌ","هُنَاكَ","صَنَمٌ","جِدًّا","أَصْنَامٌ","كَثِيرَةٌ"], answer: "صَنَمٌ هُنَا، وَ صَنَمٌ هُنَاكَ أَصْنَامٌ كَثِيرَةٌ جِدًّا" },
+  { words: ["فَقَطْ","لِلَّهِ","الْأَصْنَامَ؟","الْعِبَادَةُ","يَعْبُدُونَ","لِمَاذَا"], answer: "لِمَاذَا يَعْبُدُونَ الْأَصْنَامَ؟ الْعِبَادَةُ لِلَّهِ فَقَطْ" }
+];
+
+let exMode = null;
+let exQuestions = [];
+let exCurrent = 0;
+let exAnswered = 0;
+let exTimerSeconds = 0;
+let exTimerInterval = null;
+let exWordSelected = [];
+let exWordBank = [];
+let exGoalSeconds = 900;
+let exDotEarned = false;
+
+function exShuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function backToPicker() {
+  clearInterval(exTimerInterval);
+  document.getElementById('ex-picker').style.display = 'block';
+  document.getElementById('ex-setup').style.display = 'none';
+  document.getElementById('ex-active').style.display = 'none';
+  document.getElementById('ex-done').style.display = 'none';
+}
+
+function startFillGap() {
+  exMode = 'fillgap';
+  document.getElementById('ex-setup-label').textContent = '📝 Fill the Gap';
+  document.getElementById('ex-picker').style.display = 'none';
+  document.getElementById('ex-setup').style.display = 'block';
+}
+
+function startWordOrder() {
+  exMode = 'wordorder';
+  document.getElementById('ex-setup-label').textContent = '🔀 Word Order';
+  document.getElementById('ex-picker').style.display = 'none';
+  document.getElementById('ex-setup').style.display = 'block';
+}
+
+function launchExercise() {
+  exGoalSeconds = parseInt(document.getElementById('ex-timer-select').value);
+  exTimerSeconds = exGoalSeconds;
+  exAnswered = 0;
+  exDotEarned = false;
+  exQuestions = exShuffle(exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS] : [...WORD_ORDER_QUESTIONS]);
+  exCurrent = 0;
+  document.getElementById('ex-setup').style.display = 'none';
+  document.getElementById('ex-active').style.display = 'block';
+  exStartTimer();
+  exShowQuestion();
+}
+
+function exStartTimer() {
+  exUpdateTimerDisplay();
+  exTimerInterval = setInterval(() => {
+    exTimerSeconds--;
+    exUpdateTimerDisplay();
+    if (exTimerSeconds <= 0) {
+      clearInterval(exTimerInterval);
+      exEndSession();
+    }
+  }, 1000);
+}
+
+function exUpdateTimerDisplay() {
+  const m = Math.floor(exTimerSeconds / 60);
+  const s = exTimerSeconds % 60;
+  const el = document.getElementById('ex-timer-display');
+  if (!el) return;
+  el.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+  el.style.color = exTimerSeconds <= 30 ? '#dc2626' : '#2563eb';
+}
+
+function exShowQuestion() {
+  if (exCurrent >= exQuestions.length) {
+    exQuestions = exShuffle(exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS] : [...WORD_ORDER_QUESTIONS]);
+    exCurrent = 0;
+  }
+  document.getElementById('ex-answer-reveal').style.display = 'none';
+  document.getElementById('ex-rating-area').style.display = 'none';
+  document.getElementById('ex-progress').textContent = 'Question ' + (exAnswered + 1);
+
+  if (exMode === 'fillgap') {
+    const q = exQuestions[exCurrent];
+    document.getElementById('ex-instruction').textContent = 'Fill in the missing word';
+    document.getElementById('ex-sentence').innerHTML = q.sentence.replace('________', '<span style="display:inline-block;border-bottom:3px solid #2563eb;min-width:100px;text-align:center">________</span>');
+    document.getElementById('ex-fill-input').style.display = 'flex';
+    document.getElementById('ex-word-order').style.display = 'none';
+    const inp = document.getElementById('ex-answer-input');
+    inp.value = '';
+    inp.style.display = 'block';
+    setTimeout(() => inp.focus(), 50);
+  } else {
+    const q = exQuestions[exCurrent];
+    document.getElementById('ex-instruction').textContent = 'Put the words in the correct order';
+    document.getElementById('ex-sentence').textContent = '';
+    document.getElementById('ex-fill-input').style.display = 'none';
+    document.getElementById('ex-word-order').style.display = 'block';
+    exWordSelected = [];
+    exWordBank = exShuffle([...q.words]);
+    exRenderWordTiles();
+  }
+}
+
+function exRenderWordTiles() {
+  const bank = document.getElementById('ex-word-bank');
+  const answerRow = document.getElementById('ex-word-answer-row');
+  bank.innerHTML = '';
+  answerRow.innerHTML = '';
+
+  exWordBank.forEach((word, i) => {
+    if (exWordSelected.includes(i)) return;
+    const btn = document.createElement('button');
+    btn.textContent = word;
+    btn.style.cssText = 'padding:10px 16px;background:#eff6ff;border:2px solid #bfdbfe;border-radius:10px;font-size:1.1em;cursor:pointer;direction:rtl;font-family:inherit;transition:background 0.15s';
+    btn.onmouseover = () => btn.style.background = '#dbeafe';
+    btn.onmouseout = () => btn.style.background = '#eff6ff';
+    btn.onclick = () => { exWordSelected.push(i); exRenderWordTiles(); };
+    bank.appendChild(btn);
+  });
+
+  exWordSelected.forEach((idx, pos) => {
+    const btn = document.createElement('button');
+    btn.textContent = exWordBank[idx];
+    btn.style.cssText = 'padding:10px 16px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:1.1em;cursor:pointer;direction:rtl;font-family:inherit';
+    btn.onclick = () => { exWordSelected.splice(pos, 1); exRenderWordTiles(); };
+    answerRow.appendChild(btn);
+  });
+
+  if (exWordSelected.length === 0) {
+    answerRow.innerHTML = '<span style="color:#9ca3af;font-size:14px">Your answer will appear here</span>';
+  }
+}
+
+function exClearWordOrder() {
+  exWordSelected = [];
+  exRenderWordTiles();
+}
+
+function exSubmitAnswer() {
+  const q = exQuestions[exCurrent];
+  const reveal = document.getElementById('ex-answer-reveal');
+  reveal.textContent = '✓ Answer: ' + q.answer;
+  reveal.style.display = 'block';
+  document.getElementById('ex-fill-input').style.display = 'none';
+  document.getElementById('ex-rating-area').style.display = 'flex';
+}
+
+function exSubmitWordOrder() {
+  const q = exQuestions[exCurrent];
+  const reveal = document.getElementById('ex-answer-reveal');
+  reveal.innerHTML = '✓ Correct order:<br><span style="direction:rtl;display:block;margin-top:6px">' + q.answer + '</span>';
+  reveal.style.display = 'block';
+  document.getElementById('ex-rating-area').style.display = 'flex';
+}
+
+function exRate() {
+  exAnswered++;
+  exCurrent++;
+  exShowQuestion();
+}
+
+async function exEndSession() {
+  clearInterval(exTimerInterval);
+  document.getElementById('ex-active').style.display = 'none';
+  document.getElementById('ex-done').style.display = 'block';
+  document.getElementById('ex-done-score').textContent = 'You answered ' + exAnswered + ' question' + (exAnswered !== 1 ? 's' : '') + ' in ' + Math.round(exGoalSeconds / 60) + ' minutes.';
+  const dotEl = document.getElementById('ex-dot-earned');
+  if (exGoalSeconds >= 900) {
+    dotEl.style.display = 'block';
+    window.dispatchEvent(new CustomEvent('ex-session-complete', { detail: { count: exAnswered } }));
+  } else {
+    dotEl.style.display = 'none';
+  }
+}
+
+document.addEventListener('keydown', e => {
+  const active = document.getElementById('ex-active');
+  if (!active || active.style.display === 'none') return;
+  if (e.key === 'Enter') {
+    if (document.getElementById('ex-rating-area').style.display === 'flex') {
+      exRate();
+    } else if (exMode === 'fillgap') {
+      exSubmitAnswer();
+    } else if (exMode === 'wordorder') {
+      exSubmitWordOrder();
+    }
+  }
+});
+</script>
+</body>
+</html>
