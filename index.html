@@ -1757,7 +1757,10 @@ function exShowQuestion() {
     inp.value = '';
     inp.placeholder = 'Type the correct word...';
     setTimeout(() => inp.focus(), 50);
-    document.getElementById('ex-check-btn').onclick = exSubmitChangeWord;
+    const checkBtn = document.getElementById('ex-check-btn');
+    checkBtn.replaceWith(checkBtn.cloneNode(true));
+    const freshBtn = document.getElementById('ex-check-btn');
+    freshBtn.onclick = exSubmitChangeWord;
     inp.onkeydown = e => { if (e.key === 'Enter') exSubmitChangeWord(); };
   } else {
     const q = exQuestions[exCurrent];
