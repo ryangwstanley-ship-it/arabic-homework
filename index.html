@@ -1616,21 +1616,28 @@ function exShowPicker() {
         <div class="ex-card-desc">A word is missing from a sentence. Type what you think it is.</div>
         <div class="ex-card-note">⏱ Earns a calendar dot after 15 min</div>
       </div>
-      <div class="ex-card" id="btn-wordorder">
+     <div class="ex-card" id="btn-wordorder">
         <div class="ex-card-icon">🔀</div>
         <div class="ex-card-title">Word Order</div>
         <div class="ex-card-desc">Rearrange the words to form a correct sentence.</div>
+        <div class="ex-card-note">⏱ Earns a calendar dot after 15 min</div>
+      </div>
+      <div class="ex-card" id="btn-changeword">
+        <div class="ex-card-icon">✏️</div>
+        <div class="ex-card-title">Change One Word</div>
+        <div class="ex-card-desc">A sentence has one wrong word. Type the correct replacement.</div>
         <div class="ex-card-note">⏱ Earns a calendar dot after 15 min</div>
       </div>
     </div>
   `);
   document.getElementById('btn-fillgap').onclick = () => exShowSetup('fillgap');
   document.getElementById('btn-wordorder').onclick = () => exShowSetup('wordorder');
+  document.getElementById('btn-changeword').onclick = () => exShowSetup('changeword');
 }
 
 function exShowSetup(mode) {
   exMode = mode;
-  const title = mode === 'fillgap' ? '📝 Fill the Gap' : '🔀 Word Order';
+  const title = mode === 'fillgap' ? '📝 Fill the Gap' : mode === 'wordorder' ? '🔀 Word Order' : '✏️ Change One Word';
   exRender(`
     <div class="section-label">${title}</div>
     <div style="background:white;border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
@@ -1658,7 +1665,7 @@ function exLaunch() {
   exAnswered = 0;
   exCurrent = 0;
   exDotEarned = false;
-  exQuestions = exShuffle(exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS] : [...WORD_ORDER_QUESTIONS]);
+  exQuestions = exShuffle(exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS] : exMode === 'wordorder' ? [...WORD_ORDER_QUESTIONS] : [...CHANGE_WORD_QUESTIONS]);
   exRenderActive();
   exStartTimer();
   exShowQuestion();
@@ -1716,7 +1723,7 @@ function exUpdateTimer() {
 
 function exShowQuestion() {
   if (exCurrent >= exQuestions.length) {
-    exQuestions = exShuffle(exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS] : [...WORD_ORDER_QUESTIONS]);
+    exQuestions = exShuffle(exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS] : exMode === 'wordorder' ? [...WORD_ORDER_QUESTIONS] : [...CHANGE_WORD_QUESTIONS]);
     exCurrent = 0;
   }
   const revealEl = document.getElementById('ex-reveal');
@@ -1738,6 +1745,20 @@ function exShowQuestion() {
     setTimeout(() => inp.focus(), 50);
     document.getElementById('ex-check-btn').onclick = exSubmitFill;
     inp.onkeydown = e => { if (e.key === 'Enter') exSubmitFill(); };
+  } else if (exMode === 'changeword') {
+    const q = exQuestions[exCurrent];
+    document.getElementById('ex-instruction').textContent = 'One word is wrong — type the correct word';
+    document.getElementById('ex-sentence').innerHTML = q.sentence;
+    document.getElementById('ex-sentence').style.fontSize = '1.4em';
+    const fillDiv = document.getElementById('ex-fill-input');
+    fillDiv.style.display = 'flex';
+    document.getElementById('ex-word-order').style.display = 'none';
+    const inp = document.getElementById('ex-answer-input');
+    inp.value = '';
+    inp.placeholder = 'Type the correct word...';
+    setTimeout(() => inp.focus(), 50);
+    document.getElementById('ex-check-btn').onclick = exSubmitChangeWord;
+    inp.onkeydown = e => { if (e.key === 'Enter') exSubmitChangeWord(); };
   } else {
     const q = exQuestions[exCurrent];
     document.getElementById('ex-instruction').textContent = 'Put the words in the correct order';
