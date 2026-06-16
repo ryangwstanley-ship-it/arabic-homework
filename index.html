@@ -1329,7 +1329,13 @@ function render(){
 
 
 
- 
+ window.addEventListener('ex-session-complete', async (e) => {
+  const today = todayKey();
+  fcActivity[today] = (fcActivity[today] || 0) + e.detail.count;
+  const code = currentUser || viewingStudent;
+  await saveFlashcardData(code);
+  renderCalendar();
+});
 // ── EVENTS ──
 document.getElementById('login-btn').addEventListener('click',handleLogin);
 document.getElementById('code-input').addEventListener('keydown',e=>{if(e.key==='Enter')handleLogin();});
@@ -1666,22 +1672,11 @@ async function exEndSession() {
   document.getElementById('ex-active').style.display = 'none';
   document.getElementById('ex-done').style.display = 'block';
   document.getElementById('ex-done-score').textContent = 'You answered ' + exAnswered + ' question' + (exAnswered !== 1 ? 's' : '') + ' in ' + Math.round(exGoalSeconds / 60) + ' minutes.';
-
-  // Award calendar dot if 15+ minutes
   const dotEl = document.getElementById('ex-dot-earned');
   if (exGoalSeconds >= 900) {
     dotEl.style.display = 'block';
-    exDotEarned = true;
-    // Save to Firebase activity log
-    try {
-      const code = typeof currentUser !== 'undefined' ? currentUser : null;
-      if (code && typeof fcActivity !== 'undefined' && typeof saveFlashcardData !== 'undefined') {
-        const today = typeof todayKey === 'function' ? todayKey() : new Date().toISOString().slice(0,10);
-        fcActivity[today] = (fcActivity[today] || 0) + exAnswered;
-        await saveFlashcardData(code);
-        if (typeof renderCalendar === 'function') renderCalendar();
-      }
-    } catch(e) { console.error('Exercise dot save error', e); }
+    // Notify the module script to save the dot
+    window.dispatchEvent(new CustomEvent('ex-session-complete', { detail: { count: exAnswered } }));
   } else {
     dotEl.style.display = 'none';
   }
@@ -1704,3 +1699,5 @@ document.addEventListener('keydown', e => {
   }
 });
 </script>
+</body>
+</html>
