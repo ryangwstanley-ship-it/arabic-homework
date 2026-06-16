@@ -293,6 +293,7 @@
     <div class="tabs" id="tabs-bar" style="display:none">
       <button class="tab active" id="tab-homework" onclick="switchTab('homework')">📚 Homework</button>
       <button class="tab" id="tab-flashcards" onclick="switchTab('flashcards')">🃏 Flashcards</button>
+<button class="tab" id="tab-exercises" onclick="switchTab('exercises')">✏️ Exercises</button>
     </div>
 
     <!-- HOMEWORK TAB -->
@@ -384,7 +385,96 @@
     </div>
   </div>
 </div>
+<!-- EXERCISES TAB -->
+<div id="tab-content-exercises" class="content" style="display:none">
 
+  <!-- EXERCISE PICKER -->
+  <div id="ex-picker" style="display:block">
+    <div class="section-label">Choose an exercise</div>
+    <div style="display:flex;flex-direction:column;gap:14px;margin-top:8px">
+      <div onclick="startFillGap()" style="background:white;border-radius:16px;padding:24px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.08);border:2px solid transparent;transition:border 0.2s" onmouseover="this.style.borderColor='#2563eb'" onmouseout="this.style.borderColor='transparent'">
+        <div style="font-size:28px;margin-bottom:8px">📝</div>
+        <div style="font-size:16px;font-weight:700;color:#1a1a2e;margin-bottom:4px">Fill the Gap</div>
+        <div style="font-size:13px;color:#6b7280">A word is missing from a sentence. Type what you think it is, then see the answer.</div>
+        <div style="margin-top:12px;font-size:12px;color:#2563eb;font-weight:600">⏱ Earns a calendar dot after 15 min</div>
+      </div>
+      <div onclick="startWordOrder()" style="background:white;border-radius:16px;padding:24px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.08);border:2px solid transparent;transition:border 0.2s" onmouseover="this.style.borderColor='#2563eb'" onmouseout="this.style.borderColor='transparent'">
+        <div style="font-size:28px;margin-bottom:8px">🔀</div>
+        <div style="font-size:16px;font-weight:700;color:#1a1a2e;margin-bottom:4px">Word Order</div>
+        <div style="font-size:13px;color:#6b7280">Scrambled words are shown. Click them in the correct order to build the sentence.</div>
+        <div style="margin-top:12px;font-size:12px;color:#2563eb;font-weight:600">⏱ Earns a calendar dot after 15 min</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TIMER SETUP -->
+  <div id="ex-setup" style="display:none">
+    <div class="section-label" id="ex-setup-label">Fill the Gap</div>
+    <div style="background:white;border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
+      <div style="font-size:14px;font-weight:600;color:#6b7280;margin-bottom:12px">Choose session length</div>
+      <select id="ex-timer-select" style="width:100%;font-size:16px;padding:12px;border:2px solid #e5e7eb;border-radius:10px;outline:none">
+        <option value="60">1 minute</option>
+        <option value="120">2 minutes</option>
+        <option value="180">3 minutes</option>
+        <option value="300">5 minutes</option>
+        <option value="600">10 minutes</option>
+        <option value="900" selected>15 minutes</option>
+        <option value="1200">20 minutes</option>
+      </select>
+      <button onclick="launchExercise()" style="width:100%;margin-top:14px;padding:14px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">Start</button>
+      <button onclick="backToPicker()" style="width:100%;margin-top:8px;padding:10px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">← Back</button>
+    </div>
+  </div>
+
+  <!-- ACTIVE EXERCISE -->
+  <div id="ex-active" style="display:none">
+    <div style="display:flex;justify-content:space-between;align-items:center;background:white;padding:12px 20px;border-radius:12px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,0.06)">
+      <div id="ex-timer-display" style="font-size:1.6em;font-weight:800;color:#2563eb;font-variant-numeric:tabular-nums">15:00</div>
+      <div id="ex-progress" style="color:#6b7280;font-size:14px;font-weight:600">Question 1</div>
+    </div>
+    <div style="background:white;border-radius:16px;padding:28px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
+      <div id="ex-instruction" style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6b7280;margin-bottom:16px"></div>
+      <div id="ex-sentence" style="font-size:1.6em;line-height:2;text-align:center;direction:rtl;margin-bottom:20px"></div>
+
+      <!-- Fill gap input -->
+      <div id="ex-fill-input" style="display:none;flex-direction:column;align-items:center;gap:10px">
+        <input id="ex-answer-input" type="text" placeholder="Type the missing word..." style="font-size:1.2em;padding:12px 16px;border:2px solid #e5e7eb;border-radius:10px;width:100%;max-width:320px;text-align:center;direction:rtl;outline:none">
+        <button onclick="exSubmitAnswer()" style="padding:12px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Check → (or press Enter)</button>
+      </div>
+
+      <!-- Word order tiles -->
+      <div id="ex-word-order" style="display:none">
+        <div style="font-size:13px;color:#6b7280;text-align:center;margin-bottom:12px">Click words in the correct order</div>
+        <div id="ex-word-bank" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;direction:rtl;margin-bottom:20px"></div>
+        <div id="ex-word-answer-row" style="min-height:48px;background:#f0f4ff;border-radius:10px;padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px;direction:rtl;align-items:center;margin-bottom:12px"></div>
+        <div style="text-align:center">
+          <button onclick="exSubmitWordOrder()" style="padding:12px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Check → (or press Enter)</button>
+          <button onclick="exClearWordOrder()" style="margin-left:8px;padding:12px 20px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">Clear</button>
+        </div>
+      </div>
+
+      <!-- Answer reveal -->
+      <div id="ex-answer-reveal" style="display:none;background:#f0fdf4;border:2px solid #86efac;border-radius:10px;padding:16px;margin-top:16px;font-size:1.2em;text-align:center;direction:rtl"></div>
+    </div>
+
+    <!-- Rating buttons -->
+    <div id="ex-rating-area" style="display:none;gap:10px;margin-bottom:16px">
+      <button onclick="exRate()" style="flex:1;padding:12px;background:#fee2e2;color:#b91c1c;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">Hard</button>
+      <button onclick="exRate()" style="flex:1;padding:12px;background:#fff7ed;color:#c2410c;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">Medium</button>
+      <button onclick="exRate()" style="flex:1;padding:12px;background:#f0fdf4;color:#15803d;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">Easy</button>
+    </div>
+  </div>
+
+  <!-- DONE -->
+  <div id="ex-done" style="display:none;text-align:center;padding:40px 20px">
+    <div style="font-size:48px;margin-bottom:16px">🎉</div>
+    <div style="font-size:22px;font-weight:800;color:#1a1a2e;margin-bottom:8px">Session complete!</div>
+    <div id="ex-done-score" style="font-size:15px;color:#6b7280;margin-bottom:24px"></div>
+    <div id="ex-dot-earned" style="display:none;background:#f0fdf4;border:2px solid #86efac;border-radius:12px;padding:14px;margin-bottom:20px;font-size:14px;font-weight:600;color:#15803d">✓ You earned a calendar dot for today!</div>
+    <button onclick="backToPicker()" style="padding:14px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Choose another exercise</button>
+  </div>
+
+</div>
 <div class="modal-overlay" id="modal">
   <button class="modal-close" id="modal-close-btn">✕</button>
   <img class="modal-img" id="modal-img" src="" alt="">
@@ -1382,98 +1472,239 @@ const FILL_GAP_QUESTIONS = [
   { sentence: "وَ ________ هَذَا الرَّجُلُ يَسْكُنُ فِي قَرْيَةٍ", answer: "كَانَ" }
 ];
 
-let questions = [];
-let current = 0;
-let answered = 0;
-let timerSeconds = 0;
-let timerInterval = null;
+const WORD_ORDER_QUESTIONS = [
+  { words: ["كَثِيرَةٍ","أَيَّامٍ","كَانَ","قَبْلَ","جِدًّا،","هُنَاكَ","رَجُلٌ"], answer: "قَبْلَ أَيَّامٍ كَثِيرَةٍ جِدًّا، كَانَ هُنَاكَ رَجُلٌ" },
+  { words: ["الرَّجُلُ","وَ","يَسْكُنُ","كَانَ","قَرْيَةٍ","فِي","هَذَا"], answer: "وَ كَانَ هَذَا الرَّجُلُ يَسْكُنُ فِي قَرْيَةٍ" },
+  { words: ["هَذَا","اسْمُ","آزَرَ","وَ","الرَّجُلِ","كَانَ"], answer: "وَ كَانَ اسْمُ هَذَا الرَّجُلِ آزَرَ" },
+  { words: ["كَانَ","مُشْرِكًا","وَ","آزَرُ"], answer: "وَ كَانَ آزَرُ مُشْرِكًا" },
+  { words: ["آزَرَ","نَاسٌ","وَ","مَعَ","كَثِيرُونَ","كَانَ"], answer: "وَ كَانَ مَعَ آزَرَ نَاسٌ كَثِيرُونَ" },
+  { words: ["النَّاسُ","أَيْضًا","مُشْرِكِينَ","كَانَ","هَؤُلَاءِ","وَ"], answer: "وَ كَانَ هَؤُلَاءِ النَّاسُ مُشْرِكِينَ أَيْضًا" },
+  { words: ["هَذِهِ","يَسْكُنُ","وَ","كَانَ","الْقَرْيَةِ","مَعَ","آزَرُ","الْمُشْرِكِينَ","فِي"], answer: "وَ كَانَ آزَرُ يَسْكُنُ مَعَ الْمُشْرِكِينَ فِي هَذِهِ الْقَرْيَةِ" },
+  { words: ["الْقَرْيَةِ","فِي","أَصْنَامٌ","هَذِهِ","جِدًّا","كَثِيرَةٌ","وَ","كَانَ"], answer: "وَ كَانَ فِي هَذِهِ الْقَرْيَةِ أَصْنَامٌ كَثِيرَةٌ جِدًّا" },
+  { words: ["وَ","كَانَ","يَعْبُدُونَ","هَذِهِ","الْأَصْنَامَ","النَّاسُ"], answer: "وَ كَانَ النَّاسُ يَعْبُدُونَ هَذِهِ الْأَصْنَامَ" },
+  { words: ["النَّاسُ","كَانَ","لَهَا","يَسْجُدُونَ","وَ"], answer: "وَ كَانَ النَّاسُ يَسْجُدُونَ لَهَا" },
+  { words: ["لَهَا","أَيْضًا","يَسْجُدُ","يَعْبُدُ","وَ","أَيْضًا","وَ","آزَرُ","كَانَ","الْأَصْنَامَ","كَانَ","آزَرُ"], answer: "وَ كَانَ آزَرُ يَعْبُدُ الْأَصْنَامَ أَيْضًا وَ كَانَ آزَرُ يَسْجُدُ لَهَا أَيْضًا" },
+  { words: ["وَ","هُنَا،","صَنَمٌ","هُنَاكَ","صَنَمٌ","جِدًّا","أَصْنَامٌ","كَثِيرَةٌ"], answer: "صَنَمٌ هُنَا، وَ صَنَمٌ هُنَاكَ أَصْنَامٌ كَثِيرَةٌ جِدًّا" },
+  { words: ["فَقَطْ","لِلَّهِ","الْأَصْنَامَ؟","الْعِبَادَةُ","يَعْبُدُونَ","لِمَاذَا"], answer: "لِمَاذَا يَعْبُدُونَ الْأَصْنَامَ؟ الْعِبَادَةُ لِلَّهِ فَقَطْ" }
+];
 
-function shuffle(arr) {
-  for (let i = arr.length - 1; i > 0; i--) {
+// ── EXERCISE STATE ──
+let exMode = null; // 'fillgap' or 'wordorder'
+let exQuestions = [];
+let exCurrent = 0;
+let exAnswered = 0;
+let exTimerSeconds = 0;
+let exTimerInterval = null;
+let exWordSelected = [];
+let exWordBank = [];
+let exGoalSeconds = 900;
+let exDotEarned = false;
+
+function exShuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
+    [a[i], a[j]] = [a[j], a[i]];
   }
-  return arr;
+  return a;
 }
 
-function startExercise() {
-  timerSeconds = parseInt(document.getElementById("timer-select").value);
-  questions = shuffle([...FILL_GAP_QUESTIONS]);
-  current = 0;
-  answered = 0;
-  document.getElementById("setup-screen").style.display = "none";
-  document.getElementById("exercise-screen").style.display = "block";
-  startTimer();
-  showQuestion();
+function backToPicker() {
+  clearInterval(exTimerInterval);
+  document.getElementById('ex-picker').style.display = 'block';
+  document.getElementById('ex-setup').style.display = 'none';
+  document.getElementById('ex-active').style.display = 'none';
+  document.getElementById('ex-done').style.display = 'none';
 }
 
-function startTimer() {
-  updateTimerDisplay();
-  timerInterval = setInterval(() => {
-    timerSeconds--;
-    updateTimerDisplay();
-    if (timerSeconds <= 0) {
-      clearInterval(timerInterval);
-      endExercise();
+function startFillGap() {
+  exMode = 'fillgap';
+  document.getElementById('ex-setup-label').textContent = '📝 Fill the Gap';
+  document.getElementById('ex-picker').style.display = 'none';
+  document.getElementById('ex-setup').style.display = 'block';
+}
+
+function startWordOrder() {
+  exMode = 'wordorder';
+  document.getElementById('ex-setup-label').textContent = '🔀 Word Order';
+  document.getElementById('ex-picker').style.display = 'none';
+  document.getElementById('ex-setup').style.display = 'block';
+}
+
+function launchExercise() {
+  exGoalSeconds = parseInt(document.getElementById('ex-timer-select').value);
+  exTimerSeconds = exGoalSeconds;
+  exAnswered = 0;
+  exDotEarned = false;
+  if (exMode === 'fillgap') {
+    exQuestions = exShuffle([...FILL_GAP_QUESTIONS]);
+  } else {
+    exQuestions = exShuffle([...WORD_ORDER_QUESTIONS]);
+  }
+  exCurrent = 0;
+  document.getElementById('ex-setup').style.display = 'none';
+  document.getElementById('ex-active').style.display = 'block';
+  exStartTimer();
+  exShowQuestion();
+}
+
+function exStartTimer() {
+  exUpdateTimerDisplay();
+  exTimerInterval = setInterval(() => {
+    exTimerSeconds--;
+    exUpdateTimerDisplay();
+    if (exTimerSeconds <= 0) {
+      clearInterval(exTimerInterval);
+      exEndSession();
     }
   }, 1000);
 }
 
-function updateTimerDisplay() {
-  const m = Math.floor(timerSeconds / 60);
-  const s = timerSeconds % 60;
-  document.getElementById("timer-display").textContent = m + ":" + (s < 10 ? "0" : "") + s;
-  if (timerSeconds <= 30) document.getElementById("timer-display").style.color = "#dc2626";
+function exUpdateTimerDisplay() {
+  const m = Math.floor(exTimerSeconds / 60);
+  const s = exTimerSeconds % 60;
+  const el = document.getElementById('ex-timer-display');
+  el.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+  el.style.color = exTimerSeconds <= 30 ? '#dc2626' : '#2563eb';
 }
 
-function showQuestion() {
-  if (current >= questions.length) {
-    questions = shuffle([...FILL_GAP_QUESTIONS]);
-    current = 0;
+function exShowQuestion() {
+  if (exCurrent >= exQuestions.length) {
+    exQuestions = exShuffle(exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS] : [...WORD_ORDER_QUESTIONS]);
+    exCurrent = 0;
   }
-  const q = questions[current];
-  document.getElementById("sentence").innerHTML = q.sentence.replace("________", '<span class="blank">________</span>');
-  document.getElementById("answer-input").value = "";
-  document.getElementById("answer-input").style.display = "inline-block";
-  document.getElementById("submit-btn").style.display = "inline-block";
-  document.getElementById("answer-reveal").style.display = "none";
-  document.getElementById("rating-area").style.display = "none";
-  document.getElementById("answer-input").focus();
-  document.getElementById("progress").textContent = "السؤال " + (answered + 1);
+  document.getElementById('ex-answer-reveal').style.display = 'none';
+  document.getElementById('ex-rating-area').style.display = 'none';
+  document.getElementById('ex-progress').textContent = 'Question ' + (exAnswered + 1);
+
+  if (exMode === 'fillgap') {
+    const q = exQuestions[exCurrent];
+    document.getElementById('ex-instruction').textContent = 'Fill in the missing word';
+    document.getElementById('ex-sentence').innerHTML = q.sentence.replace('________', '<span style="display:inline-block;border-bottom:3px solid #2563eb;min-width:100px;text-align:center">________</span>');
+    document.getElementById('ex-fill-input').style.display = 'flex';
+    document.getElementById('ex-word-order').style.display = 'none';
+    const inp = document.getElementById('ex-answer-input');
+    inp.value = '';
+    inp.style.display = 'block';
+    setTimeout(() => inp.focus(), 50);
+  } else {
+    const q = exQuestions[exCurrent];
+    document.getElementById('ex-instruction').textContent = 'Put the words in the correct order';
+    document.getElementById('ex-sentence').textContent = '';
+    document.getElementById('ex-fill-input').style.display = 'none';
+    document.getElementById('ex-word-order').style.display = 'block';
+    exWordSelected = [];
+    exWordBank = exShuffle([...q.words]);
+    exRenderWordTiles();
+  }
 }
 
-function submitAnswer() {
-  const q = questions[current];
-  document.getElementById("answer-input").style.display = "none";
-  document.getElementById("submit-btn").style.display = "none";
-  const reveal = document.getElementById("answer-reveal");
-  reveal.textContent = "✓ الجواب: " + q.answer;
-  reveal.style.display = "block";
-  document.getElementById("rating-area").style.display = "flex";
+function exRenderWordTiles() {
+  const bank = document.getElementById('ex-word-bank');
+  const answerRow = document.getElementById('ex-word-answer-row');
+  bank.innerHTML = '';
+  answerRow.innerHTML = '';
+
+  exWordBank.forEach((word, i) => {
+    if (exWordSelected.includes(i)) return;
+    const btn = document.createElement('button');
+    btn.textContent = word;
+    btn.style.cssText = 'padding:10px 16px;background:#eff6ff;border:2px solid #bfdbfe;border-radius:10px;font-size:1.1em;cursor:pointer;direction:rtl;font-family:inherit;transition:background 0.15s';
+    btn.onmouseover = () => btn.style.background = '#dbeafe';
+    btn.onmouseout = () => btn.style.background = '#eff6ff';
+    btn.onclick = () => { exWordSelected.push(i); exRenderWordTiles(); };
+    bank.appendChild(btn);
+  });
+
+  exWordSelected.forEach((idx, pos) => {
+    const btn = document.createElement('button');
+    btn.textContent = exWordBank[idx];
+    btn.style.cssText = 'padding:10px 16px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:1.1em;cursor:pointer;direction:rtl;font-family:inherit';
+    btn.onclick = () => { exWordSelected.splice(pos, 1); exRenderWordTiles(); };
+    answerRow.appendChild(btn);
+  });
+
+  if (exWordSelected.length === 0) {
+    answerRow.innerHTML = '<span style="color:#9ca3af;font-size:14px">Your answer will appear here</span>';
+  }
 }
 
-function rate() {
-  answered++;
-  current++;
-  showQuestion();
+function exClearWordOrder() {
+  exWordSelected = [];
+  exRenderWordTiles();
 }
 
-function endExercise() {
-  document.getElementById("exercise-screen").style.display = "none";
-  const done = document.getElementById("done-screen");
-  done.style.display = "flex";
-  document.getElementById("done-score").textContent = "أجبت على " + answered + " سؤال";
+function exSubmitAnswer() {
+  const q = exQuestions[exCurrent];
+  const reveal = document.getElementById('ex-answer-reveal');
+  reveal.textContent = '✓ Answer: ' + q.answer;
+  reveal.style.display = 'block';
+  document.getElementById('ex-fill-input').style.display = 'none';
+  document.getElementById('ex-rating-area').style.display = 'flex';
 }
 
-document.addEventListener("keydown", e => {
-  if (e.key === "Enter") {
-    if (document.getElementById("rating-area").style.display === "flex") {
-      rate();
-    } else if (document.getElementById("answer-input").style.display !== "none") {
-      submitAnswer();
+function exSubmitWordOrder() {
+  const q = exQuestions[exCurrent];
+  const studentAnswer = exWordSelected.map(i => exWordBank[i]).join(' ');
+  const reveal = document.getElementById('ex-answer-reveal');
+  reveal.innerHTML = '✓ Correct order:<br><span style="direction:rtl;display:block;margin-top:6px">' + q.answer + '</span>';
+  reveal.style.display = 'block';
+  document.getElementById('ex-rating-area').style.display = 'flex';
+}
+
+function exRate() {
+  exAnswered++;
+  exCurrent++;
+  exShowQuestion();
+}
+
+async function exEndSession() {
+  clearInterval(exTimerInterval);
+  document.getElementById('ex-active').style.display = 'none';
+  document.getElementById('ex-done').style.display = 'block';
+  document.getElementById('ex-done-score').textContent = 'You answered ' + exAnswered + ' question' + (exAnswered !== 1 ? 's' : '') + ' in ' + Math.round(exGoalSeconds / 60) + ' minutes.';
+
+  // Award calendar dot if 15+ minutes
+  const dotEl = document.getElementById('ex-dot-earned');
+  if (exGoalSeconds >= 900) {
+    dotEl.style.display = 'block';
+    exDotEarned = true;
+    // Save to Firebase activity log
+    try {
+      const code = typeof currentUser !== 'undefined' ? currentUser : null;
+      if (code && typeof fcActivity !== 'undefined' && typeof saveFlashcardData !== 'undefined') {
+        const today = typeof todayKey === 'function' ? todayKey() : new Date().toISOString().slice(0,10);
+        fcActivity[today] = (fcActivity[today] || 0) + exAnswered;
+        await saveFlashcardData(code);
+        if (typeof renderCalendar === 'function') renderCalendar();
+      }
+    } catch(e) { console.error('Exercise dot save error', e); }
+  } else {
+    dotEl.style.display = 'none';
+  }
+}
+
+// Tab switch support for exercises
+const _origSwitchTab = window.switchTab;
+window.switchTab = function(tab) {
+  if (_origSwitchTab) _origSwitchTab(tab);
+  const exTab = document.getElementById('tab-content-exercises');
+  if (exTab) exTab.style.display = tab === 'exercises' ? 'block' : 'none';
+  const exTabBtn = document.getElementById('tab-exercises');
+  if (exTabBtn) exTabBtn.classList.toggle('active', tab === 'exercises');
+};
+
+document.addEventListener('keydown', e => {
+  if (document.getElementById('ex-active') && document.getElementById('ex-active').style.display !== 'none') {
+    if (e.key === 'Enter') {
+      if (document.getElementById('ex-rating-area').style.display === 'flex') {
+        exRate();
+      } else if (exMode === 'fillgap' && document.getElementById('ex-answer-input').style.display !== 'none') {
+        exSubmitAnswer();
+      } else if (exMode === 'wordorder') {
+        exSubmitWordOrder();
+      }
     }
   }
 });
 </script>
-</body>
-</html>
