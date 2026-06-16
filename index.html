@@ -297,7 +297,7 @@
     <div class="tabs" id="tabs-bar" style="display:none">
       <button class="tab active" id="tab-homework" onclick="switchTab('homework')">📚 Homework</button>
       <button class="tab" id="tab-flashcards" onclick="switchTab('flashcards')">🃏 Flashcards</button>
-<button class="tab" id="tab-exercises" onclick="switchTab('exercises')">✏️ Exercises</button>
+<button class="tab" id="tab-exercises" id="tab-exercises">✏️ Exercises</button>
     </div>
 
     <!-- HOMEWORK TAB -->
@@ -391,95 +391,7 @@
 </div>
 <!-- EXERCISES TAB -->
 <div id="tab-content-exercises" class="content" style="display:none">
-
-  <!-- EXERCISE PICKER -->
-  <div id="ex-picker" style="display:block">
-  <div class="section-label">Choose an exercise</div>
-  <div style="display:flex;flex-direction:column;gap:14px;margin-top:8px">
-
-    <div class="ex-trigger" data-ex="fillgap" style="background:white;border-radius:16px;padding:24px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.08);border:2px solid transparent;transition:border 0.2s" onmouseover="this.style.borderColor='#2563eb'" onmouseout="this.style.borderColor='transparent'">
-      <div style="font-size:28px;margin-bottom:8px">📝</div>
-      <div style="font-size:16px;font-weight:700;color:#1a1a2e;margin-bottom:4px">Fill the Gap</div>
-      <div style="font-size:13px;color:#6b7280">A word is missing from a sentence. Type what you think it is, then see the answer.</div>
-      <div style="margin-top:12px;font-size:12px;color:#2563eb;font-weight:600">⏱ Earns a calendar dot after 15 min</div>
-    </div>
-
-    <div class="ex-trigger" data-ex="wordorder" style="background:white;border-radius:16px;padding:24px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.08);border:2px solid transparent;transition:border 0.2s" onmouseover="this.style.borderColor='#2563eb'" onmouseout="this.style.borderColor='transparent'">
-      <div style="font-size:28px;margin-bottom:8px">🔀</div>
-      <div style="font-size:16px;font-weight:700;color:#1a1a2e;margin-bottom:4px">Word Order</div>
-      <div style="font-size:13px;color:#6b7280">Rearrange the words to form a correct sentence.</div>
-      <div style="margin-top:12px;font-size:12px;color:#2563eb;font-weight:600">⏱ Earns a calendar dot after 15 min</div>
-    </div>
-
-  </div>
-</div>
-  <!-- TIMER SETUP -->
-  <div id="ex-setup" style="display:none">
-    <div class="section-label" id="ex-setup-label">Fill the Gap</div>
-    <div style="background:white;border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
-      <div style="font-size:14px;font-weight:600;color:#6b7280;margin-bottom:12px">Choose session length</div>
-      <select id="ex-timer-select" style="width:100%;font-size:16px;padding:12px;border:2px solid #e5e7eb;border-radius:10px;outline:none">
-        <option value="60">1 minute</option>
-        <option value="120">2 minutes</option>
-        <option value="180">3 minutes</option>
-        <option value="300">5 minutes</option>
-        <option value="600">10 minutes</option>
-        <option value="900" selected>15 minutes</option>
-        <option value="1200">20 minutes</option>
-      </select>
-      <button onclick="launchExercise()" style="width:100%;margin-top:14px;padding:14px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">Start</button>
-      <button onclick="backToPicker()" style="width:100%;margin-top:8px;padding:10px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">← Back</button>
-    </div>
-  </div>
-
-  <!-- ACTIVE EXERCISE -->
-  <div id="ex-active" style="display:none">
-    <div style="display:flex;justify-content:space-between;align-items:center;background:white;padding:12px 20px;border-radius:12px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,0.06)">
-      <div id="ex-timer-display" style="font-size:1.6em;font-weight:800;color:#2563eb;font-variant-numeric:tabular-nums">15:00</div>
-      <div id="ex-progress" style="color:#6b7280;font-size:14px;font-weight:600">Question 1</div>
-    </div>
-    <div style="background:white;border-radius:16px;padding:28px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
-      <div id="ex-instruction" style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6b7280;margin-bottom:16px"></div>
-      <div id="ex-sentence" style="font-size:1.6em;line-height:2;text-align:center;direction:rtl;margin-bottom:20px"></div>
-
-      <!-- Fill gap input -->
-      <div id="ex-fill-input" style="display:none;flex-direction:column;align-items:center;gap:10px">
-        <input id="ex-answer-input" type="text" placeholder="Type the missing word..." style="font-size:1.2em;padding:12px 16px;border:2px solid #e5e7eb;border-radius:10px;width:100%;max-width:320px;text-align:center;direction:rtl;outline:none">
-        <button onclick="exSubmitAnswer()" style="padding:12px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Check → (or press Enter)</button>
-      </div>
-
-      <!-- Word order tiles -->
-      <div id="ex-word-order" style="display:none">
-        <div style="font-size:13px;color:#6b7280;text-align:center;margin-bottom:12px">Click words in the correct order</div>
-        <div id="ex-word-bank" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;direction:rtl;margin-bottom:20px"></div>
-        <div id="ex-word-answer-row" style="min-height:48px;background:#f0f4ff;border-radius:10px;padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px;direction:rtl;align-items:center;margin-bottom:12px"></div>
-        <div style="text-align:center">
-          <button onclick="exSubmitWordOrder()" style="padding:12px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Check → (or press Enter)</button>
-          <button onclick="exClearWordOrder()" style="margin-left:8px;padding:12px 20px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">Clear</button>
-        </div>
-      </div>
-
-      <!-- Answer reveal -->
-      <div id="ex-answer-reveal" style="display:none;background:#f0fdf4;border:2px solid #86efac;border-radius:10px;padding:16px;margin-top:16px;font-size:1.2em;text-align:center;direction:rtl"></div>
-    </div>
-
-    <!-- Rating buttons -->
-    <div id="ex-rating-area" style="display:none;gap:10px;margin-bottom:16px">
-      <button onclick="exRate()" style="flex:1;padding:12px;background:#fee2e2;color:#b91c1c;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">Hard</button>
-      <button onclick="exRate()" style="flex:1;padding:12px;background:#fff7ed;color:#c2410c;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">Medium</button>
-      <button onclick="exRate()" style="flex:1;padding:12px;background:#f0fdf4;color:#15803d;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">Easy</button>
-    </div>
-  </div>
-
-  <!-- DONE -->
-  <div id="ex-done" style="display:none;text-align:center;padding:40px 20px">
-    <div style="font-size:48px;margin-bottom:16px">🎉</div>
-    <div style="font-size:22px;font-weight:800;color:#1a1a2e;margin-bottom:8px">Session complete!</div>
-    <div id="ex-done-score" style="font-size:15px;color:#6b7280;margin-bottom:24px"></div>
-    <div id="ex-dot-earned" style="display:none;background:#f0fdf4;border:2px solid #86efac;border-radius:12px;padding:14px;margin-bottom:20px;font-size:14px;font-weight:600;color:#15803d">✓ You earned a calendar dot for today!</div>
-    <button onclick="backToPicker()" style="padding:14px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Choose another exercise</button>
-  </div>
-
+  <div id="ex-root"></div>
 </div>
 <div class="modal-overlay" id="modal">
   <button class="modal-close" id="modal-close-btn">✕</button>
@@ -1354,33 +1266,17 @@ document.getElementById('review-btn').addEventListener('click',toggleReview);
 document.getElementById('modal').addEventListener('click',closeModal);
 document.getElementById('modal-close-btn').addEventListener('click',e=>{e.stopPropagation();closeModal();});
 </script>
- <style>
-  #setup-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; gap: 20px; }
-  #setup-screen h1 { font-size: 1.8em; }
-  #setup-screen select { font-size: 1.2em; padding: 10px 20px; border-radius: 8px; border: 1px solid #ccc; }
-  #setup-screen button { font-size: 1.2em; padding: 12px 32px; background: #2563eb; color: white; border: none; border-radius: 8px; cursor: pointer; }
-  #exercise-screen { display: none; max-width: 800px; margin: 0 auto; padding: 20px; }
-  #timer-bar { display: flex; justify-content: space-between; align-items: center; background: white; padding: 12px 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-  #timer-display { font-size: 1.5em; font-weight: bold; color: #2563eb; }
-  #progress { color: #888; font-size: 1em; }
-  #question-card { background: white; border-radius: 12px; padding: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 20px; }
-  #sentence { font-size: 1.8em; line-height: 2.2; text-align: center; margin-bottom: 24px; }
-  .blank { display: inline-block; border-bottom: 3px solid #2563eb; min-width: 120px; text-align: center; }
-  #input-area { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 16px; }
-  #answer-input { font-size: 1.3em; padding: 10px 16px; border: 2px solid #ccc; border-radius: 8px; direction: rtl; text-align: right; width: 220px; }
-  #submit-btn { font-size: 1.1em; padding: 10px 24px; background: #2563eb; color: white; border: none; border-radius: 8px; cursor: pointer; }
-  #answer-reveal { display: none; background: #f0fdf4; border: 2px solid #86efac; border-radius: 10px; padding: 16px 20px; margin-bottom: 16px; font-size: 1.3em; text-align: center; }
-  #rating-area { display: none; justify-content: center; gap: 12px; flex-wrap: wrap; }
-  .rating-btn { font-size: 1.1em; padding: 10px 28px; border: none; border-radius: 8px; cursor: pointer; color: white; }
-  #btn-easy { background: #16a34a; }
-  #btn-medium { background: #d97706; }
-  #btn-hard { background: #dc2626; }
-  #done-screen { display: none; flex-direction: column; align-items: center; justify-content: center; height: 100vh; gap: 16px; text-align: center; }
-  #done-screen h2 { font-size: 2em; }
-  #restart-btn { font-size: 1.1em; padding: 12px 32px; background: #2563eb; color: white; border: none; border-radius: 8px; cursor: pointer; }
-
-
-
+<style>
+.ex-card { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 16px; cursor: pointer; border: 2px solid transparent; transition: border 0.2s; }
+.ex-card:hover { border-color: #2563eb; }
+.ex-card-icon { font-size: 28px; margin-bottom: 8px; }
+.ex-card-title { font-size: 16px; font-weight: 700; color: #1a1a2e; margin-bottom: 4px; }
+.ex-card-desc { font-size: 13px; color: #6b7280; }
+.ex-card-note { margin-top: 10px; font-size: 12px; color: #2563eb; font-weight: 600; }
+.ex-word-tile { padding: 10px 16px; background: #eff6ff; border: 2px solid #bfdbfe; border-radius: 10px; font-size: 1.1em; cursor: pointer; direction: rtl; font-family: inherit; transition: background 0.15s; }
+.ex-word-tile:hover { background: #dbeafe; }
+.ex-word-tile.selected { background: #2563eb; color: white; border-color: #2563eb; }
+</style>
 
 <script>
 const FILL_GAP_QUESTIONS = [
@@ -1464,79 +1360,130 @@ const WORD_ORDER_QUESTIONS = [
   { words: ["فَقَطْ","لِلَّهِ","الْأَصْنَامَ؟","الْعِبَادَةُ","يَعْبُدُونَ","لِمَاذَا"], answer: "لِمَاذَا يَعْبُدُونَ الْأَصْنَامَ؟ الْعِبَادَةُ لِلَّهِ فَقَطْ" }
 ];
 
-let exMode = null;
-let exQuestions = [];
-let exCurrent = 0;
-let exAnswered = 0;
-let exTimerSeconds = 0;
-let exTimerInterval = null;
-let exWordSelected = [];
-let exWordBank = [];
-let exGoalSeconds = 900;
-let exDotEarned = false;
+// ── EXERCISE ENGINE ──
+let exMode = null, exQuestions = [], exCurrent = 0, exAnswered = 0;
+let exTimerSeconds = 0, exTimerInterval = null;
+let exGoalSeconds = 900, exDotEarned = false;
+let exWordSelected = [], exWordBank = [];
 
 function exShuffle(arr) {
   const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
+  for (let i = a.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
   }
   return a;
 }
 
-function backToPicker() {
-  clearInterval(exTimerInterval);
-  document.getElementById('ex-picker').style.display = 'block';
-  document.getElementById('ex-setup').style.display = 'none';
-  document.getElementById('ex-active').style.display = 'none';
-  document.getElementById('ex-done').style.display = 'none';
+function exRender(html) {
+  document.getElementById('ex-root').innerHTML = html;
 }
 
-function startFillGap() {
-  exMode = 'fillgap';
-  document.getElementById('ex-setup-label').textContent = '📝 Fill the Gap';
-  document.getElementById('ex-picker').style.display = 'none';
-  document.getElementById('ex-setup').style.display = 'block';
+function exShowPicker() {
+  exRender(`
+    <div class="section-label">Choose an exercise</div>
+    <div style="display:flex;flex-direction:column;gap:14px;margin-top:8px">
+      <div class="ex-card" id="btn-fillgap">
+        <div class="ex-card-icon">📝</div>
+        <div class="ex-card-title">Fill the Gap</div>
+        <div class="ex-card-desc">A word is missing from a sentence. Type what you think it is.</div>
+        <div class="ex-card-note">⏱ Earns a calendar dot after 15 min</div>
+      </div>
+      <div class="ex-card" id="btn-wordorder">
+        <div class="ex-card-icon">🔀</div>
+        <div class="ex-card-title">Word Order</div>
+        <div class="ex-card-desc">Rearrange the words to form a correct sentence.</div>
+        <div class="ex-card-note">⏱ Earns a calendar dot after 15 min</div>
+      </div>
+    </div>
+  `);
+  document.getElementById('btn-fillgap').onclick = () => exShowSetup('fillgap');
+  document.getElementById('btn-wordorder').onclick = () => exShowSetup('wordorder');
 }
 
-function startWordOrder() {
-  exMode = 'wordorder';
-  document.getElementById('ex-setup-label').textContent = '🔀 Word Order';
-  document.getElementById('ex-picker').style.display = 'none';
-  document.getElementById('ex-setup').style.display = 'block';
+function exShowSetup(mode) {
+  exMode = mode;
+  const title = mode === 'fillgap' ? '📝 Fill the Gap' : '🔀 Word Order';
+  exRender(`
+    <div class="section-label">${title}</div>
+    <div style="background:white;border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
+      <div style="font-size:14px;font-weight:600;color:#6b7280;margin-bottom:12px">Choose session length</div>
+      <select id="ex-timer-select" style="width:100%;font-size:16px;padding:12px;border:2px solid #e5e7eb;border-radius:10px;outline:none">
+        <option value="60">1 minute</option>
+        <option value="120">2 minutes</option>
+        <option value="180">3 minutes</option>
+        <option value="300">5 minutes</option>
+        <option value="600">10 minutes</option>
+        <option value="900" selected>15 minutes</option>
+        <option value="1200">20 minutes</option>
+      </select>
+      <button id="ex-start-btn" style="width:100%;margin-top:14px;padding:14px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">Start</button>
+      <button id="ex-back-btn" style="width:100%;margin-top:8px;padding:10px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">← Back</button>
+    </div>
+  `);
+  document.getElementById('ex-start-btn').onclick = exLaunch;
+  document.getElementById('ex-back-btn').onclick = exShowPicker;
 }
 
-function launchExercise() {
+function exLaunch() {
   exGoalSeconds = parseInt(document.getElementById('ex-timer-select').value);
   exTimerSeconds = exGoalSeconds;
   exAnswered = 0;
+  exCurrent = 0;
   exDotEarned = false;
   exQuestions = exShuffle(exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS] : [...WORD_ORDER_QUESTIONS]);
-  exCurrent = 0;
-  document.getElementById('ex-setup').style.display = 'none';
-  document.getElementById('ex-active').style.display = 'block';
+  exRenderActive();
   exStartTimer();
   exShowQuestion();
 }
 
+function exRenderActive() {
+  exRender(`
+    <div style="display:flex;justify-content:space-between;align-items:center;background:white;padding:12px 20px;border-radius:12px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,0.06)">
+      <div id="ex-timer-display" style="font-size:1.6em;font-weight:800;color:#2563eb;font-variant-numeric:tabular-nums">--:--</div>
+      <div id="ex-progress" style="color:#6b7280;font-size:14px;font-weight:600">Question 1</div>
+    </div>
+    <div style="background:white;border-radius:16px;padding:28px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
+      <div id="ex-instruction" style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6b7280;margin-bottom:16px"></div>
+      <div id="ex-sentence" style="font-size:1.6em;line-height:2;text-align:center;direction:rtl;margin-bottom:20px"></div>
+      <div id="ex-fill-input" style="display:none;flex-direction:column;align-items:center;gap:10px">
+        <input id="ex-answer-input" type="text" placeholder="Type the missing word..." style="font-size:1.2em;padding:12px 16px;border:2px solid #e5e7eb;border-radius:10px;width:100%;max-width:320px;text-align:center;direction:rtl;outline:none">
+        <button id="ex-check-btn" style="padding:12px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Check ←</button>
+      </div>
+      <div id="ex-word-order" style="display:none">
+        <div style="font-size:13px;color:#6b7280;text-align:center;margin-bottom:12px">Click words in the correct order</div>
+        <div id="ex-word-bank" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;direction:rtl;margin-bottom:20px"></div>
+        <div id="ex-answer-row" style="min-height:48px;background:#f0f4ff;border-radius:10px;padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px;direction:rtl;align-items:center;margin-bottom:12px"></div>
+        <div style="text-align:center;display:flex;gap:10px;justify-content:center">
+          <button id="ex-wo-check-btn" style="padding:12px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Check ←</button>
+          <button id="ex-wo-clear-btn" style="padding:12px 20px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">Clear</button>
+        </div>
+      </div>
+      <div id="ex-reveal" style="display:none;background:#f0fdf4;border:2px solid #86efac;border-radius:10px;padding:16px;margin-top:16px;font-size:1.2em;text-align:center;direction:rtl"></div>
+    </div>
+    <div id="ex-rating-area" style="display:none;gap:10px;margin-bottom:16px">
+      <button id="ex-rate-hard" style="flex:1;padding:12px;background:#fee2e2;color:#b91c1c;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">Hard</button>
+      <button id="ex-rate-med" style="flex:1;padding:12px;background:#fff7ed;color:#c2410c;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">Medium</button>
+      <button id="ex-rate-easy" style="flex:1;padding:12px;background:#f0fdf4;color:#15803d;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">Easy</button>
+    </div>
+  `);
+}
+
 function exStartTimer() {
-  exUpdateTimerDisplay();
+  exUpdateTimer();
   exTimerInterval = setInterval(() => {
     exTimerSeconds--;
-    exUpdateTimerDisplay();
-    if (exTimerSeconds <= 0) {
-      clearInterval(exTimerInterval);
-      exEndSession();
-    }
+    exUpdateTimer();
+    if (exTimerSeconds <= 0) { clearInterval(exTimerInterval); exEndSession(); }
   }, 1000);
 }
 
-function exUpdateTimerDisplay() {
-  const m = Math.floor(exTimerSeconds / 60);
-  const s = exTimerSeconds % 60;
+function exUpdateTimer() {
   const el = document.getElementById('ex-timer-display');
   if (!el) return;
-  el.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+  const m = Math.floor(exTimerSeconds/60);
+  const s = exTimerSeconds%60;
+  el.textContent = m+':'+(s<10?'0':'')+s;
   el.style.color = exTimerSeconds <= 30 ? '#dc2626' : '#2563eb';
 }
 
@@ -1545,20 +1492,25 @@ function exShowQuestion() {
     exQuestions = exShuffle(exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS] : [...WORD_ORDER_QUESTIONS]);
     exCurrent = 0;
   }
-  document.getElementById('ex-answer-reveal').style.display = 'none';
-  document.getElementById('ex-rating-area').style.display = 'none';
-  document.getElementById('ex-progress').textContent = 'Question ' + (exAnswered + 1);
+  const revealEl = document.getElementById('ex-reveal');
+  const ratingEl = document.getElementById('ex-rating-area');
+  if (revealEl) revealEl.style.display = 'none';
+  if (ratingEl) ratingEl.style.display = 'none';
+  document.getElementById('ex-progress').textContent = 'Question '+(exAnswered+1);
 
   if (exMode === 'fillgap') {
     const q = exQuestions[exCurrent];
     document.getElementById('ex-instruction').textContent = 'Fill in the missing word';
-    document.getElementById('ex-sentence').innerHTML = q.sentence.replace('________', '<span style="display:inline-block;border-bottom:3px solid #2563eb;min-width:100px;text-align:center">________</span>');
-    document.getElementById('ex-fill-input').style.display = 'flex';
+    document.getElementById('ex-sentence').innerHTML = q.sentence.replace('________',
+      '<span style="display:inline-block;border-bottom:3px solid #2563eb;min-width:100px;text-align:center">________</span>');
+    const fillDiv = document.getElementById('ex-fill-input');
+    fillDiv.style.display = 'flex';
     document.getElementById('ex-word-order').style.display = 'none';
     const inp = document.getElementById('ex-answer-input');
     inp.value = '';
-    inp.style.display = 'block';
     setTimeout(() => inp.focus(), 50);
+    document.getElementById('ex-check-btn').onclick = exSubmitFill;
+    inp.onkeydown = e => { if (e.key === 'Enter') exSubmitFill(); };
   } else {
     const q = exQuestions[exCurrent];
     document.getElementById('ex-instruction').textContent = 'Put the words in the correct order';
@@ -1567,60 +1519,61 @@ function exShowQuestion() {
     document.getElementById('ex-word-order').style.display = 'block';
     exWordSelected = [];
     exWordBank = exShuffle([...q.words]);
-    exRenderWordTiles();
+    exRenderTiles();
+    document.getElementById('ex-wo-check-btn').onclick = exSubmitWordOrder;
+    document.getElementById('ex-wo-clear-btn').onclick = () => { exWordSelected = []; exRenderTiles(); };
   }
 }
 
-function exRenderWordTiles() {
+function exRenderTiles() {
   const bank = document.getElementById('ex-word-bank');
-  const answerRow = document.getElementById('ex-word-answer-row');
+  const ansRow = document.getElementById('ex-answer-row');
   bank.innerHTML = '';
-  answerRow.innerHTML = '';
-
+  ansRow.innerHTML = '';
   exWordBank.forEach((word, i) => {
     if (exWordSelected.includes(i)) return;
     const btn = document.createElement('button');
+    btn.className = 'ex-word-tile';
     btn.textContent = word;
-    btn.style.cssText = 'padding:10px 16px;background:#eff6ff;border:2px solid #bfdbfe;border-radius:10px;font-size:1.1em;cursor:pointer;direction:rtl;font-family:inherit;transition:background 0.15s';
-    btn.onmouseover = () => btn.style.background = '#dbeafe';
-    btn.onmouseout = () => btn.style.background = '#eff6ff';
-    btn.onclick = () => { exWordSelected.push(i); exRenderWordTiles(); };
+    btn.onclick = () => { exWordSelected.push(i); exRenderTiles(); };
     bank.appendChild(btn);
   });
-
   exWordSelected.forEach((idx, pos) => {
     const btn = document.createElement('button');
     btn.textContent = exWordBank[idx];
     btn.style.cssText = 'padding:10px 16px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:1.1em;cursor:pointer;direction:rtl;font-family:inherit';
-    btn.onclick = () => { exWordSelected.splice(pos, 1); exRenderWordTiles(); };
-    answerRow.appendChild(btn);
+    btn.onclick = () => { exWordSelected.splice(pos,1); exRenderTiles(); };
+    ansRow.appendChild(btn);
   });
-
-  if (exWordSelected.length === 0) {
-    answerRow.innerHTML = '<span style="color:#9ca3af;font-size:14px">Your answer will appear here</span>';
+  if (!exWordSelected.length) {
+    ansRow.innerHTML = '<span style="color:#9ca3af;font-size:14px">Your answer will appear here</span>';
   }
 }
 
-function exClearWordOrder() {
-  exWordSelected = [];
-  exRenderWordTiles();
-}
-
-function exSubmitAnswer() {
+function exSubmitFill() {
   const q = exQuestions[exCurrent];
-  const reveal = document.getElementById('ex-answer-reveal');
+  const reveal = document.getElementById('ex-reveal');
   reveal.textContent = '✓ Answer: ' + q.answer;
   reveal.style.display = 'block';
   document.getElementById('ex-fill-input').style.display = 'none';
-  document.getElementById('ex-rating-area').style.display = 'flex';
+  const ratingEl = document.getElementById('ex-rating-area');
+  ratingEl.style.display = 'flex';
+  document.getElementById('ex-rate-hard').onclick = exRate;
+  document.getElementById('ex-rate-med').onclick = exRate;
+  document.getElementById('ex-rate-easy').onclick = exRate;
 }
 
 function exSubmitWordOrder() {
   const q = exQuestions[exCurrent];
-  const reveal = document.getElementById('ex-answer-reveal');
-  reveal.innerHTML = '✓ Correct order:<br><span style="direction:rtl;display:block;margin-top:6px">' + q.answer + '</span>';
+  const reveal = document.getElementById('ex-reveal');
+  reveal.innerHTML = '✓ Correct order:<br><span style="direction:rtl;display:block;margin-top:6px">'+q.answer+'</span>';
   reveal.style.display = 'block';
-  document.getElementById('ex-rating-area').style.display = 'flex';
+  document.getElementById('ex-word-order').style.display = 'none';
+  const ratingEl = document.getElementById('ex-rating-area');
+  ratingEl.style.display = 'flex';
+  document.getElementById('ex-rate-hard').onclick = exRate;
+  document.getElementById('ex-rate-med').onclick = exRate;
+  document.getElementById('ex-rate-easy').onclick = exRate;
 }
 
 function exRate() {
@@ -1631,49 +1584,31 @@ function exRate() {
 
 async function exEndSession() {
   clearInterval(exTimerInterval);
-  document.getElementById('ex-active').style.display = 'none';
-  document.getElementById('ex-done').style.display = 'block';
-  document.getElementById('ex-done-score').textContent = 'You answered ' + exAnswered + ' question' + (exAnswered !== 1 ? 's' : '') + ' in ' + Math.round(exGoalSeconds / 60) + ' minutes.';
-  const dotEl = document.getElementById('ex-dot-earned');
-  if (exGoalSeconds >= 900) {
-    dotEl.style.display = 'block';
+  const dotEarned = exGoalSeconds >= 900;
+  exRender(`
+    <div style="text-align:center;padding:40px 20px">
+      <div style="font-size:48px;margin-bottom:16px">🎉</div>
+      <div style="font-size:22px;font-weight:800;color:#1a1a2e;margin-bottom:8px">Session complete!</div>
+      <div style="font-size:15px;color:#6b7280;margin-bottom:24px">You answered ${exAnswered} question${exAnswered!==1?'s':''} in ${Math.round(exGoalSeconds/60)} minutes.</div>
+      ${dotEarned ? '<div style="background:#f0fdf4;border:2px solid #86efac;border-radius:12px;padding:14px;margin-bottom:20px;font-size:14px;font-weight:600;color:#15803d">✓ You earned a calendar dot for today!</div>' : ''}
+      <button id="ex-again-btn" style="padding:14px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Choose another exercise</button>
+    </div>
+  `);
+  document.getElementById('ex-again-btn').onclick = exShowPicker;
+  if (dotEarned) {
     window.dispatchEvent(new CustomEvent('ex-session-complete', { detail: { count: exAnswered } }));
-  } else {
-    dotEl.style.display = 'none';
   }
 }
 
-document.addEventListener('keydown', e => {
-  const active = document.getElementById('ex-active');
-  if (!active || active.style.display === 'none') return;
-  if (e.key === 'Enter') {
-    if (document.getElementById('ex-rating-area').style.display === 'flex') {
-      exRate();
-    } else if (exMode === 'fillgap') {
-      exSubmitAnswer();
-    } else if (exMode === 'wordorder') {
-      exSubmitWordOrder();
-    }
-  }
-});
- window.startFillGap = startFillGap;
-window.startWordOrder = startWordOrder;
-window.backToPicker = backToPicker;
-window.launchExercise = launchExercise;
-window.exSubmitAnswer = exSubmitAnswer;
-window.exSubmitWordOrder = exSubmitWordOrder;
-// ... (Your previous code) ...
-window.exRate = exRate;
-</script>
+// ── BOOT: wire up tab switch to initialise exercises ──
+const _origSwitchTab = window.switchTab;
+window.switchTab = function(tab) {
+  _origSwitchTab(tab);
+  if (tab === 'exercises') exShowPicker();
+};
 
-<script>
-    document.querySelectorAll('.ex-trigger').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const mode = btn.getAttribute('data-ex');
-            if (mode === 'fillgap' && typeof startFillGap === 'function') startFillGap();
-            else if (mode === 'wordorder' && typeof startWordOrder === 'function') startWordOrder();
-        });
-    });
+// Also fix the tab button click since it lost its onclick in CHANGE 1
+document.getElementById('tab-exercises').onclick = () => window.switchTab('exercises');
 </script>
 </body>
 </html>
