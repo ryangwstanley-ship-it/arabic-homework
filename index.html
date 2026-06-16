@@ -1667,29 +1667,13 @@ window.exRate = exRate;
 </script>
 
 <script>
-    console.log("Direct script starting...");
-
-    // Find the buttons by their class
-    const buttons = document.querySelectorAll('.ex-trigger');
-    
-    if (buttons.length === 0) {
-        console.log("No buttons found! Check the HTML class name.");
-    } else {
-        console.log("Found " + buttons.length + " buttons.");
-        
-        buttons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const mode = btn.getAttribute('data-ex');
-                console.log("Button pressed, mode:", mode);
-                
-                if (mode === 'fillgap') {
-                    if (typeof startFillGap === 'function') startFillGap();
-                } else if (mode === 'wordorder') {
-                    if (typeof startWordOrder === 'function') startWordOrder();
-                }
-            });
+    document.querySelectorAll('.ex-trigger').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const mode = btn.getAttribute('data-ex');
+            if (mode === 'fillgap' && typeof startFillGap === 'function') startFillGap();
+            else if (mode === 'wordorder' && typeof startWordOrder === 'function') startWordOrder();
         });
-    }
+    });
 </script>
 </body>
 </html>
