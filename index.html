@@ -814,7 +814,7 @@ function renderCalendar() {
       if(sub.reviewed){const sb=document.createElement('div');sb.className='dot dot-blue';squares.appendChild(sb);}
     }
     // Flashcard activity square
-    if(fcActivity[key]){
+    if(fcActivity[key] >= 20){
       const sf=document.createElement('div');sf.className='dot dot-fc';squares.appendChild(sf);
     }
     cell.appendChild(squares); cell.onclick=()=>{selectedDate=key;renderDayPanel();renderCalendar();}; grid.appendChild(cell);
@@ -1005,7 +1005,7 @@ function resetTimer() {
 async function onTimerEnd() {
   // Log activity
   const today = todayKey();
-  fcActivity[today] = (fcActivity[today] || 0) + fcSessionCardsRead;
+  fcActivity[today] = (fcActivity[today] || 0) + fcTimerGoalMinutes;
   const code = currentUser || viewingStudent;
   await saveFlashcardData(code);
   renderCalendar();
@@ -1013,7 +1013,7 @@ async function onTimerEnd() {
   const resultEl = document.getElementById('fc-session-result');
   if (resultEl) {
     resultEl.style.display = 'block';
-    resultEl.textContent = `✓ Session complete — you read ${fcSessionCardsRead} card${fcSessionCardsRead !== 1 ? 's' : ''} in ${fcTimerGoalMinutes} minute${fcTimerGoalMinutes !== 1 ? 's' : ''}`;
+   resultEl.textContent = `✓ Session complete — ${fcTimerGoalMinutes} min added (${fcActivity[today]} min total today)`;
   }
 }
 
@@ -1597,7 +1597,7 @@ async function exEndSession() {
   `);
   document.getElementById('ex-again-btn').onclick = exShowPicker;
   if (dotEarned) {
-    window.dispatchEvent(new CustomEvent('ex-session-complete', { detail: { count: exAnswered } }));
+    window.dispatchEvent(new CustomEvent('ex-session-complete', { detail: { count: Math.round(exGoalSeconds / 60) } }));
   }
 }
 
