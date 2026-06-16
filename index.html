@@ -1508,7 +1508,58 @@ const FILL_GAP_QUESTIONS = [
   { sentence: "وَ ________ هَذَا الرَّجُلُ يَسْكُنُ فِي قَرْيَةٍ", answer: "كَانَ" }
 ];
 
-
+const TRUE_FALSE_QUESTIONS = [
+  { sentence: "الْقَرْيَةٌ هُنَا، وَ صَنَمٌ هُنَاكَ أَصْنَامٌ كَثِيرَةٌ جِدًّا", answer: false },
+  { sentence: "وَ كَانَ فِي هَذِهِ الْقَرْيَةِ أَصْنَامٌ كَثِيرَةٌ جِدًّا", answer: true },
+  { sentence: "قَبْلَ أَيَّامٍ كَثِيرَةٍ جِدًّا، كَانَ بَعْدَ رَجُلٌ", answer: false },
+  { sentence: "وَ كَانَ آزَرُ يَسْكُنُ مِنْ الْمُشْرِكِينَ فِي هَذِهِ الْقَرْيَةِ", answer: false },
+  { sentence: "وَ كَانَ صَنَمٌ يَسْكُنُ مَعَ الْمُشْرِكِينَ فِي هَذِهِ الْقَرْيَةِ", answer: false },
+  { sentence: "لِمَاذَا يَعْبُدُونَ الْأَصْنَامَ؟ مَلِكٌ لِلَّهِ فَقَطْ", answer: false },
+  { sentence: "وَ كَانَ النَّاسُ يَسْجُدُونَ لَهَا", answer: true },
+  { sentence: "وَ كَانَ هَذَا الرَّجُلُ يَسْكُنُ فِي قَرْيَةٍ", answer: true },
+  { sentence: "وَ كَانَ اسْمُ هَذَا الرَّجُلِ آزَرَ", answer: true },
+  { sentence: "وَ كَانَ مَعَ آزَرَ نَاسٌ كَثِيرُونَ", answer: true },
+  { sentence: "صَنَمٌ هُنَا، وَ صَنَمٌ هُنَاكَ أَصْنَامٌ كَثِيرَةٌ جِدًّا", answer: true },
+  { sentence: "وَ كَانَ النَّاسُ يَعْبُدُونَ هَذِهِ الْأَصْنَامَ", answer: true },
+  { sentence: "صَنَمٌ هُنَا، وَ صَنَمٌ قَبْلَ أَصْنَامٌ كَثِيرَةٌ جِدًّا", answer: false },
+  { sentence: "وَ كَانَ قَرْيَةٌ يَسْجُدُونَ لَهَا", answer: false },
+  { sentence: "وَ كَانَ آزَرُ مُشْرِكًا", answer: true },
+  { sentence: "وَ كَانَ النَّاسُ يَعْبُدُونَ هَذِهِ الْأَصْنَامَ", answer: true },
+  { sentence: "مَعَ أَيَّامٍ كَثِيرَةٍ جِدًّا، كَانَ هُنَاكَ رَجُلٌ", answer: false },
+  { sentence: "وَ كَانَ صَنَمٌ يَعْبُدُونَ هَذِهِ الْأَصْنَامَ", answer: false },
+  { sentence: "صَنَمٌ هُنَا وَ صَنَمٌ هُنَاكَ أَصْنَامٌ كَثِيرَةٌ جِدًّا", answer: false },
+  { sentence: "صَنَمٌ هُنَا، وَ صَنَمٌ هُنَاكَ أَصْنَامٌ كَثِيرَةٌ جِدًّا", answer: true },
+  { sentence: "وَ كَانَ آزَرُ يَعْبُدُ الْأَصْنَامَ أَيْضًا وَ كَانَ آزَرُ يَسْجُدُ لَهَا أَيْضًا", answer: true },
+  { sentence: "لِمَاذَا يَعْبُدُونَ الْأَصْنَامَ؟ الْعِبَادَةُ لِلَّهِ فَقَطْ", answer: true },
+  { sentence: "وَ كَانَ آزَرُ مُشْرِكًا", answer: true },
+  { sentence: "وَ كَانَ مِنْ هَذِهِ الْقَرْيَةِ أَصْنَامٌ كَثِيرَةٌ جِدًّا", answer: false },
+  { sentence: "لِمَاذَا يَعْبُدُونَ الْأَصْنَامَ؟ الْعِبَادَةُ لِلَّهِ فَقَطْ", answer: true },
+  { sentence: "وَ كَانَ الْنَاسٌ يَسْكُنُ مَعَ الْمُشْرِكِينَ فِي هَذِهِ الْقَرْيَةِ", answer: false },
+  { sentence: "وَ كَانَ هَؤُلَاءِ النَّاسُ مُشْرِكِينَ أَيْضًا", answer: true },
+  { sentence: "وَ كَانَ آزَرُ يَسْكُنُ مَعَ الْمُشْرِكِينَ فِي هَذِهِ الْآزَرُ", answer: false },
+  { sentence: "وَ كَانَ هَؤُلَاءِ آزَرُ مُشْرِكِينَ أَيْضًا", answer: false },
+  { sentence: "وَ كَانَ مَعَ آزَرَ نَاسٌ كَثِيرُونَ", answer: true },
+  { sentence: "وَ كَانَ هَذَا الرَّجُلُ يَسْكُنُ فِي قَرْيَةٍ", answer: true },
+  { sentence: "قَبْلَ أَيَّامٍ كَثِيرَةٍ جِدًّا، كَانَ عَلَى رَجُلٌ", answer: false },
+  { sentence: "وَ كَانَ آزَرُ يَسْكُنُ مَعَ الْمُشْرِكِينَ لِهَذِهِ الْقَرْيَةِ", answer: false },
+  { sentence: "قَرْيَةٌ هُنَا، وَ صَنَمٌ هُنَاكَ أَصْنَامٌ كَثِيرَةٌ جِدًّا", answer: false },
+  { sentence: "وَ كَانَ النَّاسُ يَسْجُدُونَ لَهَا", answer: true },
+  { sentence: "وَ كَانَ آزَرُ يَسْكُنُ مَعَ الْمَلِكٌ فِي هَذِهِ الْقَرْيَةِ", answer: false },
+  { sentence: "وَ كَانَ اسْمُ هَذَا الرَّجُلِ آزَرَ", answer: true },
+  { sentence: "وَ كَانَ آزَرُ يَعْبُدُ الْأَصْنَامَ أَيْضًا وَ كَانَ آزَرُ يَسْجُدُ لَهَا أَيْضًا", answer: true },
+  { sentence: "وَ كَانَ آزَرُ يَسْكُنُ مَعَ الْمُشْرِكِينَ فِي هَذِهِ الْقَرْيَةِ", answer: true },
+  { sentence: "وَ كَانَ آزَرُ يَسْكُنُ مَعَ الْمُشْرِكِينَ فِي هَذِهِ الْطِّفْلٌ", answer: false },
+  { sentence: "وَ كَانَ بِآزَرَ نَاسٌ كَثِيرُونَ", answer: false },
+  { sentence: "وَ كَانَ مَعَ آزَرَ الْصَنَمٌ كَثِيرُونَ", answer: false },
+  { sentence: "وَ كَانَ مَعَ الْقَرْيَةٌ نَاسٌ كَثِيرُونَ", answer: false },
+  { sentence: "وَ كَانَ هَذَا الرَّجُلُ يَسْكُنُ فِي آزَرُ", answer: false },
+  { sentence: "وَ كَانَ اسْمُ هَذَا الرَّجُلِ الْآزَرُ", answer: false },
+  { sentence: "وَ كَانَ هَؤُلَاءِ النَّاسُ مُشْرِكِينَ أَيْضًا", answer: true },
+  { sentence: "وَ كَانَ آزَرُ يَسْكُنُ مَعَ الْمُشْرِكِينَ فِي هَذِهِ الْقَرْيَةِ", answer: true },
+  { sentence: "وَ كَانَ آزَرُ يَسْكُنُ مَعَ الْنَاسٌ فِي هَذِهِ الْقَرْيَةِ", answer: false },
+  { sentence: "وَ كَانَ فِي هَذِهِ الْقَرْيَةِ أَصْنَامٌ كَثِيرَةٌ جِدًّا", answer: true },
+  { sentence: "قَبْلَ أَيَّامٍ كَثِيرَةٍ جِدًّا، كَانَ هُنَاكَ رَجُلٌ", answer: true },
+];
  const CHANGE_WORD_QUESTIONS = [
   { sentence: "لِمَاذَا يَعْبُدُونَ الْأَصْنَامَ؟ قَرْيَةٌ لِلَّهِ فَقَطْ", wrong: "قَرْيَةٌ", correct: "الْعِبَادَةُ" },
   { sentence: "وَ كَانَ النَّاسُ يَعْبُدُونَ هَذِهِ الْطِّفْلٌ", wrong: "الْطِّفْلٌ", correct: "الْأَصْنَامَ" },
@@ -1622,6 +1673,12 @@ function exShowPicker() {
         <div class="ex-card-desc">Rearrange the words to form a correct sentence.</div>
         <div class="ex-card-note">⏱ Earns a calendar dot after 15 min</div>
       </div>
+      <div class="ex-card" id="btn-truefalse">
+        <div class="ex-card-icon">✅</div>
+        <div class="ex-card-title">True or False</div>
+        <div class="ex-card-desc">Is the sentence correct or does it contain an error?</div>
+        <div class="ex-card-note">⏱ Earns a calendar dot after 15 min</div>
+      </div>
       <div class="ex-card" id="btn-changeword">
         <div class="ex-card-icon">✏️</div>
         <div class="ex-card-title">Change One Word</div>
@@ -1632,12 +1689,13 @@ function exShowPicker() {
   `);
   document.getElementById('btn-fillgap').onclick = () => exShowSetup('fillgap');
   document.getElementById('btn-wordorder').onclick = () => exShowSetup('wordorder');
+  document.getElementById('btn-truefalse').onclick = () => exShowSetup('truefalse');
   document.getElementById('btn-changeword').onclick = () => exShowSetup('changeword');
 }
 
 function exShowSetup(mode) {
   exMode = mode;
-  const title = mode === 'fillgap' ? '📝 Fill the Gap' : mode === 'wordorder' ? '🔀 Word Order' : '✏️ Change One Word';
+  const title = mode === 'fillgap' ? '📝 Fill the Gap' : mode === 'wordorder' ? '🔀 Word Order' : mode === 'changeword' ? '✏️ Change One Word' : '✅ True or False';
   exRender(`
     <div class="section-label">${title}</div>
     <div style="background:white;border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
@@ -1665,7 +1723,7 @@ function exLaunch() {
   exAnswered = 0;
   exCurrent = 0;
   exDotEarned = false;
-  exQuestions = exShuffle(exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS] : exMode === 'wordorder' ? [...WORD_ORDER_QUESTIONS] : [...CHANGE_WORD_QUESTIONS]);
+  exQuestions = exShuffle(exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS] : exMode === 'wordorder' ? [...WORD_ORDER_QUESTIONS] : exMode === 'changeword' ? [...CHANGE_WORD_QUESTIONS] : [...TRUE_FALSE_QUESTIONS]);
   exRenderActive();
   exStartTimer();
   exShowQuestion();
@@ -1723,7 +1781,7 @@ function exUpdateTimer() {
 
 function exShowQuestion() {
   if (exCurrent >= exQuestions.length) {
-    exQuestions = exShuffle(exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS] : exMode === 'wordorder' ? [...WORD_ORDER_QUESTIONS] : [...CHANGE_WORD_QUESTIONS]);
+    exQuestions = exShuffle(exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS] : exMode === 'wordorder' ? [...WORD_ORDER_QUESTIONS] : exMode === 'changeword' ? [...CHANGE_WORD_QUESTIONS] : [...TRUE_FALSE_QUESTIONS]);
     exCurrent = 0;
   }
   const revealEl = document.getElementById('ex-reveal');
@@ -1745,6 +1803,25 @@ function exShowQuestion() {
     setTimeout(() => inp.focus(), 50);
     document.getElementById('ex-check-btn').onclick = exSubmitFill;
     inp.onkeydown = e => { if (e.key === 'Enter') exSubmitFill(); };
+   } else if (exMode === 'truefalse') {
+    const q = exQuestions[exCurrent];
+    document.getElementById('ex-instruction').textContent = 'Is this sentence correct?';
+    document.getElementById('ex-sentence').innerHTML = q.sentence;
+    document.getElementById('ex-sentence').style.fontSize = '1.4em';
+    document.getElementById('ex-fill-input').style.display = 'none';
+    document.getElementById('ex-word-order').style.display = 'none';
+    // inject true/false buttons
+    const existing = document.getElementById('ex-tf-btns');
+    if (existing) existing.remove();
+    const tfWrap = document.createElement('div');
+    tfWrap.id = 'ex-tf-btns';
+    tfWrap.style.cssText = 'display:flex;gap:12px;justify-content:center;margin-top:8px';
+    tfWrap.innerHTML = `
+      <button id="ex-tf-true" style="flex:1;padding:14px;background:#f0fdf4;color:#15803d;border:2px solid #86efac;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">True</button>
+      <button id="ex-tf-false" style="flex:1;padding:14px;background:#fef2f2;color:#b91c1c;border:2px solid #fca5a5;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">False</button>`;
+    document.getElementById('ex-sentence').after(tfWrap);
+    document.getElementById('ex-tf-true').onclick = () => exSubmitTrueFalse(true);
+    document.getElementById('ex-tf-false').onclick = () => exSubmitTrueFalse(false);
   } else if (exMode === 'changeword') {
     const q = exQuestions[exCurrent];
     document.getElementById('ex-instruction').textContent = 'One word is wrong — type the correct word';
@@ -1813,7 +1890,23 @@ function exSubmitFill() {
   document.getElementById('ex-rate-med').onclick = exRate;
   document.getElementById('ex-rate-easy').onclick = exRate;
 }
-
+function exSubmitTrueFalse(chosen) {
+  const q = exQuestions[exCurrent];
+  const correct = chosen === q.answer;
+  const reveal = document.getElementById('ex-reveal');
+  reveal.innerHTML = (correct ? '✓ Correct! ' : '✗ Incorrect. ') +
+    'The sentence is <strong>' + (q.answer ? 'True' : 'False') + '</strong>.';
+  reveal.style.background = correct ? '#f0fdf4' : '#fef2f2';
+  reveal.style.borderColor = correct ? '#86efac' : '#fca5a5';
+  reveal.style.display = 'block';
+  const tfWrap = document.getElementById('ex-tf-btns');
+  if (tfWrap) tfWrap.style.display = 'none';
+  const ratingEl = document.getElementById('ex-rating-area');
+  ratingEl.style.display = 'flex';
+  document.getElementById('ex-rate-hard').onclick = exRate;
+  document.getElementById('ex-rate-med').onclick = exRate;
+  document.getElementById('ex-rate-easy').onclick = exRate;
+}
 function exSubmitChangeWord() {
   console.log('changeword fired');
   const q = exQuestions[exCurrent];
