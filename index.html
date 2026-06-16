@@ -1226,6 +1226,17 @@ function render(){
   if(currentTab==='flashcards')renderFlashcards();
 }
 
+
+
+
+
+
+
+
+
+
+
+ 
 // ── EVENTS ──
 document.getElementById('login-btn').addEventListener('click',handleLogin);
 document.getElementById('code-input').addEventListener('keydown',e=>{if(e.key==='Enter')handleLogin();});
@@ -1237,6 +1248,232 @@ document.getElementById('next-month-btn').addEventListener('click',()=>{calMonth
 document.getElementById('review-btn').addEventListener('click',toggleReview);
 document.getElementById('modal').addEventListener('click',closeModal);
 document.getElementById('modal-close-btn').addEventListener('click',e=>{e.stopPropagation();closeModal();});
+</script>
+ <style>
+  #setup-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; gap: 20px; }
+  #setup-screen h1 { font-size: 1.8em; }
+  #setup-screen select { font-size: 1.2em; padding: 10px 20px; border-radius: 8px; border: 1px solid #ccc; }
+  #setup-screen button { font-size: 1.2em; padding: 12px 32px; background: #2563eb; color: white; border: none; border-radius: 8px; cursor: pointer; }
+  #exercise-screen { display: none; max-width: 800px; margin: 0 auto; padding: 20px; }
+  #timer-bar { display: flex; justify-content: space-between; align-items: center; background: white; padding: 12px 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+  #timer-display { font-size: 1.5em; font-weight: bold; color: #2563eb; }
+  #progress { color: #888; font-size: 1em; }
+  #question-card { background: white; border-radius: 12px; padding: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 20px; }
+  #sentence { font-size: 1.8em; line-height: 2.2; text-align: center; margin-bottom: 24px; }
+  .blank { display: inline-block; border-bottom: 3px solid #2563eb; min-width: 120px; text-align: center; }
+  #input-area { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 16px; }
+  #answer-input { font-size: 1.3em; padding: 10px 16px; border: 2px solid #ccc; border-radius: 8px; direction: rtl; text-align: right; width: 220px; }
+  #submit-btn { font-size: 1.1em; padding: 10px 24px; background: #2563eb; color: white; border: none; border-radius: 8px; cursor: pointer; }
+  #answer-reveal { display: none; background: #f0fdf4; border: 2px solid #86efac; border-radius: 10px; padding: 16px 20px; margin-bottom: 16px; font-size: 1.3em; text-align: center; }
+  #rating-area { display: none; justify-content: center; gap: 12px; flex-wrap: wrap; }
+  .rating-btn { font-size: 1.1em; padding: 10px 28px; border: none; border-radius: 8px; cursor: pointer; color: white; }
+  #btn-easy { background: #16a34a; }
+  #btn-medium { background: #d97706; }
+  #btn-hard { background: #dc2626; }
+  #done-screen { display: none; flex-direction: column; align-items: center; justify-content: center; height: 100vh; gap: 16px; text-align: center; }
+  #done-screen h2 { font-size: 2em; }
+  #restart-btn { font-size: 1.1em; padding: 12px 32px; background: #2563eb; color: white; border: none; border-radius: 8px; cursor: pointer; }
+</style>
+
+<div id="setup-screen">
+  <h1>تمرين: أكمل الفراغ</h1>
+  <label for="timer-select">اختر وقت التمرين:</label>
+  <select id="timer-select">
+    <option value="60">1 دقيقة</option>
+    <option value="120">2 دقيقة</option>
+    <option value="180">3 دقائق</option>
+    <option value="300" selected>5 دقائق</option>
+    <option value="600">10 دقائق</option>
+    <option value="900">15 دقيقة</option>
+    <option value="1200">20 دقيقة</option>
+  </select>
+  <button onclick="startExercise()">ابدأ</button>
+</div>
+
+<div id="exercise-screen">
+  <div id="timer-bar">
+    <div id="timer-display">5:00</div>
+    <div id="progress">السؤال 1</div>
+  </div>
+  <div id="question-card">
+    <div id="sentence"></div>
+    <div id="input-area">
+      <input id="answer-input" type="text" placeholder="اكتب الجواب...">
+      <button id="submit-btn" onclick="submitAnswer()">تحقق</button>
+    </div>
+    <div id="answer-reveal"></div>
+    <div id="rating-area">
+      <button class="rating-btn" id="btn-hard" onclick="rate()">صعب</button>
+      <button class="rating-btn" id="btn-medium" onclick="rate()">متوسط</button>
+      <button class="rating-btn" id="btn-easy" onclick="rate()">سهل</button>
+    </div>
+  </div>
+</div>
+
+<div id="done-screen">
+  <h2>انتهى الوقت!</h2>
+  <p id="done-score"></p>
+  <button id="restart-btn" onclick="location.reload()">تمرين جديد</button>
+</div>
+
+<script>
+const FILL_GAP_QUESTIONS = [
+  { sentence: "وَ كَانَ هَؤُلَاءِ ________ مُشْرِكِينَ أَيْضًا", answer: "النَّاسُ" },
+  { sentence: "صَنَمٌ هُنَا، ________ صَنَمٌ هُنَاكَ أَصْنَامٌ كَثِيرَةٌ جِدًّا", answer: "وَ" },
+  { sentence: "وَ كَانَ ________ هَذَا الرَّجُلِ آزَرَ", answer: "اسْمُ" },
+  { sentence: "وَ كَانَ هَذَا الرَّجُلُ ________ فِي قَرْيَةٍ", answer: "يَسْكُنُ" },
+  { sentence: "وَ كَانَ آزَرُ يَعْبُدُ الْأَصْنَامَ أَيْضًا وَ كَانَ آزَرُ يَسْجُدُ ________ أَيْضًا", answer: "لَهَا" },
+  { sentence: "وَ كَانَ آزَرُ يَعْبُدُ ________ أَيْضًا وَ كَانَ آزَرُ يَسْجُدُ لَهَا أَيْضًا", answer: "الْأَصْنَامَ" },
+  { sentence: "لِمَاذَا يَعْبُدُونَ الْأَصْنَامَ؟ ________ لِلَّهِ فَقَطْ", answer: "الْعِبَادَةُ" },
+  { sentence: "وَ كَانَ هَؤُلَاءِ النَّاسُ ________ أَيْضًا", answer: "مُشْرِكِينَ" },
+  { sentence: "لِمَاذَا يَعْبُدُونَ الْأَصْنَامَ؟ الْعِبَادَةُ ________ فَقَطْ", answer: "لِلَّهِ" },
+  { sentence: "وَ كَانَ آزَرُ يَسْكُنُ مَعَ الْمُشْرِكِينَ ________ هَذِهِ الْقَرْيَةِ", answer: "فِي" },
+  { sentence: "وَ كَانَ ________ آزَرَ نَاسٌ كَثِيرُونَ", answer: "مَعَ" },
+  { sentence: "وَ كَانَ ________ يَسْكُنُ مَعَ الْمُشْرِكِينَ فِي هَذِهِ الْقَرْيَةِ", answer: "آزَرُ" },
+  { sentence: "وَ كَانَ ________ مُشْرِكًا", answer: "آزَرُ" },
+  { sentence: "وَ كَانَ هَذَا ________ يَسْكُنُ فِي قَرْيَةٍ", answer: "الرَّجُلُ" },
+  { sentence: "وَ كَانَ فِي ________ الْقَرْيَةِ أَصْنَامٌ كَثِيرَةٌ جِدًّا", answer: "هَذِهِ" },
+  { sentence: "وَ كَانَ آزَرُ يَسْكُنُ مَعَ ________ فِي هَذِهِ الْقَرْيَةِ", answer: "الْمُشْرِكِينَ" },
+  { sentence: "وَ كَانَ ________ يَسْجُدُونَ لَهَا", answer: "النَّاسُ" },
+  { sentence: "قَبْلَ ________ كَثِيرَةٍ جِدًّا، كَانَ هُنَاكَ رَجُلٌ", answer: "أَيَّامٍ" },
+  { sentence: "قَبْلَ أَيَّامٍ ________ جِدًّا، كَانَ هُنَاكَ رَجُلٌ", answer: "كَثِيرَةٍ" },
+  { sentence: "لِمَاذَا ________ الْأَصْنَامَ؟ الْعِبَادَةُ لِلَّهِ فَقَطْ", answer: "يَعْبُدُونَ" },
+  { sentence: "صَنَمٌ هُنَا، وَ صَنَمٌ ________ أَصْنَامٌ كَثِيرَةٌ جِدًّا", answer: "هُنَاكَ" },
+  { sentence: "وَ كَانَ اسْمُ ________ الرَّجُلِ آزَرَ", answer: "هَذَا" },
+  { sentence: "وَ كَانَ فِي هَذِهِ ________ أَصْنَامٌ كَثِيرَةٌ جِدًّا", answer: "الْقَرْيَةِ" },
+  { sentence: "وَ كَانَ آزَرُ ________ الْأَصْنَامَ أَيْضًا وَ كَانَ آزَرُ يَسْجُدُ لَهَا أَيْضًا", answer: "يَعْبُدُ" },
+  { sentence: "وَ ________ النَّاسُ يَسْجُدُونَ لَهَا", answer: "كَانَ" },
+  { sentence: "وَ كَانَ ________ هَذِهِ الْقَرْيَةِ أَصْنَامٌ كَثِيرَةٌ جِدًّا", answer: "فِي" },
+  { sentence: "وَ كَانَ آزَرُ ________ مَعَ الْمُشْرِكِينَ فِي هَذِهِ الْقَرْيَةِ", answer: "يَسْكُنُ" },
+  { sentence: "وَ ________ مَعَ آزَرَ نَاسٌ كَثِيرُونَ", answer: "كَانَ" },
+  { sentence: "قَبْلَ أَيَّامٍ كَثِيرَةٍ جِدًّا، ________ هُنَاكَ رَجُلٌ", answer: "كَانَ" },
+  { sentence: "وَ ________ اسْمُ هَذَا الرَّجُلِ آزَرَ", answer: "كَانَ" },
+  { sentence: "وَ ________ آزَرُ يَسْكُنُ مَعَ الْمُشْرِكِينَ فِي هَذِهِ الْقَرْيَةِ", answer: "كَانَ" },
+  { sentence: "قَبْلَ أَيَّامٍ كَثِيرَةٍ جِدًّا، كَانَ ________ رَجُلٌ", answer: "هُنَاكَ" },
+  { sentence: "قَبْلَ أَيَّامٍ كَثِيرَةٍ ________ كَانَ هُنَاكَ رَجُلٌ", answer: "جِدًّا،" },
+  { sentence: "وَ كَانَ آزَرُ يَعْبُدُ الْأَصْنَامَ أَيْضًا ________ كَانَ آزَرُ يَسْجُدُ لَهَا أَيْضًا", answer: "وَ" },
+  { sentence: "وَ ________ آزَرُ يَعْبُدُ الْأَصْنَامَ أَيْضًا وَ كَانَ آزَرُ يَسْجُدُ لَهَا أَيْضًا", answer: "كَانَ" },
+  { sentence: "صَنَمٌ هُنَا، وَ ________ هُنَاكَ أَصْنَامٌ كَثِيرَةٌ جِدًّا", answer: "صَنَمٌ" },
+  { sentence: "وَ كَانَ آزَرُ يَسْكُنُ مَعَ الْمُشْرِكِينَ فِي ________ الْقَرْيَةِ", answer: "هَذِهِ" },
+  { sentence: "وَ كَانَ ________ يَعْبُدُ الْأَصْنَامَ أَيْضًا وَ كَانَ آزَرُ يَسْجُدُ لَهَا أَيْضًا", answer: "آزَرُ" },
+  { sentence: "وَ كَانَ النَّاسُ ________ لَهَا", answer: "يَسْجُدُونَ" },
+  { sentence: "وَ كَانَ آزَرُ يَعْبُدُ الْأَصْنَامَ ________ وَ كَانَ آزَرُ يَسْجُدُ لَهَا أَيْضًا", answer: "أَيْضًا" },
+  { sentence: "وَ ________ هَؤُلَاءِ النَّاسُ مُشْرِكِينَ أَيْضًا", answer: "كَانَ" },
+  { sentence: "وَ كَانَ فِي هَذِهِ الْقَرْيَةِ ________ كَثِيرَةٌ جِدًّا", answer: "أَصْنَامٌ" },
+  { sentence: "صَنَمٌ هُنَا، وَ صَنَمٌ هُنَاكَ ________ كَثِيرَةٌ جِدًّا", answer: "أَصْنَامٌ" },
+  { sentence: "وَ كَانَ النَّاسُ ________ هَذِهِ الْأَصْنَامَ", answer: "يَعْبُدُونَ" },
+  { sentence: "وَ كَانَ مَعَ آزَرَ ________ كَثِيرُونَ", answer: "نَاسٌ" },
+  { sentence: "وَ كَانَ فِي هَذِهِ الْقَرْيَةِ أَصْنَامٌ ________ جِدًّا", answer: "كَثِيرَةٌ" },
+  { sentence: "وَ ________ النَّاسُ يَعْبُدُونَ هَذِهِ الْأَصْنَامَ", answer: "كَانَ" },
+  { sentence: "وَ كَانَ آزَرُ يَسْكُنُ ________ الْمُشْرِكِينَ فِي هَذِهِ الْقَرْيَةِ", answer: "مَعَ" },
+  { sentence: "وَ ________ آزَرُ مُشْرِكًا", answer: "كَانَ" },
+  { sentence: "وَ كَانَ مَعَ ________ نَاسٌ كَثِيرُونَ", answer: "آزَرَ" },
+  { sentence: "وَ كَانَ هَذَا الرَّجُلُ يَسْكُنُ ________ قَرْيَةٍ", answer: "فِي" },
+  { sentence: "وَ كَانَ ________ النَّاسُ مُشْرِكِينَ أَيْضًا", answer: "هَؤُلَاءِ" },
+  { sentence: "وَ كَانَ اسْمُ هَذَا ________ آزَرَ", answer: "الرَّجُلِ" },
+  { sentence: "وَ كَانَ النَّاسُ يَعْبُدُونَ ________ الْأَصْنَامَ", answer: "هَذِهِ" },
+  { sentence: "وَ ________ فِي هَذِهِ الْقَرْيَةِ أَصْنَامٌ كَثِيرَةٌ جِدًّا", answer: "كَانَ" },
+  { sentence: "وَ كَانَ ________ الرَّجُلُ يَسْكُنُ فِي قَرْيَةٍ", answer: "هَذَا" },
+  { sentence: "وَ كَانَ ________ يَعْبُدُونَ هَذِهِ الْأَصْنَامَ", answer: "النَّاسُ" },
+  { sentence: "صَنَمٌ ________ وَ صَنَمٌ هُنَاكَ أَصْنَامٌ كَثِيرَةٌ جِدًّا", answer: "هُنَا،" },
+  { sentence: "لِمَاذَا يَعْبُدُونَ ________ الْعِبَادَةُ لِلَّهِ فَقَطْ", answer: "الْأَصْنَامَ؟" },
+  { sentence: "صَنَمٌ هُنَا، وَ صَنَمٌ هُنَاكَ أَصْنَامٌ ________ جِدًّا", answer: "كَثِيرَةٌ" },
+  { sentence: "وَ كَانَ آزَرُ يَعْبُدُ الْأَصْنَامَ أَيْضًا وَ كَانَ آزَرُ ________ لَهَا أَيْضًا", answer: "يَسْجُدُ" },
+  { sentence: "وَ ________ هَذَا الرَّجُلُ يَسْكُنُ فِي قَرْيَةٍ", answer: "كَانَ" }
+];
+
+let questions = [];
+let current = 0;
+let answered = 0;
+let timerSeconds = 0;
+let timerInterval = null;
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function startExercise() {
+  timerSeconds = parseInt(document.getElementById("timer-select").value);
+  questions = shuffle([...FILL_GAP_QUESTIONS]);
+  current = 0;
+  answered = 0;
+  document.getElementById("setup-screen").style.display = "none";
+  document.getElementById("exercise-screen").style.display = "block";
+  startTimer();
+  showQuestion();
+}
+
+function startTimer() {
+  updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    timerSeconds--;
+    updateTimerDisplay();
+    if (timerSeconds <= 0) {
+      clearInterval(timerInterval);
+      endExercise();
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const m = Math.floor(timerSeconds / 60);
+  const s = timerSeconds % 60;
+  document.getElementById("timer-display").textContent = m + ":" + (s < 10 ? "0" : "") + s;
+  if (timerSeconds <= 30) document.getElementById("timer-display").style.color = "#dc2626";
+}
+
+function showQuestion() {
+  if (current >= questions.length) {
+    questions = shuffle([...FILL_GAP_QUESTIONS]);
+    current = 0;
+  }
+  const q = questions[current];
+  document.getElementById("sentence").innerHTML = q.sentence.replace("________", '<span class="blank">________</span>');
+  document.getElementById("answer-input").value = "";
+  document.getElementById("answer-input").style.display = "inline-block";
+  document.getElementById("submit-btn").style.display = "inline-block";
+  document.getElementById("answer-reveal").style.display = "none";
+  document.getElementById("rating-area").style.display = "none";
+  document.getElementById("answer-input").focus();
+  document.getElementById("progress").textContent = "السؤال " + (answered + 1);
+}
+
+function submitAnswer() {
+  const q = questions[current];
+  document.getElementById("answer-input").style.display = "none";
+  document.getElementById("submit-btn").style.display = "none";
+  const reveal = document.getElementById("answer-reveal");
+  reveal.textContent = "✓ الجواب: " + q.answer;
+  reveal.style.display = "block";
+  document.getElementById("rating-area").style.display = "flex";
+}
+
+function rate() {
+  answered++;
+  current++;
+  showQuestion();
+}
+
+function endExercise() {
+  document.getElementById("exercise-screen").style.display = "none";
+  const done = document.getElementById("done-screen");
+  done.style.display = "flex";
+  document.getElementById("done-score").textContent = "أجبت على " + answered + " سؤال";
+}
+
+document.addEventListener("keydown", e => {
+  if (e.key === "Enter") {
+    if (document.getElementById("rating-area").style.display === "flex") {
+      rate();
+    } else if (document.getElementById("answer-input").style.display !== "none") {
+      submitAnswer();
+    }
+  }
+});
 </script>
 </body>
 </html>
