@@ -1814,6 +1814,20 @@ function exSubmitFill() {
   document.getElementById('ex-rate-easy').onclick = exRate;
 }
 
+function exSubmitChangeWord() {
+  console.log('changeword fired');
+  const q = exQuestions[exCurrent];
+  const reveal = document.getElementById('ex-reveal');
+  reveal.innerHTML = `✕ Wrong word: <strong>${q.wrong}</strong><br>✓ Correct word: <strong>${q.correct}</strong>`;
+  reveal.style.display = 'block';
+  document.getElementById('ex-fill-input').style.display = 'none';
+  const ratingEl = document.getElementById('ex-rating-area');
+  ratingEl.style.display = 'flex';
+  document.getElementById('ex-rate-hard').onclick = exRate;
+  document.getElementById('ex-rate-med').onclick = exRate;
+  document.getElementById('ex-rate-easy').onclick = exRate;
+}
+
 function exSubmitWordOrder() {
   const q = exQuestions[exCurrent];
   const reveal = document.getElementById('ex-reveal');
