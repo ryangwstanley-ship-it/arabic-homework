@@ -1663,27 +1663,12 @@ window.exRate = exRate;
 </script>
 
 <script>
+    // This runs the moment the browser sees it, no waiting for anything
+    console.log("Script is active!"); 
+
     document.addEventListener('click', (e) => {
-        const trigger = e.target.closest('.ex-trigger');
-        if (!trigger) return; // Ignore clicks that aren't on our buttons
-
-        const mode = trigger.getAttribute('data-ex');
-        console.log("Triggered mode:", mode); // You will see this in the console!
-
-        if (mode === 'fillgap') {
-            if (typeof startFillGap === 'function') {
-                startFillGap();
-            } else {
-                console.error("Error: startFillGap() is not defined.");
-            }
-        } else if (mode === 'wordorder') {
-            if (typeof startWordOrder === 'function') {
-                startWordOrder();
-            } else {
-                console.error("Error: startWordOrder() is not defined.");
-            }
-        }
-    });
+        console.log("Something was clicked on the page:", e.target);
+    }, true); // The 'true' here makes it "capture" the click immediately
 </script>
 </body>
 </html>
