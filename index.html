@@ -390,30 +390,25 @@
 
   <!-- EXERCISE PICKER -->
   <div id="ex-picker" style="display:block">
-    <div class="section-label">Choose an exercise</div>
-    <div style="display:flex;flex-direction:column;gap:14px;margin-top:8px">
-      <div id="ex-card-fillgap" onclick="startFillGap()" style="background:white;border-radius:16px;padding:24px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.08);border:2px solid transparent;transition:border 0.2s" onmouseover="this.style.borderColor='#2563eb'" onmouseout="this.style.borderColor='transparent'">
-  <div style="font-size:28px;margin-bottom:8px">📝</div>
-  <div style="font-size:16px;font-weight:700;color:#1a1a2e;margin-bottom:4px">Fill the Gap</div>
-  <div style="font-size:13px;color:#6b7280">A word is missing from a sentence. Type what you think it is, then see the answer.</div>
-  <div style="margin-top:12px;font-size:12px;color:#2563eb;font-weight:600">⏱ Earns a calendar dot after 15 min</div>
-</div>
+  <div class="section-label">Choose an exercise</div>
+  <div style="display:flex;flex-direction:column;gap:14px;margin-top:8px">
 
-<div id="ex-card-wordorder" onclick="startWordOrder()" style="background:white;border-radius:16px;padding:24px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.08);border:2px solid transparent;transition:border 0.2s;margin-top:14px" onmouseover="this.style.borderColor='#2563eb'" onmouseout="this.style.borderColor='transparent'">
-  <div style="font-size:28px;margin-bottom:8px">🔀</div>
-  <div style="font-size:16px;font-weight:700;color:#1a1a2e;margin-bottom:4px">Word Order</div>
-  <div style="font-size:13px;color:#6b7280">Rearrange the words to form a correct sentence.</div>
-  <div style="margin-top:12px;font-size:12px;color:#2563eb;font-weight:600">⏱ Earns a calendar dot after 15 min</div>
-</div>
-      <div id="ex-card-wordorder" style="background:white;border-radius:16px;padding:24px;cursor:pointer;round:white;border-radius:16px;padding:24px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.08);border:2px solid transparent;transition:border 0.2s" onmouseover="this.style.borderColor='#2563eb'" onmouseout="this.style.borderColor='transparent'">
-        <div style="font-size:28px;margin-bottom:8px">🔀</div>
-        <div style="font-size:16px;font-weight:700;color:#1a1a2e;margin-bottom:4px">Word Order</div>
-        <div style="font-size:13px;color:#6b7280">Scrambled words are shown. Click them in the correct order to build the sentence.</div>
-        <div style="margin-top:12px;font-size:12px;color:#2563eb;font-weight:600">⏱ Earns a calendar dot after 15 min</div>
-      </div>
+    <div class="ex-trigger" data-ex="fillgap" style="background:white;border-radius:16px;padding:24px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.08);border:2px solid transparent;transition:border 0.2s" onmouseover="this.style.borderColor='#2563eb'" onmouseout="this.style.borderColor='transparent'">
+      <div style="font-size:28px;margin-bottom:8px">📝</div>
+      <div style="font-size:16px;font-weight:700;color:#1a1a2e;margin-bottom:4px">Fill the Gap</div>
+      <div style="font-size:13px;color:#6b7280">A word is missing from a sentence. Type what you think it is, then see the answer.</div>
+      <div style="margin-top:12px;font-size:12px;color:#2563eb;font-weight:600">⏱ Earns a calendar dot after 15 min</div>
     </div>
-  </div>
 
+    <div class="ex-trigger" data-ex="wordorder" style="background:white;border-radius:16px;padding:24px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.08);border:2px solid transparent;transition:border 0.2s" onmouseover="this.style.borderColor='#2563eb'" onmouseout="this.style.borderColor='transparent'">
+      <div style="font-size:28px;margin-bottom:8px">🔀</div>
+      <div style="font-size:16px;font-weight:700;color:#1a1a2e;margin-bottom:4px">Word Order</div>
+      <div style="font-size:13px;color:#6b7280">Rearrange the words to form a correct sentence.</div>
+      <div style="margin-top:12px;font-size:12px;color:#2563eb;font-weight:600">⏱ Earns a calendar dot after 15 min</div>
+    </div>
+
+  </div>
+</div>
   <!-- TIMER SETUP -->
   <div id="ex-setup" style="display:none">
     <div class="section-label" id="ex-setup-label">Fill the Gap</div>
@@ -1670,18 +1665,25 @@ window.exRate = exRate;
 <script>
     document.addEventListener('click', (e) => {
         const trigger = e.target.closest('.ex-trigger');
-        if (trigger) {
-            const mode = trigger.getAttribute('data-ex');
-            if (mode === 'fillgap') {
-                console.log("Triggering Fill the Gap");
+        if (!trigger) return; // Ignore clicks that aren't on our buttons
+
+        const mode = trigger.getAttribute('data-ex');
+        console.log("Triggered mode:", mode); // You will see this in the console!
+
+        if (mode === 'fillgap') {
+            if (typeof startFillGap === 'function') {
                 startFillGap();
-            } else if (mode === 'wordorder') {
-                console.log("Triggering Word Order");
+            } else {
+                console.error("Error: startFillGap() is not defined.");
+            }
+        } else if (mode === 'wordorder') {
+            if (typeof startWordOrder === 'function') {
                 startWordOrder();
+            } else {
+                console.error("Error: startWordOrder() is not defined.");
             }
         }
     });
 </script>
-
 </body>
 </html>
