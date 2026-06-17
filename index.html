@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Arabic Daily</title>
 <style>
+ 
   * { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
     --ink: #1a1a2e; --blue: #2563eb; --blue-light: #eff6ff;
@@ -71,6 +72,20 @@
   .tabs { display: flex; background: white; border-bottom: 1px solid var(--border); padding: 0 20px; }
   .tab { padding: 14px 18px; font-size: 14px; font-weight: 600; color: var(--grey); border: none; background: none; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; }
   .tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+.revision-banner { display: none; align-items: center; gap: 16px; background: var(--ink); padding: 14px 20px; }
+.revision-ring-wrap { position: relative; width: 56px; height: 56px; flex-shrink: 0; }
+.revision-ring { width: 56px; height: 56px; transform: rotate(-90deg); }
+.revision-ring-bg { fill: none; stroke: rgba(255,255,255,0.15); stroke-width: 6; }
+.revision-ring-fg { fill: none; stroke: var(--dot-green); stroke-width: 6; stroke-linecap: round; transition: stroke-dashoffset 0.4s ease; }
+.revision-ring-fire { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 22px; filter: grayscale(100%); opacity: 0.55; transition: filter 0.3s, opacity 0.3s; }
+.revision-ring-fire.complete { filter: none; opacity: 1; }
+.revision-info { flex: 1; min-width: 0; }
+.revision-streak { color: white; font-size: 16px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.revision-lesson { color: rgba(255,255,255,0.55); font-size: 12px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.revision-rank { text-align: right; flex-shrink: 0; }
+.revision-rank-num { color: white; font-size: 18px; font-weight: 700; }
+.revision-rank-label { color: rgba(255,255,255,0.5); font-size: 11px; }
+ 
 
 .home-card { background: white; border-radius: 18px; padding: 26px 22px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); cursor: pointer; border: 2px solid transparent; transition: border 0.2s, transform 0.15s; display: flex; align-items: center; gap: 18px; }
 .home-card:hover { border-color: var(--blue); }
@@ -300,6 +315,25 @@
       <button class="view-toggle" id="view-toggle-btn" style="display:none">Student view</button>
     </div>
 
+    <!-- REVISION BANNER (persistent across all tabs) -->
+    <div class="revision-banner" id="revision-banner">
+      <div class="revision-ring-wrap">
+        <svg class="revision-ring" viewBox="0 0 80 80">
+          <circle class="revision-ring-bg" cx="40" cy="40" r="34"></circle>
+          <circle class="revision-ring-fg" id="revision-ring-fg" cx="40" cy="40" r="34"></circle>
+        </svg>
+        <div class="revision-ring-fire" id="revision-ring-fire">🔥</div>
+      </div>
+      <div class="revision-info">
+        <div class="revision-streak" id="revision-streak-text">0 day streak</div>
+        <div class="revision-lesson" id="revision-lesson-wrap">Lesson 1</div>
+      </div>
+      <div class="revision-rank">
+        <div class="revision-rank-num" id="revision-rank-num">#—</div>
+        <div class="revision-rank-label">your rank</div>
+      </div>
+    </div>
+
     <!-- TABS -->
     <div class="tabs" id="tabs-bar" style="display:none">
   <button class="tab active" id="tab-home" onclick="switchTab('home')">🏠 Home</button>
@@ -338,19 +372,7 @@
 
     <!-- HOMEWORK TAB -->
     <div id="tab-content-homework" class="content" style="display:none">
-      <div class="streak-card" id="streak-card" style="display:none">
-        <div class="streak-left">
-          <div class="streak-flame">🔥</div>
-          <div>
-            <div class="streak-count" id="streak-count">0</div>
-            <div class="streak-label">day streak</div>
-          </div>
-        </div>
-        <div class="streak-rank">
-          <div class="streak-rank-num" id="streak-rank">#—</div>
-          <div class="streak-rank-label">your rank</div>
-        </div>
-      </div>
+      
       <div id="missed-banner" style="display:none"></div>
       <div class="section-label">Sessions</div>
       <div class="calendar-card">
@@ -544,8 +566,10 @@ let fcTimerInterval = null;
 let fcSessionCardsRead = 0;
 let fcTimerStarted = false; // has session started at least once
 
-// Activity log for flashcards: fcActivity[dateKey] = cardsRead
-let fcActivity = {};
+// Revision activity, per student: allFcActivity[code][dateKey] = minutes
+let allFcActivity = {};
+// Current lesson level, per student: studentLesson[code] = 1-16
+let studentLesson = {};
 
 // ── UTILS ──
 function dateKey(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
@@ -574,25 +598,22 @@ function getMissedDays(code) {
 }
 
 function getStreak(code) {
-  const subs = submissions[code] || {};
+  const activity = allFcActivity[code] || {};
   let streak = 0;
   const now = new Date();
   for (let i = 1; i <= 365; i++) {
     const d = new Date(now); d.setDate(now.getDate() - i);
     const key = dateKey(d);
-    const sub = subs[key];
-    const has = sub && (sub.images?.length > 0 || sub.text || sub.makeupFor);
-    if (has) streak++;
+    if ((activity[key]||0) >= 20) streak++;
     else if (isMidnightPast(key)) break;
   }
-  const ts = subs[todayKey()];
-  if (ts && (ts.images?.length > 0 || ts.text)) streak++;
+  if ((activity[todayKey()]||0) >= 20) streak++;
   return streak;
 }
 
 function getConsistency(code) {
-  const subs = submissions[code] || {};
-  const keys = Object.keys(subs).filter(k => { const s=subs[k]; return s&&(s.images?.length>0||s.text||s.makeupFor); });
+  const activity = allFcActivity[code] || {};
+  const keys = Object.keys(activity).filter(k => activity[k] >= 20);
   if (!keys.length) return 0;
   const firstDate = new Date(keys.sort()[0]);
   const daysSince = Math.max(1, Math.floor((new Date() - firstDate) / 86400000));
@@ -600,29 +621,43 @@ function getConsistency(code) {
 }
 
 function getConsecutiveMissed(code) {
-  const subs = submissions[code] || {};
+  const activity = allFcActivity[code] || {};
   let count = 0;
   const now = new Date();
   for (let i = 1; i <= 60; i++) {
     const d = new Date(now); d.setDate(now.getDate() - i);
     const key = dateKey(d);
     if (!isMidnightPast(key)) continue;
-    const sub = subs[key];
-    if (sub && (sub.images?.length>0||sub.text||sub.makeupFor)) break;
+    if ((activity[key]||0) >= 20) break;
     else count++;
   }
   return count;
 }
 
 function getStudentStatus(code) {
-  const subs = submissions[code] || {};
+  const activity = allFcActivity[code] || {};
   const today = todayKey();
   const d = new Date(); d.setDate(d.getDate()-1); const yesterday = dateKey(d);
-  const hasToday = subs[today] && (subs[today].images?.length>0||subs[today].text);
-  const hasYest = subs[yesterday] && (subs[yesterday].images?.length>0||subs[yesterday].text||subs[yesterday].makeupFor);
+  const hasToday = (activity[today]||0) >= 20;
+  const hasYest = (activity[yesterday]||0) >= 20;
   if (hasToday || hasYest) return 'green';
-  const keys = Object.keys(subs).filter(k=>{const s=subs[k];return s&&(s.images?.length>0||s.text||s.makeupFor);});
+  const keys = Object.keys(activity).filter(k=>activity[k]>=20);
   return keys.length === 0 ? 'grey' : 'red';
+}
+
+function getMissedRevisionDays(code) {
+  const activity = allFcActivity[code] || {};
+  const missed = [], now = new Date();
+  const allKeys = Object.keys(activity).sort();
+  if (!allKeys.length) return [];
+  const firstDay = allKeys[0];
+  for (let i = 1; i <= 60; i++) {
+    const d = new Date(now); d.setDate(now.getDate() - i);
+    const key = dateKey(d);
+    if (key < firstDay) break;
+    if (isMidnightPast(key) && (activity[key]||0) < 20) missed.push(key);
+  }
+  return missed.sort();
 }
 
 function getRankedStudents() { return Object.keys(STUDENTS).sort((a,b)=>getConsistency(b)-getConsistency(a)); }
@@ -663,9 +698,9 @@ async function loadFlashcardProgress(code) {
     if (snap.exists()) {
       const data = snap.data();
       fcProgress = data.progress || data || {};
-      fcActivity = data.activity || {};
+      allFcActivity[code] = data.activity || {};
       fcDeletedCards = data.deleted || {};
-      // Restore custom cards
+      studentLesson[code] = data.lesson || 1;
       if (data.customCards) {
         Object.entries(data.customCards).forEach(([lessonNum, cards]) => {
           const num = parseInt(lessonNum);
@@ -675,14 +710,22 @@ async function loadFlashcardProgress(code) {
         });
       }
     } else {
-      fcProgress = {}; fcActivity = {}; fcDeletedCards = {};
+      fcProgress = {}; allFcActivity[code] = {}; fcDeletedCards = {}; studentLesson[code] = 1;
     }
   } catch(e) { console.error('FC load error',e); }
 }
 
+async function loadStudentMeta(code) {
+  try {
+    const snap = await getDoc(doc(db,'flashcards',code));
+    const data = snap.exists() ? snap.data() : {};
+    allFcActivity[code] = data.activity || {};
+    studentLesson[code] = data.lesson || 1;
+  } catch(e) { console.error('Meta load error',e); allFcActivity[code] = {}; studentLesson[code] = 1; }
+}
+
 async function saveFlashcardData(code) {
   try {
-    // Collect custom cards (ones beyond default count)
     const customCards = {};
     Object.entries(LESSONS).forEach(([num, lesson]) => {
       const defaultCount = DEFAULT_LESSONS[num]?.cards.length || 0;
@@ -691,11 +734,20 @@ async function saveFlashcardData(code) {
     });
     await setDoc(doc(db,'flashcards',code), {
       progress: fcProgress,
-      activity: fcActivity,
+      activity: allFcActivity[code] || {},
       deleted: fcDeletedCards,
+      lesson: studentLesson[code] || 1,
       customCards
     });
   } catch(e) { console.error('FC save error',e); }
+}
+
+async function setStudentLesson(code, lesson) {
+  studentLesson[code] = lesson;
+  try {
+    await setDoc(doc(db,'flashcards',code), { lesson }, { merge: true });
+  } catch(e) { console.error('Lesson save error',e); }
+  renderRevisionBanner();
 }
 
 async function saveDay(code, dateStr, data) { await setDoc(doc(db,'submissions',code,'days',dateStr), data); }
@@ -710,6 +762,7 @@ async function handleLogin() {
     currentUser=code; isInstructor=true;
     viewingStudent=Object.keys(STUDENTS)[0];
     await Promise.all(Object.keys(STUDENTS).map(c=>loadStudentData(c)));
+   await Promise.all(Object.keys(STUDENTS).map(c=>loadStudentMeta(c)));
     startApp();
   } else if (STUDENTS[code]) {
     currentUser=code; isInstructor=false;
@@ -799,25 +852,48 @@ function renderMissedBanner() {
   const banner = document.getElementById('missed-banner');
   if (isInstructor && !isStudentView) { banner.style.display='none'; return; }
   const code = activeStudentCode();
-  const missed = getMissedDays(code);
+  const missed = getMissedRevisionDays(code);
   const consecutive = getConsecutiveMissed(code);
   if (!missed.length) { banner.style.display='none'; return; }
   banner.style.display='block';
   if (consecutive >= 2) {
-    banner.innerHTML=`<div class="banner red"><div class="banner-icon">🚨</div><div><div class="banner-title">You've missed ${consecutive} days in a row — your streak has reset!</div><div class="banner-sub">You have ${missed.length} missed day${missed.length>1?'s':''} to make up. Keep uploading today to fill them in.</div></div></div>`;
+    banner.innerHTML=`<div class="banner red"><div class="banner-icon">🚨</div><div><div class="banner-title">You've missed ${consecutive} days of revision in a row — your streak has reset!</div><div class="banner-sub">Do at least 20 minutes of flashcards or exercises today to start a new streak.</div></div></div>`;
   } else {
-    banner.innerHTML=`<div class="banner yellow"><div class="banner-icon">⚠️</div><div><div class="banner-title">You missed ${missed.length} day${missed.length>1?'s':''}!</div><div class="banner-sub">Upload extra submissions today to make up for missed days.</div></div></div>`;
+    banner.innerHTML=`<div class="banner yellow"><div class="banner-icon">⚠️</div><div><div class="banner-title">You missed ${missed.length} day${missed.length>1?'s':''} of revision!</div><div class="banner-sub">Do at least 20 minutes of flashcards or exercises today to keep your streak alive.</div></div></div>`;
   }
 }
 
-function renderStreakCard() {
-  if (isInstructor && !isStudentView) return;
+function renderRevisionBanner() {
+  const banner = document.getElementById('revision-banner');
   const code = activeStudentCode();
-  const streak = getStreak(code);
+  if (!code) { banner.style.display='none'; return; }
+  banner.style.display='flex';
+
+  const todayMinutes = (allFcActivity[code] || {})[todayKey()] || 0;
+  const percent = Math.min(100, Math.round((todayMinutes/20)*100));
+  const circumference = 2 * Math.PI * 34;
+  const ringFg = document.getElementById('revision-ring-fg');
+  ringFg.style.strokeDasharray = circumference;
+  ringFg.style.strokeDashoffset = circumference - (percent/100)*circumference;
+  document.getElementById('revision-ring-fire').classList.toggle('complete', percent >= 100);
+
   const consecutive = getConsecutiveMissed(code);
+  const streak = consecutive >= 2 ? 0 : getStreak(code);
+  document.getElementById('revision-streak-text').textContent = `🔥 ${streak} day streak`;
+
   const ranked = getRankedStudents();
-  document.getElementById('streak-count').textContent = consecutive >= 2 ? 0 : streak;
-  document.getElementById('streak-rank').textContent = `#${ranked.indexOf(code)+1}`;
+  document.getElementById('revision-rank-num').textContent = `#${ranked.indexOf(code)+1}`;
+
+  const lessonWrap = document.getElementById('revision-lesson-wrap');
+  const lesson = studentLesson[code] || 1;
+  if (isInstructor && !isStudentView) {
+    const options = Array.from({length:16}, (_,i) => i+1)
+      .map(n => `<option value="${n}" ${n===lesson?'selected':''}>Lesson ${n}</option>`).join('');
+    lessonWrap.innerHTML = `<select id="revision-lesson-select" style="background:rgba(255,255,255,0.15);color:white;border:none;border-radius:6px;padding:2px 6px;font-size:12px;font-weight:600">${options}</select>`;
+    document.getElementById('revision-lesson-select').onchange = (e) => setStudentLesson(code, parseInt(e.target.value));
+  } else {
+    lessonWrap.textContent = `Lesson ${lesson}`;
+  }
 }
 
 // ── CALENDAR ──
@@ -853,7 +929,7 @@ function renderCalendar() {
       if(sub.reviewed){const sb=document.createElement('div');sb.className='dot dot-blue';squares.appendChild(sb);}
     }
     // Flashcard activity square
-    if(fcActivity[key] >= 20){
+    if((allFcActivity[code]||{})[key] >= 20){
       const sf=document.createElement('div');sf.className='dot dot-fc';squares.appendChild(sf);
     }
     cell.appendChild(squares); cell.onclick=()=>{selectedDate=key;renderDayPanel();renderCalendar();}; grid.appendChild(cell);
@@ -1042,17 +1118,18 @@ function resetTimer() {
 }
 
 async function onTimerEnd() {
-  // Log activity
   const today = todayKey();
-  fcActivity[today] = (fcActivity[today] || 0) + fcTimerGoalMinutes;
   const code = currentUser || viewingStudent;
+  if (!allFcActivity[code]) allFcActivity[code] = {};
+  allFcActivity[code][today] = (allFcActivity[code][today] || 0) + fcTimerGoalMinutes;
   await saveFlashcardData(code);
   renderCalendar();
+  renderRevisionBanner();
 
   const resultEl = document.getElementById('fc-session-result');
   if (resultEl) {
     resultEl.style.display = 'block';
-   resultEl.textContent = `✓ Session complete — ${fcTimerGoalMinutes} min added (${fcActivity[today]} min total today)`;
+    resultEl.textContent = `✓ Session complete — ${fcTimerGoalMinutes} min added (${allFcActivity[code][today]} min total today)`;
   }
 }
 
@@ -1272,7 +1349,7 @@ function showToast(msg){const t=document.getElementById('toast');t.textContent=m
 
 // ── RENDER ──
 function render(){
-  renderCalendar();renderDayPanel();renderMissedBanner();renderStreakCard();
+  renderCalendar();renderDayPanel();renderMissedBanner();renderRevisionBanner();
   if(isInstructor&&!isStudentView)buildSidebar();
   if(currentTab==='flashcards')renderFlashcards();
 }
@@ -1289,10 +1366,12 @@ function render(){
 
  window.addEventListener('ex-session-complete', async (e) => {
   const today = todayKey();
-  fcActivity[today] = (fcActivity[today] || 0) + e.detail.count;
   const code = currentUser || viewingStudent;
+  if (!allFcActivity[code]) allFcActivity[code] = {};
+  allFcActivity[code][today] = (allFcActivity[code][today] || 0) + e.detail.count;
   await saveFlashcardData(code);
   renderCalendar();
+  renderRevisionBanner();
 });
 // ── EVENTS ──
  document.getElementById('home-btn-homework').addEventListener('click', () => switchTab('homework'));
