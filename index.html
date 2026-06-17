@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
- <title>Yusr Arabic Official</title>
+ <title> DEV </title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Arabic Daily</title>
 <style>
+ 
   * { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
     --ink: #1a1a2e; --blue: #2563eb; --blue-light: #eff6ff;
@@ -71,7 +72,28 @@
   .tabs { display: flex; background: white; border-bottom: 1px solid var(--border); padding: 0 20px; }
   .tab { padding: 14px 18px; font-size: 14px; font-weight: 600; color: var(--grey); border: none; background: none; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; }
   .tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+.revision-banner { display: none; align-items: center; gap: 16px; background: var(--ink); padding: 14px 20px; }
+.revision-ring-wrap { position: relative; width: 56px; height: 56px; flex-shrink: 0; }
+.revision-ring { width: 56px; height: 56px; transform: rotate(-90deg); }
+.revision-ring-bg { fill: none; stroke: rgba(255,255,255,0.15); stroke-width: 6; }
+.revision-ring-fg { fill: none; stroke: var(--dot-green); stroke-width: 6; stroke-linecap: round; transition: stroke-dashoffset 0.4s ease; }
+.revision-ring-fire { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 22px; filter: grayscale(100%); opacity: 0.55; transition: filter 0.3s, opacity 0.3s; }
+.revision-ring-fire.complete { filter: none; opacity: 1; }
+.revision-info { flex: 1; min-width: 0; }
+.revision-streak { color: white; font-size: 16px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.revision-lesson { color: rgba(255,255,255,0.55); font-size: 12px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.revision-rank { text-align: right; flex-shrink: 0; }
+.revision-rank-num { color: white; font-size: 18px; font-weight: 700; }
+.revision-rank-label { color: rgba(255,255,255,0.5); font-size: 11px; }
+ 
 
+.home-card { background: white; border-radius: 18px; padding: 26px 22px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); cursor: pointer; border: 2px solid transparent; transition: border 0.2s, transform 0.15s; display: flex; align-items: center; gap: 18px; }
+.home-card:hover { border-color: var(--blue); }
+.home-card:active { transform: scale(0.98); }
+.home-card-icon { font-size: 36px; flex-shrink: 0; }
+.home-card-title { font-size: 18px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+.home-card-desc { font-size: 13px; color: var(--grey); }
+ 
   /* CONTENT */
   .content { padding: 20px; max-width: 600px; }
   .section-label { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--grey); margin-bottom: 12px; }
@@ -293,28 +315,64 @@
       <button class="view-toggle" id="view-toggle-btn" style="display:none">Student view</button>
     </div>
 
+    <!-- REVISION BANNER (persistent across all tabs) -->
+    <div class="revision-banner" id="revision-banner">
+      <div class="revision-ring-wrap">
+        <svg class="revision-ring" viewBox="0 0 80 80">
+          <circle class="revision-ring-bg" cx="40" cy="40" r="34"></circle>
+          <circle class="revision-ring-fg" id="revision-ring-fg" cx="40" cy="40" r="34"></circle>
+        </svg>
+        <div class="revision-ring-fire" id="revision-ring-fire">🔥</div>
+      </div>
+      <div class="revision-info">
+        <div class="revision-streak" id="revision-streak-text">0 day streak</div>
+        <div class="revision-lesson" id="revision-lesson-wrap">Lesson 1</div>
+      </div>
+      <div class="revision-rank">
+        <div class="revision-rank-num" id="revision-rank-num">#—</div>
+        <div class="revision-rank-label">your rank</div>
+      </div>
+    </div>
+
     <!-- TABS -->
     <div class="tabs" id="tabs-bar" style="display:none">
-      <button class="tab active" id="tab-homework" onclick="switchTab('homework')">📚 Homework</button>
-      <button class="tab" id="tab-flashcards" onclick="switchTab('flashcards')">🃏 Flashcards</button>
-<button class="tab" id="tab-exercises" onclick="switchTab('exercises')">✏️ Exercises</button>
+  <button class="tab active" id="tab-home" onclick="switchTab('home')">🏠 Home</button>
+  <button class="tab" id="tab-homework" onclick="switchTab('homework')">📚 Homework</button>
+  <button class="tab" id="tab-flashcards" onclick="switchTab('flashcards')">🃏 Flashcards</button>
+  <button class="tab" id="tab-exercises" onclick="switchTab('exercises')">✏️ Exercises</button>
+</div>
+
+   <!-- HOME TAB -->
+    <div id="tab-content-home" class="content">
+      <div class="section-label">What would you like to do?</div>
+      <div style="display:flex;flex-direction:column;gap:16px;margin-top:8px;max-width:420px">
+        <div class="home-card" id="home-btn-homework">
+          <div class="home-card-icon">📚</div>
+          <div>
+            <div class="home-card-title">Homework</div>
+            <div class="home-card-desc">Submit today's homework and check your calendar</div>
+          </div>
+        </div>
+        <div class="home-card" id="home-btn-flashcards">
+          <div class="home-card-icon">🃏</div>
+          <div>
+            <div class="home-card-title">Flashcards</div>
+            <div class="home-card-desc">Review vocabulary with spaced repetition</div>
+          </div>
+        </div>
+        <div class="home-card" id="home-btn-exercises">
+          <div class="home-card-icon">✏️</div>
+          <div>
+            <div class="home-card-title">Exercises</div>
+            <div class="home-card-desc">Practise grammar and vocabulary</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- HOMEWORK TAB -->
-    <div id="tab-content-homework" class="content">
-      <div class="streak-card" id="streak-card" style="display:none">
-        <div class="streak-left">
-          <div class="streak-flame">🔥</div>
-          <div>
-            <div class="streak-count" id="streak-count">0</div>
-            <div class="streak-label">day streak</div>
-          </div>
-        </div>
-        <div class="streak-rank">
-          <div class="streak-rank-num" id="streak-rank">#—</div>
-          <div class="streak-rank-label">your rank</div>
-        </div>
-      </div>
+    <div id="tab-content-homework" class="content" style="display:none">
+      
       <div id="missed-banner" style="display:none"></div>
       <div class="section-label">Sessions</div>
       <div class="calendar-card">
@@ -414,205 +472,42 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
 
-// ── FLASHCARD DATA ──
-const DEFAULT_LESSONS = {
-  1: {
-    name: 'Lesson 1',
-    cards: [
-      { ar: 'فِي', en: 'in' },
-      { ar: 'مَعَ', en: 'with' },
-      { ar: 'هَؤُلَاءِ', en: 'these (People)' },
-      { ar: 'أَيْضًا', en: 'also' },
-      { ar: 'هَذِهِ', en: 'this (f)' },
-      { ar: 'لِ', en: 'for' },
-      { ar: 'هَا', en: 'she, it(f.)' },
-      { ar: 'قَبْلَ', en: 'before' },
-      { ar: 'كَثِيرٌ', en: 'many' },
-      { ar: 'جِدًّا', en: 'very' },
-      { ar: 'هُنَاكَ', en: 'there' },
-      { ar: 'وَ', en: 'and' },
-      { ar: 'هَذَا', en: 'this (m)' },
-      { ar: 'لِمَاذَا', en: 'why' },
-      { ar: 'يَوْمٌ / أَيَّامٌ', en: 'day' },
-      { ar: 'مُشْرِكٌ', en: 'polytheist' },
-      { ar: 'كَانَ', en: 'was' },
-      { ar: 'سَكَنَ', en: 'lived' },
-      { ar: 'عَبَدَ', en: 'worshipped' },
-      { ar: 'سَجَدَ', en: 'prostrated' },
-      { ar: 'هُنَا', en: 'here' },
-      { ar: 'رَجُلٌ / رِجَالٌ', en: 'man' },
-      { ar: 'قَرْيَةٌ / قُرىً', en: 'village' },
-      { ar: 'اِسْمٌ / أَسْمَاءٌ', en: 'name' },
-      { ar: 'نَاسٌ', en: 'people' },
-      { ar: 'صَنَمٌ / أَصْنَامٌ', en: 'idol' },
-      { ar: 'عِبَادَةٌ / عِبَادَاتٌ', en: 'worship' },
-    ]
-  },
-  2: {
-    name: 'Lesson 2',
-    cards: [
-      { ar: 'وَلَد', en: 'boy/child' },
-      { ar: 'أَب', en: 'father' },
-      { ar: 'هُ', en: 'him/it (m)' },
-      { ar: 'رَأَى', en: 'saw' },
-      { ar: 'حِجَارَة', en: 'stones' },
-      { ar: 'عَرَفَ', en: 'knew/recognised' },
-      { ar: 'أَنَّ', en: 'that' },
-      { ar: 'تِلْكَ', en: 'that (f)' },
-      { ar: 'سَيِّئ', en: 'bad' },
-      { ar: 'فَقَط', en: 'only' },
-      { ar: 'قَالَ', en: 'said' },
-      { ar: 'نَفْس', en: 'self/same' },
-      { ar: 'هُمْ', en: 'they' },
-      { ar: 'لَا', en: 'no/not' },
-      { ar: 'نَفْع', en: 'benefit' },
-      { ar: 'شَيْء', en: 'thing' },
-      { ar: 'مَا', en: 'what/not' },
-      { ar: 'مِن', en: 'from' },
-      { ar: 'مَن', en: 'who' },
-      { ar: 'بَلْ', en: 'rather' },
-      { ar: 'عَلَى', en: 'on/upon' },
-      { ar: 'دِين', en: 'religion' },
-      { ar: 'آخَر', en: 'other/another' },
-      { ar: 'رَبّ', en: 'Lord' },
-      { ar: 'لَمْ', en: 'did not' },
-      { ar: 'لَنْ', en: 'will not' },
-      { ar: 'تَرَكَ', en: 'left/abandoned' },
-      { ar: 'شِرْك', en: 'polytheism/shirk' },
-    
-    ]
-  },
-  3: {
-    name: 'Lesson 3',
-    cards: [
-      { ar: 'تَوْحِيد', en: 'monotheism' },
-      { ar: 'كُفْر', en: 'disbelief' },
-      { ar: 'هُوَ', en: 'he' },
-      { ar: 'لَيْسَ', en: 'is not' },
-      { ar: 'إِلَه', en: 'god/deity' },
-      { ar: 'حَجَر', en: 'stone' },
-      { ar: 'وَحَّدَ', en: 'declared oneness' },
-      { ar: 'نَصَحَ', en: 'advised' },
-      { ar: 'دَعَا', en: 'called/invited' },
-      { ar: 'إِلَى', en: 'to/towards' },
-      { ar: 'نَحْنُ', en: 'we' },
-      { ar: 'مُسْلِم', en: 'Muslim' },
-      { ar: 'نَا', en: 'us/our' },
-      { ar: 'أَنْتَ', en: 'you (m s)' },
-      { ar: 'يَا', en: 'O! (vocative)' },
-      { ar: 'طَالِب', en: 'student/seeker' },
-      { ar: 'عِلْم', en: 'knowledge' },
-      { ar: 'هَلْ', en: '(question particle)' },
-      { ar: 'مِثْل', en: 'like/example' },
-      { ar: 'أَنَا', en: 'I' },
-      { ar: 'أَنْتُم', en: 'you (pl)' },
-      { ar: 'إِنْ / إِنَّ', en: 'if / indeed' },
-      { ar: 'شَاءَ', en: 'willed' },
-      { ar: 'كَ', en: 'you/your (suffix)' },
-      { ar: 'فَ', en: 'so/then (prefix)' },
-      { ar: 'أَبَدًا', en: 'ever/eternity' },
-    ]
-  },
-  4: {
-    name: 'Lesson 4',
-    cards: [
-      { ar: 'جَاءَ', en: 'came' },
-      { ar: 'يَوْم', en: 'day' },
-      { ar: 'عِيد', en: 'festival/celebration' },
-      { ar: 'فَرَح', en: 'joy/happiness' },
-      { ar: 'خَرَجَ', en: 'went out' },
-      { ar: 'بَيْت', en: 'house' },
-      { ar: 'وَالِد', en: 'father/parent' },
-      { ar: 'أَ', en: '(question prefix)' },
-      { ar: 'مَرِيض', en: 'sick' },
-      { ar: 'بَقِيَ', en: 'remained' },
-      { ar: 'أَرَادَ', en: 'wanted' },
-      { ar: 'ذَهَبَ', en: 'went' },
-      { ar: 'لَكِنْ', en: 'but' },
-      { ar: 'سَمِعَ', en: 'heard' },
-      { ar: 'ثُمَّ', en: 'then' },
-      { ar: 'كَبِير', en: 'big/old' },
-      { ar: 'صَغِير', en: 'small/young' },
-      { ar: 'أَكَلَ', en: 'ate' },
-      { ar: 'أَوْ', en: 'or' },
-      { ar: 'نَطَقَ', en: 'spoke' },
-      { ar: 'سَكَتَ', en: 'was silent' },
-      { ar: 'غَضِبَ', en: 'became angry' },
-      { ar: 'ضَرَبَ', en: 'hit/struck' },
-      { ar: 'حَتَّى', en: 'until/even' },
-      { ar: 'كَسَرَ', en: 'broke' },
-      { ar: 'سَأَلَ', en: 'asked' },
-      { ar: 'دَخَلَ', en: 'entered' },
-      { ar: 'جَنَّة', en: 'paradise' },
-      { ar: 'غَيْر', en: 'other than/not' },
-      { ar: 'نَار', en: 'fire/hell' },
-    ]
-  },
-  5: {
-    name: 'Lesson 5',
-    cards: [
-      { ar: 'رَجَعَ', en: 'returned' },
-      { ar: 'مَكْسُور', en: 'broken' },
-      { ar: 'تَعَجَّبَ', en: 'was amazed' },
-      { ar: 'شَدِيد', en: 'intense/severe' },
-      { ar: 'فَعَلَ / فِعْل', en: 'did / action' },
-      { ar: 'بِ', en: 'with/by (prefix)' },
-      { ar: 'بَعْض', en: 'some' },
-      { ar: 'تَكَلَّمَ', en: 'spoke' },
-      { ar: 'عَنْ', en: 'about/from' },
-      { ar: 'أَمَام', en: 'in front of' },
-      { ar: 'حَوْل', en: 'around/about' },
-      { ar: 'كُلّ', en: 'every/all' },
-      { ar: 'جَانِب', en: 'side' },
-      { ar: 'إِذَا', en: 'if/when' },
-      { ar: 'تَمَّ', en: 'was completed' },
-      { ar: 'حَقّ', en: 'truth/right' },
-      { ar: 'قَبْلَ', en: 'before' },
-      { ar: 'بَيْن', en: 'between' },
-      { ar: 'كَيْفَ', en: 'how' },
-      { ar: 'أَمَّا', en: 'as for' },
-      { ar: 'عِنْدَ', en: 'at/with' },
-      { ar: 'يَقِين', en: 'certainty' },
-      { ar: 'أَصْبَحَ', en: 'became' },
-      { ar: 'عَدُوّ', en: 'enemy' },
-      { ar: 'وَلِيّ', en: 'guardian/friend' },
-      { ar: 'الْآن', en: 'now' },
-      { ar: 'غَاضِب', en: 'angry' },
-      { ar: 'مَاذَا', en: 'what' },
-      { ar: 'سَ', en: '(future prefix: will)' },
-    ]
-  },
-  6: {
-    name: 'Lesson 6',
-    cards: [
-      { ar: 'اِجْتَمَعَ', en: 'gathered' },
-      { ar: 'عَمِلَ / عَمَلَ', en: 'worked / made/did' },
-      { ar: 'فَكَّرَ', en: 'thought' },
-      { ar: 'جَزَاء', en: 'recompense/reward' },
-      { ar: 'الَّذِي', en: 'who/which (m s)' },
-      { ar: 'أَمَرَ / أَمْر', en: 'commanded / matter' },
-      { ar: 'جَمَعَ', en: 'gathered/collected' },
-      { ar: 'عَظِيم', en: 'great' },
-      { ar: 'أَلْقَى', en: 'threw/cast' },
-      { ar: 'خَلْف', en: 'behind' },
-      { ar: 'يَمِين', en: 'right (side)' },
-      { ar: 'يَسَار', en: 'left (side)' },
-      { ar: 'قَتَلَ', en: 'killed' },
-      { ar: 'وَجَدَ', en: 'found' },
-      { ar: 'ضَرَّ / ضُرّ', en: 'harmed / harm' },
-      { ar: 'سَالِم', en: 'safe/sound' },
-      { ar: 'فَوْق', en: 'above' },
-      { ar: 'أَثَر', en: 'trace/effect' },
-      { ar: 'تَحْت', en: 'under' },
-      { ar: 'نَصْر / نَصَرَ', en: 'victory / helped' },
-      { ar: 'الَّذِين', en: 'those who' },
-      { ar: 'آمَنَ', en: 'believed' },
-      { ar: 'لَعَلَّ', en: 'perhaps' },
-      { ar: 'أَكْبَر', en: 'greater/greatest' },
-      { ar: 'وَعَدَ / وَعْد', en: 'promised / promise' },
-    ]
-  }
-};
+
+// ── FLASHCARD DATA (now loaded from GitHub) ──
+let DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS;
+
+async function loadVocabData() {
+  const url = 'https://raw.githubusercontent.com/ryangwstanley-ship-it/database/main/website%20data%20base';
+  const res = await fetch(url);
+  const code = await res.text();
+  const runner = new Function(
+    code.replaceAll('export const', 'const') +
+    '; return { DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS };'
+  );
+  const data = runner();
+  DEFAULT_LESSONS = data.DEFAULT_LESSONS;
+  FILL_GAP_QUESTIONS = data.FILL_GAP_QUESTIONS;
+  WORD_ORDER_QUESTIONS = data.WORD_ORDER_QUESTIONS;
+  CHANGE_WORD_QUESTIONS = data.CHANGE_WORD_QUESTIONS;
+  TRUE_FALSE_QUESTIONS = data.TRUE_FALSE_QUESTIONS;
+  DEMONSTRATIVE_QUESTIONS = data.DEMONSTRATIVE_QUESTIONS;
+  SUFFIX_PRONOUN_QUESTIONS = data.SUFFIX_PRONOUN_QUESTIONS;
+
+  // Make these visible to the separate Exercises script tag further down the page
+  window.FILL_GAP_QUESTIONS = FILL_GAP_QUESTIONS;
+  window.WORD_ORDER_QUESTIONS = WORD_ORDER_QUESTIONS;
+  window.CHANGE_WORD_QUESTIONS = CHANGE_WORD_QUESTIONS;
+  window.TRUE_FALSE_QUESTIONS = TRUE_FALSE_QUESTIONS;
+  window.DEMONSTRATIVE_QUESTIONS = DEMONSTRATIVE_QUESTIONS;
+  window.SUFFIX_PRONOUN_QUESTIONS = SUFFIX_PRONOUN_QUESTIONS;
+}
+
+await loadVocabData();
+ window.FILL_GAP_QUESTIONS = FILL_GAP_QUESTIONS;
+window.WORD_ORDER_QUESTIONS = WORD_ORDER_QUESTIONS;
+window.CHANGE_WORD_QUESTIONS = CHANGE_WORD_QUESTIONS;
+window.TRUE_FALSE_QUESTIONS = TRUE_FALSE_QUESTIONS;
+
 const STUDENTS = {
   'FHD001': { name: 'Fahad',                display: 'فهد' },
   'SAD002': { name: 'Saeed',                display: 'سعيد' },
@@ -671,8 +566,10 @@ let fcTimerInterval = null;
 let fcSessionCardsRead = 0;
 let fcTimerStarted = false; // has session started at least once
 
-// Activity log for flashcards: fcActivity[dateKey] = cardsRead
-let fcActivity = {};
+// Revision activity, per student: allFcActivity[code][dateKey] = minutes
+let allFcActivity = {};
+// Current lesson level, per student: studentLesson[code] = 1-16
+let studentLesson = {};
 
 // ── UTILS ──
 function dateKey(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
@@ -701,25 +598,22 @@ function getMissedDays(code) {
 }
 
 function getStreak(code) {
-  const subs = submissions[code] || {};
+  const activity = allFcActivity[code] || {};
   let streak = 0;
   const now = new Date();
   for (let i = 1; i <= 365; i++) {
     const d = new Date(now); d.setDate(now.getDate() - i);
     const key = dateKey(d);
-    const sub = subs[key];
-    const has = sub && (sub.images?.length > 0 || sub.text || sub.makeupFor);
-    if (has) streak++;
+    if ((activity[key]||0) >= 20) streak++;
     else if (isMidnightPast(key)) break;
   }
-  const ts = subs[todayKey()];
-  if (ts && (ts.images?.length > 0 || ts.text)) streak++;
+  if ((activity[todayKey()]||0) >= 20) streak++;
   return streak;
 }
 
 function getConsistency(code) {
-  const subs = submissions[code] || {};
-  const keys = Object.keys(subs).filter(k => { const s=subs[k]; return s&&(s.images?.length>0||s.text||s.makeupFor); });
+  const activity = allFcActivity[code] || {};
+  const keys = Object.keys(activity).filter(k => activity[k] >= 20);
   if (!keys.length) return 0;
   const firstDate = new Date(keys.sort()[0]);
   const daysSince = Math.max(1, Math.floor((new Date() - firstDate) / 86400000));
@@ -727,29 +621,43 @@ function getConsistency(code) {
 }
 
 function getConsecutiveMissed(code) {
-  const subs = submissions[code] || {};
+  const activity = allFcActivity[code] || {};
   let count = 0;
   const now = new Date();
   for (let i = 1; i <= 60; i++) {
     const d = new Date(now); d.setDate(now.getDate() - i);
     const key = dateKey(d);
     if (!isMidnightPast(key)) continue;
-    const sub = subs[key];
-    if (sub && (sub.images?.length>0||sub.text||sub.makeupFor)) break;
+    if ((activity[key]||0) >= 20) break;
     else count++;
   }
   return count;
 }
 
 function getStudentStatus(code) {
-  const subs = submissions[code] || {};
+  const activity = allFcActivity[code] || {};
   const today = todayKey();
   const d = new Date(); d.setDate(d.getDate()-1); const yesterday = dateKey(d);
-  const hasToday = subs[today] && (subs[today].images?.length>0||subs[today].text);
-  const hasYest = subs[yesterday] && (subs[yesterday].images?.length>0||subs[yesterday].text||subs[yesterday].makeupFor);
+  const hasToday = (activity[today]||0) >= 20;
+  const hasYest = (activity[yesterday]||0) >= 20;
   if (hasToday || hasYest) return 'green';
-  const keys = Object.keys(subs).filter(k=>{const s=subs[k];return s&&(s.images?.length>0||s.text||s.makeupFor);});
+  const keys = Object.keys(activity).filter(k=>activity[k]>=20);
   return keys.length === 0 ? 'grey' : 'red';
+}
+
+function getMissedRevisionDays(code) {
+  const activity = allFcActivity[code] || {};
+  const missed = [], now = new Date();
+  const allKeys = Object.keys(activity).sort();
+  if (!allKeys.length) return [];
+  const firstDay = allKeys[0];
+  for (let i = 1; i <= 60; i++) {
+    const d = new Date(now); d.setDate(now.getDate() - i);
+    const key = dateKey(d);
+    if (key < firstDay) break;
+    if (isMidnightPast(key) && (activity[key]||0) < 20) missed.push(key);
+  }
+  return missed.sort();
 }
 
 function getRankedStudents() { return Object.keys(STUDENTS).sort((a,b)=>getConsistency(b)-getConsistency(a)); }
@@ -790,9 +698,9 @@ async function loadFlashcardProgress(code) {
     if (snap.exists()) {
       const data = snap.data();
       fcProgress = data.progress || data || {};
-      fcActivity = data.activity || {};
+      allFcActivity[code] = data.activity || {};
       fcDeletedCards = data.deleted || {};
-      // Restore custom cards
+      studentLesson[code] = data.lesson || 1;
       if (data.customCards) {
         Object.entries(data.customCards).forEach(([lessonNum, cards]) => {
           const num = parseInt(lessonNum);
@@ -802,14 +710,22 @@ async function loadFlashcardProgress(code) {
         });
       }
     } else {
-      fcProgress = {}; fcActivity = {}; fcDeletedCards = {};
+      fcProgress = {}; allFcActivity[code] = {}; fcDeletedCards = {}; studentLesson[code] = 1;
     }
   } catch(e) { console.error('FC load error',e); }
 }
 
+async function loadStudentMeta(code) {
+  try {
+    const snap = await getDoc(doc(db,'flashcards',code));
+    const data = snap.exists() ? snap.data() : {};
+    allFcActivity[code] = data.activity || {};
+    studentLesson[code] = data.lesson || 1;
+  } catch(e) { console.error('Meta load error',e); allFcActivity[code] = {}; studentLesson[code] = 1; }
+}
+
 async function saveFlashcardData(code) {
   try {
-    // Collect custom cards (ones beyond default count)
     const customCards = {};
     Object.entries(LESSONS).forEach(([num, lesson]) => {
       const defaultCount = DEFAULT_LESSONS[num]?.cards.length || 0;
@@ -818,11 +734,20 @@ async function saveFlashcardData(code) {
     });
     await setDoc(doc(db,'flashcards',code), {
       progress: fcProgress,
-      activity: fcActivity,
+      activity: allFcActivity[code] || {},
       deleted: fcDeletedCards,
+      lesson: studentLesson[code] || 1,
       customCards
     });
   } catch(e) { console.error('FC save error',e); }
+}
+
+async function setStudentLesson(code, lesson) {
+  studentLesson[code] = lesson;
+  try {
+    await setDoc(doc(db,'flashcards',code), { lesson }, { merge: true });
+  } catch(e) { console.error('Lesson save error',e); }
+  renderRevisionBanner();
 }
 
 async function saveDay(code, dateStr, data) { await setDoc(doc(db,'submissions',code,'days',dateStr), data); }
@@ -837,6 +762,7 @@ async function handleLogin() {
     currentUser=code; isInstructor=true;
     viewingStudent=Object.keys(STUDENTS)[0];
     await Promise.all(Object.keys(STUDENTS).map(c=>loadStudentData(c)));
+   await Promise.all(Object.keys(STUDENTS).map(c=>loadStudentMeta(c)));
     startApp();
   } else if (STUDENTS[code]) {
     currentUser=code; isInstructor=false;
@@ -865,8 +791,8 @@ function startApp() {
     app.style.display='block'; app.style.maxWidth='480px'; app.style.margin='0 auto';
     document.getElementById('header-title').textContent='My Homework';
     document.getElementById('header-sub').textContent=STUDENTS[currentUser]?.display||'';
-    document.getElementById('streak-card').style.display='flex';
     document.getElementById('tabs-bar').style.display='flex';
+    switchTab('home');
   }
   render();
 }
@@ -874,14 +800,16 @@ function startApp() {
 // ── TABS ──
 window.switchTab = function(tab) {
   currentTab = tab;
+  document.getElementById('tab-content-home').style.display = tab==='home' ? 'block' : 'none';
   document.getElementById('tab-content-homework').style.display = tab==='homework' ? 'block' : 'none';
   document.getElementById('tab-content-flashcards').style.display = tab==='flashcards' ? 'block' : 'none';
   document.getElementById('tab-content-exercises').style.display = tab==='exercises' ? 'block' : 'none';
+  document.getElementById('tab-home').classList.toggle('active', tab==='home');
   document.getElementById('tab-homework').classList.toggle('active', tab==='homework');
   document.getElementById('tab-flashcards').classList.toggle('active', tab==='flashcards');
   document.getElementById('tab-exercises').classList.toggle('active', tab==='exercises');
   if (tab==='flashcards') renderFlashcards();
- if (tab==='exercises' && typeof exShowPicker === 'function') exShowPicker();
+  if (tab==='exercises' && typeof exShowPicker === 'function') exShowPicker();
 }
 
 
@@ -923,25 +851,48 @@ function renderMissedBanner() {
   const banner = document.getElementById('missed-banner');
   if (isInstructor && !isStudentView) { banner.style.display='none'; return; }
   const code = activeStudentCode();
-  const missed = getMissedDays(code);
+  const missed = getMissedRevisionDays(code);
   const consecutive = getConsecutiveMissed(code);
   if (!missed.length) { banner.style.display='none'; return; }
   banner.style.display='block';
   if (consecutive >= 2) {
-    banner.innerHTML=`<div class="banner red"><div class="banner-icon">🚨</div><div><div class="banner-title">You've missed ${consecutive} days in a row — your streak has reset!</div><div class="banner-sub">You have ${missed.length} missed day${missed.length>1?'s':''} to make up. Keep uploading today to fill them in.</div></div></div>`;
+    banner.innerHTML=`<div class="banner red"><div class="banner-icon">🚨</div><div><div class="banner-title">You've missed ${consecutive} days of revision in a row — your streak has reset!</div><div class="banner-sub">Do at least 20 minutes of flashcards or exercises today to start a new streak.</div></div></div>`;
   } else {
-    banner.innerHTML=`<div class="banner yellow"><div class="banner-icon">⚠️</div><div><div class="banner-title">You missed ${missed.length} day${missed.length>1?'s':''}!</div><div class="banner-sub">Upload extra submissions today to make up for missed days.</div></div></div>`;
+    banner.innerHTML=`<div class="banner yellow"><div class="banner-icon">⚠️</div><div><div class="banner-title">You missed ${missed.length} day${missed.length>1?'s':''} of revision!</div><div class="banner-sub">Do at least 20 minutes of flashcards or exercises today to keep your streak alive.</div></div></div>`;
   }
 }
 
-function renderStreakCard() {
-  if (isInstructor && !isStudentView) return;
+function renderRevisionBanner() {
+  const banner = document.getElementById('revision-banner');
   const code = activeStudentCode();
-  const streak = getStreak(code);
+  if (!code) { banner.style.display='none'; return; }
+  banner.style.display='flex';
+
+  const todayMinutes = (allFcActivity[code] || {})[todayKey()] || 0;
+  const percent = Math.min(100, Math.round((todayMinutes/20)*100));
+  const circumference = 2 * Math.PI * 34;
+  const ringFg = document.getElementById('revision-ring-fg');
+  ringFg.style.strokeDasharray = circumference;
+  ringFg.style.strokeDashoffset = circumference - (percent/100)*circumference;
+  document.getElementById('revision-ring-fire').classList.toggle('complete', percent >= 100);
+
   const consecutive = getConsecutiveMissed(code);
+  const streak = consecutive >= 2 ? 0 : getStreak(code);
+  document.getElementById('revision-streak-text').textContent = `🔥 ${streak} day streak`;
+
   const ranked = getRankedStudents();
-  document.getElementById('streak-count').textContent = consecutive >= 2 ? 0 : streak;
-  document.getElementById('streak-rank').textContent = `#${ranked.indexOf(code)+1}`;
+  document.getElementById('revision-rank-num').textContent = `#${ranked.indexOf(code)+1}`;
+
+  const lessonWrap = document.getElementById('revision-lesson-wrap');
+  const lesson = studentLesson[code] || 1;
+  if (isInstructor && !isStudentView) {
+    const options = Array.from({length:16}, (_,i) => i+1)
+      .map(n => `<option value="${n}" ${n===lesson?'selected':''}>Lesson ${n}</option>`).join('');
+    lessonWrap.innerHTML = `<select id="revision-lesson-select" style="background:rgba(255,255,255,0.15);color:white;border:none;border-radius:6px;padding:2px 6px;font-size:12px;font-weight:600">${options}</select>`;
+    document.getElementById('revision-lesson-select').onchange = (e) => setStudentLesson(code, parseInt(e.target.value));
+  } else {
+    lessonWrap.textContent = `Lesson ${lesson}`;
+  }
 }
 
 // ── CALENDAR ──
@@ -977,7 +928,7 @@ function renderCalendar() {
       if(sub.reviewed){const sb=document.createElement('div');sb.className='dot dot-blue';squares.appendChild(sb);}
     }
     // Flashcard activity square
-    if(fcActivity[key] >= 20){
+    if((allFcActivity[code]||{})[key] >= 20){
       const sf=document.createElement('div');sf.className='dot dot-fc';squares.appendChild(sf);
     }
     cell.appendChild(squares); cell.onclick=()=>{selectedDate=key;renderDayPanel();renderCalendar();}; grid.appendChild(cell);
@@ -1006,7 +957,7 @@ function renderDayPanel() {
   document.getElementById('day-status').textContent=hasContent?(reviewed?'✓ Reviewed':(isMakeup?'• Made up':'• Uploaded')):'';
 
   // Show flashcard activity if any
-  const fcCount = fcActivity[selectedDate];
+  const fcCount = (allFcActivity[code] || {})[selectedDate];
   if (fcCount) {
     const existing = document.getElementById('day-status');
     existing.textContent += (existing.textContent ? ' · ' : '') + `🃏 ${fcCount} cards`;
@@ -1130,6 +1081,8 @@ function startTimer() {
   if (fcTimerSecondsLeft === 0) return;
   fcTimerRunning = true;
   fcTimerStarted = true;
+  const resultEl = document.getElementById('fc-session-result');
+  if (resultEl) resultEl.style.display = 'none';
   document.getElementById('fc-timer-start-btn').style.display = 'none';
   document.getElementById('fc-timer-stop-btn').style.display = 'inline-flex';
   fcTimerInterval = setInterval(() => {
@@ -1166,17 +1119,18 @@ function resetTimer() {
 }
 
 async function onTimerEnd() {
-  // Log activity
   const today = todayKey();
-  fcActivity[today] = (fcActivity[today] || 0) + fcTimerGoalMinutes;
   const code = currentUser || viewingStudent;
+  if (!allFcActivity[code]) allFcActivity[code] = {};
+  allFcActivity[code][today] = (allFcActivity[code][today] || 0) + fcTimerGoalMinutes;
   await saveFlashcardData(code);
   renderCalendar();
+  renderRevisionBanner();
 
   const resultEl = document.getElementById('fc-session-result');
   if (resultEl) {
     resultEl.style.display = 'block';
-   resultEl.textContent = `✓ Session complete — ${fcTimerGoalMinutes} min added (${fcActivity[today]} min total today)`;
+    resultEl.textContent = `✓ Session complete — ${fcTimerGoalMinutes} min added (${allFcActivity[code][today]} min total today)`;
   }
 }
 
@@ -1396,7 +1350,7 @@ function showToast(msg){const t=document.getElementById('toast');t.textContent=m
 
 // ── RENDER ──
 function render(){
-  renderCalendar();renderDayPanel();renderMissedBanner();renderStreakCard();
+  renderCalendar();renderDayPanel();renderMissedBanner();renderRevisionBanner();
   if(isInstructor&&!isStudentView)buildSidebar();
   if(currentTab==='flashcards')renderFlashcards();
 }
@@ -1413,12 +1367,17 @@ function render(){
 
  window.addEventListener('ex-session-complete', async (e) => {
   const today = todayKey();
-  fcActivity[today] = (fcActivity[today] || 0) + e.detail.count;
   const code = currentUser || viewingStudent;
+  if (!allFcActivity[code]) allFcActivity[code] = {};
+  allFcActivity[code][today] = (allFcActivity[code][today] || 0) + e.detail.count;
   await saveFlashcardData(code);
   renderCalendar();
+  renderRevisionBanner();
 });
 // ── EVENTS ──
+ document.getElementById('home-btn-homework').addEventListener('click', () => switchTab('homework'));
+document.getElementById('home-btn-flashcards').addEventListener('click', () => switchTab('flashcards'));
+document.getElementById('home-btn-exercises').addEventListener('click', () => switchTab('exercises'));
 document.getElementById('login-btn').addEventListener('click',handleLogin);
 document.getElementById('code-input').addEventListener('keydown',e=>{if(e.key==='Enter')handleLogin();});
 document.getElementById('sidebar-view-btn').addEventListener('click',toggleView);
@@ -1442,202 +1401,8 @@ document.getElementById('modal-close-btn').addEventListener('click',e=>{e.stopPr
 .ex-word-tile.selected { background: #2563eb; color: white; border-color: #2563eb; }
 </style>
 
+
 <script>
-const FILL_GAP_QUESTIONS = [
-  { sentence: "وَ كَانَ هَؤُلَاءِ ________ مُشْرِكِينَ أَيْضًا", answer: "النَّاسُ" },
-  { sentence: "صَنَمٌ هُنَا، ________ صَنَمٌ هُنَاكَ أَصْنَامٌ كَثِيرَةٌ جِدًّا", answer: "وَ" },
-  { sentence: "وَ كَانَ ________ هَذَا الرَّجُلِ آزَرَ", answer: "اسْمُ" },
-  { sentence: "وَ كَانَ هَذَا الرَّجُلُ ________ فِي قَرْيَةٍ", answer: "يَسْكُنُ" },
-  { sentence: "وَ كَانَ آزَرُ يَعْبُدُ الْأَصْنَامَ أَيْضًا وَ كَانَ آزَرُ يَسْجُدُ ________ أَيْضًا", answer: "لَهَا" },
-  { sentence: "وَ كَانَ آزَرُ يَعْبُدُ ________ أَيْضًا وَ كَانَ آزَرُ يَسْجُدُ لَهَا أَيْضًا", answer: "الْأَصْنَامَ" },
-  { sentence: "لِمَاذَا يَعْبُدُونَ الْأَصْنَامَ؟ ________ لِلَّهِ فَقَطْ", answer: "الْعِبَادَةُ" },
-  { sentence: "وَ كَانَ هَؤُلَاءِ النَّاسُ ________ أَيْضًا", answer: "مُشْرِكِينَ" },
-  { sentence: "لِمَاذَا يَعْبُدُونَ الْأَصْنَامَ؟ الْعِبَادَةُ ________ فَقَطْ", answer: "لِلَّهِ" },
-  { sentence: "وَ كَانَ آزَرُ يَسْكُنُ مَعَ الْمُشْرِكِينَ ________ هَذِهِ الْقَرْيَةِ", answer: "فِي" },
-  { sentence: "وَ كَانَ ________ آزَرَ نَاسٌ كَثِيرُونَ", answer: "مَعَ" },
-  { sentence: "وَ كَانَ ________ يَسْكُنُ مَعَ الْمُشْرِكِينَ فِي هَذِهِ الْقَرْيَةِ", answer: "آزَرُ" },
-  { sentence: "وَ كَانَ ________ مُشْرِكًا", answer: "آزَرُ" },
-  { sentence: "وَ كَانَ هَذَا ________ يَسْكُنُ فِي قَرْيَةٍ", answer: "الرَّجُلُ" },
-  { sentence: "وَ كَانَ فِي ________ الْقَرْيَةِ أَصْنَامٌ كَثِيرَةٌ جِدًّا", answer: "هَذِهِ" },
-  { sentence: "وَ كَانَ آزَرُ يَسْكُنُ مَعَ ________ فِي هَذِهِ الْقَرْيَةِ", answer: "الْمُشْرِكِينَ" },
-  { sentence: "وَ كَانَ ________ يَسْجُدُونَ لَهَا", answer: "النَّاسُ" },
-  { sentence: "قَبْلَ ________ كَثِيرَةٍ جِدًّا، كَانَ هُنَاكَ رَجُلٌ", answer: "أَيَّامٍ" },
-  { sentence: "قَبْلَ أَيَّامٍ ________ جِدًّا، كَانَ هُنَاكَ رَجُلٌ", answer: "كَثِيرَةٍ" },
-  { sentence: "لِمَاذَا ________ الْأَصْنَامَ؟ الْعِبَادَةُ لِلَّهِ فَقَطْ", answer: "يَعْبُدُونَ" },
-  { sentence: "صَنَمٌ هُنَا، وَ صَنَمٌ ________ أَصْنَامٌ كَثِيرَةٌ جِدًّا", answer: "هُنَاكَ" },
-  { sentence: "وَ كَانَ اسْمُ ________ الرَّجُلِ آزَرَ", answer: "هَذَا" },
-  { sentence: "وَ كَانَ فِي هَذِهِ ________ أَصْنَامٌ كَثِيرَةٌ جِدًّا", answer: "الْقَرْيَةِ" },
-  { sentence: "وَ كَانَ آزَرُ ________ الْأَصْنَامَ أَيْضًا وَ كَانَ آزَرُ يَسْجُدُ لَهَا أَيْضًا", answer: "يَعْبُدُ" },
-  { sentence: "وَ ________ النَّاسُ يَسْجُدُونَ لَهَا", answer: "كَانَ" },
-  { sentence: "وَ كَانَ ________ هَذِهِ الْقَرْيَةِ أَصْنَامٌ كَثِيرَةٌ جِدًّا", answer: "فِي" },
-  { sentence: "وَ كَانَ آزَرُ ________ مَعَ الْمُشْرِكِينَ فِي هَذِهِ الْقَرْيَةِ", answer: "يَسْكُنُ" },
-  { sentence: "وَ ________ مَعَ آزَرَ نَاسٌ كَثِيرُونَ", answer: "كَانَ" },
-  { sentence: "قَبْلَ أَيَّامٍ كَثِيرَةٍ جِدًّا، ________ هُنَاكَ رَجُلٌ", answer: "كَانَ" },
-  { sentence: "وَ ________ اسْمُ هَذَا الرَّجُلِ آزَرَ", answer: "كَانَ" },
-  { sentence: "وَ ________ آزَرُ يَسْكُنُ مَعَ الْمُشْرِكِينَ فِي هَذِهِ الْقَرْيَةِ", answer: "كَانَ" },
-  { sentence: "قَبْلَ أَيَّامٍ كَثِيرَةٍ جِدًّا، كَانَ ________ رَجُلٌ", answer: "هُنَاكَ" },
-  { sentence: "قَبْلَ أَيَّامٍ كَثِيرَةٍ ________ كَانَ هُنَاكَ رَجُلٌ", answer: "جِدًّا،" },
-  { sentence: "وَ كَانَ آزَرُ يَعْبُدُ الْأَصْنَامَ أَيْضًا ________ كَانَ آزَرُ يَسْجُدُ لَهَا أَيْضًا", answer: "وَ" },
-  { sentence: "وَ ________ آزَرُ يَعْبُدُ الْأَصْنَامَ أَيْضًا وَ كَانَ آزَرُ يَسْجُدُ لَهَا أَيْضًا", answer: "كَانَ" },
-  { sentence: "صَنَمٌ هُنَا، وَ ________ هُنَاكَ أَصْنَامٌ كَثِيرَةٌ جِدًّا", answer: "صَنَمٌ" },
-  { sentence: "وَ كَانَ آزَرُ يَسْكُنُ مَعَ الْمُشْرِكِينَ فِي ________ الْقَرْيَةِ", answer: "هَذِهِ" },
-  { sentence: "وَ كَانَ ________ يَعْبُدُ الْأَصْنَامَ أَيْضًا وَ كَانَ آزَرُ يَسْجُدُ لَهَا أَيْضًا", answer: "آزَرُ" },
-  { sentence: "وَ كَانَ النَّاسُ ________ لَهَا", answer: "يَسْجُدُونَ" },
-  { sentence: "وَ كَانَ آزَرُ يَعْبُدُ الْأَصْنَامَ ________ وَ كَانَ آزَرُ يَسْجُدُ لَهَا أَيْضًا", answer: "أَيْضًا" },
-  { sentence: "وَ ________ هَؤُلَاءِ النَّاسُ مُشْرِكِينَ أَيْضًا", answer: "كَانَ" },
-  { sentence: "وَ كَانَ فِي هَذِهِ الْقَرْيَةِ ________ كَثِيرَةٌ جِدًّا", answer: "أَصْنَامٌ" },
-  { sentence: "صَنَمٌ هُنَا، وَ صَنَمٌ هُنَاكَ ________ كَثِيرَةٌ جِدًّا", answer: "أَصْنَامٌ" },
-  { sentence: "وَ كَانَ النَّاسُ ________ هَذِهِ الْأَصْنَامَ", answer: "يَعْبُدُونَ" },
-  { sentence: "وَ كَانَ مَعَ آزَرَ ________ كَثِيرُونَ", answer: "نَاسٌ" },
-  { sentence: "وَ كَانَ فِي هَذِهِ الْقَرْيَةِ أَصْنَامٌ ________ جِدًّا", answer: "كَثِيرَةٌ" },
-  { sentence: "وَ ________ النَّاسُ يَعْبُدُونَ هَذِهِ الْأَصْنَامَ", answer: "كَانَ" },
-  { sentence: "وَ كَانَ آزَرُ يَسْكُنُ ________ الْمُشْرِكِينَ فِي هَذِهِ الْقَرْيَةِ", answer: "مَعَ" },
-  { sentence: "وَ ________ آزَرُ مُشْرِكًا", answer: "كَانَ" },
-  { sentence: "وَ كَانَ مَعَ ________ نَاسٌ كَثِيرُونَ", answer: "آزَرَ" },
-  { sentence: "وَ كَانَ هَذَا الرَّجُلُ يَسْكُنُ ________ قَرْيَةٍ", answer: "فِي" },
-  { sentence: "وَ كَانَ ________ النَّاسُ مُشْرِكِينَ أَيْضًا", answer: "هَؤُلَاءِ" },
-  { sentence: "وَ كَانَ اسْمُ هَذَا ________ آزَرَ", answer: "الرَّجُلِ" },
-  { sentence: "وَ كَانَ النَّاسُ يَعْبُدُونَ ________ الْأَصْنَامَ", answer: "هَذِهِ" },
-  { sentence: "وَ ________ فِي هَذِهِ الْقَرْيَةِ أَصْنَامٌ كَثِيرَةٌ جِدًّا", answer: "كَانَ" },
-  { sentence: "وَ كَانَ ________ الرَّجُلُ يَسْكُنُ فِي قَرْيَةٍ", answer: "هَذَا" },
-  { sentence: "وَ كَانَ ________ يَعْبُدُونَ هَذِهِ الْأَصْنَامَ", answer: "النَّاسُ" },
-  { sentence: "صَنَمٌ ________ وَ صَنَمٌ هُنَاكَ أَصْنَامٌ كَثِيرَةٌ جِدًّا", answer: "هُنَا،" },
-  { sentence: "لِمَاذَا يَعْبُدُونَ ________ الْعِبَادَةُ لِلَّهِ فَقَطْ", answer: "الْأَصْنَامَ؟" },
-  { sentence: "صَنَمٌ هُنَا، وَ صَنَمٌ هُنَاكَ أَصْنَامٌ ________ جِدًّا", answer: "كَثِيرَةٌ" },
-  { sentence: "وَ كَانَ آزَرُ يَعْبُدُ الْأَصْنَامَ أَيْضًا وَ كَانَ آزَرُ ________ لَهَا أَيْضًا", answer: "يَسْجُدُ" },
-  { sentence: "وَ ________ هَذَا الرَّجُلُ يَسْكُنُ فِي قَرْيَةٍ", answer: "كَانَ" }
-];
-
-const TRUE_FALSE_QUESTIONS = [
-  { sentence: "الْقَرْيَةٌ هُنَا، وَ صَنَمٌ هُنَاكَ أَصْنَامٌ كَثِيرَةٌ جِدًّا", answer: false },
-  { sentence: "وَ كَانَ فِي هَذِهِ الْقَرْيَةِ أَصْنَامٌ كَثِيرَةٌ جِدًّا", answer: true },
-  { sentence: "قَبْلَ أَيَّامٍ كَثِيرَةٍ جِدًّا، كَانَ بَعْدَ رَجُلٌ", answer: false },
-  { sentence: "وَ كَانَ آزَرُ يَسْكُنُ مِنْ الْمُشْرِكِينَ فِي هَذِهِ الْقَرْيَةِ", answer: false },
-  { sentence: "وَ كَانَ صَنَمٌ يَسْكُنُ مَعَ الْمُشْرِكِينَ فِي هَذِهِ الْقَرْيَةِ", answer: false },
-  { sentence: "لِمَاذَا يَعْبُدُونَ الْأَصْنَامَ؟ مَلِكٌ لِلَّهِ فَقَطْ", answer: false },
-  { sentence: "وَ كَانَ النَّاسُ يَسْجُدُونَ لَهَا", answer: true },
-  { sentence: "وَ كَانَ هَذَا الرَّجُلُ يَسْكُنُ فِي قَرْيَةٍ", answer: true },
-  { sentence: "وَ كَانَ اسْمُ هَذَا الرَّجُلِ آزَرَ", answer: true },
-  { sentence: "وَ كَانَ مَعَ آزَرَ نَاسٌ كَثِيرُونَ", answer: true },
-  { sentence: "صَنَمٌ هُنَا، وَ صَنَمٌ هُنَاكَ أَصْنَامٌ كَثِيرَةٌ جِدًّا", answer: true },
-  { sentence: "وَ كَانَ النَّاسُ يَعْبُدُونَ هَذِهِ الْأَصْنَامَ", answer: true },
-  { sentence: "صَنَمٌ هُنَا، وَ صَنَمٌ قَبْلَ أَصْنَامٌ كَثِيرَةٌ جِدًّا", answer: false },
-  { sentence: "وَ كَانَ قَرْيَةٌ يَسْجُدُونَ لَهَا", answer: false },
-  { sentence: "وَ كَانَ آزَرُ مُشْرِكًا", answer: true },
-  { sentence: "وَ كَانَ النَّاسُ يَعْبُدُونَ هَذِهِ الْأَصْنَامَ", answer: true },
-  { sentence: "مَعَ أَيَّامٍ كَثِيرَةٍ جِدًّا، كَانَ هُنَاكَ رَجُلٌ", answer: false },
-  { sentence: "وَ كَانَ صَنَمٌ يَعْبُدُونَ هَذِهِ الْأَصْنَامَ", answer: false },
-  { sentence: "صَنَمٌ هُنَا وَ صَنَمٌ هُنَاكَ أَصْنَامٌ كَثِيرَةٌ جِدًّا", answer: false },
-  { sentence: "صَنَمٌ هُنَا، وَ صَنَمٌ هُنَاكَ أَصْنَامٌ كَثِيرَةٌ جِدًّا", answer: true },
-  { sentence: "وَ كَانَ آزَرُ يَعْبُدُ الْأَصْنَامَ أَيْضًا وَ كَانَ آزَرُ يَسْجُدُ لَهَا أَيْضًا", answer: true },
-  { sentence: "لِمَاذَا يَعْبُدُونَ الْأَصْنَامَ؟ الْعِبَادَةُ لِلَّهِ فَقَطْ", answer: true },
-  { sentence: "وَ كَانَ آزَرُ مُشْرِكًا", answer: true },
-  { sentence: "وَ كَانَ مِنْ هَذِهِ الْقَرْيَةِ أَصْنَامٌ كَثِيرَةٌ جِدًّا", answer: false },
-  { sentence: "لِمَاذَا يَعْبُدُونَ الْأَصْنَامَ؟ الْعِبَادَةُ لِلَّهِ فَقَطْ", answer: true },
-  { sentence: "وَ كَانَ الْنَاسٌ يَسْكُنُ مَعَ الْمُشْرِكِينَ فِي هَذِهِ الْقَرْيَةِ", answer: false },
-  { sentence: "وَ كَانَ هَؤُلَاءِ النَّاسُ مُشْرِكِينَ أَيْضًا", answer: true },
-  { sentence: "وَ كَانَ آزَرُ يَسْكُنُ مَعَ الْمُشْرِكِينَ فِي هَذِهِ الْآزَرُ", answer: false },
-  { sentence: "وَ كَانَ هَؤُلَاءِ آزَرُ مُشْرِكِينَ أَيْضًا", answer: false },
-  { sentence: "وَ كَانَ مَعَ آزَرَ نَاسٌ كَثِيرُونَ", answer: true },
-  { sentence: "وَ كَانَ هَذَا الرَّجُلُ يَسْكُنُ فِي قَرْيَةٍ", answer: true },
-  { sentence: "قَبْلَ أَيَّامٍ كَثِيرَةٍ جِدًّا، كَانَ عَلَى رَجُلٌ", answer: false },
-  { sentence: "وَ كَانَ آزَرُ يَسْكُنُ مَعَ الْمُشْرِكِينَ لِهَذِهِ الْقَرْيَةِ", answer: false },
-  { sentence: "قَرْيَةٌ هُنَا، وَ صَنَمٌ هُنَاكَ أَصْنَامٌ كَثِيرَةٌ جِدًّا", answer: false },
-  { sentence: "وَ كَانَ النَّاسُ يَسْجُدُونَ لَهَا", answer: true },
-  { sentence: "وَ كَانَ آزَرُ يَسْكُنُ مَعَ الْمَلِكٌ فِي هَذِهِ الْقَرْيَةِ", answer: false },
-  { sentence: "وَ كَانَ اسْمُ هَذَا الرَّجُلِ آزَرَ", answer: true },
-  { sentence: "وَ كَانَ آزَرُ يَعْبُدُ الْأَصْنَامَ أَيْضًا وَ كَانَ آزَرُ يَسْجُدُ لَهَا أَيْضًا", answer: true },
-  { sentence: "وَ كَانَ آزَرُ يَسْكُنُ مَعَ الْمُشْرِكِينَ فِي هَذِهِ الْقَرْيَةِ", answer: true },
-  { sentence: "وَ كَانَ آزَرُ يَسْكُنُ مَعَ الْمُشْرِكِينَ فِي هَذِهِ الْطِّفْلٌ", answer: false },
-  { sentence: "وَ كَانَ بِآزَرَ نَاسٌ كَثِيرُونَ", answer: false },
-  { sentence: "وَ كَانَ مَعَ آزَرَ الْصَنَمٌ كَثِيرُونَ", answer: false },
-  { sentence: "وَ كَانَ مَعَ الْقَرْيَةٌ نَاسٌ كَثِيرُونَ", answer: false },
-  { sentence: "وَ كَانَ هَذَا الرَّجُلُ يَسْكُنُ فِي آزَرُ", answer: false },
-  { sentence: "وَ كَانَ اسْمُ هَذَا الرَّجُلِ الْآزَرُ", answer: false },
-  { sentence: "وَ كَانَ هَؤُلَاءِ النَّاسُ مُشْرِكِينَ أَيْضًا", answer: true },
-  { sentence: "وَ كَانَ آزَرُ يَسْكُنُ مَعَ الْمُشْرِكِينَ فِي هَذِهِ الْقَرْيَةِ", answer: true },
-  { sentence: "وَ كَانَ آزَرُ يَسْكُنُ مَعَ الْنَاسٌ فِي هَذِهِ الْقَرْيَةِ", answer: false },
-  { sentence: "وَ كَانَ فِي هَذِهِ الْقَرْيَةِ أَصْنَامٌ كَثِيرَةٌ جِدًّا", answer: true },
-  { sentence: "قَبْلَ أَيَّامٍ كَثِيرَةٍ جِدًّا، كَانَ هُنَاكَ رَجُلٌ", answer: true },
-];
- const CHANGE_WORD_QUESTIONS = [
-  { sentence: "لِمَاذَا يَعْبُدُونَ الْأَصْنَامَ؟ قَرْيَةٌ لِلَّهِ فَقَطْ", wrong: "قَرْيَةٌ", correct: "الْعِبَادَةُ" },
-  { sentence: "وَ كَانَ النَّاسُ يَعْبُدُونَ هَذِهِ الْطِّفْلٌ", wrong: "الْطِّفْلٌ", correct: "الْأَصْنَامَ" },
-  { sentence: "وَ كَانَ الْقَرْيَةٌ يَعْبُدُونَ هَذِهِ الْأَصْنَامَ", wrong: "الْقَرْيَةٌ", correct: "النَّاسُ" },
-  { sentence: "صَنَمٌ هُنَا، وَ صَنَمٌ هُنَاكَ الْمَلِكٌ كَثِيرَةٌ جِدًّا", wrong: "الْمَلِكٌ", correct: "أَصْنَامٌ" },
-  { sentence: "وَ كَانَ قَرْيَةٌ يَعْبُدُ الْأَصْنَامَ أَيْضًا وَ كَانَ آزَرُ يَسْجُدُ لَهَا أَيْضًا", wrong: "قَرْيَةٌ", correct: "آزَرُ" },
-  { sentence: "لِمَاذَا يَعْبُدُونَ الْنَاسٌ؟ الْعِبَادَةُ لِلَّهِ فَقَطْ", wrong: "الْنَاسٌ", correct: "الْأَصْنَامَ" },
-  { sentence: "وَ كَانَ رَجُلٌ يَسْجُدُونَ لَهَا", wrong: "رَجُلٌ", correct: "النَّاسُ" },
-  { sentence: "وَ كَانَ آزَرُ يَسْكُنُ مَعَ رَجُلٌ فِي هَذِهِ الْقَرْيَةِ", wrong: "رَجُلٌ", correct: "الْمُشْرِكِينَ" },
-  { sentence: "قَبْلَ أَيَّامٍ كَثِيرَةٍ جِدًّا، كَانَ بَعْدَ رَجُلٌ", wrong: "بَعْدَ", correct: "هُنَاكَ" },
-  { sentence: "وَ كَانَ فِي هَذِهِ الْقَرْيَةِ الْرَجُلٌ كَثِيرَةٌ جِدًّا", wrong: "الْرَجُلٌ", correct: "أَصْنَامٌ" },
-  { sentence: "وَ كَانَ اسْمُ هَذَا الْطِّفْلٌ آزَرَ", wrong: "الْطِّفْلٌ", correct: "الرَّجُلِ" },
-  { sentence: "وَ كَانَ آزَرُ يَعْبُدُ الْأَصْنَامَ أَيْضًا وَ كَانَ الْطِّفْلٌ يَسْجُدُ لَهَا أَيْضًا", wrong: "الْطِّفْلٌ", correct: "آزَرُ" },
-  { sentence: "وَ كَانَ هَذَا الْرَجُلٌ يَسْكُنُ فِي قَرْيَةٍ", wrong: "الْرَجُلٌ", correct: "الرَّجُلُ" },
-  { sentence: "وَ كَانَ هَذَا الرَّجُلُ يَسْكُنُ فَقَرْيَةٍ", wrong: "فَ", correct: "فِي" },
-  { sentence: "وَ كَانَ آزَرُ يَعْبُدُ الْأَصْنَامَ أَيْضًا وَ كَانَ الْرَجُلٌ يَسْجُدُ لَهَا أَيْضًا", wrong: "الْرَجُلٌ", correct: "آزَرُ" },
-  { sentence: "بِأَيَّامٍ كَثِيرَةٍ جِدًّا، كَانَ هُنَاكَ رَجُلٌ", wrong: "بِ", correct: "قَبْلَ" },
-  { sentence: "وَ كَانَ صَنَمٌ يَسْكُنُ مَعَ الْمُشْرِكِينَ فِي هَذِهِ الْقَرْيَةِ", wrong: "صَنَمٌ", correct: "آزَرُ" },
-  { sentence: "وَ كَانَ النَّاسُ يَعْبُدُونَ هَذِهِ الْرَجُلٌ", wrong: "الْرَجُلٌ", correct: "الْأَصْنَامَ" },
-  { sentence: "وَ كَانَ هَؤُلَاءِ الْقَرْيَةٌ مُشْرِكِينَ أَيْضًا", wrong: "الْقَرْيَةٌ", correct: "النَّاسُ" },
-  { sentence: "وَ كَانَ عَلَى هَذِهِ الْقَرْيَةِ أَصْنَامٌ كَثِيرَةٌ جِدًّا", wrong: "عَلَى", correct: "فِي" },
-  { sentence: "وَ كَانَ بِآزَرَ نَاسٌ كَثِيرُونَ", wrong: "بِ", correct: "مَعَ" },
-  { sentence: "وَ كَانَ الْطِّفْلٌ يَعْبُدُ الْأَصْنَامَ أَيْضًا وَ كَانَ آزَرُ يَسْجُدُ لَهَا أَيْضًا", wrong: "الْطِّفْلٌ", correct: "آزَرُ" },
-  { sentence: "وَ كَانَ هَذَا الرَّجُلُ يَسْكُنُ فِي الْطِّفْلٌ", wrong: "الْطِّفْلٌ", correct: "قَرْيَةٍ" },
-  { sentence: "صَنَمٌ هُنَا، وَ صَنَمٌ هُنَاكَ مَلِكٌ كَثِيرَةٌ جِدًّا", wrong: "مَلِكٌ", correct: "أَصْنَامٌ" },
-  { sentence: "قَبْلَ أَيَّامٍ كَثِيرَةٍ جِدًّا، كَانَ هُنَاكَ الْآزَرُ", wrong: "الْآزَرُ", correct: "رَجُلٌ" },
-  { sentence: "وَ كَانَ آزَرُ يَسْكُنُ مَعَ الْمُشْرِكِينَ فِي هَذِهِ صَنَمٌ", wrong: "صَنَمٌ", correct: "الْقَرْيَةِ" },
-  { sentence: "صَنَمٌ هُنَا، وَ صَنَمٌ هُنَاكَ طِّفْلٌ كَثِيرَةٌ جِدًّا", wrong: "طِّفْلٌ", correct: "أَصْنَامٌ" },
-  { sentence: "صَنَمٌ لِوَ صَنَمٌ هُنَاكَ أَصْنَامٌ كَثِيرَةٌ جِدًّا", wrong: "لِ", correct: "هُنَا،" },
-  { sentence: "وَ كَانَ الْنَاسٌ يَعْبُدُ الْأَصْنَامَ أَيْضًا وَ كَانَ آزَرُ يَسْجُدُ لَهَا أَيْضًا", wrong: "الْنَاسٌ", correct: "آزَرُ" },
-  { sentence: "فَأَيَّامٍ كَثِيرَةٍ جِدًّا، كَانَ هُنَاكَ رَجُلٌ", wrong: "فَ", correct: "قَبْلَ" },
-  { sentence: "وَ كَانَ صَنَمٌ يَعْبُدُونَ هَذِهِ الْأَصْنَامَ", wrong: "صَنَمٌ", correct: "النَّاسُ" },
-  { sentence: "وَ كَانَ آزَرُ يَسْكُنُ مَعَ الْنَاسٌ فِي هَذِهِ الْقَرْيَةِ", wrong: "الْنَاسٌ", correct: "الْمُشْرِكِينَ" },
-  { sentence: "وَ كَانَ فِي هَذِهِ الْنَاسٌ أَصْنَامٌ كَثِيرَةٌ جِدًّا", wrong: "الْنَاسٌ", correct: "الْقَرْيَةِ" },
-  { sentence: "وَ كَانَ مَعَ الْنَاسٌ نَاسٌ كَثِيرُونَ", wrong: "الْنَاسٌ", correct: "آزَرَ" },
-  { sentence: "وَ كَانَ فِي هَذِهِ الْرَجُلٌ أَصْنَامٌ كَثِيرَةٌ جِدًّا", wrong: "الْرَجُلٌ", correct: "الْقَرْيَةِ" },
-  { sentence: "وَ كَانَ اسْمُ هَذَا الرَّجُلِ الْرَجُلٌ", wrong: "الْرَجُلٌ", correct: "آزَرَ" },
-  { sentence: "صَنَمٌ هُنَا، وَ صَنَمٌ مَعَ أَصْنَامٌ كَثِيرَةٌ جِدًّا", wrong: "مَعَ", correct: "هُنَاكَ" },
-  { sentence: "صَنَمٌ هُنَا، وَ صَنَمٌ قَبْلَ أَصْنَامٌ كَثِيرَةٌ جِدًّا", wrong: "قَبْلَ", correct: "هُنَاكَ" },
-  { sentence: "صَنَمٌ هُنَا، وَ الْنَاسٌ هُنَاكَ أَصْنَامٌ كَثِيرَةٌ جِدًّا", wrong: "الْنَاسٌ", correct: "صَنَمٌ" },
-  { sentence: "وَ كَانَ هَذَا الرَّجُلُ يَسْكُنُ فِي آزَرُ", wrong: "آزَرُ", correct: "قَرْيَةٍ" },
-  { sentence: "وَ كَانَ الْرَجُلٌ يَسْجُدُونَ لَهَا", wrong: "الْرَجُلٌ", correct: "النَّاسُ" },
-  { sentence: "صَنَمٌ هُنَا، وَ آزَرُ هُنَاكَ أَصْنَامٌ كَثِيرَةٌ جِدًّا", wrong: "آزَرُ", correct: "صَنَمٌ" },
-  { sentence: "وَ كَانَ طِّفْلٌ يَسْكُنُ مَعَ الْمُشْرِكِينَ فِي هَذِهِ الْقَرْيَةِ", wrong: "طِّفْلٌ", correct: "آزَرُ" },
-  { sentence: "صَنَمٌ مِنْ وَ صَنَمٌ هُنَاكَ أَصْنَامٌ كَثِيرَةٌ جِدًّا", wrong: "مِنْ", correct: "هُنَا،" },
-  { sentence: "وَ كَانَ اسْمُ هَذَا صَنَمٌ آزَرَ", wrong: "صَنَمٌ", correct: "الرَّجُلِ" },
-  { sentence: "وَ كَانَ هُنَاكَ هَذِهِ الْقَرْيَةِ أَصْنَامٌ كَثِيرَةٌ جِدًّا", wrong: "هُنَاكَ", correct: "فِي" },
-  { sentence: "وَ كَانَ آزَرُ يَعْبُدُ الْأَصْنَامَ أَيْضًا وَ كَانَ الْقَرْيَةٌ يَسْجُدُ لَهَا أَيْضًا", wrong: "الْقَرْيَةٌ", correct: "آزَرُ" },
-  { sentence: "وَ كَانَ النَّاسُ يَعْبُدُونَ هَذِهِ مَلِكٌ", wrong: "مَلِكٌ", correct: "الْأَصْنَامَ" },
-  { sentence: "وَ كَانَ مَعَ آزَرَ صَنَمٌ كَثِيرُونَ", wrong: "صَنَمٌ", correct: "نَاسٌ" },
-  { sentence: "وَ كَانَ نَاسٌ يَسْكُنُ مَعَ الْمُشْرِكِينَ فِي هَذِهِ الْقَرْيَةِ", wrong: "نَاسٌ", correct: "آزَرُ" },
-  { sentence: "صَنَمٌ مَعَ وَ صَنَمٌ هُنَاكَ أَصْنَامٌ كَثِيرَةٌ جِدًّا", wrong: "مَعَ", correct: "هُنَا،" },
-  { sentence: "وَ كَانَ اسْمُ هَذَا قَرْيَةٌ آزَرَ", wrong: "قَرْيَةٌ", correct: "الرَّجُلِ" },
-  { sentence: "الْطِّفْلٌ هُنَا، وَ صَنَمٌ هُنَاكَ أَصْنَامٌ كَثِيرَةٌ جِدًّا", wrong: "الْطِّفْلٌ", correct: "صَنَمٌ" },
-  { sentence: "وَ كَانَ صَنَمٌ يَسْجُدُونَ لَهَا", wrong: "صَنَمٌ", correct: "النَّاسُ" },
-  { sentence: "الْرَجُلٌ هُنَا، وَ صَنَمٌ هُنَاكَ أَصْنَامٌ كَثِيرَةٌ جِدًّا", wrong: "الْرَجُلٌ", correct: "صَنَمٌ" },
-  { sentence: "صَنَمٌ هُنَا، وَ صَنَمٌ هُنَاكَ الْرَجُلٌ كَثِيرَةٌ جِدًّا", wrong: "الْرَجُلٌ", correct: "أَصْنَامٌ" },
-  { sentence: "وَ كَانَ هَؤُلَاءِ الْصَنَمٌ مُشْرِكِينَ أَيْضًا", wrong: "الْصَنَمٌ", correct: "النَّاسُ" },
-  { sentence: "قَبْلَ أَيَّامٍ كَثِيرَةٍ جِدًّا، كَانَ قَبْلَ رَجُلٌ", wrong: "قَبْلَ", correct: "هُنَاكَ" },
-  { sentence: "وَ كَانَ نَاسٌ يَعْبُدُونَ هَذِهِ الْأَصْنَامَ", wrong: "نَاسٌ", correct: "النَّاسُ" },
-  { sentence: "صَنَمٌ هُنَا، وَ الْطِّفْلٌ هُنَاكَ أَصْنَامٌ كَثِيرَةٌ جِدًّا", wrong: "الْطِّفْلٌ", correct: "صَنَمٌ" },
-];
-const WORD_ORDER_QUESTIONS = [
-  { words: ["كَثِيرَةٍ","أَيَّامٍ","كَانَ","قَبْلَ","جِدًّا،","هُنَاكَ","رَجُلٌ"], answer: "قَبْلَ أَيَّامٍ كَثِيرَةٍ جِدًّا، كَانَ هُنَاكَ رَجُلٌ" },
-  { words: ["الرَّجُلُ","وَ","يَسْكُنُ","كَانَ","قَرْيَةٍ","فِي","هَذَا"], answer: "وَ كَانَ هَذَا الرَّجُلُ يَسْكُنُ فِي قَرْيَةٍ" },
-  { words: ["هَذَا","اسْمُ","آزَرَ","وَ","الرَّجُلِ","كَانَ"], answer: "وَ كَانَ اسْمُ هَذَا الرَّجُلِ آزَرَ" },
-  { words: ["كَانَ","مُشْرِكًا","وَ","آزَرُ"], answer: "وَ كَانَ آزَرُ مُشْرِكًا" },
-  { words: ["آزَرَ","نَاسٌ","وَ","مَعَ","كَثِيرُونَ","كَانَ"], answer: "وَ كَانَ مَعَ آزَرَ نَاسٌ كَثِيرُونَ" },
-  { words: ["النَّاسُ","أَيْضًا","مُشْرِكِينَ","كَانَ","هَؤُلَاءِ","وَ"], answer: "وَ كَانَ هَؤُلَاءِ النَّاسُ مُشْرِكِينَ أَيْضًا" },
-  { words: ["هَذِهِ","يَسْكُنُ","وَ","كَانَ","الْقَرْيَةِ","مَعَ","آزَرُ","الْمُشْرِكِينَ","فِي"], answer: "وَ كَانَ آزَرُ يَسْكُنُ مَعَ الْمُشْرِكِينَ فِي هَذِهِ الْقَرْيَةِ" },
-  { words: ["الْقَرْيَةِ","فِي","أَصْنَامٌ","هَذِهِ","جِدًّا","كَثِيرَةٌ","وَ","كَانَ"], answer: "وَ كَانَ فِي هَذِهِ الْقَرْيَةِ أَصْنَامٌ كَثِيرَةٌ جِدًّا" },
-  { words: ["وَ","كَانَ","يَعْبُدُونَ","هَذِهِ","الْأَصْنَامَ","النَّاسُ"], answer: "وَ كَانَ النَّاسُ يَعْبُدُونَ هَذِهِ الْأَصْنَامَ" },
-  { words: ["النَّاسُ","كَانَ","لَهَا","يَسْجُدُونَ","وَ"], answer: "وَ كَانَ النَّاسُ يَسْجُدُونَ لَهَا" },
-  { words: ["لَهَا","أَيْضًا","يَسْجُدُ","يَعْبُدُ","وَ","أَيْضًا","وَ","آزَرُ","كَانَ","الْأَصْنَامَ","كَانَ","آزَرُ"], answer: "وَ كَانَ آزَرُ يَعْبُدُ الْأَصْنَامَ أَيْضًا وَ كَانَ آزَرُ يَسْجُدُ لَهَا أَيْضًا" },
-  { words: ["وَ","هُنَا،","صَنَمٌ","هُنَاكَ","صَنَمٌ","جِدًّا","أَصْنَامٌ","كَثِيرَةٌ"], answer: "صَنَمٌ هُنَا، وَ صَنَمٌ هُنَاكَ أَصْنَامٌ كَثِيرَةٌ جِدًّا" },
-  { words: ["فَقَطْ","لِلَّهِ","الْأَصْنَامَ؟","الْعِبَادَةُ","يَعْبُدُونَ","لِمَاذَا"], answer: "لِمَاذَا يَعْبُدُونَ الْأَصْنَامَ؟ الْعِبَادَةُ لِلَّهِ فَقَطْ" }
-];
-
 // ── EXERCISE ENGINE ──
 let exMode = null, exQuestions = [], exCurrent = 0, exAnswered = 0;
 let exTimerSeconds = 0, exTimerInterval = null;
@@ -1667,7 +1432,7 @@ function exShowPicker() {
         <div class="ex-card-desc">A word is missing from a sentence. Type what you think it is.</div>
         <div class="ex-card-note">⏱ Earns a calendar dot after 15 min</div>
       </div>
-     <div class="ex-card" id="btn-wordorder">
+      <div class="ex-card" id="btn-wordorder">
         <div class="ex-card-icon">🔀</div>
         <div class="ex-card-title">Word Order</div>
         <div class="ex-card-desc">Rearrange the words to form a correct sentence.</div>
@@ -1685,20 +1450,36 @@ function exShowPicker() {
         <div class="ex-card-desc">A sentence has one wrong word. Type the correct replacement.</div>
         <div class="ex-card-note">⏱ Earns a calendar dot after 15 min</div>
       </div>
+      <div class="ex-card" id="btn-demonstrative">
+        <div class="ex-card-icon">👉</div>
+        <div class="ex-card-title">Demonstrative Pronouns</div>
+        <div class="ex-card-desc">Practise هذا / هذه / هؤلاء agreement with true/false and correction questions.</div>
+        <div class="ex-card-note">⏱ Earns a calendar dot after 15 min</div>
+      </div>
+      
     </div>
   `);
   document.getElementById('btn-fillgap').onclick = () => exShowSetup('fillgap');
   document.getElementById('btn-wordorder').onclick = () => exShowSetup('wordorder');
   document.getElementById('btn-truefalse').onclick = () => exShowSetup('truefalse');
   document.getElementById('btn-changeword').onclick = () => exShowSetup('changeword');
+  document.getElementById('btn-demonstrative').onclick = () => exShowSetup('demonstrative');
+
 }
 
 function exShowSetup(mode) {
   exMode = mode;
-  const title = mode === 'fillgap' ? '📝 Fill the Gap' : mode === 'wordorder' ? '🔀 Word Order' : mode === 'changeword' ? '✏️ Change One Word' : '✅ True or False';
+  const title = mode === 'fillgap' ? '📝 Fill the Gap'
+    : mode === 'wordorder' ? '🔀 Word Order'
+    : mode === 'changeword' ? '✏️ Change One Word'
+    : mode === 'demonstrative' ? '👉 Demonstrative Pronouns'
+    : mode === 'suffixpronoun' ? '🔤 Suffix Pronouns'
+    : '✅ True or False';
+  const isGrammarDrill = mode === 'demonstrative' || mode === 'suffixpronoun';
   exRender(`
     <div class="section-label">${title}</div>
     <div style="background:white;border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
+      ${isGrammarDrill ? `<div style="background:#fffbeb;border:1.5px solid #fcd34d;border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:13px;color:#92400e;line-height:1.5">⚠️ These sentences are computer-generated, and the meanings are deliberately nonsensical so you can't guess the answer from context. Focus only on the grammar rule being tested — not what the sentence means.</div>` : ''}
       <div style="font-size:14px;font-weight:600;color:#6b7280;margin-bottom:12px">Choose session length</div>
       <select id="ex-timer-select" style="width:100%;font-size:16px;padding:12px;border:2px solid #e5e7eb;border-radius:10px;outline:none">
         <option value="60">1 minute</option>
@@ -1723,7 +1504,14 @@ function exLaunch() {
   exAnswered = 0;
   exCurrent = 0;
   exDotEarned = false;
-  exQuestions = exShuffle(exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS] : exMode === 'wordorder' ? [...WORD_ORDER_QUESTIONS] : exMode === 'changeword' ? [...CHANGE_WORD_QUESTIONS] : [...TRUE_FALSE_QUESTIONS]);
+  exQuestions = exShuffle(
+  exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS]
+  : exMode === 'wordorder' ? [...WORD_ORDER_QUESTIONS]
+  : exMode === 'changeword' ? [...CHANGE_WORD_QUESTIONS]
+  : exMode === 'demonstrative' ? [...DEMONSTRATIVE_QUESTIONS]
+  : exMode === 'suffixpronoun' ? [...SUFFIX_PRONOUN_QUESTIONS]
+  : [...TRUE_FALSE_QUESTIONS]
+);
   exRenderActive();
   exStartTimer();
   exShowQuestion();
@@ -1781,7 +1569,14 @@ function exUpdateTimer() {
 
 function exShowQuestion() {
   if (exCurrent >= exQuestions.length) {
-    exQuestions = exShuffle(exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS] : exMode === 'wordorder' ? [...WORD_ORDER_QUESTIONS] : exMode === 'changeword' ? [...CHANGE_WORD_QUESTIONS] : [...TRUE_FALSE_QUESTIONS]);
+    exQuestions = exShuffle(
+  exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS]
+  : exMode === 'wordorder' ? [...WORD_ORDER_QUESTIONS]
+  : exMode === 'changeword' ? [...CHANGE_WORD_QUESTIONS]
+  : exMode === 'demonstrative' ? [...DEMONSTRATIVE_QUESTIONS]
+  : exMode === 'suffixpronoun' ? [...SUFFIX_PRONOUN_QUESTIONS]
+  : [...TRUE_FALSE_QUESTIONS]
+);
     exCurrent = 0;
   }
   const revealEl = document.getElementById('ex-reveal');
@@ -1803,7 +1598,7 @@ function exShowQuestion() {
     setTimeout(() => inp.focus(), 50);
     document.getElementById('ex-check-btn').onclick = exSubmitFill;
     inp.onkeydown = e => { if (e.key === 'Enter') exSubmitFill(); };
-   } else if (exMode === 'truefalse') {
+   } else if (exMode === 'truefalse' || exMode === 'demonstrative' || exMode === 'suffixpronoun') {
     const q = exQuestions[exCurrent];
     document.getElementById('ex-instruction').textContent = 'Is this sentence correct?';
     document.getElementById('ex-sentence').innerHTML = q.sentence;
@@ -1892,12 +1687,10 @@ function exSubmitFill() {
 }
 function exSubmitTrueFalse(chosen) {
   const q = exQuestions[exCurrent];
-  const correct = chosen === q.answer;
   const reveal = document.getElementById('ex-reveal');
-  reveal.innerHTML = (correct ? '✓ Correct! ' : '✗ Incorrect. ') +
-    'The sentence is <strong>' + (q.answer ? 'True' : 'False') + '</strong>.';
-  reveal.style.background = correct ? '#f0fdf4' : '#fef2f2';
-  reveal.style.borderColor = correct ? '#86efac' : '#fca5a5';
+  reveal.innerHTML = 'The sentence is <strong>' + (q.answer ? 'True' : 'False') + '</strong>.';
+  reveal.style.background = '#f0fdf4';
+  reveal.style.borderColor = '#86efac';
   reveal.style.display = 'block';
   const tfWrap = document.getElementById('ex-tf-btns');
   if (tfWrap) tfWrap.style.display = 'none';
@@ -1942,20 +1735,18 @@ function exRate() {
 
 async function exEndSession() {
   clearInterval(exTimerInterval);
-  const dotEarned = exGoalSeconds >= 900;
+  const minutesThisSession = Math.round(exGoalSeconds / 60);
   exRender(`
     <div style="text-align:center;padding:40px 20px">
       <div style="font-size:48px;margin-bottom:16px">🎉</div>
       <div style="font-size:22px;font-weight:800;color:#1a1a2e;margin-bottom:8px">Session complete!</div>
-      <div style="font-size:15px;color:#6b7280;margin-bottom:24px">You answered ${exAnswered} question${exAnswered!==1?'s':''} in ${Math.round(exGoalSeconds/60)} minutes.</div>
-      ${dotEarned ? '<div style="background:#f0fdf4;border:2px solid #86efac;border-radius:12px;padding:14px;margin-bottom:20px;font-size:14px;font-weight:600;color:#15803d">✓ You earned a calendar dot for today!</div>' : ''}
+      <div style="font-size:15px;color:#6b7280;margin-bottom:24px">You answered ${exAnswered} question${exAnswered!==1?'s':''} in ${minutesThisSession} minute${minutesThisSession!==1?'s':''}.</div>
+      <div style="background:#f0fdf4;border:2px solid #86efac;border-radius:12px;padding:14px;margin-bottom:20px;font-size:14px;font-weight:600;color:#15803d">✓ ${minutesThisSession} minute${minutesThisSession!==1?'s':''} added to today's revision</div>
       <button id="ex-again-btn" style="padding:14px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Choose another exercise</button>
     </div>
   `);
   document.getElementById('ex-again-btn').onclick = exShowPicker;
-  if (dotEarned) {
-    window.dispatchEvent(new CustomEvent('ex-session-complete', { detail: { count: Math.round(exGoalSeconds / 60) } }));
-  }
+  window.dispatchEvent(new CustomEvent('ex-session-complete', { detail: { count: minutesThisSession } }));
 }
 
 window.exShowPicker = exShowPicker;
