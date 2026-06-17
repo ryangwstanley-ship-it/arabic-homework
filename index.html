@@ -415,8 +415,6 @@ const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
 
 
-const db = getFirestore(firebaseApp);
-
 // ── FLASHCARD DATA (now loaded from GitHub) ──
 let DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS;
 
@@ -437,7 +435,10 @@ async function loadVocabData() {
 }
 
 await loadVocabData();
- 
+ window.FILL_GAP_QUESTIONS = FILL_GAP_QUESTIONS;
+window.WORD_ORDER_QUESTIONS = WORD_ORDER_QUESTIONS;
+window.CHANGE_WORD_QUESTIONS = CHANGE_WORD_QUESTIONS;
+window.TRUE_FALSE_QUESTIONS = TRUE_FALSE_QUESTIONS;
 
 const STUDENTS = {
   'FHD001': { name: 'Fahad',                display: 'فهد' },
