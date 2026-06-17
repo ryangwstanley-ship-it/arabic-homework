@@ -1733,20 +1733,18 @@ function exRate() {
 
 async function exEndSession() {
   clearInterval(exTimerInterval);
-  const dotEarned = exGoalSeconds >= 900;
+  const minutesThisSession = Math.round(exGoalSeconds / 60);
   exRender(`
     <div style="text-align:center;padding:40px 20px">
       <div style="font-size:48px;margin-bottom:16px">🎉</div>
       <div style="font-size:22px;font-weight:800;color:#1a1a2e;margin-bottom:8px">Session complete!</div>
-      <div style="font-size:15px;color:#6b7280;margin-bottom:24px">You answered ${exAnswered} question${exAnswered!==1?'s':''} in ${Math.round(exGoalSeconds/60)} minutes.</div>
-      ${dotEarned ? '<div style="background:#f0fdf4;border:2px solid #86efac;border-radius:12px;padding:14px;margin-bottom:20px;font-size:14px;font-weight:600;color:#15803d">✓ You earned a calendar dot for today!</div>' : ''}
+      <div style="font-size:15px;color:#6b7280;margin-bottom:24px">You answered ${exAnswered} question${exAnswered!==1?'s':''} in ${minutesThisSession} minute${minutesThisSession!==1?'s':''}.</div>
+      <div style="background:#f0fdf4;border:2px solid #86efac;border-radius:12px;padding:14px;margin-bottom:20px;font-size:14px;font-weight:600;color:#15803d">✓ ${minutesThisSession} minute${minutesThisSession!==1?'s':''} added to today's revision</div>
       <button id="ex-again-btn" style="padding:14px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Choose another exercise</button>
     </div>
   `);
   document.getElementById('ex-again-btn').onclick = exShowPicker;
-  if (dotEarned) {
-    window.dispatchEvent(new CustomEvent('ex-session-complete', { detail: { count: Math.round(exGoalSeconds / 60) } }));
-  }
+  window.dispatchEvent(new CustomEvent('ex-session-complete', { detail: { count: minutesThisSession } }));
 }
 
 window.exShowPicker = exShowPicker;
