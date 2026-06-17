@@ -958,7 +958,7 @@ function renderDayPanel() {
   document.getElementById('day-status').textContent=hasContent?(reviewed?'✓ Reviewed':(isMakeup?'• Made up':'• Uploaded')):'';
 
   // Show flashcard activity if any
-  const fcCount = fcActivity[selectedDate];
+  const fcCount = (allFcActivity[code] || {})[selectedDate];
   if (fcCount) {
     const existing = document.getElementById('day-status');
     existing.textContent += (existing.textContent ? ' · ' : '') + `🃏 ${fcCount} cards`;
