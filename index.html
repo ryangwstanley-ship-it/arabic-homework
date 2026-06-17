@@ -72,6 +72,13 @@
   .tab { padding: 14px 18px; font-size: 14px; font-weight: 600; color: var(--grey); border: none; background: none; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; }
   .tab.active { color: var(--blue); border-bottom-color: var(--blue); }
 
+.home-card { background: white; border-radius: 18px; padding: 26px 22px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); cursor: pointer; border: 2px solid transparent; transition: border 0.2s, transform 0.15s; display: flex; align-items: center; gap: 18px; }
+.home-card:hover { border-color: var(--blue); }
+.home-card:active { transform: scale(0.98); }
+.home-card-icon { font-size: 36px; flex-shrink: 0; }
+.home-card-title { font-size: 18px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+.home-card-desc { font-size: 13px; color: var(--grey); }
+ 
   /* CONTENT */
   .content { padding: 20px; max-width: 600px; }
   .section-label { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--grey); margin-bottom: 12px; }
@@ -295,13 +302,42 @@
 
     <!-- TABS -->
     <div class="tabs" id="tabs-bar" style="display:none">
-      <button class="tab active" id="tab-homework" onclick="switchTab('homework')">📚 Homework</button>
-      <button class="tab" id="tab-flashcards" onclick="switchTab('flashcards')">🃏 Flashcards</button>
-<button class="tab" id="tab-exercises" onclick="switchTab('exercises')">✏️ Exercises</button>
+  <button class="tab active" id="tab-home" onclick="switchTab('home')">🏠 Home</button>
+  <button class="tab" id="tab-homework" onclick="switchTab('homework')">📚 Homework</button>
+  <button class="tab" id="tab-flashcards" onclick="switchTab('flashcards')">🃏 Flashcards</button>
+  <button class="tab" id="tab-exercises" onclick="switchTab('exercises')">✏️ Exercises</button>
+</div>
+
+   <!-- HOME TAB -->
+    <div id="tab-content-home" class="content">
+      <div class="section-label">What would you like to do?</div>
+      <div style="display:flex;flex-direction:column;gap:16px;margin-top:8px;max-width:420px">
+        <div class="home-card" id="home-btn-homework">
+          <div class="home-card-icon">📚</div>
+          <div>
+            <div class="home-card-title">Homework</div>
+            <div class="home-card-desc">Submit today's homework and check your calendar</div>
+          </div>
+        </div>
+        <div class="home-card" id="home-btn-flashcards">
+          <div class="home-card-icon">🃏</div>
+          <div>
+            <div class="home-card-title">Flashcards</div>
+            <div class="home-card-desc">Review vocabulary with spaced repetition</div>
+          </div>
+        </div>
+        <div class="home-card" id="home-btn-exercises">
+          <div class="home-card-icon">✏️</div>
+          <div>
+            <div class="home-card-title">Exercises</div>
+            <div class="home-card-desc">Practise grammar and vocabulary</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- HOMEWORK TAB -->
-    <div id="tab-content-homework" class="content">
+    <div id="tab-content-homework" class="content" style="display:none">
       <div class="streak-card" id="streak-card" style="display:none">
         <div class="streak-left">
           <div class="streak-flame">🔥</div>
@@ -704,6 +740,7 @@ function startApp() {
     document.getElementById('header-sub').textContent=STUDENTS[currentUser]?.display||'';
     document.getElementById('streak-card').style.display='flex';
     document.getElementById('tabs-bar').style.display='flex';
+    switchTab('home');
   }
   render();
 }
@@ -711,14 +748,16 @@ function startApp() {
 // ── TABS ──
 window.switchTab = function(tab) {
   currentTab = tab;
+  document.getElementById('tab-content-home').style.display = tab==='home' ? 'block' : 'none';
   document.getElementById('tab-content-homework').style.display = tab==='homework' ? 'block' : 'none';
   document.getElementById('tab-content-flashcards').style.display = tab==='flashcards' ? 'block' : 'none';
   document.getElementById('tab-content-exercises').style.display = tab==='exercises' ? 'block' : 'none';
+  document.getElementById('tab-home').classList.toggle('active', tab==='home');
   document.getElementById('tab-homework').classList.toggle('active', tab==='homework');
   document.getElementById('tab-flashcards').classList.toggle('active', tab==='flashcards');
   document.getElementById('tab-exercises').classList.toggle('active', tab==='exercises');
   if (tab==='flashcards') renderFlashcards();
- if (tab==='exercises' && typeof exShowPicker === 'function') exShowPicker();
+  if (tab==='exercises' && typeof exShowPicker === 'function') exShowPicker();
 }
 
 
@@ -1256,6 +1295,9 @@ function render(){
   renderCalendar();
 });
 // ── EVENTS ──
+ document.getElementById('home-btn-homework').addEventListener('click', () => switchTab('homework'));
+document.getElementById('home-btn-flashcards').addEventListener('click', () => switchTab('flashcards'));
+document.getElementById('home-btn-exercises').addEventListener('click', () => switchTab('exercises'));
 document.getElementById('login-btn').addEventListener('click',handleLogin);
 document.getElementById('code-input').addEventListener('keydown',e=>{if(e.key==='Enter')handleLogin();});
 document.getElementById('sidebar-view-btn').addEventListener('click',toggleView);
