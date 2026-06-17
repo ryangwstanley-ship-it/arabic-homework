@@ -416,7 +416,7 @@ const db = getFirestore(firebaseApp);
 
 
 // ── FLASHCARD DATA (now loaded from GitHub) ──
-let DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS;
+let DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS;
 
 async function loadVocabData() {
   const url = 'https://raw.githubusercontent.com/ryangwstanley-ship-it/database/main/website%20data%20base';
@@ -424,7 +424,7 @@ async function loadVocabData() {
   const code = await res.text();
   const runner = new Function(
     code.replaceAll('export const', 'const') +
-    '; return { DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS };'
+    '; return { DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS };'
   );
   const data = runner();
   DEFAULT_LESSONS = data.DEFAULT_LESSONS;
@@ -432,6 +432,16 @@ async function loadVocabData() {
   WORD_ORDER_QUESTIONS = data.WORD_ORDER_QUESTIONS;
   CHANGE_WORD_QUESTIONS = data.CHANGE_WORD_QUESTIONS;
   TRUE_FALSE_QUESTIONS = data.TRUE_FALSE_QUESTIONS;
+  DEMONSTRATIVE_QUESTIONS = data.DEMONSTRATIVE_QUESTIONS;
+  SUFFIX_PRONOUN_QUESTIONS = data.SUFFIX_PRONOUN_QUESTIONS;
+
+  // Make these visible to the separate Exercises script tag further down the page
+  window.FILL_GAP_QUESTIONS = FILL_GAP_QUESTIONS;
+  window.WORD_ORDER_QUESTIONS = WORD_ORDER_QUESTIONS;
+  window.CHANGE_WORD_QUESTIONS = CHANGE_WORD_QUESTIONS;
+  window.TRUE_FALSE_QUESTIONS = TRUE_FALSE_QUESTIONS;
+  window.DEMONSTRATIVE_QUESTIONS = DEMONSTRATIVE_QUESTIONS;
+  window.SUFFIX_PRONOUN_QUESTIONS = SUFFIX_PRONOUN_QUESTIONS;
 }
 
 await loadVocabData();
@@ -1300,7 +1310,7 @@ function exShowPicker() {
         <div class="ex-card-desc">A word is missing from a sentence. Type what you think it is.</div>
         <div class="ex-card-note">⏱ Earns a calendar dot after 15 min</div>
       </div>
-     <div class="ex-card" id="btn-wordorder">
+      <div class="ex-card" id="btn-wordorder">
         <div class="ex-card-icon">🔀</div>
         <div class="ex-card-title">Word Order</div>
         <div class="ex-card-desc">Rearrange the words to form a correct sentence.</div>
@@ -1318,17 +1328,36 @@ function exShowPicker() {
         <div class="ex-card-desc">A sentence has one wrong word. Type the correct replacement.</div>
         <div class="ex-card-note">⏱ Earns a calendar dot after 15 min</div>
       </div>
+      <div class="ex-card" id="btn-demonstrative">
+        <div class="ex-card-icon">👉</div>
+        <div class="ex-card-title">Demonstrative Pronouns</div>
+        <div class="ex-card-desc">Practise هذا / هذه / هؤلاء agreement with true/false and correction questions.</div>
+        <div class="ex-card-note">⏱ Earns a calendar dot after 15 min</div>
+      </div>
+      <div class="ex-card" id="btn-suffixpronoun">
+        <div class="ex-card-icon">🔤</div>
+        <div class="ex-card-title">Suffix Pronouns</div>
+        <div class="ex-card-desc">A sentence has the wrong suffix pronoun. Type the correct one.</div>
+        <div class="ex-card-note">⏱ Earns a calendar dot after 15 min</div>
+      </div>
     </div>
   `);
   document.getElementById('btn-fillgap').onclick = () => exShowSetup('fillgap');
   document.getElementById('btn-wordorder').onclick = () => exShowSetup('wordorder');
   document.getElementById('btn-truefalse').onclick = () => exShowSetup('truefalse');
   document.getElementById('btn-changeword').onclick = () => exShowSetup('changeword');
+  document.getElementById('btn-demonstrative').onclick = () => exShowSetup('demonstrative');
+  document.getElementById('btn-suffixpronoun').onclick = () => exShowSetup('suffixpronoun');
 }
 
 function exShowSetup(mode) {
   exMode = mode;
-  const title = mode === 'fillgap' ? '📝 Fill the Gap' : mode === 'wordorder' ? '🔀 Word Order' : mode === 'changeword' ? '✏️ Change One Word' : '✅ True or False';
+  const title = mode === 'fillgap' ? '📝 Fill the Gap'
+  : mode === 'wordorder' ? '🔀 Word Order'
+  : mode === 'changeword' ? '✏️ Change One Word'
+  : mode === 'demonstrative' ? '👉 Demonstrative Pronouns'
+  : mode === 'suffixpronoun' ? '🔤 Suffix Pronouns'
+  : '✅ True or False';
   exRender(`
     <div class="section-label">${title}</div>
     <div style="background:white;border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
@@ -1356,7 +1385,14 @@ function exLaunch() {
   exAnswered = 0;
   exCurrent = 0;
   exDotEarned = false;
-  exQuestions = exShuffle(exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS] : exMode === 'wordorder' ? [...WORD_ORDER_QUESTIONS] : exMode === 'changeword' ? [...CHANGE_WORD_QUESTIONS] : [...TRUE_FALSE_QUESTIONS]);
+  exQuestions = exShuffle(
+  exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS]
+  : exMode === 'wordorder' ? [...WORD_ORDER_QUESTIONS]
+  : exMode === 'changeword' ? [...CHANGE_WORD_QUESTIONS]
+  : exMode === 'demonstrative' ? [...DEMONSTRATIVE_QUESTIONS]
+  : exMode === 'suffixpronoun' ? [...SUFFIX_PRONOUN_QUESTIONS]
+  : [...TRUE_FALSE_QUESTIONS]
+);
   exRenderActive();
   exStartTimer();
   exShowQuestion();
@@ -1414,7 +1450,14 @@ function exUpdateTimer() {
 
 function exShowQuestion() {
   if (exCurrent >= exQuestions.length) {
-    exQuestions = exShuffle(exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS] : exMode === 'wordorder' ? [...WORD_ORDER_QUESTIONS] : exMode === 'changeword' ? [...CHANGE_WORD_QUESTIONS] : [...TRUE_FALSE_QUESTIONS]);
+    exQuestions = exShuffle(
+  exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS]
+  : exMode === 'wordorder' ? [...WORD_ORDER_QUESTIONS]
+  : exMode === 'changeword' ? [...CHANGE_WORD_QUESTIONS]
+  : exMode === 'demonstrative' ? [...DEMONSTRATIVE_QUESTIONS]
+  : exMode === 'suffixpronoun' ? [...SUFFIX_PRONOUN_QUESTIONS]
+  : [...TRUE_FALSE_QUESTIONS]
+);
     exCurrent = 0;
   }
   const revealEl = document.getElementById('ex-reveal');
@@ -1455,7 +1498,7 @@ function exShowQuestion() {
     document.getElementById('ex-sentence').after(tfWrap);
     document.getElementById('ex-tf-true').onclick = () => exSubmitTrueFalse(true);
     document.getElementById('ex-tf-false').onclick = () => exSubmitTrueFalse(false);
-  } else if (exMode === 'changeword') {
+  } else if (exMode === 'changeword' || exMode === 'suffixpronoun') {
     const q = exQuestions[exCurrent];
     document.getElementById('ex-instruction').textContent = 'One word is wrong — type the correct word';
     document.getElementById('ex-sentence').innerHTML = q.sentence;
@@ -1472,6 +1515,42 @@ function exShowQuestion() {
     const freshBtn = document.getElementById('ex-check-btn');
     freshBtn.onclick = exSubmitChangeWord;
     inp.onkeydown = e => { if (e.key === 'Enter') exSubmitChangeWord(); };
+  } else if (exMode === 'demonstrative') {
+    const q = exQuestions[exCurrent];
+    if (q.type === 'tf') {
+      document.getElementById('ex-instruction').textContent = 'Is this phrase correct?';
+      document.getElementById('ex-sentence').innerHTML = q.sentence;
+      document.getElementById('ex-sentence').style.fontSize = '1.4em';
+      document.getElementById('ex-fill-input').style.display = 'none';
+      document.getElementById('ex-word-order').style.display = 'none';
+      const existing = document.getElementById('ex-tf-btns');
+      if (existing) existing.remove();
+      const tfWrap = document.createElement('div');
+      tfWrap.id = 'ex-tf-btns';
+      tfWrap.style.cssText = 'display:flex;gap:12px;justify-content:center;margin-top:8px';
+      tfWrap.innerHTML = `
+        <button id="ex-tf-true" style="flex:1;padding:14px;background:#f0fdf4;color:#15803d;border:2px solid #86efac;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">True</button>
+        <button id="ex-tf-false" style="flex:1;padding:14px;background:#fef2f2;color:#b91c1c;border:2px solid #fca5a5;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">False</button>`;
+      document.getElementById('ex-sentence').after(tfWrap);
+      document.getElementById('ex-tf-true').onclick = () => exSubmitTrueFalse(true);
+      document.getElementById('ex-tf-false').onclick = () => exSubmitTrueFalse(false);
+    } else {
+      document.getElementById('ex-instruction').textContent = 'One word is wrong — type the correct word';
+      document.getElementById('ex-sentence').innerHTML = q.sentence;
+      document.getElementById('ex-sentence').style.fontSize = '1.4em';
+      const fillDiv = document.getElementById('ex-fill-input');
+      fillDiv.style.display = 'flex';
+      document.getElementById('ex-word-order').style.display = 'none';
+      const inp = document.getElementById('ex-answer-input');
+      inp.value = '';
+      inp.placeholder = 'Type the correct word...';
+      setTimeout(() => inp.focus(), 50);
+      const checkBtn = document.getElementById('ex-check-btn');
+      checkBtn.replaceWith(checkBtn.cloneNode(true));
+      const freshBtn = document.getElementById('ex-check-btn');
+      freshBtn.onclick = exSubmitChangeWord;
+      inp.onkeydown = e => { if (e.key === 'Enter') exSubmitChangeWord(); };
+    }
   } else {
     const q = exQuestions[exCurrent];
     document.getElementById('ex-instruction').textContent = 'Put the words in the correct order';
