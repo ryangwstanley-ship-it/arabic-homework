@@ -415,6 +415,30 @@ const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
 
 
+const db = getFirestore(firebaseApp);
+
+// ── FLASHCARD DATA (now loaded from GitHub) ──
+let DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS;
+
+async function loadVocabData() {
+  const url = 'https://raw.githubusercontent.com/ryangwstanley-ship-it/database/main/website%20data%20base';
+  const res = await fetch(url);
+  const code = await res.text();
+  const runner = new Function(
+    code.replaceAll('export const', 'const') +
+    '; return { DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS };'
+  );
+  const data = runner();
+  DEFAULT_LESSONS = data.DEFAULT_LESSONS;
+  FILL_GAP_QUESTIONS = data.FILL_GAP_QUESTIONS;
+  WORD_ORDER_QUESTIONS = data.WORD_ORDER_QUESTIONS;
+  CHANGE_WORD_QUESTIONS = data.CHANGE_WORD_QUESTIONS;
+  TRUE_FALSE_QUESTIONS = data.TRUE_FALSE_QUESTIONS;
+}
+
+await loadVocabData();
+ 
+
 const STUDENTS = {
   'FHD001': { name: 'Fahad',                display: 'فهد' },
   'SAD002': { name: 'Saeed',                display: 'سعيد' },
