@@ -1570,12 +1570,10 @@ function exSubmitFill() {
 }
 function exSubmitTrueFalse(chosen) {
   const q = exQuestions[exCurrent];
-  const correct = chosen === q.answer;
   const reveal = document.getElementById('ex-reveal');
-  reveal.innerHTML = (correct ? '✓ Correct! ' : '✗ Incorrect. ') +
-    'The sentence is <strong>' + (q.answer ? 'True' : 'False') + '</strong>.';
-  reveal.style.background = correct ? '#f0fdf4' : '#fef2f2';
-  reveal.style.borderColor = correct ? '#86efac' : '#fca5a5';
+  reveal.innerHTML = 'The sentence is <strong>' + (q.answer ? 'True' : 'False') + '</strong>.';
+  reveal.style.background = '#f0fdf4';
+  reveal.style.borderColor = '#86efac';
   reveal.style.display = 'block';
   const tfWrap = document.getElementById('ex-tf-btns');
   if (tfWrap) tfWrap.style.display = 'none';
