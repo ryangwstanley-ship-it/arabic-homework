@@ -1081,6 +1081,8 @@ function startTimer() {
   if (fcTimerSecondsLeft === 0) return;
   fcTimerRunning = true;
   fcTimerStarted = true;
+  const resultEl = document.getElementById('fc-session-result');
+  if (resultEl) resultEl.style.display = 'none';
   document.getElementById('fc-timer-start-btn').style.display = 'none';
   document.getElementById('fc-timer-stop-btn').style.display = 'inline-flex';
   fcTimerInterval = setInterval(() => {
