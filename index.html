@@ -1353,14 +1353,16 @@ function exShowPicker() {
 function exShowSetup(mode) {
   exMode = mode;
   const title = mode === 'fillgap' ? '📝 Fill the Gap'
-  : mode === 'wordorder' ? '🔀 Word Order'
-  : mode === 'changeword' ? '✏️ Change One Word'
-  : mode === 'demonstrative' ? '👉 Demonstrative Pronouns'
-  : mode === 'suffixpronoun' ? '🔤 Suffix Pronouns'
-  : '✅ True or False';
+    : mode === 'wordorder' ? '🔀 Word Order'
+    : mode === 'changeword' ? '✏️ Change One Word'
+    : mode === 'demonstrative' ? '👉 Demonstrative Pronouns'
+    : mode === 'suffixpronoun' ? '🔤 Suffix Pronouns'
+    : '✅ True or False';
+  const isGrammarDrill = mode === 'demonstrative' || mode === 'suffixpronoun';
   exRender(`
     <div class="section-label">${title}</div>
     <div style="background:white;border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
+      ${isGrammarDrill ? `<div style="background:#fffbeb;border:1.5px solid #fcd34d;border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:13px;color:#92400e;line-height:1.5">⚠️ These sentences are computer-generated, and the meanings are deliberately nonsensical so you can't guess the answer from context. Focus only on the grammar rule being tested — not what the sentence means.</div>` : ''}
       <div style="font-size:14px;font-weight:600;color:#6b7280;margin-bottom:12px">Choose session length</div>
       <select id="ex-timer-select" style="width:100%;font-size:16px;padding:12px;border:2px solid #e5e7eb;border-radius:10px;outline:none">
         <option value="60">1 minute</option>
@@ -1479,7 +1481,7 @@ function exShowQuestion() {
     setTimeout(() => inp.focus(), 50);
     document.getElementById('ex-check-btn').onclick = exSubmitFill;
     inp.onkeydown = e => { if (e.key === 'Enter') exSubmitFill(); };
-   } else if (exMode === 'truefalse') {
+   } else if (exMode === 'truefalse' || exMode === 'demonstrative' || exMode === 'suffixpronoun') {
     const q = exQuestions[exCurrent];
     document.getElementById('ex-instruction').textContent = 'Is this sentence correct?';
     document.getElementById('ex-sentence').innerHTML = q.sentence;
@@ -1498,7 +1500,7 @@ function exShowQuestion() {
     document.getElementById('ex-sentence').after(tfWrap);
     document.getElementById('ex-tf-true').onclick = () => exSubmitTrueFalse(true);
     document.getElementById('ex-tf-false').onclick = () => exSubmitTrueFalse(false);
-  } else if (exMode === 'changeword' || exMode === 'suffixpronoun') {
+  } else if (exMode === 'changeword') {
     const q = exQuestions[exCurrent];
     document.getElementById('ex-instruction').textContent = 'One word is wrong — type the correct word';
     document.getElementById('ex-sentence').innerHTML = q.sentence;
@@ -1515,42 +1517,6 @@ function exShowQuestion() {
     const freshBtn = document.getElementById('ex-check-btn');
     freshBtn.onclick = exSubmitChangeWord;
     inp.onkeydown = e => { if (e.key === 'Enter') exSubmitChangeWord(); };
-  } else if (exMode === 'demonstrative') {
-    const q = exQuestions[exCurrent];
-    if (q.type === 'tf') {
-      document.getElementById('ex-instruction').textContent = 'Is this phrase correct?';
-      document.getElementById('ex-sentence').innerHTML = q.sentence;
-      document.getElementById('ex-sentence').style.fontSize = '1.4em';
-      document.getElementById('ex-fill-input').style.display = 'none';
-      document.getElementById('ex-word-order').style.display = 'none';
-      const existing = document.getElementById('ex-tf-btns');
-      if (existing) existing.remove();
-      const tfWrap = document.createElement('div');
-      tfWrap.id = 'ex-tf-btns';
-      tfWrap.style.cssText = 'display:flex;gap:12px;justify-content:center;margin-top:8px';
-      tfWrap.innerHTML = `
-        <button id="ex-tf-true" style="flex:1;padding:14px;background:#f0fdf4;color:#15803d;border:2px solid #86efac;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">True</button>
-        <button id="ex-tf-false" style="flex:1;padding:14px;background:#fef2f2;color:#b91c1c;border:2px solid #fca5a5;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">False</button>`;
-      document.getElementById('ex-sentence').after(tfWrap);
-      document.getElementById('ex-tf-true').onclick = () => exSubmitTrueFalse(true);
-      document.getElementById('ex-tf-false').onclick = () => exSubmitTrueFalse(false);
-    } else {
-      document.getElementById('ex-instruction').textContent = 'One word is wrong — type the correct word';
-      document.getElementById('ex-sentence').innerHTML = q.sentence;
-      document.getElementById('ex-sentence').style.fontSize = '1.4em';
-      const fillDiv = document.getElementById('ex-fill-input');
-      fillDiv.style.display = 'flex';
-      document.getElementById('ex-word-order').style.display = 'none';
-      const inp = document.getElementById('ex-answer-input');
-      inp.value = '';
-      inp.placeholder = 'Type the correct word...';
-      setTimeout(() => inp.focus(), 50);
-      const checkBtn = document.getElementById('ex-check-btn');
-      checkBtn.replaceWith(checkBtn.cloneNode(true));
-      const freshBtn = document.getElementById('ex-check-btn');
-      freshBtn.onclick = exSubmitChangeWord;
-      inp.onkeydown = e => { if (e.key === 'Enter') exSubmitChangeWord(); };
-    }
   } else {
     const q = exQuestions[exCurrent];
     document.getElementById('ex-instruction').textContent = 'Put the words in the correct order';
