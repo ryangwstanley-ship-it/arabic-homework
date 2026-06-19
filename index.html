@@ -58,6 +58,13 @@
   .sidebar-view-btn { width: 100%; padding: 9px 12px; background: rgba(255,255,255,0.1); border: none; border-radius: 8px; color: rgba(255,255,255,0.7); font-size: 12px; font-weight: 600; cursor: pointer; transition: background 0.2s; text-align: left; }
   .sidebar-view-btn:hover { background: rgba(255,255,255,0.18); }
 
+.mini-ring-wrap { position: relative; width: 44px; height: 44px; }
+.mini-ring-wrap.centered { margin: 0 auto 8px; }
+.mini-ring { width: 44px; height: 44px; transform: rotate(-90deg); }
+.mini-ring-bg { fill: none; stroke: #e5e7eb; stroke-width: 4; }
+.mini-ring-fg { fill: none; stroke: var(--dot-green); stroke-width: 4; stroke-linecap: round; transition: stroke-dashoffset 0.4s ease; }
+.mini-ring-emoji { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+ 
  .dopamine-box { background:white; border-radius:16px; padding:20px 24px; text-align:center; box-shadow:0 4px 16px rgba(0,0,0,0.12); cursor:pointer; user-select:none; transition:box-shadow 0.15s; }
 .dopamine-box:hover { box-shadow:0 6px 22px rgba(0,0,0,0.18); }
 .dopamine-box.moved { position:fixed; z-index:55; max-width:220px; }
@@ -201,8 +208,8 @@
 
   /* ── FLASHCARDS ── */
   .fc-lesson-picker { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
-  .fc-lesson-btn { padding: 8px 16px; border-radius: 20px; border: 2px solid var(--border); background: white; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--grey); transition: all 0.2s; }
-  .fc-lesson-btn.active { background: var(--blue); border-color: var(--blue); color: white; }
+.fc-lesson-btn { padding: 12px 14px; border-radius: 16px; border: 2px solid var(--border); background: white; cursor: pointer; color: var(--grey); transition: all 0.2s; text-align: center; min-width: 90px; }
+.fc-lesson-btn.active { background: var(--blue-light); border-color: var(--blue); color: var(--ink); }
 
   .fc-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
   .fc-stat { background: white; border-radius: 12px; padding: 14px; text-align: center; }
@@ -575,12 +582,35 @@ let fcTimerStarted = false; // has session started at least once
 let allFcActivity = {};
 // Current lesson level, per student: studentLesson[code] = 1-16
 let studentLesson = {};
+// Per-exercise question mastery: exProgress[mode][questionIndex] = 1(Hard)/2(Medium)/3(Easy)
+let exProgress = {};
 
 // ── UTILS ──
 function dateKey(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 function todayKey() { return dateKey(new Date()); }
 function formatDateLong(key) { const [y,m,d]=key.split('-').map(Number); return new Date(y,m-1,d).toLocaleDateString('en-GB',{weekday:'long',year:'numeric',month:'long',day:'numeric'}); }
 function activeStudentCode() { return isInstructor && !isStudentView ? viewingStudent : currentUser; }
+ function miniRing(percent, emoji, centered) {
+  const r = 18, c = 2 * Math.PI * r;
+  const offset = c - (percent/100)*c;
+  return `<div class="mini-ring-wrap${centered?' centered':''}">
+    <svg class="mini-ring" viewBox="0 0 44 44">
+      <circle class="mini-ring-bg" cx="22" cy="22" r="${r}"></circle>
+      <circle class="mini-ring-fg" cx="22" cy="22" r="${r}" style="stroke-dasharray:${c};stroke-dashoffset:${offset}"></circle>
+    </svg>
+    <div class="mini-ring-emoji">${emoji}</div>
+  </div>`;
+}
+window.miniRing = miniRing;
+
+function getLessonMasteryPercent(lessonNum) {
+  const lesson = LESSONS[lessonNum];
+  if (!lesson) return 0;
+  const activeIdxs = lesson.cards.map((_,i)=>i).filter(i=>!isCardDeleted(lessonNum,i));
+  if (!activeIdxs.length) return 0;
+  const easyCount = activeIdxs.filter(i => getCardProgress(lessonNum,i).lastRating === 3).length;
+  return Math.round((easyCount/activeIdxs.length)*100);
+}
 
 function isMidnightPast(dateStr) {
   const [y,m,d] = dateStr.split('-').map(Number);
@@ -706,6 +736,7 @@ async function loadFlashcardProgress(code) {
       allFcActivity[code] = data.activity || {};
       fcDeletedCards = data.deleted || {};
       studentLesson[code] = data.lesson || 1;
+      exProgress = data.exProgress || {};
       if (data.customCards) {
         Object.entries(data.customCards).forEach(([lessonNum, cards]) => {
           const num = parseInt(lessonNum);
@@ -715,7 +746,7 @@ async function loadFlashcardProgress(code) {
         });
       }
     } else {
-      fcProgress = {}; allFcActivity[code] = {}; fcDeletedCards = {}; studentLesson[code] = 1;
+      fcProgress = {}; allFcActivity[code] = {}; fcDeletedCards = {}; studentLesson[code] = 1; exProgress = {};
     }
   } catch(e) { console.error('FC load error',e); }
 }
@@ -742,12 +773,27 @@ async function saveFlashcardData(code) {
       activity: allFcActivity[code] || {},
       deleted: fcDeletedCards,
       lesson: studentLesson[code] || 1,
+      exProgress,
       customCards
     });
   } catch(e) { console.error('FC save error',e); }
 }
 
 async function setStudentLesson(code, lesson) {
+ window.recordExerciseRating = async function(mode, index, rating) {
+  if (!exProgress[mode]) exProgress[mode] = {};
+  exProgress[mode][index] = rating;
+  const code = currentUser || viewingStudent;
+  await saveFlashcardData(code);
+};
+
+window.getExerciseMasteryPercent = function(mode, poolLength) {
+  const prog = exProgress[mode] || {};
+  if (!poolLength) return 0;
+  let easyCount = 0;
+  for (let i = 0; i < poolLength; i++) { if (prog[i] === 3) easyCount++; }
+  return Math.round((easyCount / poolLength) * 100);
+};
   studentLesson[code] = lesson;
   try {
     await setDoc(doc(db,'flashcards',code), { lesson }, { merge: true });
@@ -1156,7 +1202,7 @@ function deleteCard(lessonNum, cardIdx) {
 
 function getCardProgress(lessonNum, cardIdx) {
   const key = `${lessonNum}_${cardIdx}`;
-  return fcProgress[key] || { interval: 0, easeFactor: 2.5, nextReview: 0, reps: 0 };
+  return fcProgress[key] || { interval: 0, easeFactor: 2.5, nextReview: 0, reps: 0, lastRating: 0 };
 }
 
 function setCardProgress(lessonNum, cardIdx, data) {
@@ -1181,20 +1227,21 @@ function buildFcQueue() {
 }
 
 // SM-2 algorithm
+// rating: 1=Hard, 2=Medium, 3=Easy
 function applyRating(lessonNum, cardIdx, rating) {
   const p = getCardProgress(lessonNum, cardIdx);
   let { interval, easeFactor, reps } = p;
   if (rating === 1) {
     interval = 0; reps = 0;
   } else {
-    if (reps === 0) interval = 1;
-    else if (reps === 1) interval = 6;
-    else interval = Math.round(interval * easeFactor);
+    if (reps === 0) interval = rating === 3 ? 4 : 1;
+    else if (reps === 1) interval = rating === 3 ? 10 : 6;
+    else interval = Math.round(interval * (rating === 3 ? easeFactor * 1.3 : easeFactor));
     reps++;
   }
-  easeFactor = Math.max(1.3, easeFactor + 0.1 - (5 - rating) * (0.08 + (5 - rating) * 0.02));
+  easeFactor = Math.max(1.3, easeFactor + (rating === 3 ? 0.15 : rating === 2 ? 0.05 : -0.15));
   const nextReview = Date.now() + interval * 86400000;
-  setCardProgress(lessonNum, cardIdx, { interval, easeFactor, nextReview, reps });
+  setCardProgress(lessonNum, cardIdx, { interval, easeFactor, nextReview, reps, lastRating: rating });
 }
 
 function renderFlashcards() {
@@ -1202,10 +1249,12 @@ function renderFlashcards() {
   const picker = document.getElementById('fc-lesson-picker');
   picker.innerHTML='';
   Object.entries(LESSONS).forEach(([num, lesson]) => {
+    const lessonNum = parseInt(num);
+    const pct = getLessonMasteryPercent(lessonNum);
     const btn = document.createElement('button');
-    btn.className='fc-lesson-btn'+(parseInt(num)===fcCurrentLesson?' active':'');
-    btn.textContent=lesson.name;
-    btn.onclick=()=>{ fcCurrentLesson=parseInt(num); buildFcQueue(); renderFlashcards(); };
+    btn.className='fc-lesson-btn'+(lessonNum===fcCurrentLesson?' active':'');
+    btn.innerHTML = `${miniRing(pct, '🃏', true)}<div style="font-size:13px;font-weight:600">${lesson.name}</div><div style="font-size:11px;color:var(--grey);margin-top:2px">${pct}% mastered</div>`;
+    btn.onclick=()=>{ fcCurrentLesson=lessonNum; buildFcQueue(); renderFlashcards(); };
     picker.appendChild(btn);
   });
 
@@ -1287,12 +1336,10 @@ function renderFlashcards() {
   const ratingWrap = document.createElement('div');
   ratingWrap.className='fc-rating-wrap';
   ratingWrap.id='fc-rating-wrap';
-  ratingWrap.innerHTML=`
-    <button class="fc-rating-btn fc-r1" data-r="1">1<br>Again</button>
-    <button class="fc-rating-btn fc-r2" data-r="2">2<br>Hard</button>
-    <button class="fc-rating-btn fc-r3" data-r="3">3<br>Good</button>
-    <button class="fc-rating-btn fc-r4" data-r="4">4<br>Easy</button>
-    <button class="fc-rating-btn fc-r5" data-r="5">5<br>Perfect</button>`;
+ ratingWrap.innerHTML=`
+    <button class="fc-rating-btn fc-r2" data-r="1">Hard</button>
+    <button class="fc-rating-btn fc-r3" data-r="2">Medium</button>
+    <button class="fc-rating-btn fc-r4" data-r="3">Easy</button>`;
   area.appendChild(ratingWrap);
 
   const progress = document.createElement('div');
@@ -1496,6 +1543,17 @@ let exTimerSeconds = 0, exTimerInterval = null;
 let exGoalSeconds = 900, exDotEarned = false;
 let exWordSelected = [], exWordBank = [];
 
+ function poolForMode(mode) {
+  return mode === 'fillgap' ? FILL_GAP_QUESTIONS
+    : mode === 'wordorder' ? WORD_ORDER_QUESTIONS
+    : mode === 'changeword' ? CHANGE_WORD_QUESTIONS
+    : mode === 'demonstrative' ? DEMONSTRATIVE_QUESTIONS
+    : mode === 'suffixpronoun' ? SUFFIX_PRONOUN_QUESTIONS
+    : TRUE_FALSE_QUESTIONS;
+}
+function buildExQuestions(mode) {
+  return exShuffle(poolForMode(mode).map((q,i) => ({ ...q, __idx: i })));
+}
 function exShuffle(arr) {
   const a = [...arr];
   for (let i = a.length-1; i > 0; i--) {
@@ -1510,38 +1568,43 @@ function exRender(html) {
 }
 
 function exShowPicker() {
+  const fillgapPct = window.getExerciseMasteryPercent('fillgap', FILL_GAP_QUESTIONS.length);
+  const wordorderPct = window.getExerciseMasteryPercent('wordorder', WORD_ORDER_QUESTIONS.length);
+  const truefalsePct = window.getExerciseMasteryPercent('truefalse', TRUE_FALSE_QUESTIONS.length);
+  const changewordPct = window.getExerciseMasteryPercent('changeword', CHANGE_WORD_QUESTIONS.length);
+  const demonstrativePct = window.getExerciseMasteryPercent('demonstrative', DEMONSTRATIVE_QUESTIONS.length);
   exRender(`
     <div class="section-label">Choose an exercise</div>
     <div style="display:flex;flex-direction:column;gap:14px;margin-top:8px">
-      <div class="ex-card" id="btn-fillgap">
-        <div class="ex-card-icon">📝</div>
+     <div class="ex-card" id="btn-fillgap">
+        ${window.miniRing(fillgapPct, '📝')}
         <div class="ex-card-title">Fill the Gap</div>
         <div class="ex-card-desc">A word is missing from a sentence. Type what you think it is.</div>
-        <div class="ex-card-note">⏱ Earns a calendar dot after 15 min</div>
+        <div class="ex-card-note">${fillgapPct}% mastered</div>
       </div>
       <div class="ex-card" id="btn-wordorder">
-        <div class="ex-card-icon">🔀</div>
+        ${window.miniRing(wordorderPct, '🔀')}
         <div class="ex-card-title">Word Order</div>
         <div class="ex-card-desc">Rearrange the words to form a correct sentence.</div>
-        <div class="ex-card-note">⏱ Earns a calendar dot after 15 min</div>
+        <div class="ex-card-note">${wordorderPct}% mastered</div>
       </div>
-      <div class="ex-card" id="btn-truefalse">
-        <div class="ex-card-icon">✅</div>
+     <div class="ex-card" id="btn-truefalse">
+        ${window.miniRing(truefalsePct, '✅')}
         <div class="ex-card-title">True or False</div>
         <div class="ex-card-desc">Is the sentence correct or does it contain an error?</div>
-        <div class="ex-card-note">⏱ Earns a calendar dot after 15 min</div>
+        <div class="ex-card-note">${truefalsePct}% mastered</div>
       </div>
-      <div class="ex-card" id="btn-changeword">
-        <div class="ex-card-icon">✏️</div>
+     <div class="ex-card" id="btn-changeword">
+        ${window.miniRing(changewordPct, '✏️')}
         <div class="ex-card-title">Change One Word</div>
         <div class="ex-card-desc">A sentence has one wrong word. Type the correct replacement.</div>
-        <div class="ex-card-note">⏱ Earns a calendar dot after 15 min</div>
+        <div class="ex-card-note">${changewordPct}% mastered</div>
       </div>
-      <div class="ex-card" id="btn-demonstrative">
-        <div class="ex-card-icon">👉</div>
+     <div class="ex-card" id="btn-demonstrative">
+        ${window.miniRing(demonstrativePct, '👉')}
         <div class="ex-card-title">Demonstrative Pronouns</div>
         <div class="ex-card-desc">Practise هذا / هذه / هؤلاء agreement with true/false and correction questions.</div>
-        <div class="ex-card-note">⏱ Earns a calendar dot after 15 min</div>
+        <div class="ex-card-note">${demonstrativePct}% mastered</div>
       </div>
       
     </div>
@@ -1591,14 +1654,7 @@ function exLaunch() {
   exAnswered = 0;
   exCurrent = 0;
   exDotEarned = false;
-  exQuestions = exShuffle(
-  exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS]
-  : exMode === 'wordorder' ? [...WORD_ORDER_QUESTIONS]
-  : exMode === 'changeword' ? [...CHANGE_WORD_QUESTIONS]
-  : exMode === 'demonstrative' ? [...DEMONSTRATIVE_QUESTIONS]
-  : exMode === 'suffixpronoun' ? [...SUFFIX_PRONOUN_QUESTIONS]
-  : [...TRUE_FALSE_QUESTIONS]
-);
+  exQuestions = buildExQuestions(exMode);
   exRenderActive();
   exStartTimer();
   exShowQuestion();
@@ -1654,16 +1710,7 @@ function exUpdateTimer() {
   el.style.color = exTimerSeconds <= 30 ? '#dc2626' : '#2563eb';
 }
 
-function exShowQuestion() {
-  if (exCurrent >= exQuestions.length) {
-    exQuestions = exShuffle(
-  exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS]
-  : exMode === 'wordorder' ? [...WORD_ORDER_QUESTIONS]
-  : exMode === 'changeword' ? [...CHANGE_WORD_QUESTIONS]
-  : exMode === 'demonstrative' ? [...DEMONSTRATIVE_QUESTIONS]
-  : exMode === 'suffixpronoun' ? [...SUFFIX_PRONOUN_QUESTIONS]
-  : [...TRUE_FALSE_QUESTIONS]
-);
+exQuestions = buildExQuestions(exMode);
     exCurrent = 0;
   }
   const revealEl = document.getElementById('ex-reveal');
@@ -1768,9 +1815,7 @@ function exSubmitFill() {
   document.getElementById('ex-fill-input').style.display = 'none';
   const ratingEl = document.getElementById('ex-rating-area');
   ratingEl.style.display = 'flex';
-  document.getElementById('ex-rate-hard').onclick = exRate;
-  document.getElementById('ex-rate-med').onclick = exRate;
-  document.getElementById('ex-rate-easy').onclick = exRate;
+  wireRatingButtons();
 }
 function exSubmitTrueFalse(chosen) {
   const q = exQuestions[exCurrent];
@@ -1783,9 +1828,7 @@ function exSubmitTrueFalse(chosen) {
   if (tfWrap) tfWrap.style.display = 'none';
   const ratingEl = document.getElementById('ex-rating-area');
   ratingEl.style.display = 'flex';
-  document.getElementById('ex-rate-hard').onclick = exRate;
-  document.getElementById('ex-rate-med').onclick = exRate;
-  document.getElementById('ex-rate-easy').onclick = exRate;
+  wireRatingButtons();
 }
 function exSubmitChangeWord() {
   console.log('changeword fired');
@@ -1796,9 +1839,7 @@ function exSubmitChangeWord() {
   document.getElementById('ex-fill-input').style.display = 'none';
   const ratingEl = document.getElementById('ex-rating-area');
   ratingEl.style.display = 'flex';
-  document.getElementById('ex-rate-hard').onclick = exRate;
-  document.getElementById('ex-rate-med').onclick = exRate;
-  document.getElementById('ex-rate-easy').onclick = exRate;
+  wireRatingButtons();
 }
 
 function exSubmitWordOrder() {
@@ -1809,15 +1850,21 @@ function exSubmitWordOrder() {
   document.getElementById('ex-word-order').style.display = 'none';
   const ratingEl = document.getElementById('ex-rating-area');
   ratingEl.style.display = 'flex';
-  document.getElementById('ex-rate-hard').onclick = exRate;
-  document.getElementById('ex-rate-med').onclick = exRate;
-  document.getElementById('ex-rate-easy').onclick = exRate;
+  wireRatingButtons();
 }
 
-function exRate() {
+function exRate(rating) {
+  const q = exQuestions[exCurrent];
+  if (window.recordExerciseRating) window.recordExerciseRating(exMode, q.__idx, rating);
   exAnswered++;
   exCurrent++;
   exShowQuestion();
+}
+
+function wireRatingButtons() {
+  document.getElementById('ex-rate-hard').onclick = () => exRate(1);
+  document.getElementById('ex-rate-med').onclick = () => exRate(2);
+  document.getElementById('ex-rate-easy').onclick = () => exRate(3);
 }
 
 async function exEndSession() {
