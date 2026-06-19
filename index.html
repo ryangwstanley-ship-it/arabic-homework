@@ -1711,7 +1711,9 @@ function exUpdateTimer() {
   el.style.color = exTimerSeconds <= 30 ? '#dc2626' : '#2563eb';
 }
 
-exQuestions = buildExQuestions(exMode);
+function exShowQuestion() {
+  if (exCurrent >= exQuestions.length) {
+    exQuestions = buildExQuestions(exMode);
     exCurrent = 0;
   }
   const revealEl = document.getElementById('ex-reveal');
