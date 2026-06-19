@@ -58,6 +58,10 @@
   .sidebar-view-btn { width: 100%; padding: 9px 12px; background: rgba(255,255,255,0.1); border: none; border-radius: 8px; color: rgba(255,255,255,0.7); font-size: 12px; font-weight: 600; cursor: pointer; transition: background 0.2s; text-align: left; }
   .sidebar-view-btn:hover { background: rgba(255,255,255,0.18); }
 
+ .dopamine-box { background:white; border-radius:16px; padding:20px 24px; text-align:center; box-shadow:0 4px 16px rgba(0,0,0,0.12); cursor:pointer; user-select:none; transition:box-shadow 0.15s; }
+.dopamine-box:hover { box-shadow:0 6px 22px rgba(0,0,0,0.18); }
+.dopamine-box.moved { position:fixed; z-index:55; max-width:220px; }
+
   /* MAIN */
   #main { flex: 1; overflow-y: auto; min-width: 0; }
 
@@ -368,6 +372,7 @@
           </div>
         </div>
       </div>
+     <div id="dopamine-zone"></div>
     </div>
 
     <!-- HOMEWORK TAB -->
@@ -793,6 +798,7 @@ function startApp() {
     document.getElementById('header-sub').textContent=STUDENTS[currentUser]?.display||'';
     document.getElementById('tabs-bar').style.display='flex';
     switchTab('home');
+    renderDopamineButton();
   }
   render();
 }
@@ -1346,6 +1352,89 @@ function closeModal(){document.getElementById('modal').classList.remove('open');
 // ── TOAST ──
 let toastTimer;
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2500);}
+
+// ── DOPAMINE BUTTON (Fahd only) ──
+let dopamineBoxPos = null;
+
+function getDopamineState() {
+  try {
+    const raw = localStorage.getItem('fahdDopamineState');
+    const data = raw ? JSON.parse(raw) : null;
+    if (!data || data.date !== todayKey()) {
+      const fresh = { date: todayKey(), stage: 0 };
+      localStorage.setItem('fahdDopamineState', JSON.stringify(fresh));
+      return fresh;
+    }
+    return data;
+  } catch(e) { return { date: todayKey(), stage: 0 }; }
+}
+
+function randomDopaminePos() {
+  return { top: (10 + Math.random()*60) + '%', left: (5 + Math.random()*70) + '%' };
+}
+
+function updateHeaderCoffee(show) {
+  const el = document.getElementById('header-title');
+  if (!el) return;
+  el.textContent = show ? 'My Homework ☕' : 'My Homework';
+}
+
+window.dopamineClick = function() {
+  const state = getDopamineState();
+  localStorage.setItem('fahdDopamineState', JSON.stringify({ date: todayKey(), stage: state.stage + 1 }));
+  renderDopamineButton();
+};
+
+function renderDopamineButton() {
+  const zone = document.getElementById('dopamine-zone');
+  if (!zone) return;
+  if (currentUser !== 'FHD001') { zone.innerHTML = ''; return; }
+
+  const stage = getDopamineState().stage;
+
+  if (stage === 0) {
+    dopamineBoxPos = null;
+    zone.innerHTML = `<div style="display:flex;justify-content:center;margin-top:20px">
+      <div class="dopamine-box" onclick="window.dopamineClick()">
+        <div style="font-size:32px;margin-bottom:6px">🎯</div>
+        <div style="font-weight:800;font-size:14px;color:#1a1a2e">Dopamine Button — for my #1 student</div>
+      </div></div>`;
+    updateHeaderCoffee(false);
+    return;
+  }
+
+  if (stage >= 5) {
+    zone.innerHTML = `<div style="margin-top:20px;text-align:center;color:#6b7280;font-size:14px;font-weight:600">you have lost your dopamine privileges, but here is a coffee ☕</div>`;
+    updateHeaderCoffee(true);
+    return;
+  }
+
+  if (!dopamineBoxPos) dopamineBoxPos = randomDopaminePos();
+
+  let inner = '', label = '', scatter = '';
+  if (stage === 1) {
+    inner = `<div style="font-size:32px">🎯</div>`;
+    label = 'did you actually do the homework, yaa Batal?';
+  } else if (stage === 2) {
+    inner = `<div style="font-size:48px">❌</div>`;
+    label = 'oh no, you broke the website??';
+  } else if (stage === 3) {
+    inner = `<div style="font-size:64px">❌</div>`;
+    label = 'STOP BREAKING THINGS';
+    const p1 = randomDopaminePos(), p2 = randomDopaminePos();
+    scatter = `<div style="position:fixed;top:${p1.top};left:${p1.left};font-size:64px;z-index:60;pointer-events:none">❌</div>
+      <div style="position:fixed;top:${p2.top};left:${p2.left};font-size:64px;z-index:60;pointer-events:none">❌</div>`;
+  } else if (stage === 4) {
+    inner = `<div style="font-size:48px">✅</div>`;
+    label = "phew! don't press it again ya Fahd!";
+  }
+
+  zone.innerHTML = `<div class="dopamine-box moved" style="top:${dopamineBoxPos.top};left:${dopamineBoxPos.left}" onclick="window.dopamineClick()">
+      ${inner}
+      <div style="font-size:13px;font-weight:700;color:#1a1a2e;margin-top:8px;max-width:200px">${label}</div>
+    </div>${scatter}`;
+  updateHeaderCoffee(false);
+}
 
 // ── RENDER ──
 function render(){
