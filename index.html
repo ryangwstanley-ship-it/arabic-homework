@@ -780,7 +780,14 @@ async function saveFlashcardData(code) {
 }
 
 async function setStudentLesson(code, lesson) {
- window.recordExerciseRating = async function(mode, index, rating) {
+  studentLesson[code] = lesson;
+  try {
+    await setDoc(doc(db,'flashcards',code), { lesson }, { merge: true });
+  } catch(e) { console.error('Lesson save error',e); }
+ renderRevisionBanner();
+}
+
+window.recordExerciseRating = async function(mode, index, rating) {
   if (!exProgress[mode]) exProgress[mode] = {};
   exProgress[mode][index] = rating;
   const code = currentUser || viewingStudent;
@@ -794,12 +801,6 @@ window.getExerciseMasteryPercent = function(mode, poolLength) {
   for (let i = 0; i < poolLength; i++) { if (prog[i] === 3) easyCount++; }
   return Math.round((easyCount / poolLength) * 100);
 };
-  studentLesson[code] = lesson;
-  try {
-    await setDoc(doc(db,'flashcards',code), { lesson }, { merge: true });
-  } catch(e) { console.error('Lesson save error',e); }
-  renderRevisionBanner();
-}
 
 async function saveDay(code, dateStr, data) { await setDoc(doc(db,'submissions',code,'days',dateStr), data); }
 
