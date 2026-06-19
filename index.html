@@ -1338,9 +1338,9 @@ function renderFlashcards() {
   ratingWrap.className='fc-rating-wrap';
   ratingWrap.id='fc-rating-wrap';
  ratingWrap.innerHTML=`
-    <button class="fc-rating-btn fc-r2" data-r="1">Hard</button>
-    <button class="fc-rating-btn fc-r3" data-r="2">Medium</button>
-    <button class="fc-rating-btn fc-r4" data-r="3">Easy</button>`;
+    <button class="fc-rating-btn fc-r2" data-r="1">No idea</button>
+    <button class="fc-rating-btn fc-r3" data-r="2">Nearly got it</button>
+    <button class="fc-rating-btn fc-r4" data-r="3">Got it right!</button>`;
   area.appendChild(ratingWrap);
 
   const progress = document.createElement('div');
@@ -1686,9 +1686,9 @@ function exRenderActive() {
       <div id="ex-reveal" style="display:none;background:#f0fdf4;border:2px solid #86efac;border-radius:10px;padding:16px;margin-top:16px;font-size:1.2em;text-align:center;direction:rtl"></div>
     </div>
     <div id="ex-rating-area" style="display:none;gap:10px;margin-bottom:16px">
-      <button id="ex-rate-hard" style="flex:1;padding:12px;background:#fee2e2;color:#b91c1c;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">Hard</button>
-      <button id="ex-rate-med" style="flex:1;padding:12px;background:#fff7ed;color:#c2410c;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">Medium</button>
-      <button id="ex-rate-easy" style="flex:1;padding:12px;background:#f0fdf4;color:#15803d;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">Easy</button>
+      <button id="ex-rate-hard" style="flex:1;padding:12px;background:#fee2e2;color:#b91c1c;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">No idea</button>
+      <button id="ex-rate-med" style="flex:1;padding:12px;background:#fff7ed;color:#c2410c;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">Nearly got it</button>
+      <button id="ex-rate-easy" style="flex:1;padding:12px;background:#f0fdf4;color:#15803d;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">Got it right!</button>
     </div>
   `);
 }
