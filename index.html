@@ -489,7 +489,7 @@ const db = getFirestore(firebaseApp);
 let DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS;
 
 async function loadVocabData() {
-  const url = 'https://raw.githubusercontent.com/ryangwstanley-ship-it/database/main/website%20data%20base';
+  const url = 'https://raw.githubusercontent.com/ryangwstanley-ship-it/database/main/website%20data%20base?t=' + Date.now();
   const res = await fetch(url);
   const code = await res.text();
   const runner = new Function(
