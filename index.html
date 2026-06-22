@@ -515,7 +515,12 @@ async function loadVocabData() {
   
 }
 
-await loadVocabData();
+try {
+  await loadVocabData();
+} catch (e) {
+  console.error('Vocab load failed:', e);
+  alert('Error loading data: ' + e.message);
+}
  window.FILL_GAP_QUESTIONS = FILL_GAP_QUESTIONS;
 window.WORD_ORDER_QUESTIONS = WORD_ORDER_QUESTIONS;
 window.CHANGE_WORD_QUESTIONS = CHANGE_WORD_QUESTIONS;
