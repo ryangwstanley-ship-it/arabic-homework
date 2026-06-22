@@ -486,7 +486,7 @@ const db = getFirestore(firebaseApp);
 
 
 // ── FLASHCARD DATA (now loaded from GitHub) ──
-let DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS;
+let DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS;
 
 async function loadVocabData() {
 
@@ -495,7 +495,7 @@ const res = await fetch(url);
 const code = await res.text();
 const runner = new Function(
 code.replaceAll('export const', 'const') +
-'; return { DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS };'
+'; return { DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS };'
 );
 const data = runner();
 DEFAULT_LESSONS = data.DEFAULT_LESSONS;
@@ -505,6 +505,7 @@ CHANGE_WORD_QUESTIONS = data.CHANGE_WORD_QUESTIONS;
 TRUE_FALSE_QUESTIONS = data.TRUE_FALSE_QUESTIONS;
 DEMONSTRATIVE_QUESTIONS = data.DEMONSTRATIVE_QUESTIONS;
 SUFFIX_PRONOUN_QUESTIONS = data.SUFFIX_PRONOUN_QUESTIONS;
+ADJECTIVE_AGREEMENT_QUESTIONS = data.ADJECTIVE_AGREEMENT_QUESTIONS;
 
 
 window.FILL_GAP_QUESTIONS = FILL_GAP_QUESTIONS;
@@ -513,6 +514,7 @@ window.CHANGE_WORD_QUESTIONS = CHANGE_WORD_QUESTIONS;
 window.TRUE_FALSE_QUESTIONS = TRUE_FALSE_QUESTIONS;
 window.DEMONSTRATIVE_QUESTIONS = DEMONSTRATIVE_QUESTIONS;
 window.SUFFIX_PRONOUN_QUESTIONS = SUFFIX_PRONOUN_QUESTIONS;
+window.ADJECTIVE_AGREEMENT_QUESTIONS = ADJECTIVE_AGREEMENT_QUESTIONS;
 
 }
 
@@ -1610,10 +1612,10 @@ exRender(`
   <div class="ex-card-note">⏱ Earns a calendar dot after 15 min</div>
 </div>
 <div class="ex-card" id="btn-adjectiveagreement">
-  <div class="ex-card-icon">✨</div>
+  ${window.miniRing(window.getExerciseMasteryPercent('adjectiveagreement', ADJECTIVE_AGREEMENT_QUESTIONS.length), '✨')}
   <div class="ex-card-title">Adjective Agreement</div>
   <div class="ex-card-desc">Noun-adjective agreement: is the adjective correctly matched to the noun?</div>
-  <div class="ex-card-note">⏱ Earns a calendar dot after 15 min</div>
+  <div class="ex-card-note">${window.getExerciseMasteryPercent('adjectiveagreement', ADJECTIVE_AGREEMENT_QUESTIONS.length)}% mastered</div>
 </div>
 
 
