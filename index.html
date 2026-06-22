@@ -634,19 +634,39 @@ function getMissedDays(code) {
 }
 
 function getStreak(code) {
+  const lesson = studentLesson[code] || 1;
   const activity = allFcActivity[code] || {};
+  const subs = submissions[code] || {};
+  
   let streak = 0;
   const now = new Date();
   for (let i = 1; i <= 365; i++) {
     const d = new Date(now); d.setDate(now.getDate() - i);
     const key = dateKey(d);
-    if ((activity[key]||0) >= 20) streak++;
-    else if (isMidnightPast(key)) break;
+    
+    // For Lesson 0: check if homework submitted
+    if (lesson === 0) {
+      const hasSub = subs[key] && (subs[key].images?.length || subs[key].text);
+      if (hasSub) streak++;
+      else if (isMidnightPast(key)) break;
+    } else {
+      // Normal: check flashcard minutes
+      if ((activity[key]||0) >= 20) streak++;
+      else if (isMidnightPast(key)) break;
+    }
   }
-  if ((activity[todayKey()]||0) >= 20) streak++;
+  
+  // Check today
+  const today = todayKey();
+  if (lesson === 0) {
+    const todaySub = subs[today] && (subs[today].images?.length || subs[today].text);
+    if (todaySub) streak++;
+  } else {
+    if ((activity[today]||0) >= 20) streak++;
+  }
+  
   return streak;
 }
-
 function getConsistency(code) {
   const activity = allFcActivity[code] || {};
   const keys = Object.keys(activity).filter(k => activity[k] >= 20);
@@ -1247,6 +1267,14 @@ function applyRating(lessonNum, cardIdx, rating) {
 }
 
 function renderFlashcards() {
+  const lesson = studentLesson[activeStudentCode()] || 1;
+  
+  // If student is in "Other", redirect to homework
+  if (lesson === 0) {
+    switchTab('homework');
+    return;
+  }
+
   // Lesson picker
   const picker = document.getElementById('fc-lesson-picker');
   picker.innerHTML='';
@@ -1570,6 +1598,20 @@ function exRender(html) {
 }
 
 function exShowPicker() {
+  const lesson = studentLesson[activeStudentCode()] || 1;
+  
+  // If Lesson 0, show message instead
+  if (lesson === 0) {
+    exRender(`
+      <div style="background:white;border-radius:16px;padding:40px 24px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.08)">
+        <div style="font-size:32px;margin-bottom:12px">📚</div>
+        <div style="font-size:18px;font-weight:700;color:#1a1a2e;margin-bottom:8px">Flashcards & Exercises are optional</div>
+        <div style="font-size:14px;color:#6b7280;margin-bottom:20px">Your streak is based on homework submission. Visit the Homework tab to submit.</div>
+      </div>
+    `);
+    return;
+  }
+
   const fillgapPct = window.getExerciseMasteryPercent('fillgap', FILL_GAP_QUESTIONS.length);
   const wordorderPct = window.getExerciseMasteryPercent('wordorder', WORD_ORDER_QUESTIONS.length);
   const truefalsePct = window.getExerciseMasteryPercent('truefalse', TRUE_FALSE_QUESTIONS.length);
