@@ -1604,10 +1604,16 @@ exRender(`
        <div class="ex-card-note">${changewordPct}% mastered</div>
      </div>
   <div class="ex-card" id="btn-demonstrative">
- <div class="ex-card-icon">👉</div>
- <div class="ex-card-title">Demonstrative Pronouns</div>
- <div class="ex-card-desc">Practise هذا / هذه / هؤلاء agreement with true/false and correction questions.</div>
- <div class="ex-card-note">⏱ Earns a calendar dot after 15 min</div>
+  <div class="ex-card-icon">👉</div>
+  <div class="ex-card-title">Demonstrative Pronouns</div>
+  <div class="ex-card-desc">Practise هذا / هذه / هؤلاء agreement with true/false and correction questions.</div>
+  <div class="ex-card-note">⏱ Earns a calendar dot after 15 min</div>
+</div>
+<div class="ex-card" id="btn-adjectiveagreement">
+  <div class="ex-card-icon">✨</div>
+  <div class="ex-card-title">Adjective Agreement</div>
+  <div class="ex-card-desc">Noun-adjective agreement: is the adjective correctly matched to the noun?</div>
+  <div class="ex-card-note">⏱ Earns a calendar dot after 15 min</div>
 </div>
 
 
@@ -1619,6 +1625,7 @@ document.getElementById('btn-wordorder').onclick = () => exShowSetup('wordorder'
 document.getElementById('btn-truefalse').onclick = () => exShowSetup('truefalse');
 document.getElementById('btn-changeword').onclick = () => exShowSetup('changeword');
 document.getElementById('btn-demonstrative').onclick = () => exShowSetup('demonstrative');
+document.getElementById('btn-adjectiveagreement').onclick = () => exShowSetup('adjectiveagreement');
 
 
 }
@@ -1667,7 +1674,7 @@ exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS]
 : exMode === 'changeword' ? [...CHANGE_WORD_QUESTIONS]
 : exMode === 'demonstrative' ? [...DEMONSTRATIVE_QUESTIONS]
 : exMode === 'suffixpronoun' ? [...SUFFIX_PRONOUN_QUESTIONS]
-
+: exMode === 'adjectiveagreement' ? [...ADJECTIVE_AGREEMENT_QUESTIONS]
 : [...TRUE_FALSE_QUESTIONS]
 );
 exRenderActive();
