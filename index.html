@@ -1764,7 +1764,7 @@ inp.value = '';
 setTimeout(() => inp.focus(), 50);
 document.getElementById('ex-check-btn').onclick = exSubmitFill;
 inp.onkeydown = e => { if (e.key === 'Enter') exSubmitFill(); };
-} else if (exMode === 'truefalse' || exMode === 'demonstrative' || exMode === 'suffixpronoun') {
+} else if (exMode === 'truefalse' || exMode === 'demonstrative' || exMode === 'suffixpronoun' || exMode === 'adjectiveagreement') {
 const q = exQuestions[exCurrent];
 document.getElementById('ex-instruction').textContent = 'Is this sentence correct?';
 document.getElementById('ex-sentence').innerHTML = q.sentence;
