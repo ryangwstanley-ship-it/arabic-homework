@@ -1263,9 +1263,9 @@ function renderFlashcards() {
     const lessonNum = parseInt(num);
     if (lessonNum > maxLesson) return; // Skip lessons beyond student's level
     const btn = document.createElement('button');
-    btn.className='fc-lesson-btn'+(lessonNum===fcCurrentLesson?' active':'');
+    btn.className='fc-lesson-btn'+(num==fcCurrentLesson?' active':'');
     btn.textContent=lesson.name;
-    btn.onclick=()=>{ fcCurrentLesson=lessonNum; buildFcQueue(); renderFlashcards(); };
+    btn.onclick=()=>{ fcCurrentLesson=num; buildFcQueue(); renderFlashcards(); };
     picker.appendChild(btn);
   });
 
