@@ -1,77 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
- <title> DEV </title>
+<title> DEV </title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Arabic Daily</title>
 <style>
- 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --ink: #1a1a2e; --blue: #2563eb; --blue-light: #eff6ff;
-    --green: #16a34a; --dot-green: #22c55e; --dot-blue: #3b82f6;
-    --dot-red: #ef4444; --dot-yellow: #eab308; --grey: #6b7280;
-    --grey-light: #f3f4f6; --border: #e5e7eb; --card-radius: 16px;
-    --sidebar-w: 220px;
-  }
-   { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f4ff; color: var(--ink); min-height: 100vh; }
 
-  /* LOGIN */
-  #login-screen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; background: linear-gradient(160deg, #1a1a2e 0%, #2563eb 100%); }
-  .login-logo { width: 64px; height: 64px; background: white; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 28px; margin-bottom: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
-  .login-title { color: white; font-size: 28px; font-weight: 700; margin-bottom: 6px; }
-  .login-subtitle { color: rgba(255,255,255,0.6); font-size: 14px; margin-bottom: 40px; }
-  .login-card { background: white; border-radius: var(--card-radius); padding: 28px; width: 100%; max-width: 360px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
-  .login-card label { display: block; font-size: 13px; font-weight: 600; color: var(--grey); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
-  .login-card input { width: 100%; padding: 14px 16px; border: 2px solid var(--border); border-radius: 10px; font-size: 18px; letter-spacing: 4px; text-align: center; font-weight: 700; color: var(--ink); outline: none; transition: border-color 0.2s; text-transform: uppercase; }
-  .login-card input:focus { border-color: var(--blue); }
-  .login-btn { width: 100%; margin-top: 16px; padding: 14px; background: var(--blue); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; }
-  .login-btn:hover { background: #1d4ed8; }
-  .login-error { color: #ef4444; font-size: 13px; margin-top: 10px; text-align: center; display: none; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+--ink: #1a1a2e; --blue: #2563eb; --blue-light: #eff6ff;
+--green: #16a34a; --dot-green: #22c55e; --dot-blue: #3b82f6;
+--dot-red: #ef4444; --dot-yellow: #eab308; --grey: #6b7280;
+--grey-light: #f3f4f6; --border: #e5e7eb; --card-radius: 16px;
+--sidebar-w: 220px;
+}
+{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f4ff; color: var(--ink); min-height: 100vh; }
 
-  /* APP */
-  #app { display: none; min-height: 100vh; }
+/* LOGIN */
+#login-screen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; background: linear-gradient(160deg, #1a1a2e 0%, #2563eb 100%); }
+.login-logo { width: 64px; height: 64px; background: white; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 28px; margin-bottom: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+.login-title { color: white; font-size: 28px; font-weight: 700; margin-bottom: 6px; }
+.login-subtitle { color: rgba(255,255,255,0.6); font-size: 14px; margin-bottom: 40px; }
+.login-card { background: white; border-radius: var(--card-radius); padding: 28px; width: 100%; max-width: 360px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+.login-card label { display: block; font-size: 13px; font-weight: 600; color: var(--grey); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+.login-card input { width: 100%; padding: 14px 16px; border: 2px solid var(--border); border-radius: 10px; font-size: 18px; letter-spacing: 4px; text-align: center; font-weight: 700; color: var(--ink); outline: none; transition: border-color 0.2s; text-transform: uppercase; }
+.login-card input:focus { border-color: var(--blue); }
+.login-btn { width: 100%; margin-top: 16px; padding: 14px; background: var(--blue); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; }
+.login-btn:hover { background: #1d4ed8; }
+.login-error { color: #ef4444; font-size: 13px; margin-top: 10px; text-align: center; display: none; }
 
-  /* SIDEBAR */
-  #sidebar { width: var(--sidebar-w); min-width: var(--sidebar-w); background: var(--ink); min-height: 100vh; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; overflow: hidden; transition: width 0.25s, min-width 0.25s; }
-  #sidebar.collapsed { width: 0; min-width: 0; }
-  .sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 20px 16px 16px; border-bottom: 1px solid rgba(255,255,255,0.1); white-space: nowrap; }
-  .sidebar-logo-icon { width: 32px; height: 32px; background: var(--blue); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
-  .sidebar-logo-text { color: white; font-size: 14px; font-weight: 700; }
-  .sidebar-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.35); padding: 16px 16px 8px; white-space: nowrap; }
-  .sidebar-students { flex: 1; overflow-y: auto; padding: 0 8px 16px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent; }
-  .sidebar-student { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 10px; cursor: pointer; transition: background 0.15s; margin-bottom: 2px; white-space: nowrap; }
-  .sidebar-student:hover { background: rgba(255,255,255,0.08); }
-  .sidebar-student.active { background: rgba(255,255,255,0.15); }
-  .sidebar-avatar { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: white; flex-shrink: 0; }
-  .sidebar-info { flex: 1; overflow: hidden; }
-  .sidebar-name { color: white; font-size: 13px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; }
-  .sidebar-streak { color: rgba(255,255,255,0.5); font-size: 11px; }
-  .status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-  .status-dot.green { background: var(--dot-green); }
-  .status-dot.red { background: var(--dot-red); }
-  .status-dot.grey { background: rgba(255,255,255,0.2); }
-  .sidebar-bottom { padding: 12px 8px; border-top: 1px solid rgba(255,255,255,0.1); white-space: nowrap; }
-  .sidebar-view-btn { width: 100%; padding: 9px 12px; background: rgba(255,255,255,0.1); border: none; border-radius: 8px; color: rgba(255,255,255,0.7); font-size: 12px; font-weight: 600; cursor: pointer; transition: background 0.2s; text-align: left; }
-  .sidebar-view-btn:hover { background: rgba(255,255,255,0.18); }
+/* APP */
+#app { display: none; min-height: 100vh; }
 
-  /* MAIN */
-  #main { flex: 1; overflow-y: auto; min-width: 0; }
+/* SIDEBAR */
+#sidebar { width: var(--sidebar-w); min-width: var(--sidebar-w); background: var(--ink); min-height: 100vh; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; overflow: hidden; transition: width 0.25s, min-width 0.25s; }
+#sidebar.collapsed { width: 0; min-width: 0; }
+.sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 20px 16px 16px; border-bottom: 1px solid rgba(255,255,255,0.1); white-space: nowrap; }
+.sidebar-logo-icon { width: 32px; height: 32px; background: var(--blue); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.sidebar-logo-text { color: white; font-size: 14px; font-weight: 700; }
+.sidebar-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.35); padding: 16px 16px 8px; white-space: nowrap; }
+.sidebar-students { flex: 1; overflow-y: auto; padding: 0 8px 16px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent; }
+.sidebar-student { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 10px; cursor: pointer; transition: background 0.15s; margin-bottom: 2px; white-space: nowrap; }
+.sidebar-student:hover { background: rgba(255,255,255,0.08); }
+.sidebar-student.active { background: rgba(255,255,255,0.15); }
+.sidebar-avatar { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: white; flex-shrink: 0; }
+.sidebar-info { flex: 1; overflow: hidden; }
+.sidebar-name { color: white; font-size: 13px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; }
+.sidebar-streak { color: rgba(255,255,255,0.5); font-size: 11px; }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.status-dot.green { background: var(--dot-green); }
+.status-dot.red { background: var(--dot-red); }
+.status-dot.grey { background: rgba(255,255,255,0.2); }
+.hw-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; background: rgba(255,255,255,0.15); }
+.hw-dot.done { background: var(--dot-green); }
+.sidebar-bottom { padding: 12px 8px; border-top: 1px solid rgba(255,255,255,0.1); white-space: nowrap; }
+.sidebar-view-btn { width: 100%; padding: 9px 12px; background: rgba(255,255,255,0.1); border: none; border-radius: 8px; color: rgba(255,255,255,0.7); font-size: 12px; font-weight: 600; cursor: pointer; transition: background 0.2s; text-align: left; }
+.sidebar-view-btn:hover { background: rgba(255,255,255,0.18); }
 
-  /* HEADER */
-  .header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; background: white; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10; gap: 12px; }
-  .header-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
-  .sidebar-toggle { width: 36px; height: 36px; border: none; background: var(--grey-light); border-radius: 10px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .header-icon { width: 36px; height: 36px; background: var(--blue); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
-  .header-title { font-size: 17px; font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .header-sub { font-size: 12px; color: var(--grey); }
-  .view-toggle { padding: 7px 14px; background: var(--grey-light); border: none; border-radius: 8px; font-size: 13px; font-weight: 600; color: var(--grey); cursor: pointer; flex-shrink: 0; }
+.mini-ring-wrap { position: relative; width: 44px; height: 44px; }
+.mini-ring-wrap.centered { margin: 0 auto 8px; }
+.mini-ring { width: 44px; height: 44px; transform: rotate(-90deg); }
+.mini-ring-bg { fill: none; stroke: #e5e7eb; stroke-width: 4; }
+.mini-ring-fg { fill: none; stroke: var(--dot-green); stroke-width: 4; stroke-linecap: round; transition: stroke-dashoffset 0.4s ease; }
+.mini-ring-emoji { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 20px; }
 
-  /* TABS */
-  .tabs { display: flex; background: white; border-bottom: 1px solid var(--border); padding: 0 20px; }
-  .tab { padding: 14px 18px; font-size: 14px; font-weight: 600; color: var(--grey); border: none; background: none; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; }
-  .tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+.dopamine-box { background:white; border-radius:16px; padding:20px 24px; text-align:center; box-shadow:0 4px 16px rgba(0,0,0,0.12); cursor:pointer; user-select:none; transition:box-shadow 0.15s; }
+.dopamine-box:hover { box-shadow:0 6px 22px rgba(0,0,0,0.18); }
+.dopamine-box.moved { position:fixed; z-index:55; max-width:220px; }
+
+/* MAIN */
+#main { flex: 1; overflow-y: auto; min-width: 0; }
+
+/* HEADER */
+.header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; background: white; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10; gap: 12px; }
+.header-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.sidebar-toggle { width: 36px; height: 36px; border: none; background: var(--grey-light); border-radius: 10px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.header-icon { width: 36px; height: 36px; background: var(--blue); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.header-title { font-size: 17px; font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.header-sub { font-size: 12px; color: var(--grey); }
+.view-toggle { padding: 7px 14px; background: var(--grey-light); border: none; border-radius: 8px; font-size: 13px; font-weight: 600; color: var(--grey); cursor: pointer; flex-shrink: 0; }
+
+/* TABS */
+.tabs { display: flex; background: white; border-bottom: 1px solid var(--border); padding: 0 20px; }
+.tab { padding: 14px 18px; font-size: 14px; font-weight: 600; color: var(--grey); border: none; background: none; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; }
+.tab.active { color: var(--blue); border-bottom-color: var(--blue); }
 .revision-banner { display: none; align-items: center; gap: 16px; background: var(--ink); padding: 14px 20px; }
 .revision-ring-wrap { position: relative; width: 56px; height: 56px; flex-shrink: 0; }
 .revision-ring { width: 56px; height: 56px; transform: rotate(-90deg); }
@@ -85,7 +98,7 @@
 .revision-rank { text-align: right; flex-shrink: 0; }
 .revision-rank-num { color: white; font-size: 18px; font-weight: 700; }
 .revision-rank-label { color: rgba(255,255,255,0.5); font-size: 11px; }
- 
+
 
 .home-card { background: white; border-radius: 18px; padding: 26px 22px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); cursor: pointer; border: 2px solid transparent; transition: border 0.2s, transform 0.15s; display: flex; align-items: center; gap: 18px; }
 .home-card:hover { border-color: var(--blue); }
@@ -93,367 +106,366 @@
 .home-card-icon { font-size: 36px; flex-shrink: 0; }
 .home-card-title { font-size: 18px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
 .home-card-desc { font-size: 13px; color: var(--grey); }
- 
-  /* CONTENT */
-  .content { padding: 20px; max-width: 600px; }
-  .section-label { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--grey); margin-bottom: 12px; }
 
-  /* STREAK CARD */
-  .streak-card { background: var(--ink); border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; }
-  .streak-left { display: flex; align-items: center; gap: 14px; }
-  .streak-flame { font-size: 36px; }
-  .streak-count { font-size: 32px; font-weight: 800; color: white; line-height: 1; }
-  .streak-label { font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 2px; }
-  .streak-rank { text-align: right; }
-  .streak-rank-num { font-size: 22px; font-weight: 700; color: white; }
-  .streak-rank-label { font-size: 12px; color: rgba(255,255,255,0.5); }
+/* CONTENT */
+.content { padding: 20px; max-width: 600px; }
+.section-label { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--grey); margin-bottom: 12px; }
 
-  /* BANNER */
-  .banner { border-radius: var(--card-radius); padding: 16px 18px; margin-bottom: 20px; display: flex; align-items: flex-start; gap: 12px; }
-  .banner.yellow { background: #fefce8; border: 1.5px solid #fde047; }
-  .banner.red { background: #fef2f2; border: 1.5px solid #fca5a5; }
-  .banner-icon { font-size: 22px; flex-shrink: 0; }
-  .banner-title { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 3px; }
-  .banner-sub { font-size: 13px; color: var(--grey); }
+/* STREAK CARD */
+.streak-card { background: var(--ink); border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; }
+.streak-left { display: flex; align-items: center; gap: 14px; }
+.streak-flame { font-size: 36px; }
+.streak-count { font-size: 32px; font-weight: 800; color: white; line-height: 1; }
+.streak-label { font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 2px; }
+.streak-rank { text-align: right; }
+.streak-rank-num { font-size: 22px; font-weight: 700; color: white; }
+.streak-rank-label { font-size: 12px; color: rgba(255,255,255,0.5); }
 
-  /* CALENDAR */
-  .calendar-card { background: white; border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
-  .cal-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-  .cal-nav-btn { width: 32px; height: 32px; border: none; background: none; font-size: 18px; cursor: pointer; color: var(--grey); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
-  .cal-nav-btn:hover { background: var(--grey-light); }
-  .cal-month { font-size: 16px; font-weight: 700; direction: rtl; }
-  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
-  .cal-day-header { text-align: center; font-size: 11px; color: var(--grey); font-weight: 600; padding: 4px 0 8px; direction: rtl; }
-  .cal-day { display: flex; flex-direction: column; align-items: center; padding: 6px 2px; border-radius: 10px; cursor: pointer; transition: background 0.15s; min-height: 52px; }
-  .cal-day:hover:not(.other-month) { background: var(--grey-light); }
-  .cal-day.today .day-num { background: var(--blue-light); color: var(--blue); font-weight: 700; border-radius: 8px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
-  .cal-day.selected { background: var(--grey-light); }
-  .cal-day.selected .day-num { color: var(--ink); font-weight: 700; }
-  .cal-day.selected.sel-green { background: #dcfce7; }
-  .cal-day.selected.sel-green .day-num { color: var(--green); }
-  .cal-day.selected.sel-yellow { background: #fef9c3; }
-  .cal-day.selected.sel-yellow .day-num { color: #854d0e; }
-  .cal-day.selected.sel-blue { background: var(--blue-light); }
-  .cal-day.selected.sel-blue .day-num { color: var(--blue); }
-  .day-num { font-size: 14px; color: var(--ink); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
-  .other-month .day-num { color: var(--border); }
+/* BANNER */
+.banner { border-radius: var(--card-radius); padding: 16px 18px; margin-bottom: 20px; display: flex; align-items: flex-start; gap: 12px; }
+.banner.yellow { background: #fefce8; border: 1.5px solid #fde047; }
+.banner.red { background: #fef2f2; border: 1.5px solid #fca5a5; }
+.banner-icon { font-size: 22px; flex-shrink: 0; }
+.banner-title { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 3px; }
+.banner-sub { font-size: 13px; color: var(--grey); }
 
-  /* Activity squares instead of dots */
-  .dots { display: flex; gap: 2px; margin-top: 3px; height: 8px; align-items: center; flex-wrap: wrap; justify-content: center; }
-  .dot { width: 7px; height: 7px; border-radius: 2px; flex-shrink: 0; }
-  .dot-green { background: var(--dot-green); }
-  .dot-blue { background: var(--dot-blue); }
-  .dot-yellow { background: var(--dot-yellow); }
-  /* Flashcard activity square */
-  .dot-fc { background: #8b5cf6; }
+/* CALENDAR */
+.calendar-card { background: white; border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+.cal-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.cal-nav-btn { width: 32px; height: 32px; border: none; background: none; font-size: 18px; cursor: pointer; color: var(--grey); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+.cal-nav-btn:hover { background: var(--grey-light); }
+.cal-month { font-size: 16px; font-weight: 700; direction: rtl; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.cal-day-header { text-align: center; font-size: 11px; color: var(--grey); font-weight: 600; padding: 4px 0 8px; direction: rtl; }
+.cal-day { display: flex; flex-direction: column; align-items: center; padding: 6px 2px; border-radius: 10px; cursor: pointer; transition: background 0.15s; min-height: 52px; }
+.cal-day:hover:not(.other-month) { background: var(--grey-light); }
+.cal-day.today .day-num { background: var(--blue-light); color: var(--blue); font-weight: 700; border-radius: 8px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
+.cal-day.selected { background: var(--grey-light); }
+.cal-day.selected .day-num { color: var(--ink); font-weight: 700; }
+.cal-day.selected.sel-green { background: #dcfce7; }
+.cal-day.selected.sel-green .day-num { color: var(--green); }
+.cal-day.selected.sel-yellow { background: #fef9c3; }
+.cal-day.selected.sel-yellow .day-num { color: #854d0e; }
+.cal-day.selected.sel-blue { background: var(--blue-light); }
+.cal-day.selected.sel-blue .day-num { color: var(--blue); }
+.day-num { font-size: 14px; color: var(--ink); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
+.other-month .day-num { color: var(--border); }
 
-  .cal-legend { display: flex; gap: 12px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); flex-wrap: wrap; }
-  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--grey); }
-  .legend-sq { width: 10px; height: 10px; border-radius: 2px; }
+/* Activity squares instead of dots */
+.dots { display: flex; gap: 2px; margin-top: 3px; height: 8px; align-items: center; flex-wrap: wrap; justify-content: center; }
+.dot { width: 7px; height: 7px; border-radius: 2px; flex-shrink: 0; }
+.dot-green { background: var(--dot-green); }
+.dot-blue { background: var(--dot-blue); }
+.dot-yellow { background: var(--dot-yellow); }
+/* Flashcard activity square */
+.dot-fc { background: #8b5cf6; }
 
-  /* DAY CARD */
-  .day-card { border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; background: var(--grey-light); color: var(--ink); }
-  .day-card.card-green { background: #16a34a; color: white; }
-  .day-card.card-yellow { background: #ca8a04; color: white; }
-  .day-card.card-blue { background: var(--blue); color: white; }
-  .day-card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; }
-  .day-badge { background: rgba(0,0,0,0.1); border-radius: 20px; padding: 4px 10px; font-size: 12px; font-weight: 600; }
-  .day-card.card-green .day-badge, .day-card.card-yellow .day-badge, .day-card.card-blue .day-badge { background: rgba(255,255,255,0.2); }
-  .day-status { font-size: 13px; opacity: 0.85; }
-  .day-date { font-size: 22px; font-weight: 700; line-height: 1.2; }
-  .review-btn { padding: 10px 18px; border-radius: 10px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap; }
-  .review-btn.reviewed { background: rgba(255,255,255,0.25); color: white; }
-  .review-btn.not-reviewed { background: white; color: var(--blue); }
+.cal-legend { display: flex; gap: 12px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--grey); }
+.legend-sq { width: 10px; height: 10px; border-radius: 2px; }
 
-  /* SUBMISSIONS */
-  .submissions-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px; }
-  .submission-thumb { border-radius: 12px; overflow: hidden; position: relative; background: var(--grey-light); aspect-ratio: 3/4; cursor: pointer; }
-  .submission-thumb img { width: 100%; height: 100%; object-fit: cover; }
-  .submission-badge { position: absolute; top: 8px; left: 8px; color: white; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px; }
-  .submission-badge.reviewed-badge { background: var(--blue); }
-  .submission-badge.uploaded-badge { background: var(--green); }
-  .submission-badge.makeup-badge { background: var(--dot-yellow); color: #1a1a2e; }
+/* DAY CARD */
+.day-card { border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; background: var(--grey-light); color: var(--ink); }
+.day-card.card-green { background: #16a34a; color: white; }
+.day-card.card-yellow { background: #ca8a04; color: white; }
+.day-card.card-blue { background: var(--blue); color: white; }
+.day-card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; }
+.day-badge { background: rgba(0,0,0,0.1); border-radius: 20px; padding: 4px 10px; font-size: 12px; font-weight: 600; }
+.day-card.card-green .day-badge, .day-card.card-yellow .day-badge, .day-card.card-blue .day-badge { background: rgba(255,255,255,0.2); }
+.day-status { font-size: 13px; opacity: 0.85; }
+.day-date { font-size: 22px; font-weight: 700; line-height: 1.2; }
+.review-btn { padding: 10px 18px; border-radius: 10px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+.review-btn.reviewed { background: rgba(255,255,255,0.25); color: white; }
+.review-btn.not-reviewed { background: white; color: var(--blue); }
 
-  /* TEXT SUBMISSION */
-  .text-submission { background: white; border-radius: 12px; padding: 16px; margin-bottom: 16px; border: 1.5px solid var(--border); }
-  .text-submission-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--grey); margin-bottom: 8px; }
-  .text-submission-content { font-size: 15px; color: var(--ink); line-height: 1.6; direction: auto; }
+/* SUBMISSIONS */
+.submissions-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px; }
+.submission-thumb { border-radius: 12px; overflow: hidden; position: relative; background: var(--grey-light); aspect-ratio: 3/4; cursor: pointer; }
+.submission-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.submission-badge { position: absolute; top: 8px; left: 8px; color: white; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px; }
+.submission-badge.reviewed-badge { background: var(--blue); }
+.submission-badge.uploaded-badge { background: var(--green); }
+.submission-badge.makeup-badge { background: var(--dot-yellow); color: #1a1a2e; }
 
-  /* UPLOAD */
-  .upload-section { background: white; border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; border: 1.5px solid var(--border); }
-  .upload-section-title { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 16px; }
-  .upload-area { border: 2px dashed var(--border); border-radius: 12px; padding: 24px; text-align: center; cursor: pointer; transition: all 0.2s; margin-bottom: 12px; }
-  .upload-area:hover { border-color: var(--blue); background: var(--blue-light); }
-  .upload-icon { font-size: 28px; margin-bottom: 6px; }
-  .upload-title { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
-  .upload-sub { font-size: 12px; color: var(--grey); }
-  #file-input { display: none; }
-  .text-input-wrap textarea { width: 100%; padding: 12px 14px; border: 2px solid var(--border); border-radius: 10px; font-size: 15px; color: var(--ink); resize: vertical; min-height: 100px; outline: none; font-family: inherit; transition: border-color 0.2s; direction: auto; }
-  .text-input-wrap textarea:focus { border-color: var(--blue); }
-  .submit-btn { width: 100%; margin-top: 12px; padding: 14px; background: var(--blue); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; }
-  .submit-btn:disabled { background: var(--grey); cursor: not-allowed; }
+/* TEXT SUBMISSION */
+.text-submission { background: white; border-radius: 12px; padding: 16px; margin-bottom: 16px; border: 1.5px solid var(--border); }
+.text-submission-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--grey); margin-bottom: 8px; }
+.text-submission-content { font-size: 15px; color: var(--ink); line-height: 1.6; direction: auto; }
 
-  /* ── FLASHCARDS ── */
-  .fc-lesson-picker { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
-  .fc-lesson-btn { padding: 8px 16px; border-radius: 20px; border: 2px solid var(--border); background: white; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--grey); transition: all 0.2s; }
-  .fc-lesson-btn.active { background: var(--blue); border-color: var(--blue); color: white; }
+/* UPLOAD */
+.upload-section { background: white; border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; border: 1.5px solid var(--border); }
+.upload-section-title { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 16px; }
+.upload-area { border: 2px dashed var(--border); border-radius: 12px; padding: 24px; text-align: center; cursor: pointer; transition: all 0.2s; margin-bottom: 12px; }
+.upload-area:hover { border-color: var(--blue); background: var(--blue-light); }
+.upload-icon { font-size: 28px; margin-bottom: 6px; }
+.upload-title { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+.upload-sub { font-size: 12px; color: var(--grey); }
+#file-input { display: none; }
+.text-input-wrap textarea { width: 100%; padding: 12px 14px; border: 2px solid var(--border); border-radius: 10px; font-size: 15px; color: var(--ink); resize: vertical; min-height: 100px; outline: none; font-family: inherit; transition: border-color 0.2s; direction: auto; }
+.text-input-wrap textarea:focus { border-color: var(--blue); }
+.submit-btn { width: 100%; margin-top: 12px; padding: 14px; background: var(--blue); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; }
+.submit-btn:disabled { background: var(--grey); cursor: not-allowed; }
 
-  .fc-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-  .fc-stat { background: white; border-radius: 12px; padding: 14px; text-align: center; }
-  .fc-stat-num { font-size: 22px; font-weight: 800; color: var(--ink); }
-  .fc-stat-label { font-size: 11px; color: var(--grey); margin-top: 2px; }
+/* ── FLASHCARDS ── */
+.fc-lesson-picker { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+.fc-lesson-btn { padding: 12px 14px; border-radius: 16px; border: 2px solid var(--border); background: white; cursor: pointer; color: var(--grey); transition: all 0.2s; text-align: center; min-width: 90px; }
+.fc-lesson-btn.active { background: var(--blue-light); border-color: var(--blue); color: var(--ink); }
 
-  /* TIMER PANEL */
-  .fc-timer-panel { background: white; border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
-  .fc-timer-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-  .fc-timer-display { font-size: 36px; font-weight: 800; color: var(--ink); font-variant-numeric: tabular-nums; letter-spacing: 2px; min-width: 90px; }
-  .fc-timer-display.running { color: var(--green); }
-  .fc-timer-display.done { color: var(--dot-red); }
-  .fc-timer-controls { display: flex; gap: 8px; align-items: center; }
-  .fc-timer-btn { padding: 10px 18px; border-radius: 10px; border: none; font-size: 14px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
-  .fc-timer-start { background: var(--green); color: white; }
-  .fc-timer-stop { background: #fee2e2; color: #b91c1c; }
-  .fc-timer-reset { background: var(--grey-light); color: var(--grey); }
-  .fc-timer-goal { display: flex; align-items: center; gap: 8px; margin-top: 14px; }
-  .fc-timer-goal label { font-size: 12px; color: var(--grey); font-weight: 600; white-space: nowrap; }
-  .fc-timer-goal input[type=range] { flex: 1; accent-color: var(--blue); }
-  .fc-timer-goal-val { font-size: 13px; font-weight: 700; color: var(--blue); min-width: 32px; text-align: right; }
-  .fc-session-result { margin-top: 14px; padding: 12px 14px; background: #f0fdf4; border-radius: 10px; font-size: 14px; font-weight: 600; color: var(--green); display: none; }
+.fc-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+.fc-stat { background: white; border-radius: 12px; padding: 14px; text-align: center; }
+.fc-stat-num { font-size: 22px; font-weight: 800; color: var(--ink); }
+.fc-stat-label { font-size: 11px; color: var(--grey); margin-top: 2px; }
 
-  .fc-card-wrap { perspective: 1000px; margin-bottom: 20px; }
-  .fc-card { background: white; border-radius: var(--card-radius); padding: 48px 28px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.08); min-height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.15s; position: relative; }
-  .fc-card:active { transform: scale(0.98); }
-  .fc-arabic { font-size: 42px; font-weight: 700; color: var(--ink); line-height: 1.3; direction: rtl; margin-bottom: 8px; }
-  .fc-tap-hint { font-size: 13px; color: var(--grey); margin-top: 16px; }
-  .fc-english { font-size: 22px; font-weight: 600; color: var(--blue); margin-top: 12px; display: none; }
-  .fc-card.revealed .fc-english { display: block; }
-  .fc-card.revealed .fc-tap-hint { display: none; }
+/* TIMER PANEL */
+.fc-timer-panel { background: white; border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+.fc-timer-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.fc-timer-display { font-size: 36px; font-weight: 800; color: var(--ink); font-variant-numeric: tabular-nums; letter-spacing: 2px; min-width: 90px; }
+.fc-timer-display.running { color: var(--green); }
+.fc-timer-display.done { color: var(--dot-red); }
+.fc-timer-controls { display: flex; gap: 8px; align-items: center; }
+.fc-timer-btn { padding: 10px 18px; border-radius: 10px; border: none; font-size: 14px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
+.fc-timer-start { background: var(--green); color: white; }
+.fc-timer-stop { background: #fee2e2; color: #b91c1c; }
+.fc-timer-reset { background: var(--grey-light); color: var(--grey); }
+.fc-timer-goal { display: flex; align-items: center; gap: 8px; margin-top: 14px; }
+.fc-timer-goal label { font-size: 12px; color: var(--grey); font-weight: 600; white-space: nowrap; }
+.fc-timer-goal input[type=range] { flex: 1; accent-color: var(--blue); }
+.fc-timer-goal-val { font-size: 13px; font-weight: 700; color: var(--blue); min-width: 32px; text-align: right; }
+.fc-session-result { margin-top: 14px; padding: 12px 14px; background: #f0fdf4; border-radius: 10px; font-size: 14px; font-weight: 600; color: var(--green); display: none; }
 
-  /* Delete button on card */
-  .fc-delete-btn { position: absolute; top: 12px; right: 12px; width: 28px; height: 28px; border-radius: 50%; border: none; background: #fee2e2; color: #b91c1c; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0.6; transition: opacity 0.2s; }
-  .fc-delete-btn:hover { opacity: 1; }
+.fc-card-wrap { perspective: 1000px; margin-bottom: 20px; }
+.fc-card { background: white; border-radius: var(--card-radius); padding: 48px 28px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.08); min-height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.15s; position: relative; }
+.fc-card:active { transform: scale(0.98); }
+.fc-arabic { font-size: 42px; font-weight: 700; color: var(--ink); line-height: 1.3; direction: rtl; margin-bottom: 8px; }
+.fc-tap-hint { font-size: 13px; color: var(--grey); margin-top: 16px; }
+.fc-english { font-size: 22px; font-weight: 600; color: var(--blue); margin-top: 12px; display: none; }
+.fc-card.revealed .fc-english { display: block; }
+.fc-card.revealed .fc-tap-hint { display: none; }
 
-  .fc-rating-wrap { display: none; gap: 8px; margin-bottom: 20px; }
-  .fc-rating-wrap.visible { display: flex; }
-  .fc-rating-btn { flex: 1; padding: 12px 4px; border: none; border-radius: 10px; font-size: 12px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
-  .fc-rating-btn:hover { opacity: 0.85; }
-  .fc-r1 { background: #fef2f2; color: #b91c1c; }
-  .fc-r2 { background: #fff7ed; color: #c2410c; }
-  .fc-r3 { background: #fefce8; color: #854d0e; }
-  .fc-r4 { background: #f0fdf4; color: #15803d; }
-  .fc-r5 { background: #eff6ff; color: #1d4ed8; }
+/* Delete button on card */
+.fc-delete-btn { position: absolute; top: 12px; right: 12px; width: 28px; height: 28px; border-radius: 50%; border: none; background: #fee2e2; color: #b91c1c; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0.6; transition: opacity 0.2s; }
+.fc-delete-btn:hover { opacity: 1; }
 
-  .fc-done { background: white; border-radius: var(--card-radius); padding: 40px 28px; text-align: center; margin-bottom: 20px; }
-  .fc-done-icon { font-size: 48px; margin-bottom: 12px; }
-  .fc-done-title { font-size: 20px; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
-  .fc-done-sub { font-size: 14px; color: var(--grey); margin-bottom: 20px; }
-  .fc-restart-btn { padding: 12px 24px; background: var(--blue); color: white; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; }
+.fc-rating-wrap { display: none; gap: 8px; margin-bottom: 20px; }
+.fc-rating-wrap.visible { display: flex; }
+.fc-rating-btn { flex: 1; padding: 12px 4px; border: none; border-radius: 10px; font-size: 12px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
+.fc-rating-btn:hover { opacity: 0.85; }
+.fc-r1 { background: #fef2f2; color: #b91c1c; }
+.fc-r2 { background: #fff7ed; color: #c2410c; }
+.fc-r3 { background: #fefce8; color: #854d0e; }
+.fc-r4 { background: #f0fdf4; color: #15803d; }
+.fc-r5 { background: #eff6ff; color: #1d4ed8; }
 
-  /* ADD CARD */
-  .fc-add-section { background: white; border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; border: 1.5px dashed var(--border); }
-  .fc-add-section h3 { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 14px; }
-  .fc-add-row { display: flex; gap: 10px; align-items: flex-end; }
-  .fc-add-field { flex: 1; }
-  .fc-add-field label { display: block; font-size: 11px; font-weight: 600; color: var(--grey); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-  .fc-add-field input { width: 100%; padding: 10px 12px; border: 2px solid var(--border); border-radius: 8px; font-size: 15px; color: var(--ink); outline: none; font-family: inherit; transition: border-color 0.2s; }
-  .fc-add-field input:focus { border-color: var(--blue); }
-  .fc-add-field input[dir=rtl] { direction: rtl; font-size: 18px; }
-  .fc-add-submit { padding: 10px 16px; background: var(--blue); color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+.fc-done { background: white; border-radius: var(--card-radius); padding: 40px 28px; text-align: center; margin-bottom: 20px; }
+.fc-done-icon { font-size: 48px; margin-bottom: 12px; }
+.fc-done-title { font-size: 20px; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
+.fc-done-sub { font-size: 14px; color: var(--grey); margin-bottom: 20px; }
+.fc-restart-btn { padding: 12px 24px; background: var(--blue); color: white; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; }
 
-  /* MODAL */
-  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100; align-items: center; justify-content: center; padding: 20px; }
-  .modal-overlay.open { display: flex; }
-  .modal-img { max-width: 100%; max-height: 80vh; border-radius: 12px; object-fit: contain; }
-  .modal-close { position: absolute; top: 16px; right: 16px; background: white; border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+/* ADD CARD */
+.fc-add-section { background: white; border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; border: 1.5px dashed var(--border); }
+.fc-add-section h3 { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 14px; }
+.fc-add-row { display: flex; gap: 10px; align-items: flex-end; }
+.fc-add-field { flex: 1; }
+.fc-add-field label { display: block; font-size: 11px; font-weight: 600; color: var(--grey); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.fc-add-field input { width: 100%; padding: 10px 12px; border: 2px solid var(--border); border-radius: 8px; font-size: 15px; color: var(--ink); outline: none; font-family: inherit; transition: border-color 0.2s; }
+.fc-add-field input:focus { border-color: var(--blue); }
+.fc-add-field input[dir=rtl] { direction: rtl; font-size: 18px; }
+.fc-add-submit { padding: 10px 16px; background: var(--blue); color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; }
 
-  /* TOAST */
-  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--ink); color: white; padding: 12px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; z-index: 200; transition: transform 0.3s; white-space: nowrap; }
-  .toast.show { transform: translateX(-50%) translateY(0); }
-  .no-submission-msg { background: white; border-radius: var(--card-radius); padding: 20px; text-align: center; color: var(--grey); font-size: 14px; margin-bottom: 20px; }
-  .locked-msg { background: #fef2f2; border-radius: var(--card-radius); padding: 16px; text-align: center; color: #b91c1c; font-size: 14px; margin-bottom: 20px; border: 1.5px solid #fca5a5; }
+/* MODAL */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100; align-items: center; justify-content: center; padding: 20px; }
+.modal-overlay.open { display: flex; }
+.modal-img { max-width: 100%; max-height: 80vh; border-radius: 12px; object-fit: contain; }
+.modal-close { position: absolute; top: 16px; right: 16px; background: white; border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+/* TOAST */
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--ink); color: white; padding: 12px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; z-index: 200; transition: transform 0.3s; white-space: nowrap; }
+.toast.show { transform: translateX(-50%) translateY(0); }
+.no-submission-msg { background: white; border-radius: var(--card-radius); padding: 20px; text-align: center; color: var(--grey); font-size: 14px; margin-bottom: 20px; }
+.locked-msg { background: #fef2f2; border-radius: var(--card-radius); padding: 16px; text-align: center; color: #b91c1c; font-size: 14px; margin-bottom: 20px; border: 1.5px solid #fca5a5; }
 </style>
 </head>
 <body>
- <script>
-    console.log("THE FILE IS LOADING!");
+<script>
+console.log("THE FILE IS LOADING!");
 </script>
 
 <div id="login-screen">
-  <div class="login-logo">🕌</div>
-  <div class="login-title">Arabic Daily</div>
-  <div class="login-subtitle">Daily homework tracker</div>
-  <div class="login-card">
-    <label>Your code</label>
-    <input type="text" id="code-input" maxlength="6" placeholder="ABC123" autocomplete="off">
-    <div class="login-error" id="login-error">Code not recognised. Try again.</div>
-    <button class="login-btn" id="login-btn">Enter</button>
-  </div>
+<div class="login-logo">🕌</div>
+<div class="login-title">Arabic Daily</div>
+<div class="login-subtitle">Daily homework tracker</div>
+<div class="login-card">
+<label>Your code</label>
+<input type="text" id="code-input" maxlength="6" placeholder="ABC123" autocomplete="off">
+<div class="login-error" id="login-error">Code not recognised. Try again.</div>
+<button class="login-btn" id="login-btn">Enter</button>
+</div>
 </div>
 
 <div id="app">
-  <div id="sidebar" style="display:none">
-    <div class="sidebar-logo">
-      <div class="sidebar-logo-icon">🕌</div>
-      <div class="sidebar-logo-text">Arabic Daily</div>
-    </div>
-    <div class="sidebar-label">Students</div>
-    <div class="sidebar-students" id="sidebar-students"></div>
-    <div class="sidebar-bottom">
-      <button class="sidebar-view-btn" id="sidebar-view-btn">👤 Student view</button>
-    </div>
-  </div>
-  <div id="main">
-    <div class="header">
-      <div class="header-left">
-        <button class="sidebar-toggle" id="sidebar-toggle" style="display:none">☰</button>
-        <div class="header-icon">🕌</div>
-        <div>
-          <div class="header-title" id="header-title">My Homework</div>
-          <div class="header-sub" id="header-sub"></div>
-        </div>
-      </div>
-      <button class="view-toggle" id="view-toggle-btn" style="display:none">Student view</button>
-    </div>
+<div id="sidebar" style="display:none">
+<div class="sidebar-logo">
+<div class="sidebar-logo-icon">🕌</div>
+<div class="sidebar-logo-text">Arabic Daily</div>
+</div>
+<div class="sidebar-label">Students</div>
+<div class="sidebar-students" id="sidebar-students"></div>
 
-    <!-- REVISION BANNER (persistent across all tabs) -->
-    <div class="revision-banner" id="revision-banner">
-      <div class="revision-ring-wrap">
-        <svg class="revision-ring" viewBox="0 0 80 80">
-          <circle class="revision-ring-bg" cx="40" cy="40" r="34"></circle>
-          <circle class="revision-ring-fg" id="revision-ring-fg" cx="40" cy="40" r="34"></circle>
-        </svg>
-        <div class="revision-ring-fire" id="revision-ring-fire">🔥</div>
-      </div>
-      <div class="revision-info">
-        <div class="revision-streak" id="revision-streak-text">0 day streak</div>
-        <div class="revision-lesson" id="revision-lesson-wrap">Lesson 1</div>
-      </div>
-      <div class="revision-rank">
-        <div class="revision-rank-num" id="revision-rank-num">#—</div>
-        <div class="revision-rank-label">your rank</div>
-      </div>
-    </div>
-
-    <!-- TABS -->
-    <div class="tabs" id="tabs-bar" style="display:none">
-  <button class="tab active" id="tab-home" onclick="switchTab('home')">🏠 Home</button>
-  <button class="tab" id="tab-homework" onclick="switchTab('homework')">📚 Homework</button>
-  <button class="tab" id="tab-flashcards" onclick="switchTab('flashcards')">🃏 Flashcards</button>
-  <button class="tab" id="tab-exercises" onclick="switchTab('exercises')">✏️ Exercises</button>
+</div>
+<div id="main">
+<div class="header">
+<div class="header-left">
+<button class="sidebar-toggle" id="sidebar-toggle" style="display:none">☰</button>
+<div class="header-icon">🕌</div>
+<div>
+<div class="header-title" id="header-title">My Homework</div>
+<div class="header-sub" id="header-sub"></div>
+</div>
 </div>
 
-   <!-- HOME TAB -->
-    <div id="tab-content-home" class="content">
-      <div class="section-label">What would you like to do?</div>
-      <div style="display:flex;flex-direction:column;gap:16px;margin-top:8px;max-width:420px">
-        <div class="home-card" id="home-btn-homework">
-          <div class="home-card-icon">📚</div>
-          <div>
-            <div class="home-card-title">Homework</div>
-            <div class="home-card-desc">Submit today's homework and check your calendar</div>
-          </div>
-        </div>
-        <div class="home-card" id="home-btn-flashcards">
-          <div class="home-card-icon">🃏</div>
-          <div>
-            <div class="home-card-title">Flashcards</div>
-            <div class="home-card-desc">Review vocabulary with spaced repetition</div>
-          </div>
-        </div>
-        <div class="home-card" id="home-btn-exercises">
-          <div class="home-card-icon">✏️</div>
-          <div>
-            <div class="home-card-title">Exercises</div>
-            <div class="home-card-desc">Practise grammar and vocabulary</div>
-          </div>
-        </div>
-      </div>
-    </div>
+</div>
 
-    <!-- HOMEWORK TAB -->
-    <div id="tab-content-homework" class="content" style="display:none">
-      
-      <div id="missed-banner" style="display:none"></div>
-      <div class="section-label">Sessions</div>
-      <div class="calendar-card">
-        <div class="cal-nav">
-          <button class="cal-nav-btn" id="prev-month-btn">‹</button>
-          <div class="cal-month" id="cal-month-label"></div>
-          <button class="cal-nav-btn" id="next-month-btn">›</button>
-        </div>
-        <div class="cal-grid" id="cal-grid"></div>
-        <div class="cal-legend">
-          <div class="legend-item"><div class="legend-sq" style="background:var(--dot-green)"></div> Submitted</div>
-          <div class="legend-item"><div class="legend-sq" style="background:var(--dot-blue)"></div> Reviewed</div>
-          <div class="legend-item"><div class="legend-sq" style="background:var(--dot-yellow)"></div> Made up</div>
-          <div class="legend-item"><div class="legend-sq" style="background:#8b5cf6"></div> Flashcards</div>
-        </div>
-      </div>
-      <div class="day-card" id="day-card" style="display:none">
-        <div class="day-card-top">
-          <div>
-            <div class="day-badge" id="day-badge">Day —</div>
-            <div class="day-status" id="day-status" style="margin-top:6px"></div>
-          </div>
-          <button class="review-btn" id="review-btn" style="display:none"></button>
-        </div>
-        <div class="day-date" id="day-date" style="margin-top:8px"></div>
-      </div>
-      <div id="submissions-area"></div>
-      <div id="upload-area-wrap" style="display:none"></div>
-    </div>
+<!-- REVISION BANNER (persistent across all tabs) -->
+<div class="revision-banner" id="revision-banner">
+<div class="revision-ring-wrap">
+<svg class="revision-ring" viewBox="0 0 80 80">
+<circle class="revision-ring-bg" cx="40" cy="40" r="34"></circle>
+<circle class="revision-ring-fg" id="revision-ring-fg" cx="40" cy="40" r="34"></circle>
+</svg>
+<div class="revision-ring-fire" id="revision-ring-fire">🔥</div>
+</div>
+<div class="revision-info">
+<div class="revision-streak" id="revision-streak-text">0 day streak</div>
+<div class="revision-lesson" id="revision-lesson-wrap">Lesson 1</div>
+</div>
+<div class="revision-rank">
+<div class="revision-rank-num" id="revision-rank-num">#—</div>
+<div class="revision-rank-label">your rank</div>
+</div>
+</div>
 
-    <!-- FLASHCARDS TAB -->
-    <div id="tab-content-flashcards" class="content" style="display:none">
-      <div class="section-label">Lessons</div>
-      <div class="fc-lesson-picker" id="fc-lesson-picker"></div>
-      <div class="fc-stats" id="fc-stats"></div>
+<!-- TABS -->
+<div class="tabs" id="tabs-bar" style="display:none">
+<button class="tab active" id="tab-home" onclick="switchTab('home')">🏠 Home</button>
+<button class="tab" id="tab-homework" onclick="switchTab('homework')">📚 Homework</button>
+<button class="tab" id="tab-flashcards" onclick="switchTab('flashcards')">🃏 Flashcards</button>
+<button class="tab" id="tab-exercises" onclick="switchTab('exercises')">✏️ Exercises</button>
+</div>
 
-      <!-- TIMER PANEL -->
-      <div class="fc-timer-panel">
-        <div class="fc-timer-row">
-          <div class="fc-timer-display" id="fc-timer-display">5:00</div>
-          <div class="fc-timer-controls">
-            <button class="fc-timer-btn fc-timer-start" id="fc-timer-start-btn">▶ Start</button>
-            <button class="fc-timer-btn fc-timer-stop" id="fc-timer-stop-btn" style="display:none">⏸ Stop</button>
-            <button class="fc-timer-btn fc-timer-reset" id="fc-timer-reset-btn">↺</button>
-          </div>
-        </div>
-        <div class="fc-timer-goal">
-          <label>Goal</label>
-          <input type="range" id="fc-timer-range" min="1" max="5" step="1" value="5">
-          <span class="fc-timer-goal-val" id="fc-timer-goal-val">5 min</span>
-        </div>
-        <div class="fc-session-result" id="fc-session-result"></div>
-      </div>
+<!-- HOME TAB -->
+<div id="tab-content-home" class="content" style="display:none">
+<div class="section-label">What would you like to do?</div>
+<div style="display:flex;flex-direction:column;gap:16px;margin-top:8px;max-width:420px">
+<div class="home-card" id="home-btn-homework">
+<div class="home-card-icon">📚</div>
+<div>
+<div class="home-card-title">Homework</div>
+<div class="home-card-desc">Submit today's homework and check your calendar</div>
+</div>
+</div>
+<div class="home-card" id="home-btn-flashcards">
+<div class="home-card-icon">🃏</div>
+<div>
+<div class="home-card-title">Flashcards</div>
+<div class="home-card-desc">Review vocabulary with spaced repetition</div>
+</div>
+</div>
+<div class="home-card" id="home-btn-exercises">
+<div class="home-card-icon">✏️</div>
+<div>
+<div class="home-card-title">Exercises</div>
+<div class="home-card-desc">Practise grammar and vocabulary</div>
+</div>
+</div>
+</div>
+<div id="dopamine-zone"></div>
+</div>
 
-      <div id="fc-area"></div>
+<!-- HOMEWORK TAB -->
+<div id="tab-content-homework" class="content" style="display:none">
 
-      <!-- ADD CARD -->
-      <div class="fc-add-section">
-        <h3>➕ Add a card to this lesson</h3>
-        <div class="fc-add-row">
-          <div class="fc-add-field">
-            <label>Arabic</label>
-            <input type="text" id="fc-add-ar" dir="rtl" placeholder="عَرَبِيٌّ">
-          </div>
-          <div class="fc-add-field">
-            <label>English</label>
-            <input type="text" id="fc-add-en" placeholder="meaning">
-          </div>
-          <button class="fc-add-submit" id="fc-add-btn">Add</button>
-        </div>
-      </div>
-   
-  </div>
+<div id="missed-banner" style="display:none"></div>
+<div class="section-label">Sessions</div>
+<div class="calendar-card">
+<div class="cal-nav">
+<button class="cal-nav-btn" id="prev-month-btn">‹</button>
+<div class="cal-month" id="cal-month-label"></div>
+<button class="cal-nav-btn" id="next-month-btn">›</button>
+</div>
+<div class="cal-grid" id="cal-grid"></div>
+<div class="cal-legend">
+<div class="legend-item"><div class="legend-sq" style="background:var(--dot-green)"></div> Submitted</div>
+<div class="legend-item"><div class="legend-sq" style="background:var(--dot-blue)"></div> Reviewed</div>
+<div class="legend-item"><div class="legend-sq" style="background:var(--dot-yellow)"></div> Made up</div>
+<div class="legend-item"><div class="legend-sq" style="background:#8b5cf6"></div> Flashcards</div>
+</div>
+</div>
+<div class="day-card" id="day-card" style="display:none">
+<div class="day-card-top">
+<div>
+<div class="day-badge" id="day-badge">Day —</div>
+<div class="day-status" id="day-status" style="margin-top:6px"></div>
+</div>
+<button class="review-btn" id="review-btn" style="display:none"></button>
+</div>
+<div class="day-date" id="day-date" style="margin-top:8px"></div>
+</div>
+<div id="submissions-area"></div>
+<div id="upload-area-wrap" style="display:none"></div>
+</div>
+
+<!-- FLASHCARDS TAB -->
+<div id="tab-content-flashcards" class="content" style="display:none">
+<div class="section-label">Lessons</div>
+<div class="fc-lesson-picker" id="fc-lesson-picker"></div>
+<div class="fc-stats" id="fc-stats"></div>
+
+<!-- TIMER PANEL -->
+<div class="fc-timer-panel">
+<div class="fc-timer-row">
+<div class="fc-timer-display" id="fc-timer-display">5:00</div>
+<div class="fc-timer-controls">
+<button class="fc-timer-btn fc-timer-start" id="fc-timer-start-btn">▶ Start</button>
+<button class="fc-timer-btn fc-timer-stop" id="fc-timer-stop-btn" style="display:none">⏸ Stop</button>
+<button class="fc-timer-btn fc-timer-reset" id="fc-timer-reset-btn">↺</button>
+</div>
+</div>
+<div class="fc-timer-goal">
+<label>Goal</label>
+<input type="range" id="fc-timer-range" min="1" max="5" step="1" value="5">
+<span class="fc-timer-goal-val" id="fc-timer-goal-val">5 min</span>
+</div>
+<div class="fc-session-result" id="fc-session-result"></div>
+</div>
+
+<div id="fc-area"></div>
+
+<!-- ADD CARD -->
+<div class="fc-add-section">
+<h3>➕ Add a card to this lesson</h3>
+<div class="fc-add-row">
+<div class="fc-add-field">
+<label>Arabic</label>
+<input type="text" id="fc-add-ar" dir="rtl" placeholder="عَرَبِيٌّ">
+</div>
+<div class="fc-add-field">
+<label>English</label>
+<input type="text" id="fc-add-en" placeholder="meaning">
+</div>
+<button class="fc-add-submit" id="fc-add-btn">Add</button>
+</div>
+</div>
+
+</div>
 </div>
 <!-- EXERCISES TAB -->
 <div id="tab-content-exercises" class="content" style="display:none">
-  <div id="ex-root"></div>
+<div id="ex-root"></div>
 </div>
 <div class="modal-overlay" id="modal">
-  <button class="modal-close" id="modal-close-btn">✕</button>
-  <img class="modal-img" id="modal-img" src="" alt="">
+<button class="modal-close" id="modal-close-btn">✕</button>
+<img class="modal-img" id="modal-img" src="" alt="">
 </div>
 <div class="toast" id="toast"></div>
 
@@ -462,83 +474,90 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/fireba
 import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBmeQwuWPeuQtdC-7w3SyBb2K5ljvvqBGY",
-  authDomain: "arabichomework-1a72f.firebaseapp.com",
-  projectId: "arabichomework-1a72f",
-  storageBucket: "arabichomework-1a72f.firebasestorage.app",
-  messagingSenderId: "388670650097",
-  appId: "1:388670650097:web:1dcb72409b2b6731e41b50"
+apiKey: "AIzaSyBmeQwuWPeuQtdC-7w3SyBb2K5ljvvqBGY",
+authDomain: "arabichomework-1a72f.firebaseapp.com",
+projectId: "arabichomework-1a72f",
+storageBucket: "arabichomework-1a72f.firebasestorage.app",
+messagingSenderId: "388670650097",
+appId: "1:388670650097:web:1dcb72409b2b6731e41b50"
 };
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
 
 
 // ── FLASHCARD DATA (now loaded from GitHub) ──
-let DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS;
+let DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS;
 
 async function loadVocabData() {
-  const url = 'https://raw.githubusercontent.com/ryangwstanley-ship-it/database/main/website%20data%20base';
-  const res = await fetch(url);
-  const code = await res.text();
-  const runner = new Function(
-    code.replaceAll('export const', 'const') +
-    '; return { DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS };'
-  );
-  const data = runner();
-  DEFAULT_LESSONS = data.DEFAULT_LESSONS;
-  FILL_GAP_QUESTIONS = data.FILL_GAP_QUESTIONS;
-  WORD_ORDER_QUESTIONS = data.WORD_ORDER_QUESTIONS;
-  CHANGE_WORD_QUESTIONS = data.CHANGE_WORD_QUESTIONS;
-  TRUE_FALSE_QUESTIONS = data.TRUE_FALSE_QUESTIONS;
-  DEMONSTRATIVE_QUESTIONS = data.DEMONSTRATIVE_QUESTIONS;
-  SUFFIX_PRONOUN_QUESTIONS = data.SUFFIX_PRONOUN_QUESTIONS;
 
-  // Make these visible to the separate Exercises script tag further down the page
-  window.FILL_GAP_QUESTIONS = FILL_GAP_QUESTIONS;
-  window.WORD_ORDER_QUESTIONS = WORD_ORDER_QUESTIONS;
-  window.CHANGE_WORD_QUESTIONS = CHANGE_WORD_QUESTIONS;
-  window.TRUE_FALSE_QUESTIONS = TRUE_FALSE_QUESTIONS;
-  window.DEMONSTRATIVE_QUESTIONS = DEMONSTRATIVE_QUESTIONS;
-  window.SUFFIX_PRONOUN_QUESTIONS = SUFFIX_PRONOUN_QUESTIONS;
-}
+  const url = 'https://raw.githubusercontent.com/ryangwstanley-ship-it/database/main/website%20data%20base?t=' + Date.now();
+const res = await fetch(url);
+const code = await res.text();
+const runner = new Function(
+code.replaceAll('export const', 'const') +
+'; return { DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS };'
+);
+const data = runner();
+DEFAULT_LESSONS = data.DEFAULT_LESSONS;
+FILL_GAP_QUESTIONS = data.FILL_GAP_QUESTIONS;
+WORD_ORDER_QUESTIONS = data.WORD_ORDER_QUESTIONS;
+CHANGE_WORD_QUESTIONS = data.CHANGE_WORD_QUESTIONS;
+TRUE_FALSE_QUESTIONS = data.TRUE_FALSE_QUESTIONS;
+DEMONSTRATIVE_QUESTIONS = data.DEMONSTRATIVE_QUESTIONS;
+SUFFIX_PRONOUN_QUESTIONS = data.SUFFIX_PRONOUN_QUESTIONS;
+ADJECTIVE_AGREEMENT_QUESTIONS = data.ADJECTIVE_AGREEMENT_QUESTIONS;
 
-await loadVocabData();
- window.FILL_GAP_QUESTIONS = FILL_GAP_QUESTIONS;
+
+window.FILL_GAP_QUESTIONS = FILL_GAP_QUESTIONS;
 window.WORD_ORDER_QUESTIONS = WORD_ORDER_QUESTIONS;
 window.CHANGE_WORD_QUESTIONS = CHANGE_WORD_QUESTIONS;
 window.TRUE_FALSE_QUESTIONS = TRUE_FALSE_QUESTIONS;
+window.DEMONSTRATIVE_QUESTIONS = DEMONSTRATIVE_QUESTIONS;
+window.SUFFIX_PRONOUN_QUESTIONS = SUFFIX_PRONOUN_QUESTIONS;
+window.ADJECTIVE_AGREEMENT_QUESTIONS = ADJECTIVE_AGREEMENT_QUESTIONS;
+
+}
+
+await loadVocabData();
+window.FILL_GAP_QUESTIONS = FILL_GAP_QUESTIONS;
+window.WORD_ORDER_QUESTIONS = WORD_ORDER_QUESTIONS;
+window.CHANGE_WORD_QUESTIONS = CHANGE_WORD_QUESTIONS;
+window.TRUE_FALSE_QUESTIONS = TRUE_FALSE_QUESTIONS;
+window.DEMONSTRATIVE_QUESTIONS = DEMONSTRATIVE_QUESTIONS;
+window.SUFFIX_PRONOUN_QUESTIONS = SUFFIX_PRONOUN_QUESTIONS;
+window.ADJECTIVE_AGREEMENT_QUESTIONS = ADJECTIVE_AGREEMENT_QUESTIONS;
 
 const STUDENTS = {
-  'FHD001': { name: 'Fahad',                display: 'فهد' },
-  'SAD002': { name: 'Saeed',                display: 'سعيد' },
-  'HMZ003': { name: 'Hamza',                display: 'حمزة' },
-  'AHM004': { name: 'Ahmed (Senegal)',       display: 'أحمد' },
-  'AMN005': { name: 'Ameen (Germany)',       display: 'أمين' },
-  'ALA006': { name: 'Alaa',                 display: 'علاء' },
-  'ABD007': { name: 'Abdurrahman',          display: 'عبد الرحمن' },
-  'YSF008': { name: 'Yusuf',               display: 'يوسف' },
-  'YNS009': { name: 'Yunus',               display: 'يونس' },
-  'UBD010': { name: 'Ubaid',               display: 'عبيد' },
-  'SBH011': { name: 'Subayhan',            display: 'صبيحان' },
-  'ADM012': { name: 'Adam',                display: 'آدم' },
-  'JST013': { name: 'Justin',              display: 'عبد الرحمن' },
-  'IDR014': { name: 'Idrees',              display: 'إدريس' },
-  'KLM015': { name: 'Kaleem & Idrees',     display: 'كليم وإدريس' },
-  'HSM016': { name: 'Hussam',              display: 'حسام' },
-  'MHM017': { name: 'Mahmoud',             display: 'محمود' },
-  'HSN018': { name: 'Hassan',              display: 'حسن' },
-  'MHD019': { name: 'Muhammad',            display: 'محمد' },
-  'HDR020': { name: 'Haider',              display: 'هيدر' },
-  'SHN021': { name: 'Shan',               display: 'شان' },
-  'NYZ022': { name: 'Niyaz',              display: 'نياز' },
-  'AHK023': { name: 'Ahmed (Hong Kong)',   display: 'أحمد' },
-  'ISA024': { name: 'Isa',                display: 'عيسى' },
-  'ABM025': { name: 'Abu Mariam',          display: 'أبو مريم' },
-  'AMK026': { name: 'Ameen (Canada)',      display: 'أمين' },
-  'SMR027': { name: 'Samar',              display: 'سمر' },
-  'MMR028': { name: 'Muhammad (Ibn Qurayb)', display: 'محمد' },
-  'GHM029': { name: 'Emad',               display: 'غماد' },
-  'MRJ030': { name: 'Miraj',              display: 'معراج' },
+'FHD001': { name: 'Fahad',                display: 'فهد' },
+'SAD002': { name: 'Saeed',                display: 'سعيد' },
+'HMZ003': { name: 'Hamza',                display: 'حمزة' },
+'AHM004': { name: 'Ahmed (Senegal)',       display: 'أحمد' },
+'AMN005': { name: 'Ameen (Germany)',       display: 'أمين' },
+'ALA006': { name: 'Alaa',                 display: 'علاء' },
+'ABD007': { name: 'Abdurrahman',          display: 'عبد الرحمن' },
+'YSF008': { name: 'Yusuf',               display: 'يوسف' },
+'YNS009': { name: 'Yunus',               display: 'يونس' },
+'UBD010': { name: 'Ubaid',               display: 'عبيد' },
+'SBH011': { name: 'Subayhan',            display: 'صبيحان' },
+'ADM012': { name: 'Adam',                display: 'آدم' },
+'JST013': { name: 'Justin',              display: 'عبد الرحمن' },
+'IDR014': { name: 'Idrees',              display: 'إدريس' },
+'KLM015': { name: 'Kaleem & Idrees',     display: 'كليم وإدريس' },
+'HSM016': { name: 'Hussam',              display: 'حسام' },
+'MHM017': { name: 'Mahmoud',             display: 'محمود' },
+'HSN018': { name: 'Hassan',              display: 'حسن' },
+'MHD019': { name: 'Muhammad',            display: 'محمد' },
+'HDR020': { name: 'Haider',              display: 'هيدر' },
+'SHN021': { name: 'Shan',               display: 'شان' },
+'NYZ022': { name: 'Niyaz',              display: 'نياز' },
+'AHK023': { name: 'Ahmed (Hong Kong)',   display: 'أحمد' },
+'ISA024': { name: 'Isa',                display: 'عيسى' },
+'ABM025': { name: 'Abu Mariam',          display: 'أبو مريم' },
+'AMK026': { name: 'Ameen (Canada)',      display: 'أمين' },
+'SMR027': { name: 'Samar',              display: 'سمر' },
+'MMR028': { name: 'Muhammad (Ibn Qurayb)', display: 'محمد' },
+'GHM029': { name: 'Emad',               display: 'غماد' },
+'MRJ030': { name: 'Miraj',              display: 'معراج' },
 };
 const INSTRUCTOR_CODE = 'RYAN01';
 
@@ -570,149 +589,173 @@ let fcTimerStarted = false; // has session started at least once
 let allFcActivity = {};
 // Current lesson level, per student: studentLesson[code] = 1-16
 let studentLesson = {};
+// Per-exercise question mastery: exProgress[mode][questionIndex] = 1(Hard)/2(Medium)/3(Easy)
+let exProgress = {};
 
 // ── UTILS ──
 function dateKey(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 function todayKey() { return dateKey(new Date()); }
 function formatDateLong(key) { const [y,m,d]=key.split('-').map(Number); return new Date(y,m-1,d).toLocaleDateString('en-GB',{weekday:'long',year:'numeric',month:'long',day:'numeric'}); }
 function activeStudentCode() { return isInstructor && !isStudentView ? viewingStudent : currentUser; }
+function miniRing(percent, emoji, centered) {
+const r = 18, c = 2 * Math.PI * r;
+const offset = c - (percent/100)*c;
+return `<div class="mini-ring-wrap${centered?' centered':''}">
+   <svg class="mini-ring" viewBox="0 0 44 44">
+     <circle class="mini-ring-bg" cx="22" cy="22" r="${r}"></circle>
+     <circle class="mini-ring-fg" cx="22" cy="22" r="${r}" style="stroke-dasharray:${c};stroke-dashoffset:${offset}"></circle>
+   </svg>
+   <div class="mini-ring-emoji">${emoji}</div>
+ </div>`;
+}
+window.miniRing = miniRing;
+
+function getLessonMasteryPercent(lessonNum) {
+const lesson = LESSONS[lessonNum];
+if (!lesson) return 0;
+const activeIdxs = lesson.cards.map((_,i)=>i).filter(i=>!isCardDeleted(lessonNum,i));
+if (!activeIdxs.length) return 0;
+const easyCount = activeIdxs.filter(i => getCardProgress(lessonNum,i).lastRating === 3).length;
+return Math.round((easyCount/activeIdxs.length)*100);
+}
 
 function isMidnightPast(dateStr) {
-  const [y,m,d] = dateStr.split('-').map(Number);
-  return new Date() > new Date(y, m-1, d+1, 0, 0, 0);
+const [y,m,d] = dateStr.split('-').map(Number);
+return new Date() > new Date(y, m-1, d+1, 0, 0, 0);
 }
 
 function getMissedDays(code) {
-  const subs = submissions[code] || {};
-  const missed = [], now = new Date();
-  const allKeys = Object.keys(subs).sort();
-  if (!allKeys.length) return [];
-  const firstSubmission = allKeys[0];
-  for (let i = 1; i <= 60; i++) {
-    const d = new Date(now); d.setDate(now.getDate() - i);
-    const key = dateKey(d);
-    if (key < firstSubmission) break;
-    if (isMidnightPast(key) && (!subs[key] || (!subs[key].images?.length && !subs[key].text))) missed.push(key);
-  }
-  return missed.sort();
+const subs = submissions[code] || {};
+const missed = [], now = new Date();
+const allKeys = Object.keys(subs).sort();
+if (!allKeys.length) return [];
+const firstSubmission = allKeys[0];
+for (let i = 1; i <= 60; i++) {
+const d = new Date(now); d.setDate(now.getDate() - i);
+const key = dateKey(d);
+if (key < firstSubmission) break;
+if (isMidnightPast(key) && (!subs[key] || (!subs[key].images?.length && !subs[key].text))) missed.push(key);
+}
+return missed.sort();
 }
 
 function getStreak(code) {
-  const activity = allFcActivity[code] || {};
-  let streak = 0;
-  const now = new Date();
-  for (let i = 1; i <= 365; i++) {
-    const d = new Date(now); d.setDate(now.getDate() - i);
-    const key = dateKey(d);
-    if ((activity[key]||0) >= 20) streak++;
-    else if (isMidnightPast(key)) break;
-  }
-  if ((activity[todayKey()]||0) >= 20) streak++;
-  return streak;
+const activity = allFcActivity[code] || {};
+let streak = 0;
+const now = new Date();
+for (let i = 1; i <= 365; i++) {
+const d = new Date(now); d.setDate(now.getDate() - i);
+const key = dateKey(d);
+if ((activity[key]||0) >= 20) streak++;
+else if (isMidnightPast(key)) break;
+}
+if ((activity[todayKey()]||0) >= 20) streak++;
+return streak;
 }
 
 function getConsistency(code) {
-  const activity = allFcActivity[code] || {};
-  const keys = Object.keys(activity).filter(k => activity[k] >= 20);
-  if (!keys.length) return 0;
-  const firstDate = new Date(keys.sort()[0]);
-  const daysSince = Math.max(1, Math.floor((new Date() - firstDate) / 86400000));
-  return keys.length / daysSince;
+const activity = allFcActivity[code] || {};
+const keys = Object.keys(activity).filter(k => activity[k] >= 20);
+if (!keys.length) return 0;
+const firstDate = new Date(keys.sort()[0]);
+const daysSince = Math.max(1, Math.floor((new Date() - firstDate) / 86400000));
+return keys.length / daysSince;
 }
 
 function getConsecutiveMissed(code) {
-  const activity = allFcActivity[code] || {};
-  let count = 0;
-  const now = new Date();
-  for (let i = 1; i <= 60; i++) {
-    const d = new Date(now); d.setDate(now.getDate() - i);
-    const key = dateKey(d);
-    if (!isMidnightPast(key)) continue;
-    if ((activity[key]||0) >= 20) break;
-    else count++;
-  }
-  return count;
+const activity = allFcActivity[code] || {};
+let count = 0;
+const now = new Date();
+for (let i = 1; i <= 60; i++) {
+const d = new Date(now); d.setDate(now.getDate() - i);
+const key = dateKey(d);
+if (!isMidnightPast(key)) continue;
+if ((activity[key]||0) >= 20) break;
+else count++;
+}
+return count;
 }
 
 function getStudentStatus(code) {
-  const activity = allFcActivity[code] || {};
-  const today = todayKey();
-  const d = new Date(); d.setDate(d.getDate()-1); const yesterday = dateKey(d);
-  const hasToday = (activity[today]||0) >= 20;
-  const hasYest = (activity[yesterday]||0) >= 20;
-  if (hasToday || hasYest) return 'green';
-  const keys = Object.keys(activity).filter(k=>activity[k]>=20);
-  return keys.length === 0 ? 'grey' : 'red';
+const activity = allFcActivity[code] || {};
+const today = todayKey();
+const d = new Date(); d.setDate(d.getDate()-1); const yesterday = dateKey(d);
+const hasToday = (activity[today]||0) >= 20;
+const hasYest = (activity[yesterday]||0) >= 20;
+if (hasToday || hasYest) return 'green';
+const keys = Object.keys(activity).filter(k=>activity[k]>=20);
+return keys.length === 0 ? 'grey' : 'red';
 }
 
 function getMissedRevisionDays(code) {
-  const activity = allFcActivity[code] || {};
-  const missed = [], now = new Date();
-  const allKeys = Object.keys(activity).sort();
-  if (!allKeys.length) return [];
-  const firstDay = allKeys[0];
-  for (let i = 1; i <= 60; i++) {
-    const d = new Date(now); d.setDate(now.getDate() - i);
-    const key = dateKey(d);
-    if (key < firstDay) break;
-    if (isMidnightPast(key) && (activity[key]||0) < 20) missed.push(key);
-  }
-  return missed.sort();
+const activity = allFcActivity[code] || {};
+const missed = [], now = new Date();
+const allKeys = Object.keys(activity).sort();
+if (!allKeys.length) return [];
+const firstDay = allKeys[0];
+for (let i = 1; i <= 60; i++) {
+const d = new Date(now); d.setDate(now.getDate() - i);
+const key = dateKey(d);
+if (key < firstDay) break;
+if (isMidnightPast(key) && (activity[key]||0) < 20) missed.push(key);
+}
+return missed.sort();
 }
 
 function getRankedStudents() { return Object.keys(STUDENTS).sort((a,b)=>getConsistency(b)-getConsistency(a)); }
 
 function fileToBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = e => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const MAX=800; let w=img.width,h=img.height;
-        if(w>h&&w>MAX){h=h*MAX/w;w=MAX;}else if(h>MAX){w=w*MAX/h;h=MAX;}
-        canvas.width=w;canvas.height=h;
-        canvas.getContext('2d').drawImage(img,0,0,w,h);
-        resolve(canvas.toDataURL('image/jpeg',0.7));
-      };
-      img.src=e.target.result;
-    };
-    reader.onerror=reject;
-    reader.readAsDataURL(file);
-  });
+return new Promise((resolve, reject) => {
+const reader = new FileReader();
+reader.onload = e => {
+const img = new Image();
+img.onload = () => {
+const canvas = document.createElement('canvas');
+const MAX=800; let w=img.width,h=img.height;
+if(w>h&&w>MAX){h=h*MAX/w;w=MAX;}else if(h>MAX){w=w*MAX/h;h=MAX;}
+canvas.width=w;canvas.height=h;
+canvas.getContext('2d').drawImage(img,0,0,w,h);
+resolve(canvas.toDataURL('image/jpeg',0.7));
+};
+img.src=e.target.result;
+};
+reader.onerror=reject;
+reader.readAsDataURL(file);
+});
 }
 
 // ── FIREBASE ──
 async function loadStudentData(code) {
-  if (submissions[code]) return;
-  submissions[code] = {};
-  try {
-    const snap = await getDocs(collection(db,'submissions',code,'days'));
-    snap.forEach(d => { submissions[code][d.id] = d.data(); });
-  } catch(e) { console.error('Load error',e); }
+if (submissions[code]) return;
+submissions[code] = {};
+try {
+const snap = await getDocs(collection(db,'submissions',code,'days'));
+snap.forEach(d => { submissions[code][d.id] = d.data(); });
+} catch(e) { console.error('Load error',e); }
 }
 
 async function loadFlashcardProgress(code) {
-  try {
-    const snap = await getDoc(doc(db,'flashcards',code));
-    if (snap.exists()) {
-      const data = snap.data();
-      fcProgress = data.progress || data || {};
-      allFcActivity[code] = data.activity || {};
-      fcDeletedCards = data.deleted || {};
-      studentLesson[code] = data.lesson || 1;
-      if (data.customCards) {
-        Object.entries(data.customCards).forEach(([lessonNum, cards]) => {
-          const num = parseInt(lessonNum);
-          if (LESSONS[num]) {
-            LESSONS[num].cards = [...DEFAULT_LESSONS[num]?.cards || [], ...cards];
-          }
-        });
-      }
-    } else {
-      fcProgress = {}; allFcActivity[code] = {}; fcDeletedCards = {}; studentLesson[code] = 1;
-    }
-  } catch(e) { console.error('FC load error',e); }
+try {
+const snap = await getDoc(doc(db,'flashcards',code));
+if (snap.exists()) {
+const data = snap.data();
+fcProgress = data.progress || data || {};
+allFcActivity[code] = data.activity || {};
+fcDeletedCards = data.deleted || {};
+studentLesson[code] = data.lesson || 1;
+exProgress = data.exProgress || {};
+if (data.customCards) {
+Object.entries(data.customCards).forEach(([lessonNum, cards]) => {
+const num = parseInt(lessonNum);
+if (LESSONS[num]) {
+LESSONS[num].cards = [...DEFAULT_LESSONS[num]?.cards || [], ...cards];
+}
+});
+}
+} else {
+fcProgress = {}; allFcActivity[code] = {}; fcDeletedCards = {}; studentLesson[code] = 1; exProgress = {};
+}
+} catch(e) { console.error('FC load error',e); }
 }
 
 async function loadStudentMeta(code) {
@@ -722,33 +765,49 @@ async function loadStudentMeta(code) {
     allFcActivity[code] = data.activity || {};
     studentLesson[code] = data.lesson || 1;
   } catch(e) { console.error('Meta load error',e); allFcActivity[code] = {}; studentLesson[code] = 1; }
+  if (!studentLesson[code]) studentLesson[code] = 1;
 }
-
 async function saveFlashcardData(code) {
-  try {
-    const customCards = {};
-    Object.entries(LESSONS).forEach(([num, lesson]) => {
-      const defaultCount = DEFAULT_LESSONS[num]?.cards.length || 0;
-      const extras = lesson.cards.slice(defaultCount);
-      if (extras.length) customCards[num] = extras;
-    });
-    await setDoc(doc(db,'flashcards',code), {
-      progress: fcProgress,
-      activity: allFcActivity[code] || {},
-      deleted: fcDeletedCards,
-      lesson: studentLesson[code] || 1,
-      customCards
-    });
-  } catch(e) { console.error('FC save error',e); }
+try {
+const customCards = {};
+Object.entries(LESSONS).forEach(([num, lesson]) => {
+const defaultCount = DEFAULT_LESSONS[num]?.cards.length || 0;
+const extras = lesson.cards.slice(defaultCount);
+if (extras.length) customCards[num] = extras;
+});
+await setDoc(doc(db,'flashcards',code), {
+progress: fcProgress,
+activity: allFcActivity[code] || {},
+deleted: fcDeletedCards,
+lesson: studentLesson[code] || 1,
+exProgress,
+customCards
+});
+} catch(e) { console.error('FC save error',e); }
 }
 
 async function setStudentLesson(code, lesson) {
-  studentLesson[code] = lesson;
-  try {
-    await setDoc(doc(db,'flashcards',code), { lesson }, { merge: true });
-  } catch(e) { console.error('Lesson save error',e); }
-  renderRevisionBanner();
+studentLesson[code] = lesson;
+try {
+await setDoc(doc(db,'flashcards',code), { lesson }, { merge: true });
+} catch(e) { console.error('Lesson save error',e); }
+renderRevisionBanner();
 }
+
+window.recordExerciseRating = async function(mode, index, rating) {
+if (!exProgress[mode]) exProgress[mode] = {};
+exProgress[mode][index] = rating;
+const code = currentUser || viewingStudent;
+await saveFlashcardData(code);
+};
+
+window.getExerciseMasteryPercent = function(mode, poolLength) {
+const prog = exProgress[mode] || {};
+if (!poolLength) return 0;
+let easyCount = 0;
+for (let i = 0; i < poolLength; i++) { if (prog[i] === 3) easyCount++; }
+return Math.round((easyCount / poolLength) * 100);
+};
 
 async function saveDay(code, dateStr, data) { await setDoc(doc(db,'submissions',code,'days',dateStr), data); }
 
@@ -767,6 +826,7 @@ async function handleLogin() {
   } else if (STUDENTS[code]) {
     currentUser=code; isInstructor=false;
     await loadStudentData(code);
+    await loadStudentMeta(code);
     await loadFlashcardProgress(code);
     startApp();
   } else {
@@ -776,123 +836,123 @@ async function handleLogin() {
 
 // ── START ──
 function startApp() {
-  document.getElementById('login-screen').style.display='none';
-  const app = document.getElementById('app');
-  const now = new Date(); calYear=now.getFullYear(); calMonth=now.getMonth(); selectedDate=todayKey();
-  if (isInstructor) {
-    app.style.display='flex';
-    const sidebar = document.getElementById('sidebar');
-    sidebar.style.display='flex'; sidebar.style.flexDirection='column';
-    document.getElementById('sidebar-toggle').style.display='flex';
-    document.getElementById('view-toggle-btn').style.display='block';
-    if (window.innerWidth < 600) { sidebarCollapsed=true; sidebar.classList.add('collapsed'); }
-    buildSidebar(); updateHeaderForInstructor();
-  } else {
-    app.style.display='block'; app.style.maxWidth='480px'; app.style.margin='0 auto';
-    document.getElementById('header-title').textContent='My Homework';
-    document.getElementById('header-sub').textContent=STUDENTS[currentUser]?.display||'';
-    document.getElementById('tabs-bar').style.display='flex';
-    switchTab('home');
-  }
-  render();
+document.getElementById('login-screen').style.display='none';
+const app = document.getElementById('app');
+const now = new Date(); calYear=now.getFullYear(); calMonth=now.getMonth(); selectedDate=todayKey();
+if (isInstructor) {
+app.style.display='flex';
+const sidebar = document.getElementById('sidebar');
+sidebar.style.display='flex'; sidebar.style.flexDirection='column';
+document.getElementById('sidebar-toggle').style.display='flex';
+if (window.innerWidth < 600) { sidebarCollapsed=true; sidebar.classList.add('collapsed'); }
+document.getElementById('tab-content-homework').style.display='block';
+buildSidebar(); updateHeaderForInstructor();
+} else {
+app.style.display='block'; app.style.maxWidth='480px'; app.style.margin='0 auto';
+document.getElementById('header-title').textContent='My Homework';
+document.getElementById('header-sub').textContent=STUDENTS[currentUser]?.display||'';
+document.getElementById('tabs-bar').style.display='flex';
+switchTab('home');
+renderDopamineButton();
+}
+render();
 }
 
 // ── TABS ──
 window.switchTab = function(tab) {
-  currentTab = tab;
-  document.getElementById('tab-content-home').style.display = tab==='home' ? 'block' : 'none';
-  document.getElementById('tab-content-homework').style.display = tab==='homework' ? 'block' : 'none';
-  document.getElementById('tab-content-flashcards').style.display = tab==='flashcards' ? 'block' : 'none';
-  document.getElementById('tab-content-exercises').style.display = tab==='exercises' ? 'block' : 'none';
-  document.getElementById('tab-home').classList.toggle('active', tab==='home');
-  document.getElementById('tab-homework').classList.toggle('active', tab==='homework');
-  document.getElementById('tab-flashcards').classList.toggle('active', tab==='flashcards');
-  document.getElementById('tab-exercises').classList.toggle('active', tab==='exercises');
-  if (tab==='flashcards') renderFlashcards();
-  if (tab==='exercises' && typeof exShowPicker === 'function') exShowPicker();
+currentTab = tab;
+document.getElementById('tab-content-home').style.display = tab==='home' ? 'block' : 'none';
+document.getElementById('tab-content-homework').style.display = tab==='homework' ? 'block' : 'none';
+document.getElementById('tab-content-flashcards').style.display = tab==='flashcards' ? 'block' : 'none';
+document.getElementById('tab-content-exercises').style.display = tab==='exercises' ? 'block' : 'none';
+document.getElementById('tab-home').classList.toggle('active', tab==='home');
+document.getElementById('tab-homework').classList.toggle('active', tab==='homework');
+document.getElementById('tab-flashcards').classList.toggle('active', tab==='flashcards');
+document.getElementById('tab-exercises').classList.toggle('active', tab==='exercises');
+if (tab==='flashcards') renderFlashcards();
+if (tab==='exercises' && typeof exShowPicker === 'function') exShowPicker();
 }
 
 
 // ── SIDEBAR ──
 function buildSidebar() {
-  const wrap = document.getElementById('sidebar-students'); wrap.innerHTML='';
-  const ranked = getRankedStudents();
-  ranked.forEach((code, idx) => {
-    const s = STUDENTS[code]; const status = getStudentStatus(code); const streak = getStreak(code);
-    const el = document.createElement('div');
-    el.className='sidebar-student'+(code===viewingStudent?' active':'');
-    el.innerHTML=`<div class="sidebar-avatar">${idx+1}</div><div class="sidebar-info"><div class="sidebar-name">${s.name}</div><div class="sidebar-streak">🔥 ${streak} day streak</div></div><div class="status-dot ${status}"></div>`;
-    el.onclick=async()=>{ viewingStudent=code; updateHeaderForInstructor(); buildSidebar(); render(); };
-    wrap.appendChild(el);
-  });
+const wrap = document.getElementById('sidebar-students'); wrap.innerHTML='';
+const ranked = getRankedStudents();
+const today = todayKey();
+ranked.forEach((code, idx) => {
+const s = STUDENTS[code]; const status = getStudentStatus(code); const streak = getStreak(code);
+const todaySub = submissions[code]?.[today];
+const didHomework = !!(todaySub && (todaySub.images?.length || todaySub.text));
+const todayMinutes = (allFcActivity[code]||{})[today] || 0;
+const el = document.createElement('div');
+el.className='sidebar-student'+(code===viewingStudent?' active':'');
+el.innerHTML=`<div class="sidebar-avatar">${idx+1}</div><div class="sidebar-info"><div class="sidebar-name">${s.name}</div><div class="sidebar-streak">🔥 ${streak} day streak · ⏱ ${todayMinutes} min today</div></div><div class="hw-dot ${didHomework?'done':''}" title="Homework today"></div><div class="status-dot ${status}"></div>`;
+el.onclick=async()=>{ viewingStudent=code; updateHeaderForInstructor(); buildSidebar(); render(); };
+wrap.appendChild(el);
+});
 }
 
 function updateHeaderForInstructor() {
-  const s = STUDENTS[viewingStudent];
-  document.getElementById('header-title').textContent = isStudentView?'My Homework':(s?.name||'Instructor Review');
-  document.getElementById('header-sub').textContent = isStudentView?'':'Instructor view';
+const s = STUDENTS[viewingStudent];
+document.getElementById('header-title').textContent = isStudentView?'My Homework':(s?.name||'Instructor Review');
+document.getElementById('header-sub').textContent = isStudentView?'':'Instructor view';
 }
 
 function toggleSidebar() {
-  sidebarCollapsed = !sidebarCollapsed;
-  document.getElementById('sidebar').classList.toggle('collapsed', sidebarCollapsed);
-  document.getElementById('sidebar-toggle').textContent = sidebarCollapsed ? '☰' : '✕';
+sidebarCollapsed = !sidebarCollapsed;
+document.getElementById('sidebar').classList.toggle('collapsed', sidebarCollapsed);
+document.getElementById('sidebar-toggle').textContent = sidebarCollapsed ? '☰' : '✕';
 }
 
-function toggleView() {
-  isStudentView=!isStudentView;
-  document.getElementById('sidebar-view-btn').textContent=isStudentView?'← Instructor view':'👤 Student view';
-  document.getElementById('tabs-bar').style.display=isStudentView?'flex':'none';
-  updateHeaderForInstructor(); render();
-}
+
 
 // ── MISSED BANNER ──
 function renderMissedBanner() {
-  const banner = document.getElementById('missed-banner');
-  if (isInstructor && !isStudentView) { banner.style.display='none'; return; }
-  const code = activeStudentCode();
-  const missed = getMissedRevisionDays(code);
-  const consecutive = getConsecutiveMissed(code);
-  if (!missed.length) { banner.style.display='none'; return; }
-  banner.style.display='block';
-  if (consecutive >= 2) {
-    banner.innerHTML=`<div class="banner red"><div class="banner-icon">🚨</div><div><div class="banner-title">You've missed ${consecutive} days of revision in a row — your streak has reset!</div><div class="banner-sub">Do at least 20 minutes of flashcards or exercises today to start a new streak.</div></div></div>`;
-  } else {
-    banner.innerHTML=`<div class="banner yellow"><div class="banner-icon">⚠️</div><div><div class="banner-title">You missed ${missed.length} day${missed.length>1?'s':''} of revision!</div><div class="banner-sub">Do at least 20 minutes of flashcards or exercises today to keep your streak alive.</div></div></div>`;
-  }
+const banner = document.getElementById('missed-banner');
+if (isInstructor && !isStudentView) { banner.style.display='none'; return; }
+const code = activeStudentCode();
+const missed = getMissedRevisionDays(code);
+const consecutive = getConsecutiveMissed(code);
+if (!missed.length) { banner.style.display='none'; return; }
+banner.style.display='block';
+if (consecutive >= 2) {
+banner.innerHTML=`<div class="banner red"><div class="banner-icon">🚨</div><div><div class="banner-title">You've missed ${consecutive} days of revision in a row — your streak has reset!</div><div class="banner-sub">Do at least 20 minutes of flashcards or exercises today to start a new streak.</div></div></div>`;
+} else {
+banner.innerHTML=`<div class="banner yellow"><div class="banner-icon">⚠️</div><div><div class="banner-title">You missed ${missed.length} day${missed.length>1?'s':''} of revision!</div><div class="banner-sub">Do at least 20 minutes of flashcards or exercises today to keep your streak alive.</div></div></div>`;
+}
 }
 
 function renderRevisionBanner() {
-  const banner = document.getElementById('revision-banner');
-  const code = activeStudentCode();
-  if (!code) { banner.style.display='none'; return; }
-  banner.style.display='flex';
+const banner = document.getElementById('revision-banner');
+const code = activeStudentCode();
+if (!code) { banner.style.display='none'; return; }
+banner.style.display='flex';
 
-  const todayMinutes = (allFcActivity[code] || {})[todayKey()] || 0;
-  const percent = Math.min(100, Math.round((todayMinutes/20)*100));
-  const circumference = 2 * Math.PI * 34;
-  const ringFg = document.getElementById('revision-ring-fg');
-  ringFg.style.strokeDasharray = circumference;
-  ringFg.style.strokeDashoffset = circumference - (percent/100)*circumference;
-  document.getElementById('revision-ring-fire').classList.toggle('complete', percent >= 100);
+const todayMinutes = (allFcActivity[code] || {})[todayKey()] || 0;
+const percent = Math.min(100, Math.round((todayMinutes/20)*100));
+const circumference = 2 * Math.PI * 34;
+const ringFg = document.getElementById('revision-ring-fg');
+ringFg.style.strokeDasharray = circumference;
+ringFg.style.strokeDashoffset = circumference - (percent/100)*circumference;
+document.getElementById('revision-ring-fire').classList.toggle('complete', percent >= 100);
 
-  const consecutive = getConsecutiveMissed(code);
-  const streak = consecutive >= 2 ? 0 : getStreak(code);
-  document.getElementById('revision-streak-text').textContent = `🔥 ${streak} day streak`;
+const consecutive = getConsecutiveMissed(code);
+const streak = consecutive >= 2 ? 0 : getStreak(code);
+document.getElementById('revision-streak-text').textContent = `🔥 ${streak} day streak`;
 
-  const ranked = getRankedStudents();
-  document.getElementById('revision-rank-num').textContent = `#${ranked.indexOf(code)+1}`;
+const ranked = getRankedStudents();
+document.getElementById('revision-rank-num').textContent = `#${ranked.indexOf(code)+1}`;
 
-  const lessonWrap = document.getElementById('revision-lesson-wrap');
-  const lesson = studentLesson[code] || 1;
-  if (isInstructor && !isStudentView) {
-    const options = Array.from({length:16}, (_,i) => i+1)
-      .map(n => `<option value="${n}" ${n===lesson?'selected':''}>Lesson ${n}</option>`).join('');
-    lessonWrap.innerHTML = `<select id="revision-lesson-select" style="background:rgba(255,255,255,0.15);color:white;border:none;border-radius:6px;padding:2px 6px;font-size:12px;font-weight:600">${options}</select>`;
-    document.getElementById('revision-lesson-select').onchange = (e) => setStudentLesson(code, parseInt(e.target.value));
-  } else {
-    lessonWrap.textContent = `Lesson ${lesson}`;
-  }
+const lessonWrap = document.getElementById('revision-lesson-wrap');
+const lesson = studentLesson[code] || 1;
+if (isInstructor && !isStudentView) {
+const options = Array.from({length:16}, (_,i) => i+1)
+.map(n => `<option value="${n}" ${n===lesson?'selected':''}>Lesson ${n}</option>`).join('');
+lessonWrap.innerHTML = `<select id="revision-lesson-select" style="background:rgba(255,255,255,0.15);color:white;border:none;border-radius:6px;padding:2px 6px;font-size:12px;font-weight:600">${options}</select>`;
+document.getElementById('revision-lesson-select').onchange = (e) => setStudentLesson(code, parseInt(e.target.value));
+} else {
+lessonWrap.textContent = `Lesson ${lesson}`;
+}
 }
 
 // ── CALENDAR ──
@@ -900,444 +960,447 @@ const AR_MONTHS=['يناير','فبراير','مارس','أبريل','مايو',
 const AR_DAYS=['الأحد','السبت','الجمعة','الخميس','الأربعاء','الثلاثاء','الاثنين'];
 
 function renderCalendar() {
-  document.getElementById('cal-month-label').textContent=`${AR_MONTHS[calMonth]} ${calYear}`;
-  const grid=document.getElementById('cal-grid'); grid.innerHTML='';
-  AR_DAYS.forEach(d=>{const h=document.createElement('div');h.className='cal-day-header';h.textContent=d;grid.appendChild(h);});
-  const firstDay=new Date(calYear,calMonth,1).getDay();
-  const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
-  const daysInPrev=new Date(calYear,calMonth,0).getDate();
-  const startOffset=(6-firstDay+7)%7;
-  const code=activeStudentCode(); const subs=submissions[code]||{}; const today=todayKey();
-  for(let i=startOffset-1;i>=0;i--){const cell=document.createElement('div');cell.className='cal-day other-month';const n=document.createElement('div');n.className='day-num';n.textContent=daysInPrev-i;cell.appendChild(n);grid.appendChild(cell);}
-  for(let d=1;d<=daysInMonth;d++){
-    const key=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const cell=document.createElement('div'); cell.className='cal-day';
-    if(key===today)cell.classList.add('today');
-    if(key===selectedDate){
-      const selSub=subs[key]; cell.classList.add('selected');
-      if(selSub?.reviewed)cell.classList.add('sel-blue');
-      else if(selSub?.makeupFor)cell.classList.add('sel-yellow');
-      else if(selSub?.images?.length>0||selSub?.text)cell.classList.add('sel-green');
-    }
-    const n=document.createElement('div');n.className='day-num';n.textContent=d;cell.appendChild(n);
-    const squares=document.createElement('div');squares.className='dots';
-    const sub=subs[key];
-    if(sub){
-      if(sub.makeupFor){const sy=document.createElement('div');sy.className='dot dot-yellow';squares.appendChild(sy);}
-      else if(sub.images?.length>0||sub.text){const sg=document.createElement('div');sg.className='dot dot-green';squares.appendChild(sg);}
-      if(sub.reviewed){const sb=document.createElement('div');sb.className='dot dot-blue';squares.appendChild(sb);}
-    }
-    // Flashcard activity square
-    if((allFcActivity[code]||{})[key] >= 20){
-      const sf=document.createElement('div');sf.className='dot dot-fc';squares.appendChild(sf);
-    }
-    cell.appendChild(squares); cell.onclick=()=>{selectedDate=key;renderDayPanel();renderCalendar();}; grid.appendChild(cell);
-  }
-  const remaining=(7-((startOffset+daysInMonth)%7))%7;
-  for(let d=1;d<=remaining;d++){const cell=document.createElement('div');cell.className='cal-day other-month';const n=document.createElement('div');n.className='day-num';n.textContent=d;cell.appendChild(n);grid.appendChild(cell);}
+document.getElementById('cal-month-label').textContent=`${AR_MONTHS[calMonth]} ${calYear}`;
+const grid=document.getElementById('cal-grid'); grid.innerHTML='';
+AR_DAYS.forEach(d=>{const h=document.createElement('div');h.className='cal-day-header';h.textContent=d;grid.appendChild(h);});
+const firstDay=new Date(calYear,calMonth,1).getDay();
+const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+const daysInPrev=new Date(calYear,calMonth,0).getDate();
+const startOffset=(6-firstDay+7)%7;
+const code=activeStudentCode(); const subs=submissions[code]||{}; const today=todayKey();
+for(let i=startOffset-1;i>=0;i--){const cell=document.createElement('div');cell.className='cal-day other-month';const n=document.createElement('div');n.className='day-num';n.textContent=daysInPrev-i;cell.appendChild(n);grid.appendChild(cell);}
+for(let d=1;d<=daysInMonth;d++){
+const key=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+const cell=document.createElement('div'); cell.className='cal-day';
+if(key===today)cell.classList.add('today');
+if(key===selectedDate){
+const selSub=subs[key]; cell.classList.add('selected');
+if(selSub?.reviewed)cell.classList.add('sel-blue');
+else if(selSub?.makeupFor)cell.classList.add('sel-yellow');
+else if(selSub?.images?.length>0||selSub?.text)cell.classList.add('sel-green');
+}
+const n=document.createElement('div');n.className='day-num';n.textContent=d;cell.appendChild(n);
+const squares=document.createElement('div');squares.className='dots';
+const sub=subs[key];
+if(sub){
+if(sub.makeupFor){const sy=document.createElement('div');sy.className='dot dot-yellow';squares.appendChild(sy);}
+else if(sub.images?.length>0||sub.text){const sg=document.createElement('div');sg.className='dot dot-green';squares.appendChild(sg);}
+if(sub.reviewed){const sb=document.createElement('div');sb.className='dot dot-blue';squares.appendChild(sb);}
+}
+// Flashcard activity square
+if((allFcActivity[code]||{})[key] >= 20){
+const sf=document.createElement('div');sf.className='dot dot-fc';squares.appendChild(sf);
+}
+cell.appendChild(squares); cell.onclick=()=>{selectedDate=key;renderDayPanel();renderCalendar();}; grid.appendChild(cell);
+}
+const remaining=(7-((startOffset+daysInMonth)%7))%7;
+for(let d=1;d<=remaining;d++){const cell=document.createElement('div');cell.className='cal-day other-month';const n=document.createElement('div');n.className='day-num';n.textContent=d;cell.appendChild(n);grid.appendChild(cell);}
 }
 
 // ── DAY PANEL ──
 function renderDayPanel() {
-  if(!selectedDate){document.getElementById('day-card').style.display='none';return;}
-  const code=activeStudentCode(); const subs=submissions[code]||{}; const sub=subs[selectedDate];
-  const hasImages=sub?.images?.length>0; const hasText=!!sub?.text; const hasContent=hasImages||hasText||!!sub?.makeupFor;
-  const reviewed=sub?.reviewed; const isMakeup=!!sub?.makeupFor;
-  const allKeys=Object.keys(subs).filter(k=>{const s=subs[k];return s&&(s.images?.length>0||s.text||s.makeupFor);}).sort();
-  const dayNum=allKeys.indexOf(selectedDate)+1||null;
+if(!selectedDate){document.getElementById('day-card').style.display='none';return;}
+const code=activeStudentCode(); const subs=submissions[code]||{}; const sub=subs[selectedDate];
+const hasImages=sub?.images?.length>0; const hasText=!!sub?.text; const hasContent=hasImages||hasText||!!sub?.makeupFor;
+const reviewed=sub?.reviewed; const isMakeup=!!sub?.makeupFor;
+const allKeys=Object.keys(subs).filter(k=>{const s=subs[k];return s&&(s.images?.length>0||s.text||s.makeupFor);}).sort();
+const dayNum=allKeys.indexOf(selectedDate)+1||null;
 
-  const dayCardEl=document.getElementById('day-card');
-  dayCardEl.style.display='block'; dayCardEl.className='day-card';
-  if(reviewed)dayCardEl.classList.add('card-blue');
-  else if(isMakeup)dayCardEl.classList.add('card-yellow');
-  else if(hasContent)dayCardEl.classList.add('card-green');
+const dayCardEl=document.getElementById('day-card');
+dayCardEl.style.display='block'; dayCardEl.className='day-card';
+if(reviewed)dayCardEl.classList.add('card-blue');
+else if(isMakeup)dayCardEl.classList.add('card-yellow');
+else if(hasContent)dayCardEl.classList.add('card-green');
 
-  document.getElementById('day-badge').textContent=dayNum?`Day ${dayNum}`:(hasContent?'Make-up':'No submission');
-  document.getElementById('day-date').textContent=formatDateLong(selectedDate);
-  document.getElementById('day-status').textContent=hasContent?(reviewed?'✓ Reviewed':(isMakeup?'• Made up':'• Uploaded')):'';
+document.getElementById('day-badge').textContent=dayNum?`Day ${dayNum}`:(hasContent?'Make-up':'No submission');
+document.getElementById('day-date').textContent=formatDateLong(selectedDate);
+document.getElementById('day-status').textContent=hasContent?(reviewed?'✓ Reviewed':(isMakeup?'• Made up':'• Uploaded')):'';
 
-  // Show flashcard activity if any
-  const fcCount = (allFcActivity[code] || {})[selectedDate];
-  if (fcCount) {
-    const existing = document.getElementById('day-status');
-    existing.textContent += (existing.textContent ? ' · ' : '') + `🃏 ${fcCount} cards`;
-  }
+// Show flashcard activity if any
+const fcCount = (allFcActivity[code] || {})[selectedDate];
+if (fcCount) {
+const existing = document.getElementById('day-status');
+existing.textContent += (existing.textContent ? ' · ' : '') + `🃏 ${fcCount} cards`;
+}
 
-  const reviewBtn=document.getElementById('review-btn');
-  if(isInstructor&&!isStudentView&&hasContent){
-    reviewBtn.style.display='block';
-    reviewBtn.className=reviewed?'review-btn reviewed':'review-btn not-reviewed';
-    reviewBtn.textContent=reviewed?'✓ Reviewed':'Mark as reviewed?';
-  } else { reviewBtn.style.display='none'; }
+const reviewBtn=document.getElementById('review-btn');
+if(isInstructor&&!isStudentView&&hasContent){
+reviewBtn.style.display='block';
+reviewBtn.className=reviewed?'review-btn reviewed':'review-btn not-reviewed';
+reviewBtn.textContent=reviewed?'✓ Reviewed':'Mark as reviewed?';
+} else { reviewBtn.style.display='none'; }
 
-  const area=document.getElementById('submissions-area'); area.innerHTML='';
-  if(hasText){
-    const tw=document.createElement('div');tw.className='text-submission';
-    tw.innerHTML=`<div class="text-submission-label">Written submission</div><div class="text-submission-content">${sub.text.replace(/\n/g,'<br>')}</div>`;
-    area.appendChild(tw);
-  }
-  if(hasImages){
-    const grid=document.createElement('div');grid.className='submissions-grid';
-    sub.images.forEach(src=>{
-      const wrap=document.createElement('div');wrap.className='submission-thumb';
-      const img=document.createElement('img');img.src=src;img.onclick=()=>openModal(src);wrap.appendChild(img);
-      const badge=document.createElement('div');
-      badge.className='submission-badge '+(reviewed?'reviewed-badge':(isMakeup?'makeup-badge':'uploaded-badge'));
-      badge.textContent=reviewed?'Reviewed':(isMakeup?'Made up':'Uploaded');
-      wrap.appendChild(badge);grid.appendChild(wrap);
-    });
-    area.appendChild(grid);
-  }
-  if(!hasContent){
-    const empty=document.createElement('div');empty.className='no-submission-msg';
-    empty.textContent='No homework submitted for this day.';area.appendChild(empty);
-  }
+const area=document.getElementById('submissions-area'); area.innerHTML='';
+if(hasText){
+const tw=document.createElement('div');tw.className='text-submission';
+tw.innerHTML=`<div class="text-submission-label">Written submission</div><div class="text-submission-content">${sub.text.replace(/\n/g,'<br>')}</div>`;
+area.appendChild(tw);
+}
+if(hasImages){
+const grid=document.createElement('div');grid.className='submissions-grid';
+sub.images.forEach(src=>{
+const wrap=document.createElement('div');wrap.className='submission-thumb';
+const img=document.createElement('img');img.src=src;img.onclick=()=>openModal(src);wrap.appendChild(img);
+const badge=document.createElement('div');
+badge.className='submission-badge '+(reviewed?'reviewed-badge':(isMakeup?'makeup-badge':'uploaded-badge'));
+badge.textContent=reviewed?'Reviewed':(isMakeup?'Made up':'Uploaded');
+wrap.appendChild(badge);grid.appendChild(wrap);
+});
+area.appendChild(grid);
+}
+if(!hasContent){
+const empty=document.createElement('div');empty.className='no-submission-msg';
+empty.textContent='No homework submitted for this day.';area.appendChild(empty);
+}
 
-  const uploadWrap=document.getElementById('upload-area-wrap'); uploadWrap.innerHTML='';
-  const isToday=selectedDate===todayKey();
-  if(isMidnightPast(selectedDate)&&!isToday&&(!isInstructor||isStudentView)){
-    const lk=document.createElement('div');lk.className='locked-msg';lk.textContent='⛔ This day is locked — midnight has passed.';uploadWrap.appendChild(lk);uploadWrap.style.display='block';return;
-  }
-  if((!isInstructor||isStudentView)&&isToday){
-    const missed=getMissedDays(code);
-    const section=document.createElement('div');section.className='upload-section';
-    let title=hasContent?'Add another submission':'Submit today\'s homework';
-    if(missed.length>0&&hasContent)title=`Make up a missed day (${missed.length} remaining)`;
-    section.innerHTML=`<div class="upload-section-title">${title}</div>
-      <div class="upload-area" id="upload-trigger"><div class="upload-icon">📸</div><div class="upload-title">Upload a photo</div><div class="upload-sub">Tap to choose</div></div>
-      <input type="file" id="file-input" accept="image/*" multiple>
-      <div class="text-input-wrap" style="margin-top:12px"><textarea id="text-input" placeholder="Or type your Arabic homework here..."></textarea></div>
-      <button class="submit-btn" id="submit-btn">Submit</button>`;
-    uploadWrap.appendChild(section); uploadWrap.style.display='block';
-    document.getElementById('upload-trigger').addEventListener('click',()=>document.getElementById('file-input').click());
-    document.getElementById('file-input').addEventListener('change',e=>{
-      if(e.target.files.length>0){document.getElementById('upload-trigger').style.background='#f0fdf4';document.getElementById('upload-trigger').style.borderColor='var(--dot-green)';document.getElementById('upload-trigger').querySelector('.upload-title').textContent=`${e.target.files.length} photo(s) selected`;}
-    });
-    document.getElementById('submit-btn').addEventListener('click',handleSubmit);
-  } else { uploadWrap.style.display='none'; }
+const uploadWrap=document.getElementById('upload-area-wrap'); uploadWrap.innerHTML='';
+const isToday=selectedDate===todayKey();
+if(isMidnightPast(selectedDate)&&!isToday&&(!isInstructor||isStudentView)){
+const lk=document.createElement('div');lk.className='locked-msg';lk.textContent='⛔ This day is locked — midnight has passed.';uploadWrap.appendChild(lk);uploadWrap.style.display='block';return;
+}
+if((!isInstructor||isStudentView)&&isToday){
+const missed=getMissedDays(code);
+const section=document.createElement('div');section.className='upload-section';
+let title=hasContent?'Add another submission':'Submit today\'s homework';
+if(missed.length>0&&hasContent)title=`Make up a missed day (${missed.length} remaining)`;
+section.innerHTML=`<div class="upload-section-title">${title}</div>
+     <div class="upload-area" id="upload-trigger"><div class="upload-icon">📸</div><div class="upload-title">Upload a photo</div><div class="upload-sub">Tap to choose</div></div>
+     <input type="file" id="file-input" accept="image/*" multiple>
+     <div class="text-input-wrap" style="margin-top:12px"><textarea id="text-input" placeholder="Or type your Arabic homework here..."></textarea></div>
+     <button class="submit-btn" id="submit-btn">Submit</button>`;
+uploadWrap.appendChild(section); uploadWrap.style.display='block';
+document.getElementById('upload-trigger').addEventListener('click',()=>document.getElementById('file-input').click());
+document.getElementById('file-input').addEventListener('change',e=>{
+if(e.target.files.length>0){document.getElementById('upload-trigger').style.background='#f0fdf4';document.getElementById('upload-trigger').style.borderColor='var(--dot-green)';document.getElementById('upload-trigger').querySelector('.upload-title').textContent=`${e.target.files.length} photo(s) selected`;}
+});
+document.getElementById('submit-btn').addEventListener('click',handleSubmit);
+} else { uploadWrap.style.display='none'; }
 }
 
 // ── SUBMIT ──
 async function handleSubmit() {
-  const code=currentUser;
-  const fileInput=document.getElementById('file-input');
-  const textInput=document.getElementById('text-input');
-  const files=fileInput?Array.from(fileInput.files):[];
-  const text=textInput?textInput.value.trim():'';
-  if(!files.length&&!text){showToast('Add a photo or write something first');return;}
-  const btn=document.getElementById('submit-btn');
-  btn.textContent='Uploading…';btn.disabled=true; showToast('Uploading…');
-  try {
-    const missed=getMissedDays(code);
-    const imgs=[];
-    for(const f of files){imgs.push(await fileToBase64(f));}
-    const subs=submissions[code]||{};
-    const todaySub=subs[selectedDate];
-    const hasExisting=todaySub&&(todaySub.images?.length>0||todaySub.text);
-    if(hasExisting&&missed.length>0){
-      const missedDay=missed[0];
-      const makeupData={images:imgs,text,reviewed:false,makeupFor:selectedDate};
-      submissions[code][missedDay]=makeupData;
-      await saveDay(code,missedDay,makeupData);
-      showToast('Made up '+formatDateLong(missedDay)+' ✓');
-    } else {
-      const existing=subs[selectedDate]||{};
-      const dayData={images:[...(existing.images||[]),...imgs],text:text||(existing.text||''),reviewed:false};
-      submissions[code][selectedDate]=dayData;
-      await saveDay(code,selectedDate,dayData);
-      showToast('Homework submitted ✓');
-    }
-    render();
-  } catch(e){showToast('Upload failed — try again');console.error(e);btn.textContent='Submit';btn.disabled=false;}
+const code=currentUser;
+const fileInput=document.getElementById('file-input');
+const textInput=document.getElementById('text-input');
+const files=fileInput?Array.from(fileInput.files):[];
+const text=textInput?textInput.value.trim():'';
+if(!files.length&&!text){showToast('Add a photo or write something first');return;}
+const btn=document.getElementById('submit-btn');
+btn.textContent='Uploading…';btn.disabled=true; showToast('Uploading…');
+try {
+const missed=getMissedDays(code);
+const imgs=[];
+for(const f of files){imgs.push(await fileToBase64(f));}
+const subs=submissions[code]||{};
+const todaySub=subs[selectedDate];
+const hasExisting=todaySub&&(todaySub.images?.length>0||todaySub.text);
+if(hasExisting&&missed.length>0){
+const missedDay=missed[0];
+const makeupData={images:imgs,text,reviewed:false,makeupFor:selectedDate};
+submissions[code][missedDay]=makeupData;
+await saveDay(code,missedDay,makeupData);
+showToast('Made up '+formatDateLong(missedDay)+' ✓');
+} else {
+const existing=subs[selectedDate]||{};
+const dayData={images:[...(existing.images||[]),...imgs],text:text||(existing.text||''),reviewed:false};
+submissions[code][selectedDate]=dayData;
+await saveDay(code,selectedDate,dayData);
+showToast('Homework submitted ✓');
+}
+render();
+} catch(e){showToast('Upload failed — try again');console.error(e);btn.textContent='Submit';btn.disabled=false;}
 }
 
 // ── REVIEW ──
 async function toggleReview() {
-  const code=viewingStudent; if(!submissions[code]?.[selectedDate])return;
-  const current=submissions[code][selectedDate].reviewed;
-  submissions[code][selectedDate].reviewed=!current; render(); buildSidebar();
-  try{await updateDoc(doc(db,'submissions',code,'days',selectedDate),{reviewed:!current});showToast(!current?'Marked as reviewed ✓':'Unmarked');}
-  catch(e){showToast('Error — try again');submissions[code][selectedDate].reviewed=current;render();}
+const code=viewingStudent; if(!submissions[code]?.[selectedDate])return;
+const current=submissions[code][selectedDate].reviewed;
+submissions[code][selectedDate].reviewed=!current; render(); buildSidebar();
+try{await updateDoc(doc(db,'submissions',code,'days',selectedDate),{reviewed:!current});showToast(!current?'Marked as reviewed ✓':'Unmarked');}
+catch(e){showToast('Error — try again');submissions[code][selectedDate].reviewed=current;render();}
 }
 
 // ── TIMER ──
 function formatTime(seconds) {
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  return `${m}:${String(s).padStart(2,'0')}`;
+const m = Math.floor(seconds / 60);
+const s = seconds % 60;
+return `${m}:${String(s).padStart(2,'0')}`;
 }
 
 function updateTimerDisplay() {
-  const el = document.getElementById('fc-timer-display');
-  if (!el) return;
-  el.textContent = formatTime(fcTimerSecondsLeft);
-  el.className = 'fc-timer-display';
-  if (fcTimerRunning) el.classList.add('running');
-  else if (fcTimerStarted && fcTimerSecondsLeft === 0) el.classList.add('done');
+const el = document.getElementById('fc-timer-display');
+if (!el) return;
+el.textContent = formatTime(fcTimerSecondsLeft);
+el.className = 'fc-timer-display';
+if (fcTimerRunning) el.classList.add('running');
+else if (fcTimerStarted && fcTimerSecondsLeft === 0) el.classList.add('done');
 }
 
 function startTimer() {
-  if (fcTimerRunning) return;
-  if (fcTimerSecondsLeft === 0) return;
-  fcTimerRunning = true;
-  fcTimerStarted = true;
-  const resultEl = document.getElementById('fc-session-result');
-  if (resultEl) resultEl.style.display = 'none';
-  document.getElementById('fc-timer-start-btn').style.display = 'none';
-  document.getElementById('fc-timer-stop-btn').style.display = 'inline-flex';
-  fcTimerInterval = setInterval(() => {
-    fcTimerSecondsLeft--;
-    updateTimerDisplay();
-    if (fcTimerSecondsLeft <= 0) {
-      clearInterval(fcTimerInterval);
-      fcTimerRunning = false;
-      document.getElementById('fc-timer-start-btn').style.display = 'inline-flex';
-      document.getElementById('fc-timer-stop-btn').style.display = 'none';
-      onTimerEnd();
-    }
-  }, 1000);
-  updateTimerDisplay();
+if (fcTimerRunning) return;
+if (fcTimerSecondsLeft === 0) return;
+fcTimerRunning = true;
+fcTimerStarted = true;
+const resultEl = document.getElementById('fc-session-result');
+if (resultEl) resultEl.style.display = 'none';
+document.getElementById('fc-timer-start-btn').style.display = 'none';
+document.getElementById('fc-timer-stop-btn').style.display = 'inline-flex';
+fcTimerInterval = setInterval(() => {
+fcTimerSecondsLeft--;
+updateTimerDisplay();
+if (fcTimerSecondsLeft <= 0) {
+clearInterval(fcTimerInterval);
+fcTimerRunning = false;
+document.getElementById('fc-timer-start-btn').style.display = 'inline-flex';
+document.getElementById('fc-timer-stop-btn').style.display = 'none';
+onTimerEnd();
+}
+}, 1000);
+updateTimerDisplay();
 }
 
 function stopTimer() {
-  if (!fcTimerRunning) return;
-  clearInterval(fcTimerInterval);
-  fcTimerRunning = false;
-  document.getElementById('fc-timer-start-btn').style.display = 'inline-flex';
-  document.getElementById('fc-timer-stop-btn').style.display = 'none';
-  updateTimerDisplay();
+if (!fcTimerRunning) return;
+clearInterval(fcTimerInterval);
+fcTimerRunning = false;
+document.getElementById('fc-timer-start-btn').style.display = 'inline-flex';
+document.getElementById('fc-timer-stop-btn').style.display = 'none';
+updateTimerDisplay();
 }
 
 function resetTimer() {
-  stopTimer();
-  fcTimerSecondsLeft = fcTimerGoalMinutes * 60;
-  fcSessionCardsRead = 0;
-  fcTimerStarted = false;
-  const resultEl = document.getElementById('fc-session-result');
-  if (resultEl) resultEl.style.display = 'none';
-  updateTimerDisplay();
+stopTimer();
+fcTimerSecondsLeft = fcTimerGoalMinutes * 60;
+fcSessionCardsRead = 0;
+fcTimerStarted = false;
+const resultEl = document.getElementById('fc-session-result');
+if (resultEl) resultEl.style.display = 'none';
+updateTimerDisplay();
 }
 
 async function onTimerEnd() {
-  const today = todayKey();
-  const code = currentUser || viewingStudent;
-  if (!allFcActivity[code]) allFcActivity[code] = {};
-  allFcActivity[code][today] = (allFcActivity[code][today] || 0) + fcTimerGoalMinutes;
-  await saveFlashcardData(code);
-  renderCalendar();
-  renderRevisionBanner();
+const today = todayKey();
+const code = currentUser || viewingStudent;
+if (!allFcActivity[code]) allFcActivity[code] = {};
+allFcActivity[code][today] = (allFcActivity[code][today] || 0) + fcTimerGoalMinutes;
+await saveFlashcardData(code);
+renderCalendar();
+renderRevisionBanner();
 
-  const resultEl = document.getElementById('fc-session-result');
-  if (resultEl) {
-    resultEl.style.display = 'block';
-    resultEl.textContent = `✓ Session complete — ${fcTimerGoalMinutes} min added (${allFcActivity[code][today]} min total today)`;
-  }
+const resultEl = document.getElementById('fc-session-result');
+if (resultEl) {
+resultEl.style.display = 'block';
+resultEl.textContent = `✓ Session complete — ${fcTimerGoalMinutes} min added (${allFcActivity[code][today]} min total today)`;
+}
 }
 
 // ── FLASHCARDS ──
 function isCardDeleted(lessonNum, cardIdx) {
-  return (fcDeletedCards[lessonNum] || []).includes(cardIdx);
+return (fcDeletedCards[lessonNum] || []).includes(cardIdx);
 }
 
 function deleteCard(lessonNum, cardIdx) {
-  if (!fcDeletedCards[lessonNum]) fcDeletedCards[lessonNum] = [];
-  if (!fcDeletedCards[lessonNum].includes(cardIdx)) {
-    fcDeletedCards[lessonNum].push(cardIdx);
-  }
-  // Remove from queue if present
-  fcQueue = fcQueue.filter(c => c.idx !== cardIdx);
-  if (fcCurrentIdx >= fcQueue.length) fcCurrentIdx = Math.max(0, fcQueue.length - 1);
+if (!fcDeletedCards[lessonNum]) fcDeletedCards[lessonNum] = [];
+if (!fcDeletedCards[lessonNum].includes(cardIdx)) {
+fcDeletedCards[lessonNum].push(cardIdx);
+}
+// Remove from queue if present
+fcQueue = fcQueue.filter(c => c.idx !== cardIdx);
+if (fcCurrentIdx >= fcQueue.length) fcCurrentIdx = Math.max(0, fcQueue.length - 1);
 }
 
 function getCardProgress(lessonNum, cardIdx) {
-  const key = `${lessonNum}_${cardIdx}`;
-  return fcProgress[key] || { interval: 0, easeFactor: 2.5, nextReview: 0, reps: 0 };
+const key = `${lessonNum}_${cardIdx}`;
+return fcProgress[key] || { interval: 0, easeFactor: 2.5, nextReview: 0, reps: 0, lastRating: 0 };
 }
 
 function setCardProgress(lessonNum, cardIdx, data) {
-  const key = `${lessonNum}_${cardIdx}`;
-  fcProgress[key] = data;
+const key = `${lessonNum}_${cardIdx}`;
+fcProgress[key] = data;
 }
 
 function getDueCards(lessonNum) {
-  const now = Date.now();
-  const lesson = LESSONS[lessonNum];
-  if (!lesson) return [];
-  return lesson.cards
-    .map((c,i) => ({...c, idx: i}))
-    .filter(c => !isCardDeleted(lessonNum, c.idx) && getCardProgress(lessonNum, c.idx).nextReview <= now);
+const now = Date.now();
+const lesson = LESSONS[lessonNum];
+if (!lesson) return [];
+return lesson.cards
+.map((c,i) => ({...c, idx: i}))
+.filter(c => !isCardDeleted(lessonNum, c.idx) && getCardProgress(lessonNum, c.idx).nextReview <= now);
 }
 
 function buildFcQueue() {
-  fcQueue = getDueCards(fcCurrentLesson);
-  for(let i=fcQueue.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[fcQueue[i],fcQueue[j]]=[fcQueue[j],fcQueue[i]];}
-  fcCurrentIdx = 0;
-  fcRevealed = false;
+fcQueue = getDueCards(fcCurrentLesson);
+for(let i=fcQueue.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[fcQueue[i],fcQueue[j]]=[fcQueue[j],fcQueue[i]];}
+fcCurrentIdx = 0;
+fcRevealed = false;
 }
 
 // SM-2 algorithm
+// rating: 1=Hard, 2=Medium, 3=Easy
 function applyRating(lessonNum, cardIdx, rating) {
-  const p = getCardProgress(lessonNum, cardIdx);
-  let { interval, easeFactor, reps } = p;
-  if (rating === 1) {
-    interval = 0; reps = 0;
-  } else {
-    if (reps === 0) interval = 1;
-    else if (reps === 1) interval = 6;
-    else interval = Math.round(interval * easeFactor);
-    reps++;
-  }
-  easeFactor = Math.max(1.3, easeFactor + 0.1 - (5 - rating) * (0.08 + (5 - rating) * 0.02));
-  const nextReview = Date.now() + interval * 86400000;
-  setCardProgress(lessonNum, cardIdx, { interval, easeFactor, nextReview, reps });
+const p = getCardProgress(lessonNum, cardIdx);
+let { interval, easeFactor, reps } = p;
+if (rating === 1) {
+interval = 0; reps = 0;
+} else {
+if (reps === 0) interval = rating === 3 ? 4 : 1;
+else if (reps === 1) interval = rating === 3 ? 10 : 6;
+else interval = Math.round(interval * (rating === 3 ? easeFactor * 1.3 : easeFactor));
+reps++;
+}
+easeFactor = Math.max(1.3, easeFactor + (rating === 3 ? 0.15 : rating === 2 ? 0.05 : -0.15));
+const nextReview = Date.now() + interval * 86400000;
+setCardProgress(lessonNum, cardIdx, { interval, easeFactor, nextReview, reps, lastRating: rating });
 }
 
 function renderFlashcards() {
   // Lesson picker
   const picker = document.getElementById('fc-lesson-picker');
   picker.innerHTML='';
+  const code = currentUser || viewingStudent;
+  const maxLesson = (studentLesson[code] !== undefined) ? studentLesson[code] : 1;
   Object.entries(LESSONS).forEach(([num, lesson]) => {
+    const lessonNum = parseInt(num);
+    if (lessonNum > maxLesson) return; // Skip lessons beyond student's level
     const btn = document.createElement('button');
-    btn.className='fc-lesson-btn'+(parseInt(num)===fcCurrentLesson?' active':'');
+    btn.className='fc-lesson-btn'+(lessonNum===fcCurrentLesson?' active':'');
     btn.textContent=lesson.name;
-    btn.onclick=()=>{ fcCurrentLesson=parseInt(num); buildFcQueue(); renderFlashcards(); };
+    btn.onclick=()=>{ fcCurrentLesson=lessonNum; buildFcQueue(); renderFlashcards(); };
     picker.appendChild(btn);
   });
 
-  // Stats
-  const lesson = LESSONS[fcCurrentLesson];
-  const totalActive = lesson.cards.filter((_,i)=>!isCardDeleted(fcCurrentLesson,i)).length;
-  const due = getDueCards(fcCurrentLesson).length;
-  const learned = lesson.cards.filter((_,i)=>!isCardDeleted(fcCurrentLesson,i)&&getCardProgress(fcCurrentLesson,i).reps>0).length;
-  const statsEl = document.getElementById('fc-stats');
-  statsEl.innerHTML=`
-    <div class="fc-stat"><div class="fc-stat-num">${totalActive}</div><div class="fc-stat-label">Active cards</div></div>
-    <div class="fc-stat"><div class="fc-stat-num" style="color:var(--blue)">${due}</div><div class="fc-stat-label">Due today</div></div>
-    <div class="fc-stat"><div class="fc-stat-num" style="color:var(--green)">${learned}</div><div class="fc-stat-label">Learned</div></div>`;
+// Stats
+const lesson = LESSONS[fcCurrentLesson];
+const totalActive = lesson.cards.filter((_,i)=>!isCardDeleted(fcCurrentLesson,i)).length;
+const due = getDueCards(fcCurrentLesson).length;
+const learned = lesson.cards.filter((_,i)=>!isCardDeleted(fcCurrentLesson,i)&&getCardProgress(fcCurrentLesson,i).reps>0).length;
+const statsEl = document.getElementById('fc-stats');
+statsEl.innerHTML=`
+   <div class="fc-stat"><div class="fc-stat-num">${totalActive}</div><div class="fc-stat-label">Active cards</div></div>
+   <div class="fc-stat"><div class="fc-stat-num" style="color:var(--blue)">${due}</div><div class="fc-stat-label">Due today</div></div>
+   <div class="fc-stat"><div class="fc-stat-num" style="color:var(--green)">${learned}</div><div class="fc-stat-label">Learned</div></div>`;
 
-  // Timer panel wiring (re-bind after render)
-  updateTimerDisplay();
-  const startBtn = document.getElementById('fc-timer-start-btn');
-  const stopBtn = document.getElementById('fc-timer-stop-btn');
-  const resetBtn = document.getElementById('fc-timer-reset-btn');
-  const rangeEl = document.getElementById('fc-timer-range');
-  const goalValEl = document.getElementById('fc-timer-goal-val');
+// Timer panel wiring (re-bind after render)
+updateTimerDisplay();
+const startBtn = document.getElementById('fc-timer-start-btn');
+const stopBtn = document.getElementById('fc-timer-stop-btn');
+const resetBtn = document.getElementById('fc-timer-reset-btn');
+const rangeEl = document.getElementById('fc-timer-range');
+const goalValEl = document.getElementById('fc-timer-goal-val');
 
-  if (startBtn) {
-    startBtn.onclick = startTimer;
-    stopBtn.onclick = stopTimer;
-    resetBtn.onclick = resetTimer;
-  }
+if (startBtn) {
+startBtn.onclick = startTimer;
+stopBtn.onclick = stopTimer;
+resetBtn.onclick = resetTimer;
+}
 
-  if (rangeEl) {
-    rangeEl.value = fcTimerGoalMinutes;
-    goalValEl.textContent = `${fcTimerGoalMinutes} min`;
-    rangeEl.oninput = () => {
-      fcTimerGoalMinutes = parseInt(rangeEl.value);
-      goalValEl.textContent = `${fcTimerGoalMinutes} min`;
-      if (!fcTimerRunning) {
-        fcTimerSecondsLeft = fcTimerGoalMinutes * 60;
-        updateTimerDisplay();
-      }
-    };
-  }
+if (rangeEl) {
+rangeEl.value = fcTimerGoalMinutes;
+goalValEl.textContent = `${fcTimerGoalMinutes} min`;
+rangeEl.oninput = () => {
+fcTimerGoalMinutes = parseInt(rangeEl.value);
+goalValEl.textContent = `${fcTimerGoalMinutes} min`;
+if (!fcTimerRunning) {
+fcTimerSecondsLeft = fcTimerGoalMinutes * 60;
+updateTimerDisplay();
+}
+};
+}
 
-  if (!fcQueue.length) buildFcQueue();
+if (!fcQueue.length) buildFcQueue();
 
-  const area = document.getElementById('fc-area');
-  area.innerHTML='';
+const area = document.getElementById('fc-area');
+area.innerHTML='';
 
-  if (!fcQueue.length || fcCurrentIdx >= fcQueue.length) {
-    area.innerHTML=`<div class="fc-done">
-      <div class="fc-done-icon">🎉</div>
-      <div class="fc-done-title">All done for now!</div>
-      <div class="fc-done-sub">You've reviewed all due cards. Come back tomorrow for more.</div>
-      <button class="fc-restart-btn" id="fc-restart">Review all again</button>
-    </div>`;
-    document.getElementById('fc-restart').addEventListener('click',()=>{
-      LESSONS[fcCurrentLesson].cards.forEach((_,i)=>{
-        if (!isCardDeleted(fcCurrentLesson, i)) {
-          const p=getCardProgress(fcCurrentLesson,i);
-          setCardProgress(fcCurrentLesson,i,{...p,nextReview:0});
-        }
-      });
-      buildFcQueue(); renderFlashcards();
-    });
-    return;
-  }
+if (!fcQueue.length || fcCurrentIdx >= fcQueue.length) {
+area.innerHTML=`<div class="fc-done">
+     <div class="fc-done-icon">🎉</div>
+     <div class="fc-done-title">All done for now!</div>
+     <div class="fc-done-sub">You've reviewed all due cards. Come back tomorrow for more.</div>
+     <button class="fc-restart-btn" id="fc-restart">Review all again</button>
+   </div>`;
+document.getElementById('fc-restart').addEventListener('click',()=>{
+LESSONS[fcCurrentLesson].cards.forEach((_,i)=>{
+if (!isCardDeleted(fcCurrentLesson, i)) {
+const p=getCardProgress(fcCurrentLesson,i);
+setCardProgress(fcCurrentLesson,i,{...p,nextReview:0});
+}
+});
+buildFcQueue(); renderFlashcards();
+});
+return;
+}
 
-  const card = fcQueue[fcCurrentIdx];
+const card = fcQueue[fcCurrentIdx];
 
-  const cardEl = document.createElement('div');
-  cardEl.className='fc-card-wrap';
-  cardEl.innerHTML=`
-    <div class="fc-card" id="fc-card">
-      <button class="fc-delete-btn" id="fc-delete-btn" title="Remove this card">✕</button>
-      <div class="fc-arabic">${card.ar}</div>
-      <div class="fc-english">${card.en}</div>
-      <div class="fc-tap-hint">Tap to reveal</div>
-    </div>`;
-  area.appendChild(cardEl);
+const cardEl = document.createElement('div');
+cardEl.className='fc-card-wrap';
+cardEl.innerHTML=`
+   <div class="fc-card" id="fc-card">
+     <button class="fc-delete-btn" id="fc-delete-btn" title="Remove this card">✕</button>
+     <div class="fc-arabic">${card.ar}</div>
+     <div class="fc-english">${card.en}</div>
+     <div class="fc-tap-hint">Tap to reveal</div>
+   </div>`;
+area.appendChild(cardEl);
 
-  const ratingWrap = document.createElement('div');
-  ratingWrap.className='fc-rating-wrap';
-  ratingWrap.id='fc-rating-wrap';
-  ratingWrap.innerHTML=`
-    <button class="fc-rating-btn fc-r1" data-r="1">1<br>Again</button>
-    <button class="fc-rating-btn fc-r2" data-r="2">2<br>Hard</button>
-    <button class="fc-rating-btn fc-r3" data-r="3">3<br>Good</button>
-    <button class="fc-rating-btn fc-r4" data-r="4">4<br>Easy</button>
-    <button class="fc-rating-btn fc-r5" data-r="5">5<br>Perfect</button>`;
-  area.appendChild(ratingWrap);
+const ratingWrap = document.createElement('div');
+ratingWrap.className='fc-rating-wrap';
+ratingWrap.id='fc-rating-wrap';
+ratingWrap.innerHTML=`
+   <button class="fc-rating-btn fc-r2" data-r="1">No idea</button>
+   <button class="fc-rating-btn fc-r3" data-r="2">Nearly got it</button>
+   <button class="fc-rating-btn fc-r4" data-r="3">Got it right!</button>`;
+area.appendChild(ratingWrap);
 
-  const progress = document.createElement('div');
-  progress.style.cssText='text-align:center;font-size:12px;color:var(--grey);margin-top:8px';
-  progress.textContent=`${fcCurrentIdx+1} / ${fcQueue.length}`;
-  area.appendChild(progress);
+const progress = document.createElement('div');
+progress.style.cssText='text-align:center;font-size:12px;color:var(--grey);margin-top:8px';
+progress.textContent=`${fcCurrentIdx+1} / ${fcQueue.length}`;
+area.appendChild(progress);
 
-  document.getElementById('fc-card').addEventListener('click', (e) => {
-    if (e.target.id === 'fc-delete-btn') return;
-    document.getElementById('fc-card').classList.add('revealed');
-    document.getElementById('fc-rating-wrap').classList.add('visible');
-  });
+document.getElementById('fc-card').addEventListener('click', (e) => {
+if (e.target.id === 'fc-delete-btn') return;
+document.getElementById('fc-card').classList.add('revealed');
+document.getElementById('fc-rating-wrap').classList.add('visible');
+});
 
-  document.getElementById('fc-delete-btn').addEventListener('click', async (e) => {
-    e.stopPropagation();
-    deleteCard(fcCurrentLesson, card.idx);
-    const code = currentUser || viewingStudent;
-    await saveFlashcardData(code);
-    showToast('Card removed ✓');
-    renderFlashcards();
-  });
+document.getElementById('fc-delete-btn').addEventListener('click', async (e) => {
+e.stopPropagation();
+deleteCard(fcCurrentLesson, card.idx);
+const code = currentUser || viewingStudent;
+await saveFlashcardData(code);
+showToast('Card removed ✓');
+renderFlashcards();
+});
 
-  ratingWrap.querySelectorAll('.fc-rating-btn').forEach(btn=>{
-    btn.addEventListener('click',async()=>{
-      const rating = parseInt(btn.dataset.r);
-      applyRating(fcCurrentLesson, card.idx, rating);
-      if (rating === 1) fcQueue.push(card);
-      fcCurrentIdx++;
-      fcSessionCardsRead++;
-      const code = currentUser || viewingStudent;
-      await saveFlashcardData(code);
-      renderFlashcards();
-    });
-  });
+ratingWrap.querySelectorAll('.fc-rating-btn').forEach(btn=>{
+btn.addEventListener('click',async()=>{
+const rating = parseInt(btn.dataset.r);
+applyRating(fcCurrentLesson, card.idx, rating);
+if (rating === 1) fcQueue.push(card);
+fcCurrentIdx++;
+fcSessionCardsRead++;
+const code = currentUser || viewingStudent;
+await saveFlashcardData(code);
+renderFlashcards();
+});
+});
 
-  // Add card button
-  document.getElementById('fc-add-btn').onclick = async () => {
-    const ar = document.getElementById('fc-add-ar').value.trim();
-    const en = document.getElementById('fc-add-en').value.trim();
-    if (!ar || !en) { showToast('Enter both Arabic and English'); return; }
-    const newIdx = LESSONS[fcCurrentLesson].cards.length;
-    LESSONS[fcCurrentLesson].cards.push({ ar, en });
-    document.getElementById('fc-add-ar').value = '';
-    document.getElementById('fc-add-en').value = '';
-    const code = currentUser || viewingStudent;
-    await saveFlashcardData(code);
-    showToast('Card added ✓');
-    buildFcQueue();
-    renderFlashcards();
-  };
+// Add card button
+document.getElementById('fc-add-btn').onclick = async () => {
+const ar = document.getElementById('fc-add-ar').value.trim();
+const en = document.getElementById('fc-add-en').value.trim();
+if (!ar || !en) { showToast('Enter both Arabic and English'); return; }
+const newIdx = LESSONS[fcCurrentLesson].cards.length;
+LESSONS[fcCurrentLesson].cards.push({ ar, en });
+document.getElementById('fc-add-ar').value = '';
+document.getElementById('fc-add-en').value = '';
+const code = currentUser || viewingStudent;
+await saveFlashcardData(code);
+showToast('Card added ✓');
+buildFcQueue();
+renderFlashcards();
+};
 }
 
 // ── MODAL ──
@@ -1348,11 +1411,94 @@ function closeModal(){document.getElementById('modal').classList.remove('open');
 let toastTimer;
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2500);}
 
+// ── DOPAMINE BUTTON (Fahd only) ──
+let dopamineBoxPos = null;
+
+function getDopamineState() {
+try {
+const raw = localStorage.getItem('fahdDopamineState');
+const data = raw ? JSON.parse(raw) : null;
+if (!data || data.date !== todayKey()) {
+const fresh = { date: todayKey(), stage: 0 };
+localStorage.setItem('fahdDopamineState', JSON.stringify(fresh));
+return fresh;
+}
+return data;
+} catch(e) { return { date: todayKey(), stage: 0 }; }
+}
+
+function randomDopaminePos() {
+return { top: (10 + Math.random()*60) + '%', left: (5 + Math.random()*70) + '%' };
+}
+
+function updateHeaderCoffee(show) {
+const el = document.getElementById('header-title');
+if (!el) return;
+el.textContent = show ? 'My Homework ☕' : 'My Homework';
+}
+
+window.dopamineClick = function() {
+const state = getDopamineState();
+localStorage.setItem('fahdDopamineState', JSON.stringify({ date: todayKey(), stage: state.stage + 1 }));
+renderDopamineButton();
+};
+
+function renderDopamineButton() {
+const zone = document.getElementById('dopamine-zone');
+if (!zone) return;
+if (currentUser !== 'FHD001') { zone.innerHTML = ''; return; }
+
+const stage = getDopamineState().stage;
+
+if (stage === 0) {
+dopamineBoxPos = null;
+zone.innerHTML = `<div style="display:flex;justify-content:center;margin-top:20px">
+     <div class="dopamine-box" onclick="window.dopamineClick()">
+       <div style="font-size:32px;margin-bottom:6px">🎯</div>
+       <div style="font-weight:800;font-size:14px;color:#1a1a2e">Dopamine Button — for my #1 student</div>
+     </div></div>`;
+updateHeaderCoffee(false);
+return;
+}
+
+if (stage >= 5) {
+zone.innerHTML = `<div style="margin-top:20px;text-align:center;color:#6b7280;font-size:14px;font-weight:600">you have lost your dopamine privileges, but here is a coffee ☕</div>`;
+updateHeaderCoffee(true);
+return;
+}
+
+if (!dopamineBoxPos) dopamineBoxPos = randomDopaminePos();
+
+let inner = '', label = '', scatter = '';
+if (stage === 1) {
+inner = `<div style="font-size:32px">🎯</div>`;
+label = 'did you actually do the homework, yaa Batal?';
+} else if (stage === 2) {
+inner = `<div style="font-size:48px">❌</div>`;
+label = 'oh no, you broke the website??';
+} else if (stage === 3) {
+inner = `<div style="font-size:64px">❌</div>`;
+label = 'STOP BREAKING THINGS';
+const p1 = randomDopaminePos(), p2 = randomDopaminePos();
+scatter = `<div style="position:fixed;top:${p1.top};left:${p1.left};font-size:64px;z-index:60;pointer-events:none">❌</div>
+     <div style="position:fixed;top:${p2.top};left:${p2.left};font-size:64px;z-index:60;pointer-events:none">❌</div>`;
+} else if (stage === 4) {
+inner = `<div style="font-size:48px">✅</div>`;
+label = "phew! don't press it again ya Fahd!";
+}
+
+zone.innerHTML = `<div class="dopamine-box moved" style="top:${dopamineBoxPos.top};left:${dopamineBoxPos.left}" onclick="window.dopamineClick()">
+     ${inner}
+     <div style="font-size:13px;font-weight:700;color:#1a1a2e;margin-top:8px;max-width:200px">${label}</div>
+   </div>${scatter}`;
+updateHeaderCoffee(false);
+}
+
 // ── RENDER ──
 function render(){
-  renderCalendar();renderDayPanel();renderMissedBanner();renderRevisionBanner();
-  if(isInstructor&&!isStudentView)buildSidebar();
-  if(currentTab==='flashcards')renderFlashcards();
+renderCalendar();renderDayPanel();renderMissedBanner();renderRevisionBanner();
+if(isInstructor&&!isStudentView)buildSidebar();
+if(currentTab==='flashcards')renderFlashcards();
 }
 
 
@@ -1365,23 +1511,22 @@ function render(){
 
 
 
- window.addEventListener('ex-session-complete', async (e) => {
-  const today = todayKey();
-  const code = currentUser || viewingStudent;
-  if (!allFcActivity[code]) allFcActivity[code] = {};
-  allFcActivity[code][today] = (allFcActivity[code][today] || 0) + e.detail.count;
-  await saveFlashcardData(code);
-  renderCalendar();
-  renderRevisionBanner();
+window.addEventListener('ex-session-complete', async (e) => {
+const today = todayKey();
+const code = currentUser || viewingStudent;
+if (!allFcActivity[code]) allFcActivity[code] = {};
+allFcActivity[code][today] = (allFcActivity[code][today] || 0) + e.detail.count;
+await saveFlashcardData(code);
+renderCalendar();
+renderRevisionBanner();
 });
 // ── EVENTS ──
- document.getElementById('home-btn-homework').addEventListener('click', () => switchTab('homework'));
+document.getElementById('home-btn-homework').addEventListener('click', () => switchTab('homework'));
 document.getElementById('home-btn-flashcards').addEventListener('click', () => switchTab('flashcards'));
 document.getElementById('home-btn-exercises').addEventListener('click', () => switchTab('exercises'));
 document.getElementById('login-btn').addEventListener('click',handleLogin);
 document.getElementById('code-input').addEventListener('keydown',e=>{if(e.key==='Enter')handleLogin();});
-document.getElementById('sidebar-view-btn').addEventListener('click',toggleView);
-document.getElementById('view-toggle-btn').addEventListener('click',toggleView);
+
 document.getElementById('sidebar-toggle').addEventListener('click',toggleSidebar);
 document.getElementById('prev-month-btn').addEventListener('click',()=>{calMonth--;if(calMonth<0){calMonth=11;calYear--;}renderCalendar();});
 document.getElementById('next-month-btn').addEventListener('click',()=>{calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCalendar();});
@@ -1409,344 +1554,371 @@ let exTimerSeconds = 0, exTimerInterval = null;
 let exGoalSeconds = 900, exDotEarned = false;
 let exWordSelected = [], exWordBank = [];
 
+function poolForMode(mode) {
+return mode === 'fillgap' ? FILL_GAP_QUESTIONS
+: mode === 'wordorder' ? WORD_ORDER_QUESTIONS
+: mode === 'changeword' ? CHANGE_WORD_QUESTIONS
+: mode === 'demonstrative' ? DEMONSTRATIVE_QUESTIONS
+: mode === 'suffixpronoun' ? SUFFIX_PRONOUN_QUESTIONS
+: TRUE_FALSE_QUESTIONS;
+}
+function buildExQuestions(mode) {
+return exShuffle(poolForMode(mode).map((q,i) => ({ ...q, __idx: i })));
+}
 function exShuffle(arr) {
-  const a = [...arr];
-  for (let i = a.length-1; i > 0; i--) {
-    const j = Math.floor(Math.random()*(i+1));
-    [a[i],a[j]] = [a[j],a[i]];
-  }
-  return a;
+const a = [...arr];
+for (let i = a.length-1; i > 0; i--) {
+const j = Math.floor(Math.random()*(i+1));
+[a[i],a[j]] = [a[j],a[i]];
+}
+return a;
 }
 
 function exRender(html) {
-  document.getElementById('ex-root').innerHTML = html;
+document.getElementById('ex-root').innerHTML = html;
 }
 
 function exShowPicker() {
-  exRender(`
-    <div class="section-label">Choose an exercise</div>
-    <div style="display:flex;flex-direction:column;gap:14px;margin-top:8px">
-      <div class="ex-card" id="btn-fillgap">
-        <div class="ex-card-icon">📝</div>
-        <div class="ex-card-title">Fill the Gap</div>
-        <div class="ex-card-desc">A word is missing from a sentence. Type what you think it is.</div>
-        <div class="ex-card-note">⏱ Earns a calendar dot after 15 min</div>
-      </div>
-      <div class="ex-card" id="btn-wordorder">
-        <div class="ex-card-icon">🔀</div>
-        <div class="ex-card-title">Word Order</div>
-        <div class="ex-card-desc">Rearrange the words to form a correct sentence.</div>
-        <div class="ex-card-note">⏱ Earns a calendar dot after 15 min</div>
-      </div>
-      <div class="ex-card" id="btn-truefalse">
-        <div class="ex-card-icon">✅</div>
-        <div class="ex-card-title">True or False</div>
-        <div class="ex-card-desc">Is the sentence correct or does it contain an error?</div>
-        <div class="ex-card-note">⏱ Earns a calendar dot after 15 min</div>
-      </div>
-      <div class="ex-card" id="btn-changeword">
-        <div class="ex-card-icon">✏️</div>
-        <div class="ex-card-title">Change One Word</div>
-        <div class="ex-card-desc">A sentence has one wrong word. Type the correct replacement.</div>
-        <div class="ex-card-note">⏱ Earns a calendar dot after 15 min</div>
-      </div>
-      <div class="ex-card" id="btn-demonstrative">
-        <div class="ex-card-icon">👉</div>
-        <div class="ex-card-title">Demonstrative Pronouns</div>
-        <div class="ex-card-desc">Practise هذا / هذه / هؤلاء agreement with true/false and correction questions.</div>
-        <div class="ex-card-note">⏱ Earns a calendar dot after 15 min</div>
-      </div>
-      
-    </div>
-  `);
-  document.getElementById('btn-fillgap').onclick = () => exShowSetup('fillgap');
-  document.getElementById('btn-wordorder').onclick = () => exShowSetup('wordorder');
-  document.getElementById('btn-truefalse').onclick = () => exShowSetup('truefalse');
-  document.getElementById('btn-changeword').onclick = () => exShowSetup('changeword');
-  document.getElementById('btn-demonstrative').onclick = () => exShowSetup('demonstrative');
+const fillgapPct = window.getExerciseMasteryPercent('fillgap', FILL_GAP_QUESTIONS.length);
+const wordorderPct = window.getExerciseMasteryPercent('wordorder', WORD_ORDER_QUESTIONS.length);
+const truefalsePct = window.getExerciseMasteryPercent('truefalse', TRUE_FALSE_QUESTIONS.length);
+const changewordPct = window.getExerciseMasteryPercent('changeword', CHANGE_WORD_QUESTIONS.length);
+const demonstrativePct = window.getExerciseMasteryPercent('demonstrative', DEMONSTRATIVE_QUESTIONS.length);
+const adjectiveagreementPct = window.getExerciseMasteryPercent('adjectiveagreement', ADJECTIVE_AGREEMENT_QUESTIONS.length);
 
+exRender(`
+   <div class="section-label">Choose an exercise</div>
+   <div style="display:flex;flex-direction:column;gap:14px;margin-top:8px">
+    <div class="ex-card" id="btn-fillgap">
+       ${window.miniRing(fillgapPct, '📝')}
+       <div class="ex-card-title">Fill the Gap</div>
+       <div class="ex-card-desc">A word is missing from a sentence. Type what you think it is.</div>
+       <div class="ex-card-note">${fillgapPct}% mastered</div>
+     </div>
+     <div class="ex-card" id="btn-wordorder">
+       ${window.miniRing(wordorderPct, '🔀')}
+       <div class="ex-card-title">Word Order</div>
+       <div class="ex-card-desc">Rearrange the words to form a correct sentence.</div>
+       <div class="ex-card-note">${wordorderPct}% mastered</div>
+     </div>
+    <div class="ex-card" id="btn-truefalse">
+       ${window.miniRing(truefalsePct, '✅')}
+       <div class="ex-card-title">True or False</div>
+       <div class="ex-card-desc">Is the sentence correct or does it contain an error?</div>
+       <div class="ex-card-note">${truefalsePct}% mastered</div>
+     </div>
+    <div class="ex-card" id="btn-changeword">
+       ${window.miniRing(changewordPct, '✏️')}
+       <div class="ex-card-title">Change One Word</div>
+       <div class="ex-card-desc">A sentence has one wrong word. Type the correct replacement.</div>
+       <div class="ex-card-note">${changewordPct}% mastered</div>
+     </div>
+  <div class="ex-card" id="btn-demonstrative">
+  ${window.miniRing(demonstrativePct, '👉')}
+  <div class="ex-card-title">Demonstrative Pronouns</div>
+  <div class="ex-card-desc">Practise هذا / هذه / هؤلاء agreement with true/false and correction questions.</div>
+  <div class="ex-card-note">${demonstrativePct}% mastered</div>
+</div>
+<div class="ex-card" id="btn-adjectiveagreement">
+  ${window.miniRing(adjectiveagreementPct, '✨')}
+  <div class="ex-card-title">Adjective Agreement</div>
+  <div class="ex-card-desc">Noun-adjective agreement: is the adjective correctly matched to the noun?</div>
+  <div class="ex-card-note">${adjectiveagreementPct}% mastered</div>
+</div>
+     
+   </div>
+ `);
+document.getElementById('btn-fillgap').onclick = () => exShowSetup('fillgap');
+document.getElementById('btn-wordorder').onclick = () => exShowSetup('wordorder');
+document.getElementById('btn-truefalse').onclick = () => exShowSetup('truefalse');
+document.getElementById('btn-changeword').onclick = () => exShowSetup('changeword');
+document.getElementById('btn-demonstrative').onclick = () => exShowSetup('demonstrative');
+document.getElementById('btn-adjectiveagreement').onclick = () => exShowSetup('adjectiveagreement');
 }
 
 function exShowSetup(mode) {
-  exMode = mode;
-  const title = mode === 'fillgap' ? '📝 Fill the Gap'
-    : mode === 'wordorder' ? '🔀 Word Order'
-    : mode === 'changeword' ? '✏️ Change One Word'
-    : mode === 'demonstrative' ? '👉 Demonstrative Pronouns'
-    : mode === 'suffixpronoun' ? '🔤 Suffix Pronouns'
-    : '✅ True or False';
-  const isGrammarDrill = mode === 'demonstrative' || mode === 'suffixpronoun';
-  exRender(`
-    <div class="section-label">${title}</div>
-    <div style="background:white;border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
-      ${isGrammarDrill ? `<div style="background:#fffbeb;border:1.5px solid #fcd34d;border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:13px;color:#92400e;line-height:1.5">⚠️ These sentences are computer-generated, and the meanings are deliberately nonsensical so you can't guess the answer from context. Focus only on the grammar rule being tested — not what the sentence means.</div>` : ''}
-      <div style="font-size:14px;font-weight:600;color:#6b7280;margin-bottom:12px">Choose session length</div>
-      <select id="ex-timer-select" style="width:100%;font-size:16px;padding:12px;border:2px solid #e5e7eb;border-radius:10px;outline:none">
-        <option value="60">1 minute</option>
-        <option value="120">2 minutes</option>
-        <option value="180">3 minutes</option>
-        <option value="300">5 minutes</option>
-        <option value="600">10 minutes</option>
-        <option value="900" selected>15 minutes</option>
-        <option value="1200">20 minutes</option>
-      </select>
-      <button id="ex-start-btn" style="width:100%;margin-top:14px;padding:14px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">Start</button>
-      <button id="ex-back-btn" style="width:100%;margin-top:8px;padding:10px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">← Back</button>
-    </div>
-  `);
-  document.getElementById('ex-start-btn').onclick = exLaunch;
-  document.getElementById('ex-back-btn').onclick = exShowPicker;
+exMode = mode;
+const title = mode === 'fillgap' ? '📝 Fill the Gap'
+: mode === 'wordorder' ? '🔀 Word Order'
+: mode === 'changeword' ? '✏️ Change One Word'
+: mode === 'demonstrative' ? '👉 Demonstrative Pronouns'
+: mode === 'suffixpronoun' ? '🔤 Suffix Pronouns'
+: '✅ True or False';
+const isGrammarDrill = mode === 'demonstrative' || mode === 'suffixpronoun';
+exRender(`
+   <div class="section-label">${title}</div>
+   <div style="background:white;border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
+     ${isGrammarDrill ? `<div style="background:#fffbeb;border:1.5px solid #fcd34d;border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:13px;color:#92400e;line-height:1.5">⚠️ These sentences are computer-generated, and the meanings are deliberately nonsensical so you can't guess the answer from context. Focus only on the grammar rule being tested — not what the sentence means.</div>` : ''}
+     <div style="font-size:14px;font-weight:600;color:#6b7280;margin-bottom:12px">Choose session length</div>
+     <select id="ex-timer-select" style="width:100%;font-size:16px;padding:12px;border:2px solid #e5e7eb;border-radius:10px;outline:none">
+       <option value="60">1 minute</option>
+       <option value="120">2 minutes</option>
+       <option value="180">3 minutes</option>
+       <option value="300">5 minutes</option>
+       <option value="600">10 minutes</option>
+       <option value="900" selected>15 minutes</option>
+       <option value="1200">20 minutes</option>
+     </select>
+     <button id="ex-start-btn" style="width:100%;margin-top:14px;padding:14px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">Start</button>
+     <button id="ex-back-btn" style="width:100%;margin-top:8px;padding:10px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">← Back</button>
+   </div>
+ `);
+document.getElementById('ex-start-btn').onclick = exLaunch;
+document.getElementById('ex-back-btn').onclick = exShowPicker;
 }
 
 function exLaunch() {
-  exGoalSeconds = parseInt(document.getElementById('ex-timer-select').value);
-  exTimerSeconds = exGoalSeconds;
-  exAnswered = 0;
-  exCurrent = 0;
-  exDotEarned = false;
-  exQuestions = exShuffle(
-  exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS]
-  : exMode === 'wordorder' ? [...WORD_ORDER_QUESTIONS]
-  : exMode === 'changeword' ? [...CHANGE_WORD_QUESTIONS]
-  : exMode === 'demonstrative' ? [...DEMONSTRATIVE_QUESTIONS]
-  : exMode === 'suffixpronoun' ? [...SUFFIX_PRONOUN_QUESTIONS]
-  : [...TRUE_FALSE_QUESTIONS]
+exGoalSeconds = parseInt(document.getElementById('ex-timer-select').value);
+exTimerSeconds = exGoalSeconds;
+exAnswered = 0;
+exCurrent = 0;
+exDotEarned = false;
+
+exQuestions = exShuffle(
+exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS]
+: exMode === 'wordorder' ? [...WORD_ORDER_QUESTIONS]
+: exMode === 'changeword' ? [...CHANGE_WORD_QUESTIONS]
+: exMode === 'demonstrative' ? [...DEMONSTRATIVE_QUESTIONS]
+: exMode === 'suffixpronoun' ? [...SUFFIX_PRONOUN_QUESTIONS]
+: exMode === 'adjectiveagreement' ? [...ADJECTIVE_AGREEMENT_QUESTIONS]
+: [...TRUE_FALSE_QUESTIONS]
 );
-  exRenderActive();
-  exStartTimer();
-  exShowQuestion();
+exRenderActive();
+exStartTimer();
+exShowQuestion();
 }
 
 function exRenderActive() {
-  exRender(`
-    <div style="display:flex;justify-content:space-between;align-items:center;background:white;padding:12px 20px;border-radius:12px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,0.06)">
-      <div id="ex-timer-display" style="font-size:1.6em;font-weight:800;color:#2563eb;font-variant-numeric:tabular-nums">--:--</div>
-      <div id="ex-progress" style="color:#6b7280;font-size:14px;font-weight:600">Question 1</div>
-    </div>
-    <div style="background:white;border-radius:16px;padding:28px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
-      <div id="ex-instruction" style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6b7280;margin-bottom:16px"></div>
-      <div id="ex-sentence" style="font-size:1.6em;line-height:2;text-align:center;direction:rtl;margin-bottom:20px"></div>
-      <div id="ex-fill-input" style="display:none;flex-direction:column;align-items:center;gap:10px">
-        <input id="ex-answer-input" type="text" placeholder="Type the missing word..." style="font-size:1.2em;padding:12px 16px;border:2px solid #e5e7eb;border-radius:10px;width:100%;max-width:320px;text-align:center;direction:rtl;outline:none">
-        <button id="ex-check-btn" style="padding:12px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Check ←</button>
-      </div>
-      <div id="ex-word-order" style="display:none">
-        <div style="font-size:13px;color:#6b7280;text-align:center;margin-bottom:12px">Click words in the correct order</div>
-        <div id="ex-word-bank" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;direction:rtl;margin-bottom:20px"></div>
-        <div id="ex-answer-row" style="min-height:48px;background:#f0f4ff;border-radius:10px;padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px;direction:rtl;align-items:center;margin-bottom:12px"></div>
-        <div style="text-align:center;display:flex;gap:10px;justify-content:center">
-          <button id="ex-wo-check-btn" style="padding:12px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Check ←</button>
-          <button id="ex-wo-clear-btn" style="padding:12px 20px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">Clear</button>
-        </div>
-      </div>
-      <div id="ex-reveal" style="display:none;background:#f0fdf4;border:2px solid #86efac;border-radius:10px;padding:16px;margin-top:16px;font-size:1.2em;text-align:center;direction:rtl"></div>
-    </div>
-    <div id="ex-rating-area" style="display:none;gap:10px;margin-bottom:16px">
-      <button id="ex-rate-hard" style="flex:1;padding:12px;background:#fee2e2;color:#b91c1c;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">Hard</button>
-      <button id="ex-rate-med" style="flex:1;padding:12px;background:#fff7ed;color:#c2410c;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">Medium</button>
-      <button id="ex-rate-easy" style="flex:1;padding:12px;background:#f0fdf4;color:#15803d;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">Easy</button>
-    </div>
-  `);
+exRender(`
+   <div style="display:flex;justify-content:space-between;align-items:center;background:white;padding:12px 20px;border-radius:12px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,0.06)">
+     <div id="ex-timer-display" style="font-size:1.6em;font-weight:800;color:#2563eb;font-variant-numeric:tabular-nums">--:--</div>
+     <div id="ex-progress" style="color:#6b7280;font-size:14px;font-weight:600">Question 1</div>
+   </div>
+   <div style="background:white;border-radius:16px;padding:28px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
+     <div id="ex-instruction" style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6b7280;margin-bottom:16px"></div>
+     <div id="ex-sentence" style="font-size:1.6em;line-height:2;text-align:center;direction:rtl;margin-bottom:20px"></div>
+     <div id="ex-fill-input" style="display:none;flex-direction:column;align-items:center;gap:10px">
+       <input id="ex-answer-input" type="text" placeholder="Type the missing word..." style="font-size:1.2em;padding:12px 16px;border:2px solid #e5e7eb;border-radius:10px;width:100%;max-width:320px;text-align:center;direction:rtl;outline:none">
+       <button id="ex-check-btn" style="padding:12px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Check ←</button>
+     </div>
+     <div id="ex-word-order" style="display:none">
+       <div style="font-size:13px;color:#6b7280;text-align:center;margin-bottom:12px">Click words in the correct order</div>
+       <div id="ex-word-bank" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;direction:rtl;margin-bottom:20px"></div>
+       <div id="ex-answer-row" style="min-height:48px;background:#f0f4ff;border-radius:10px;padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px;direction:rtl;align-items:center;margin-bottom:12px"></div>
+       <div style="text-align:center;display:flex;gap:10px;justify-content:center">
+         <button id="ex-wo-check-btn" style="padding:12px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Check ←</button>
+         <button id="ex-wo-clear-btn" style="padding:12px 20px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">Clear</button>
+       </div>
+     </div>
+     <div id="ex-reveal" style="display:none;background:#f0fdf4;border:2px solid #86efac;border-radius:10px;padding:16px;margin-top:16px;font-size:1.2em;text-align:center;direction:rtl"></div>
+   </div>
+   <div id="ex-rating-area" style="display:none;gap:10px;margin-bottom:16px">
+     <button id="ex-rate-hard" style="flex:1;padding:12px;background:#fee2e2;color:#b91c1c;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">No idea</button>
+     <button id="ex-rate-med" style="flex:1;padding:12px;background:#fff7ed;color:#c2410c;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">Nearly got it</button>
+     <button id="ex-rate-easy" style="flex:1;padding:12px;background:#f0fdf4;color:#15803d;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">Got it right!</button>
+   </div>
+ `);
 }
 
 function exStartTimer() {
-  exUpdateTimer();
-  exTimerInterval = setInterval(() => {
-    exTimerSeconds--;
-    exUpdateTimer();
-    if (exTimerSeconds <= 0) { clearInterval(exTimerInterval); exEndSession(); }
-  }, 1000);
+exUpdateTimer();
+exTimerInterval = setInterval(() => {
+exTimerSeconds--;
+exUpdateTimer();
+if (exTimerSeconds <= 0) { clearInterval(exTimerInterval); exEndSession(); }
+}, 1000);
 }
 
 function exUpdateTimer() {
-  const el = document.getElementById('ex-timer-display');
-  if (!el) return;
-  const m = Math.floor(exTimerSeconds/60);
-  const s = exTimerSeconds%60;
-  el.textContent = m+':'+(s<10?'0':'')+s;
-  el.style.color = exTimerSeconds <= 30 ? '#dc2626' : '#2563eb';
+const el = document.getElementById('ex-timer-display');
+if (!el) return;
+const m = Math.floor(exTimerSeconds/60);
+const s = exTimerSeconds%60;
+el.textContent = m+':'+(s<10?'0':'')+s;
+el.style.color = exTimerSeconds <= 30 ? '#dc2626' : '#2563eb';
 }
 
 function exShowQuestion() {
-  if (exCurrent >= exQuestions.length) {
-    exQuestions = exShuffle(
-  exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS]
-  : exMode === 'wordorder' ? [...WORD_ORDER_QUESTIONS]
-  : exMode === 'changeword' ? [...CHANGE_WORD_QUESTIONS]
-  : exMode === 'demonstrative' ? [...DEMONSTRATIVE_QUESTIONS]
-  : exMode === 'suffixpronoun' ? [...SUFFIX_PRONOUN_QUESTIONS]
-  : [...TRUE_FALSE_QUESTIONS]
+if (exCurrent >= exQuestions.length) {
+exQuestions = exShuffle(
+exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS]
+: exMode === 'wordorder' ? [...WORD_ORDER_QUESTIONS]
+: exMode === 'changeword' ? [...CHANGE_WORD_QUESTIONS]
+: exMode === 'demonstrative' ? [...DEMONSTRATIVE_QUESTIONS]
+: exMode === 'suffixpronoun' ? [...SUFFIX_PRONOUN_QUESTIONS]
+: exMode === 'adjectiveagreement' ? [...ADJECTIVE_AGREEMENT_QUESTIONS]
+: [...TRUE_FALSE_QUESTIONS]
 );
-    exCurrent = 0;
-  }
-  const revealEl = document.getElementById('ex-reveal');
-  const ratingEl = document.getElementById('ex-rating-area');
-  if (revealEl) revealEl.style.display = 'none';
-  if (ratingEl) ratingEl.style.display = 'none';
-  document.getElementById('ex-progress').textContent = 'Question '+(exAnswered+1);
+exCurrent = 0;
+}
+const revealEl = document.getElementById('ex-reveal');
+const ratingEl = document.getElementById('ex-rating-area');
+if (revealEl) revealEl.style.display = 'none';
+if (ratingEl) ratingEl.style.display = 'none';
+document.getElementById('ex-progress').textContent = 'Question '+(exAnswered+1);
 
-  if (exMode === 'fillgap') {
-    const q = exQuestions[exCurrent];
-    document.getElementById('ex-instruction').textContent = 'Fill in the missing word';
-    document.getElementById('ex-sentence').innerHTML = q.sentence.replace('________',
-      '<span style="display:inline-block;border-bottom:3px solid #2563eb;min-width:100px;text-align:center">________</span>');
-    const fillDiv = document.getElementById('ex-fill-input');
-    fillDiv.style.display = 'flex';
-    document.getElementById('ex-word-order').style.display = 'none';
-    const inp = document.getElementById('ex-answer-input');
-    inp.value = '';
-    setTimeout(() => inp.focus(), 50);
-    document.getElementById('ex-check-btn').onclick = exSubmitFill;
-    inp.onkeydown = e => { if (e.key === 'Enter') exSubmitFill(); };
-   } else if (exMode === 'truefalse' || exMode === 'demonstrative' || exMode === 'suffixpronoun') {
-    const q = exQuestions[exCurrent];
-    document.getElementById('ex-instruction').textContent = 'Is this sentence correct?';
-    document.getElementById('ex-sentence').innerHTML = q.sentence;
-    document.getElementById('ex-sentence').style.fontSize = '1.4em';
-    document.getElementById('ex-fill-input').style.display = 'none';
-    document.getElementById('ex-word-order').style.display = 'none';
-    // inject true/false buttons
-    const existing = document.getElementById('ex-tf-btns');
-    if (existing) existing.remove();
-    const tfWrap = document.createElement('div');
-    tfWrap.id = 'ex-tf-btns';
-    tfWrap.style.cssText = 'display:flex;gap:12px;justify-content:center;margin-top:8px';
-    tfWrap.innerHTML = `
-      <button id="ex-tf-true" style="flex:1;padding:14px;background:#f0fdf4;color:#15803d;border:2px solid #86efac;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">True</button>
-      <button id="ex-tf-false" style="flex:1;padding:14px;background:#fef2f2;color:#b91c1c;border:2px solid #fca5a5;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">False</button>`;
-    document.getElementById('ex-sentence').after(tfWrap);
-    document.getElementById('ex-tf-true').onclick = () => exSubmitTrueFalse(true);
-    document.getElementById('ex-tf-false').onclick = () => exSubmitTrueFalse(false);
-  } else if (exMode === 'changeword') {
-    const q = exQuestions[exCurrent];
-    document.getElementById('ex-instruction').textContent = 'One word is wrong — type the correct word';
-    document.getElementById('ex-sentence').innerHTML = q.sentence;
-    document.getElementById('ex-sentence').style.fontSize = '1.4em';
-    const fillDiv = document.getElementById('ex-fill-input');
-    fillDiv.style.display = 'flex';
-    document.getElementById('ex-word-order').style.display = 'none';
-    const inp = document.getElementById('ex-answer-input');
-    inp.value = '';
-    inp.placeholder = 'Type the correct word...';
-    setTimeout(() => inp.focus(), 50);
-    const checkBtn = document.getElementById('ex-check-btn');
-    checkBtn.replaceWith(checkBtn.cloneNode(true));
-    const freshBtn = document.getElementById('ex-check-btn');
-    freshBtn.onclick = exSubmitChangeWord;
-    inp.onkeydown = e => { if (e.key === 'Enter') exSubmitChangeWord(); };
-  } else {
-    const q = exQuestions[exCurrent];
-    document.getElementById('ex-instruction').textContent = 'Put the words in the correct order';
-    document.getElementById('ex-sentence').textContent = '';
-    document.getElementById('ex-fill-input').style.display = 'none';
-    document.getElementById('ex-word-order').style.display = 'block';
-    exWordSelected = [];
-    exWordBank = exShuffle([...q.words]);
-    exRenderTiles();
-    document.getElementById('ex-wo-check-btn').onclick = exSubmitWordOrder;
-    document.getElementById('ex-wo-clear-btn').onclick = () => { exWordSelected = []; exRenderTiles(); };
-  }
+if (exMode === 'fillgap') {
+const q = exQuestions[exCurrent];
+document.getElementById('ex-instruction').textContent = 'Fill in the missing word';
+document.getElementById('ex-sentence').innerHTML = q.sentence.replace('________',
+'<span style="display:inline-block;border-bottom:3px solid #2563eb;min-width:100px;text-align:center">________</span>');
+const fillDiv = document.getElementById('ex-fill-input');
+fillDiv.style.display = 'flex';
+document.getElementById('ex-word-order').style.display = 'none';
+const inp = document.getElementById('ex-answer-input');
+inp.value = '';
+setTimeout(() => inp.focus(), 50);
+document.getElementById('ex-check-btn').onclick = exSubmitFill;
+inp.onkeydown = e => { if (e.key === 'Enter') exSubmitFill(); };
+} else if (exMode === 'truefalse' || exMode === 'demonstrative' || exMode === 'suffixpronoun' || exMode === 'adjectiveagreement') {
+const q = exQuestions[exCurrent];
+document.getElementById('ex-instruction').textContent = 'Is this sentence correct?';
+document.getElementById('ex-sentence').innerHTML = q.sentence;
+document.getElementById('ex-sentence').style.fontSize = '1.4em';
+document.getElementById('ex-fill-input').style.display = 'none';
+document.getElementById('ex-word-order').style.display = 'none';
+// inject true/false buttons
+const existing = document.getElementById('ex-tf-btns');
+if (existing) existing.remove();
+const tfWrap = document.createElement('div');
+tfWrap.id = 'ex-tf-btns';
+tfWrap.style.cssText = 'display:flex;gap:12px;justify-content:center;margin-top:8px';
+tfWrap.innerHTML = `
+     <button id="ex-tf-true" style="flex:1;padding:14px;background:#f0fdf4;color:#15803d;border:2px solid #86efac;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">True</button>
+     <button id="ex-tf-false" style="flex:1;padding:14px;background:#fef2f2;color:#b91c1c;border:2px solid #fca5a5;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">False</button>`;
+document.getElementById('ex-sentence').after(tfWrap);
+document.getElementById('ex-tf-true').onclick = () => exSubmitTrueFalse(true);
+document.getElementById('ex-tf-false').onclick = () => exSubmitTrueFalse(false);
+} else if (exMode === 'changeword') {
+const q = exQuestions[exCurrent];
+document.getElementById('ex-instruction').textContent = 'One word is wrong — type the correct word';
+document.getElementById('ex-sentence').innerHTML = q.sentence;
+document.getElementById('ex-sentence').style.fontSize = '1.4em';
+const fillDiv = document.getElementById('ex-fill-input');
+fillDiv.style.display = 'flex';
+document.getElementById('ex-word-order').style.display = 'none';
+const inp = document.getElementById('ex-answer-input');
+inp.value = '';
+inp.placeholder = 'Type the correct word...';
+setTimeout(() => inp.focus(), 50);
+const checkBtn = document.getElementById('ex-check-btn');
+checkBtn.replaceWith(checkBtn.cloneNode(true));
+const freshBtn = document.getElementById('ex-check-btn');
+freshBtn.onclick = exSubmitChangeWord;
+inp.onkeydown = e => { if (e.key === 'Enter') exSubmitChangeWord(); };
+} else {
+const q = exQuestions[exCurrent];
+document.getElementById('ex-instruction').textContent = 'Put the words in the correct order';
+document.getElementById('ex-sentence').textContent = '';
+document.getElementById('ex-fill-input').style.display = 'none';
+document.getElementById('ex-word-order').style.display = 'block';
+exWordSelected = [];
+exWordBank = exShuffle([...q.words]);
+exRenderTiles();
+document.getElementById('ex-wo-check-btn').onclick = exSubmitWordOrder;
+document.getElementById('ex-wo-clear-btn').onclick = () => { exWordSelected = []; exRenderTiles(); };
+}
 }
 
 function exRenderTiles() {
-  const bank = document.getElementById('ex-word-bank');
-  const ansRow = document.getElementById('ex-answer-row');
-  bank.innerHTML = '';
-  ansRow.innerHTML = '';
-  exWordBank.forEach((word, i) => {
-    if (exWordSelected.includes(i)) return;
-    const btn = document.createElement('button');
-    btn.className = 'ex-word-tile';
-    btn.textContent = word;
-    btn.onclick = () => { exWordSelected.push(i); exRenderTiles(); };
-    bank.appendChild(btn);
-  });
-  exWordSelected.forEach((idx, pos) => {
-    const btn = document.createElement('button');
-    btn.textContent = exWordBank[idx];
-    btn.style.cssText = 'padding:10px 16px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:1.1em;cursor:pointer;direction:rtl;font-family:inherit';
-    btn.onclick = () => { exWordSelected.splice(pos,1); exRenderTiles(); };
-    ansRow.appendChild(btn);
-  });
-  if (!exWordSelected.length) {
-    ansRow.innerHTML = '<span style="color:#9ca3af;font-size:14px">Your answer will appear here</span>';
-  }
+const bank = document.getElementById('ex-word-bank');
+const ansRow = document.getElementById('ex-answer-row');
+bank.innerHTML = '';
+ansRow.innerHTML = '';
+exWordBank.forEach((word, i) => {
+if (exWordSelected.includes(i)) return;
+const btn = document.createElement('button');
+btn.className = 'ex-word-tile';
+btn.textContent = word;
+btn.onclick = () => { exWordSelected.push(i); exRenderTiles(); };
+bank.appendChild(btn);
+});
+exWordSelected.forEach((idx, pos) => {
+const btn = document.createElement('button');
+btn.textContent = exWordBank[idx];
+btn.style.cssText = 'padding:10px 16px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:1.1em;cursor:pointer;direction:rtl;font-family:inherit';
+btn.onclick = () => { exWordSelected.splice(pos,1); exRenderTiles(); };
+ansRow.appendChild(btn);
+});
+if (!exWordSelected.length) {
+ansRow.innerHTML = '<span style="color:#9ca3af;font-size:14px">Your answer will appear here</span>';
+}
 }
 
 function exSubmitFill() {
-  const q = exQuestions[exCurrent];
-  const reveal = document.getElementById('ex-reveal');
-  reveal.textContent = '✓ Answer: ' + q.answer;
-  reveal.style.display = 'block';
-  document.getElementById('ex-fill-input').style.display = 'none';
-  const ratingEl = document.getElementById('ex-rating-area');
-  ratingEl.style.display = 'flex';
-  document.getElementById('ex-rate-hard').onclick = exRate;
-  document.getElementById('ex-rate-med').onclick = exRate;
-  document.getElementById('ex-rate-easy').onclick = exRate;
+const q = exQuestions[exCurrent];
+const reveal = document.getElementById('ex-reveal');
+reveal.textContent = '✓ Answer: ' + q.answer;
+reveal.style.display = 'block';
+document.getElementById('ex-fill-input').style.display = 'none';
+const ratingEl = document.getElementById('ex-rating-area');
+ratingEl.style.display = 'flex';
+wireRatingButtons();
 }
 function exSubmitTrueFalse(chosen) {
-  const q = exQuestions[exCurrent];
-  const reveal = document.getElementById('ex-reveal');
-  reveal.innerHTML = 'The sentence is <strong>' + (q.answer ? 'True' : 'False') + '</strong>.';
-  reveal.style.background = '#f0fdf4';
-  reveal.style.borderColor = '#86efac';
-  reveal.style.display = 'block';
-  const tfWrap = document.getElementById('ex-tf-btns');
-  if (tfWrap) tfWrap.style.display = 'none';
-  const ratingEl = document.getElementById('ex-rating-area');
-  ratingEl.style.display = 'flex';
-  document.getElementById('ex-rate-hard').onclick = exRate;
-  document.getElementById('ex-rate-med').onclick = exRate;
-  document.getElementById('ex-rate-easy').onclick = exRate;
+const q = exQuestions[exCurrent];
+const reveal = document.getElementById('ex-reveal');
+reveal.innerHTML = 'The sentence is <strong>' + (q.answer ? 'True' : 'False') + '</strong>.';
+reveal.style.background = '#f0fdf4';
+reveal.style.borderColor = '#86efac';
+reveal.style.display = 'block';
+const tfWrap = document.getElementById('ex-tf-btns');
+if (tfWrap) tfWrap.style.display = 'none';
+const ratingEl = document.getElementById('ex-rating-area');
+ratingEl.style.display = 'flex';
+wireRatingButtons();
 }
 function exSubmitChangeWord() {
-  console.log('changeword fired');
-  const q = exQuestions[exCurrent];
-  const reveal = document.getElementById('ex-reveal');
-  reveal.innerHTML = `✕ Wrong word: <strong>${q.wrong}</strong><br>✓ Correct word: <strong>${q.correct}</strong>`;
-  reveal.style.display = 'block';
-  document.getElementById('ex-fill-input').style.display = 'none';
-  const ratingEl = document.getElementById('ex-rating-area');
-  ratingEl.style.display = 'flex';
-  document.getElementById('ex-rate-hard').onclick = exRate;
-  document.getElementById('ex-rate-med').onclick = exRate;
-  document.getElementById('ex-rate-easy').onclick = exRate;
+console.log('changeword fired');
+const q = exQuestions[exCurrent];
+const reveal = document.getElementById('ex-reveal');
+reveal.innerHTML = `✕ Wrong word: <strong>${q.wrong}</strong><br>✓ Correct word: <strong>${q.correct}</strong>`;
+reveal.style.display = 'block';
+document.getElementById('ex-fill-input').style.display = 'none';
+const ratingEl = document.getElementById('ex-rating-area');
+ratingEl.style.display = 'flex';
+wireRatingButtons();
 }
 
 function exSubmitWordOrder() {
-  const q = exQuestions[exCurrent];
-  const reveal = document.getElementById('ex-reveal');
-  reveal.innerHTML = '✓ Correct order:<br><span style="direction:rtl;display:block;margin-top:6px">'+q.answer+'</span>';
-  reveal.style.display = 'block';
-  document.getElementById('ex-word-order').style.display = 'none';
-  const ratingEl = document.getElementById('ex-rating-area');
-  ratingEl.style.display = 'flex';
-  document.getElementById('ex-rate-hard').onclick = exRate;
-  document.getElementById('ex-rate-med').onclick = exRate;
-  document.getElementById('ex-rate-easy').onclick = exRate;
+const q = exQuestions[exCurrent];
+const reveal = document.getElementById('ex-reveal');
+reveal.innerHTML = '✓ Correct order:<br><span style="direction:rtl;display:block;margin-top:6px">'+q.answer+'</span>';
+reveal.style.display = 'block';
+document.getElementById('ex-word-order').style.display = 'none';
+const ratingEl = document.getElementById('ex-rating-area');
+ratingEl.style.display = 'flex';
+wireRatingButtons();
 }
 
-function exRate() {
-  exAnswered++;
-  exCurrent++;
-  exShowQuestion();
+function exRate(rating) {
+const q = exQuestions[exCurrent];
+if (window.recordExerciseRating) window.recordExerciseRating(exMode, q.__idx, rating);
+exAnswered++;
+exCurrent++;
+exShowQuestion();
+}
+
+function wireRatingButtons() {
+document.getElementById('ex-rate-hard').onclick = () => exRate(1);
+document.getElementById('ex-rate-med').onclick = () => exRate(2);
+document.getElementById('ex-rate-easy').onclick = () => exRate(3);
 }
 
 async function exEndSession() {
-  clearInterval(exTimerInterval);
-  const minutesThisSession = Math.round(exGoalSeconds / 60);
-  exRender(`
-    <div style="text-align:center;padding:40px 20px">
-      <div style="font-size:48px;margin-bottom:16px">🎉</div>
-      <div style="font-size:22px;font-weight:800;color:#1a1a2e;margin-bottom:8px">Session complete!</div>
-      <div style="font-size:15px;color:#6b7280;margin-bottom:24px">You answered ${exAnswered} question${exAnswered!==1?'s':''} in ${minutesThisSession} minute${minutesThisSession!==1?'s':''}.</div>
-      <div style="background:#f0fdf4;border:2px solid #86efac;border-radius:12px;padding:14px;margin-bottom:20px;font-size:14px;font-weight:600;color:#15803d">✓ ${minutesThisSession} minute${minutesThisSession!==1?'s':''} added to today's revision</div>
-      <button id="ex-again-btn" style="padding:14px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Choose another exercise</button>
-    </div>
-  `);
-  document.getElementById('ex-again-btn').onclick = exShowPicker;
-  window.dispatchEvent(new CustomEvent('ex-session-complete', { detail: { count: minutesThisSession } }));
+clearInterval(exTimerInterval);
+const minutesThisSession = Math.round(exGoalSeconds / 60);
+exRender(`
+   <div style="text-align:center;padding:40px 20px">
+     <div style="font-size:48px;margin-bottom:16px">🎉</div>
+     <div style="font-size:22px;font-weight:800;color:#1a1a2e;margin-bottom:8px">Session complete!</div>
+     <div style="font-size:15px;color:#6b7280;margin-bottom:24px">You answered ${exAnswered} question${exAnswered!==1?'s':''} in ${minutesThisSession} minute${minutesThisSession!==1?'s':''}.</div>
+     <div style="background:#f0fdf4;border:2px solid #86efac;border-radius:12px;padding:14px;margin-bottom:20px;font-size:14px;font-weight:600;color:#15803d">✓ ${minutesThisSession} minute${minutesThisSession!==1?'s':''} added to today's revision</div>
+     <button id="ex-again-btn" style="padding:14px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Choose another exercise</button>
+   </div>
+ `);
+document.getElementById('ex-again-btn').onclick = exShowPicker;
+window.dispatchEvent(new CustomEvent('ex-session-complete', { detail: { count: minutesThisSession } }));
 }
 
 window.exShowPicker = exShowPicker;
