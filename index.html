@@ -756,14 +756,14 @@ fcProgress = {}; allFcActivity[code] = {}; fcDeletedCards = {}; studentLesson[co
 }
 
 async function loadStudentMeta(code) {
-try {
-const snap = await getDoc(doc(db,'flashcards',code));
-const data = snap.exists() ? snap.data() : {};
-allFcActivity[code] = data.activity || {};
-studentLesson[code] = data.lesson || 1;
-} catch(e) { console.error('Meta load error',e); allFcActivity[code] = {}; studentLesson[code] = 1; }
+  try {
+    const snap = await getDoc(doc(db,'flashcards',code));
+    const data = snap.exists() ? snap.data() : {};
+    allFcActivity[code] = data.activity || {};
+    studentLesson[code] = data.lesson || 1;
+  } catch(e) { console.error('Meta load error',e); allFcActivity[code] = {}; studentLesson[code] = 1; }
+  if (!studentLesson[code]) studentLesson[code] = 1;
 }
-
 async function saveFlashcardData(code) {
 try {
 const customCards = {};
@@ -810,24 +810,25 @@ async function saveDay(code, dateStr, data) { await setDoc(doc(db,'submissions',
 
 // ── LOGIN ──
 async function handleLogin() {
-const code = document.getElementById('code-input').value.trim().toUpperCase();
-const err = document.getElementById('login-error');
-const btn = document.getElementById('login-btn');
-btn.textContent='Signing in…'; btn.disabled=true;
-if (code === INSTRUCTOR_CODE) {
-currentUser=code; isInstructor=true;
-viewingStudent=Object.keys(STUDENTS)[0];
-await Promise.all(Object.keys(STUDENTS).map(c=>loadStudentData(c)));
-await Promise.all(Object.keys(STUDENTS).map(c=>loadStudentMeta(c)));
-startApp();
-} else if (STUDENTS[code]) {
-currentUser=code; isInstructor=false;
-await loadStudentData(code);
-await loadFlashcardProgress(code);
-startApp();
-} else {
-err.style.display='block'; btn.textContent='Enter'; btn.disabled=false;
-}
+  const code = document.getElementById('code-input').value.trim().toUpperCase();
+  const err = document.getElementById('login-error');
+  const btn = document.getElementById('login-btn');
+  btn.textContent='Signing in…'; btn.disabled=true;
+  if (code === INSTRUCTOR_CODE) {
+    currentUser=code; isInstructor=true;
+    viewingStudent=Object.keys(STUDENTS)[0];
+    await Promise.all(Object.keys(STUDENTS).map(c=>loadStudentData(c)));
+   await Promise.all(Object.keys(STUDENTS).map(c=>loadStudentMeta(c)));
+    startApp();
+  } else if (STUDENTS[code]) {
+    currentUser=code; isInstructor=false;
+    await loadStudentData(code);
+    await loadStudentMeta(code);
+    await loadFlashcardProgress(code);
+    startApp();
+  } else {
+    err.style.display='block'; btn.textContent='Enter'; btn.disabled=false;
+  }
 }
 
 // ── START ──
