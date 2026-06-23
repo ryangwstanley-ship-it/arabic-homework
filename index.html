@@ -1254,7 +1254,7 @@ function renderFlashcards() {
   const picker = document.getElementById('fc-lesson-picker');
   picker.innerHTML='';
   const code = currentUser || viewingStudent;
-  const maxLesson = studentLesson[code] || 1;
+  const maxLesson = (studentLesson[code] !== undefined) ? studentLesson[code] : 1;
   Object.entries(LESSONS).forEach(([num, lesson]) => {
     const lessonNum = parseInt(num);
     if (lessonNum > maxLesson) return; // Skip lessons beyond student's level
@@ -1576,7 +1576,7 @@ document.getElementById('ex-root').innerHTML = html;
 
 function exShowPicker() {
 const code = currentUser || viewingStudent;
-const maxLesson = studentLesson[code] || 1;
+const maxLesson = (studentLesson[code] !== undefined) ? studentLesson[code] : 1;
 const fillgapPct = window.getExerciseMasteryPercent('fillgap', FILL_GAP_QUESTIONS.length);
 const wordorderPct = window.getExerciseMasteryPercent('wordorder', WORD_ORDER_QUESTIONS.length);
 const truefalsePct = window.getExerciseMasteryPercent('truefalse', TRUE_FALSE_QUESTIONS.length);
