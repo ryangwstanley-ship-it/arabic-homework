@@ -1588,6 +1588,7 @@ const truefalsePct = window.getExerciseMasteryPercent('truefalse', TRUE_FALSE_QU
 const changewordPct = window.getExerciseMasteryPercent('changeword', CHANGE_WORD_QUESTIONS.length);
 const demonstrativePct = window.getExerciseMasteryPercent('demonstrative', DEMONSTRATIVE_QUESTIONS.length);
 const adjectiveagreementPct = window.getExerciseMasteryPercent('adjectiveagreement', ADJECTIVE_AGREEMENT_QUESTIONS.length);
+const pluralPct = window.getExerciseMasteryPercent('plural', PLURAL_QUESTIONS.length);
 
 exRender(`
    <div class="section-label">Choose an exercise</div>
@@ -1628,6 +1629,12 @@ exRender(`
   <div class="ex-card-desc">Noun-adjective agreement: is the adjective correctly matched to the noun?</div>
   <div class="ex-card-note">${adjectiveagreementPct}% mastered</div>
 </div>
+<div class="ex-card" id="btn-plural">
+  ${window.miniRing(pluralPct, '👥')}
+  <div class="ex-card-title">Spot the Plural</div>
+  <div class="ex-card-desc">Two words appear — tap the one that is plural.</div>
+  <div class="ex-card-note">${pluralPct}% mastered</div>
+</div>
      
    </div>
  `);
@@ -1637,6 +1644,7 @@ document.getElementById('btn-truefalse').onclick = () => exShowSetup('truefalse'
 document.getElementById('btn-changeword').onclick = () => exShowSetup('changeword');
 document.getElementById('btn-demonstrative').onclick = () => exShowSetup('demonstrative');
 document.getElementById('btn-adjectiveagreement').onclick = () => exShowSetup('adjectiveagreement');
+document.getElementById('btn-plural').onclick = () => exShowSetup('plural');
 }
 
 function exShowSetup(mode) {
@@ -1646,6 +1654,7 @@ const title = mode === 'fillgap' ? '📝 Fill the Gap'
 : mode === 'changeword' ? '✏️ Change One Word'
 : mode === 'demonstrative' ? '👉 Demonstrative Pronouns'
 : mode === 'suffixpronoun' ? '🔤 Suffix Pronouns'
+: mode === 'plural' ? '👥 Spot the Plural'
 : '✅ True or False';
 const isGrammarDrill = mode === 'demonstrative' || mode === 'suffixpronoun';
 exRender(`
@@ -1684,6 +1693,7 @@ exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS]
 : exMode === 'demonstrative' ? [...DEMONSTRATIVE_QUESTIONS]
 : exMode === 'suffixpronoun' ? [...SUFFIX_PRONOUN_QUESTIONS]
 : exMode === 'adjectiveagreement' ? [...ADJECTIVE_AGREEMENT_QUESTIONS]
+: exMode === 'plural' ? [...PLURAL_QUESTIONS]
 : [...TRUE_FALSE_QUESTIONS]
 );
 exRenderActive();
@@ -1750,6 +1760,8 @@ exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS]
 : exMode === 'demonstrative' ? [...DEMONSTRATIVE_QUESTIONS]
 : exMode === 'suffixpronoun' ? [...SUFFIX_PRONOUN_QUESTIONS]
 : exMode === 'adjectiveagreement' ? [...ADJECTIVE_AGREEMENT_QUESTIONS]
+: exMode === 'plural' ? [...PLURAL_QUESTIONS]
+: [...TRUE_FALSE_QUESTIONS]
 : [...TRUE_FALSE_QUESTIONS]
 );
 exCurrent = 0;
@@ -1809,6 +1821,31 @@ checkBtn.replaceWith(checkBtn.cloneNode(true));
 const freshBtn = document.getElementById('ex-check-btn');
 freshBtn.onclick = exSubmitChangeWord;
 inp.onkeydown = e => { if (e.key === 'Enter') exSubmitChangeWord(); };
+} else if (exMode === 'plural') {
+const q = exQuestions[exCurrent];
+document.getElementById('ex-instruction').textContent = 'Which word is the plural?';
+document.getElementById('ex-sentence').textContent = '';
+document.getElementById('ex-fill-input').style.display = 'none';
+document.getElementById('ex-word-order').style.display = 'none';
+const existingTiles = document.getElementById('ex-tf-btns');
+if (existingTiles) existingTiles.remove();
+const choices = exShuffle([
+  { text: q.singular, isPlural: false },
+  { text: q.plural, isPlural: true }
+]);
+const pluralWrap = document.createElement('div');
+pluralWrap.id = 'ex-tf-btns';
+pluralWrap.style.cssText = 'display:flex;gap:12px;justify-content:center;margin-top:8px';
+choices.forEach(c => {
+const tile = document.createElement('button');
+tile.className = 'ex-word-tile';
+tile.style.flex = '1';
+tile.style.textAlign = 'center';
+tile.textContent = c.text;
+tile.onclick = () => exSubmitPlural(c.isPlural);
+pluralWrap.appendChild(tile);
+});
+document.getElementById('ex-sentence').after(pluralWrap);
 } else {
 const q = exQuestions[exCurrent];
 document.getElementById('ex-instruction').textContent = 'Put the words in the correct order';
@@ -1878,6 +1915,24 @@ const reveal = document.getElementById('ex-reveal');
 reveal.innerHTML = `✕ Wrong word: <strong>${q.wrong}</strong><br>✓ Correct word: <strong>${q.correct}</strong>`;
 reveal.style.display = 'block';
 document.getElementById('ex-fill-input').style.display = 'none';
+const ratingEl = document.getElementById('ex-rating-area');
+ratingEl.style.display = 'flex';
+wireRatingButtons();
+}
+
+function exSubmitPlural(chosenIsPlural) {
+const q = exQuestions[exCurrent];
+const reveal = document.getElementById('ex-reveal');
+if (chosenIsPlural) {
+reveal.innerHTML = '✓ Correct! <strong>' + q.plural + '</strong> is the plural of <strong>' + q.singular + '</strong>.';
+} else {
+reveal.innerHTML = '✕ Not quite. The plural is <strong>' + q.plural + '</strong> (singular: <strong>' + q.singular + '</strong>).';
+}
+reveal.style.background = '#f0fdf4';
+reveal.style.borderColor = '#86efac';
+reveal.style.display = 'block';
+const tfWrap = document.getElementById('ex-tf-btns');
+if (tfWrap) tfWrap.style.display = 'none';
 const ratingEl = document.getElementById('ex-rating-area');
 ratingEl.style.display = 'flex';
 wireRatingButtons();
