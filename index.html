@@ -1579,19 +1579,12 @@ document.getElementById('ex-root').innerHTML = html;
 }
 
 function exShowPicker() {
-const code = currentUser || viewingStudent;
-const maxLesson = (studentLesson[code] !== undefined) ? studentLesson[code] : 1;
 const fillgapPct = window.getExerciseMasteryPercent('fillgap', FILL_GAP_QUESTIONS.length);
 const wordorderPct = window.getExerciseMasteryPercent('wordorder', WORD_ORDER_QUESTIONS.length);
 const truefalsePct = window.getExerciseMasteryPercent('truefalse', TRUE_FALSE_QUESTIONS.length);
 const changewordPct = window.getExerciseMasteryPercent('changeword', CHANGE_WORD_QUESTIONS.length);
 const demonstrativePct = window.getExerciseMasteryPercent('demonstrative', DEMONSTRATIVE_QUESTIONS.length);
 const adjectiveagreementPct = window.getExerciseMasteryPercent('adjectiveagreement', ADJECTIVE_AGREEMENT_QUESTIONS.length);
-
-if (maxLesson === 0) {
-  exRender(`<div style="text-align:center;padding:40px 20px;color:#6b7280">You don't have access to exercises yet.</div>`);
-  return;
-}
 
 exRender(`
    <div class="section-label">Choose an exercise</div>
