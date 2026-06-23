@@ -1585,7 +1585,7 @@ const changewordPct = window.getExerciseMasteryPercent('changeword', CHANGE_WORD
 const demonstrativePct = window.getExerciseMasteryPercent('demonstrative', DEMONSTRATIVE_QUESTIONS.length);
 const adjectiveagreementPct = window.getExerciseMasteryPercent('adjectiveagreement', ADJECTIVE_AGREEMENT_QUESTIONS.length);
 
-if (maxLesson < 1) {
+if (maxLesson === 0) {
   exRender(`<div style="text-align:center;padding:40px 20px;color:#6b7280">You don't have access to exercises yet.</div>`);
   return;
 }
