@@ -1832,7 +1832,7 @@ exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS]
 : exMode === 'typeharakat' ? exBuildLesson1Pool()
 : exMode === 'typeenglish' ? exBuildLesson1Pool()
 : [...TRUE_FALSE_QUESTIONS]
-
+  
 );
 exCurrent = 0;
 }
@@ -1948,6 +1948,30 @@ checkWrap.style.cssText = 'text-align:center;margin-top:16px';
 checkWrap.innerHTML = '<button id="ex-fem-check-btn" style="padding:12px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Check ←</button>';
 femWrap.after(checkWrap);
 document.getElementById('ex-fem-check-btn').onclick = exSubmitFeminine;
+} else if (exMode === 'typeharakat' || exMode === 'typeenglish') {
+const q = exQuestions[exCurrent];
+const existingType = document.getElementById('ex-tf-btns');
+if (existingType) existingType.remove();
+if (exMode === 'typeharakat') {
+document.getElementById('ex-instruction').textContent = 'Type this word using bare letters only (no harakat)';
+document.getElementById('ex-sentence').textContent = q.ar;
+} else {
+document.getElementById('ex-instruction').textContent = 'Type the Arabic word';
+document.getElementById('ex-sentence').textContent = q.en;
+document.getElementById('ex-sentence').style.direction = 'ltr';
+}
+const fillDiv = document.getElementById('ex-fill-input');
+fillDiv.style.display = 'flex';
+document.getElementById('ex-word-order').style.display = 'none';
+const inp = document.getElementById('ex-answer-input');
+inp.value = '';
+inp.placeholder = 'Type here...';
+setTimeout(() => inp.focus(), 50);
+const checkBtn = document.getElementById('ex-check-btn');
+checkBtn.replaceWith(checkBtn.cloneNode(true));
+const freshBtn = document.getElementById('ex-check-btn');
+freshBtn.onclick = exSubmitTyping;
+inp.onkeydown = e => { if (e.key === 'Enter') exSubmitTyping(); };
 } else {
 const q = exQuestions[exCurrent];
 document.getElementById('ex-instruction').textContent = 'Put the words in the correct order';
@@ -2060,6 +2084,25 @@ reveal.style.borderColor = '#86efac';
 reveal.style.display = 'block';
 const checkWrap = document.getElementById('ex-fem-check-wrap');
 if (checkWrap) checkWrap.style.display = 'none';
+const ratingEl = document.getElementById('ex-rating-area');
+ratingEl.style.display = 'flex';
+wireRatingButtons();
+}
+
+function exSubmitTyping() {
+const q = exQuestions[exCurrent];
+const typed = document.getElementById('ex-answer-input').value;
+const correct = typed === q.target;
+const reveal = document.getElementById('ex-reveal');
+if (correct) {
+reveal.innerHTML = '✓ Correct! <strong>' + q.target + '</strong>';
+} else {
+reveal.innerHTML = '✕ Not quite.<br>You typed: <strong>' + (typed || '(nothing)') + '</strong><br>Correct answer: <strong>' + q.target + '</strong>';
+}
+reveal.style.background = '#f0fdf4';
+reveal.style.borderColor = '#86efac';
+reveal.style.display = 'block';
+document.getElementById('ex-fill-input').style.display = 'none';
 const ratingEl = document.getElementById('ex-rating-area');
 ratingEl.style.display = 'flex';
 wireRatingButtons();
