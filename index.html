@@ -1635,6 +1635,7 @@ const truefalsePct = window.getExerciseMasteryPercent('truefalse', TRUE_FALSE_QU
 const changewordPct = window.getExerciseMasteryPercent('changeword', CHANGE_WORD_QUESTIONS.length);
 const demonstrativePct = window.getExerciseMasteryPercent('demonstrative', DEMONSTRATIVE_QUESTIONS.length);
 const suffixpronounPct = window.getExerciseMasteryPercent('suffixpronoun', SUFFIX_PRONOUN_QUESTIONS.length);
+const suffixtransPct = window.getExerciseMasteryPercent('suffixtrans', SUFFIX_TRANSLATION_QUESTIONS.length);
 const adjectiveagreementPct = window.getExerciseMasteryPercent('adjectiveagreement', ADJECTIVE_AGREEMENT_QUESTIONS.length);
 const pluralPct = window.getExerciseMasteryPercent('plural', PLURAL_QUESTIONS.length);
 const femininePct = window.getExerciseMasteryPercent('feminine', FEMININE_QUESTIONS.length);
@@ -1680,6 +1681,12 @@ exRender(`
   <div class="ex-card-desc">Does the attached pronoun (ـهُ / ـهَا / ـهُمْ) match the first word? True or false.</div>
   <div class="ex-card-note">${suffixpronounPct}% mastered</div>
 </div>
+<div class="ex-card" id="btn-suffixtrans">
+  ${window.miniRing(suffixtransPct, '✍️')}
+  <div class="ex-card-title">Suffix Pronouns — Translate</div>
+  <div class="ex-card-desc">Read the English, write the Arabic, then reveal and grade yourself.</div>
+  <div class="ex-card-note">${suffixtransPct}% mastered</div>
+</div>
 <div class="ex-card" id="btn-adjectiveagreement">
   ${window.miniRing(adjectiveagreementPct, '✨')}
   <div class="ex-card-title">Adjective Agreement</div>
@@ -1719,6 +1726,7 @@ document.getElementById('btn-truefalse').onclick = () => exShowSetup('truefalse'
 document.getElementById('btn-changeword').onclick = () => exShowSetup('changeword');
 document.getElementById('btn-demonstrative').onclick = () => exShowSetup('demonstrative');
 document.getElementById('btn-suffixpronoun').onclick = () => exShowSetup('suffixpronoun');
+document.getElementById('btn-suffixtrans').onclick = () => exShowSetup('suffixtrans');
 document.getElementById('btn-adjectiveagreement').onclick = () => exShowSetup('adjectiveagreement');
 document.getElementById('btn-plural').onclick = () => exShowSetup('plural');
 document.getElementById('btn-feminine').onclick = () => exShowSetup('feminine');
@@ -1737,6 +1745,8 @@ const title = mode === 'fillgap' ? '📝 Fill the Gap'
 : mode === 'feminine' ? '♀️ Spot the Feminine'
 : mode === 'typeharakat' ? '⌨️ Type Without Harakat'
 : mode === 'typeenglish' ? '🔤 English → Arabic'
+: mode === 'suffixtrans' ? '✍️ Suffix Pronouns — Translate'
+: '✅ True or False';
 : '✅ True or False';
 const isGrammarDrill = mode === 'demonstrative';
 exRender(`
@@ -1779,6 +1789,7 @@ exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS]
 : exMode === 'feminine' ? [...FEMININE_QUESTIONS]
 : exMode === 'typeharakat' ? exBuildLesson1Pool()
 : exMode === 'typeenglish' ? exBuildLesson1Pool()
+: exMode === 'suffixtrans' ? exShuffle([...SUFFIX_TRANSLATION_QUESTIONS]).slice(0, 11)
 : [...TRUE_FALSE_QUESTIONS]
 );
 exRenderActive();
@@ -1849,6 +1860,7 @@ exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS]
 : exMode === 'feminine' ? [...FEMININE_QUESTIONS]
 : exMode === 'typeharakat' ? exBuildLesson1Pool()
 : exMode === 'typeenglish' ? exBuildLesson1Pool()
+: exMode === 'suffixtrans' ? exShuffle([...SUFFIX_TRANSLATION_QUESTIONS]).slice(0, 11)
 : [...TRUE_FALSE_QUESTIONS]
   
 );
