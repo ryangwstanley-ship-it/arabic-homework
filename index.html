@@ -1627,6 +1627,8 @@ const demonstrativePct = window.getExerciseMasteryPercent('demonstrative', DEMON
 const adjectiveagreementPct = window.getExerciseMasteryPercent('adjectiveagreement', ADJECTIVE_AGREEMENT_QUESTIONS.length);
 const pluralPct = window.getExerciseMasteryPercent('plural', PLURAL_QUESTIONS.length);
 const femininePct = window.getExerciseMasteryPercent('feminine', FEMININE_QUESTIONS.length);
+const typeharakatPct = window.getExerciseMasteryPercent('typeharakat', exBuildLesson1Pool().length);
+const typeenglishPct = window.getExerciseMasteryPercent('typeenglish', exBuildLesson1Pool().length);
 
 exRender(`
    <div class="section-label">Choose an exercise</div>
@@ -1679,6 +1681,18 @@ exRender(`
   <div class="ex-card-desc">Four words appear — tap the two that are feminine, then Check.</div>
   <div class="ex-card-note">${femininePct}% mastered</div>
 </div>
+<div class="ex-card" id="btn-typeharakat">
+  ${window.miniRing(typeharakatPct, '⌨️')}
+  <div class="ex-card-title">Type Without Harakat (Lesson 1)</div>
+  <div class="ex-card-desc">See the word with harakat — type it using bare letters only.</div>
+  <div class="ex-card-note">${typeharakatPct}% mastered</div>
+</div>
+<div class="ex-card" id="btn-typeenglish">
+  ${window.miniRing(typeenglishPct, '🔤')}
+  <div class="ex-card-title">English → Arabic (Lesson 1)</div>
+  <div class="ex-card-desc">See the English — type the Arabic word from memory.</div>
+  <div class="ex-card-note">${typeenglishPct}% mastered</div>
+</div>
      
    </div>
  `);
@@ -1690,6 +1704,8 @@ document.getElementById('btn-demonstrative').onclick = () => exShowSetup('demons
 document.getElementById('btn-adjectiveagreement').onclick = () => exShowSetup('adjectiveagreement');
 document.getElementById('btn-plural').onclick = () => exShowSetup('plural');
 document.getElementById('btn-feminine').onclick = () => exShowSetup('feminine');
+document.getElementById('btn-typeharakat').onclick = () => exShowSetup('typeharakat');
+document.getElementById('btn-typeenglish').onclick = () => exShowSetup('typeenglish');
 }
 
 function exShowSetup(mode) {
@@ -1701,6 +1717,8 @@ const title = mode === 'fillgap' ? '📝 Fill the Gap'
 : mode === 'suffixpronoun' ? '🔤 Suffix Pronouns'
 : mode === 'plural' ? '👥 Spot the Plural'
 : mode === 'feminine' ? '♀️ Spot the Feminine'
+: mode === 'typeharakat' ? '⌨️ Type Without Harakat'
+: mode === 'typeenglish' ? '🔤 English → Arabic'
 : '✅ True or False';
 const isGrammarDrill = mode === 'demonstrative' || mode === 'suffixpronoun';
 exRender(`
@@ -1741,6 +1759,8 @@ exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS]
 : exMode === 'adjectiveagreement' ? [...ADJECTIVE_AGREEMENT_QUESTIONS]
 : exMode === 'plural' ? [...PLURAL_QUESTIONS]
 : exMode === 'feminine' ? [...FEMININE_QUESTIONS]
+: exMode === 'typeharakat' ? exBuildLesson1Pool()
+: exMode === 'typeenglish' ? exBuildLesson1Pool()
 : [...TRUE_FALSE_QUESTIONS]
 );
 exRenderActive();
@@ -1809,6 +1829,8 @@ exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS]
 : exMode === 'adjectiveagreement' ? [...ADJECTIVE_AGREEMENT_QUESTIONS]
 : exMode === 'plural' ? [...PLURAL_QUESTIONS]
 : exMode === 'feminine' ? [...FEMININE_QUESTIONS]
+: exMode === 'typeharakat' ? exBuildLesson1Pool()
+: exMode === 'typeenglish' ? exBuildLesson1Pool()
 : [...TRUE_FALSE_QUESTIONS]
 
 );
