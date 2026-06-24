@@ -568,6 +568,7 @@ const INSTRUCTOR_CODE = 'RYAN01';
 
 // Runtime lesson data (can be modified per user)
 let LESSONS = JSON.parse(JSON.stringify(DEFAULT_LESSONS));
+window.LESSONS = LESSONS;
 
 let currentUser = null, isInstructor = false, viewingStudent = null;
 let isStudentView = false, calYear, calMonth, selectedDate = null;
@@ -1601,7 +1602,7 @@ const EX_L1_PLURAL_EN = {
 
 // Build the Lesson 1 typing pool: {ar (with harakat shown), target (bare), en}
 function exBuildLesson1Pool() {
-const cards = (LESSONS[1] && LESSONS[1].cards) ? LESSONS[1].cards : [];
+const cards = (window.LESSONS && window.LESSONS[1] && window.LESSONS[1].cards) ? window.LESSONS[1].cards : [];
 const pool = [];
 cards.forEach(c => {
 if (c.ar.includes('/')) {
