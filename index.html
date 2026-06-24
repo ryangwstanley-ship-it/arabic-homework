@@ -1624,6 +1624,7 @@ const wordorderPct = window.getExerciseMasteryPercent('wordorder', WORD_ORDER_QU
 const truefalsePct = window.getExerciseMasteryPercent('truefalse', TRUE_FALSE_QUESTIONS.length);
 const changewordPct = window.getExerciseMasteryPercent('changeword', CHANGE_WORD_QUESTIONS.length);
 const demonstrativePct = window.getExerciseMasteryPercent('demonstrative', DEMONSTRATIVE_QUESTIONS.length);
+const suffixpronounPct = window.getExerciseMasteryPercent('suffixpronoun', SUFFIX_PRONOUN_QUESTIONS.length);
 const adjectiveagreementPct = window.getExerciseMasteryPercent('adjectiveagreement', ADJECTIVE_AGREEMENT_QUESTIONS.length);
 const pluralPct = window.getExerciseMasteryPercent('plural', PLURAL_QUESTIONS.length);
 const femininePct = window.getExerciseMasteryPercent('feminine', FEMININE_QUESTIONS.length);
@@ -1663,6 +1664,12 @@ exRender(`
   <div class="ex-card-desc">Practise هذا / هذه / هؤلاء agreement with true/false and correction questions.</div>
   <div class="ex-card-note">${demonstrativePct}% mastered</div>
 </div>
+<div class="ex-card" id="btn-suffixpronoun">
+  ${window.miniRing(suffixpronounPct, '🔤')}
+  <div class="ex-card-title">Suffix Pronouns</div>
+  <div class="ex-card-desc">Does the attached pronoun (ـهُ / ـهَا / ـهُمْ) match the first word? True or false.</div>
+  <div class="ex-card-note">${suffixpronounPct}% mastered</div>
+</div>
 <div class="ex-card" id="btn-adjectiveagreement">
   ${window.miniRing(adjectiveagreementPct, '✨')}
   <div class="ex-card-title">Adjective Agreement</div>
@@ -1701,6 +1708,7 @@ document.getElementById('btn-wordorder').onclick = () => exShowSetup('wordorder'
 document.getElementById('btn-truefalse').onclick = () => exShowSetup('truefalse');
 document.getElementById('btn-changeword').onclick = () => exShowSetup('changeword');
 document.getElementById('btn-demonstrative').onclick = () => exShowSetup('demonstrative');
+document.getElementById('btn-suffixpronoun').onclick = () => exShowSetup('suffixpronoun');
 document.getElementById('btn-adjectiveagreement').onclick = () => exShowSetup('adjectiveagreement');
 document.getElementById('btn-plural').onclick = () => exShowSetup('plural');
 document.getElementById('btn-feminine').onclick = () => exShowSetup('feminine');
@@ -1720,7 +1728,7 @@ const title = mode === 'fillgap' ? '📝 Fill the Gap'
 : mode === 'typeharakat' ? '⌨️ Type Without Harakat'
 : mode === 'typeenglish' ? '🔤 English → Arabic'
 : '✅ True or False';
-const isGrammarDrill = mode === 'demonstrative' || mode === 'suffixpronoun';
+const isGrammarDrill = mode === 'demonstrative';
 exRender(`
    <div class="section-label">${title}</div>
    <div style="background:white;border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
