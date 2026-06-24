@@ -1977,6 +1977,26 @@ checkWrap.style.cssText = 'text-align:center;margin-top:16px';
 checkWrap.innerHTML = '<button id="ex-fem-check-btn" style="padding:12px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Check ←</button>';
 femWrap.after(checkWrap);
 document.getElementById('ex-fem-check-btn').onclick = exSubmitFeminine;
+} else if (exMode === 'suffixtrans') {
+const q = exQuestions[exCurrent];
+const existingType = document.getElementById('ex-tf-btns');
+if (existingType) existingType.remove();
+document.getElementById('ex-instruction').textContent = 'Read the English, write the Arabic, then reveal';
+document.getElementById('ex-sentence').textContent = q.en;
+document.getElementById('ex-sentence').style.direction = 'ltr';
+const fillDiv = document.getElementById('ex-fill-input');
+fillDiv.style.display = 'flex';
+document.getElementById('ex-word-order').style.display = 'none';
+const inp = document.getElementById('ex-answer-input');
+inp.value = '';
+inp.placeholder = 'Write the Arabic here...';
+setTimeout(() => inp.focus(), 50);
+const checkBtn = document.getElementById('ex-check-btn');
+checkBtn.replaceWith(checkBtn.cloneNode(true));
+const freshBtn = document.getElementById('ex-check-btn');
+freshBtn.textContent = 'Reveal ←';
+freshBtn.onclick = exSubmitSuffixTrans;
+inp.onkeydown = e => { if (e.key === 'Enter') exSubmitSuffixTrans(); };
 } else if (exMode === 'typeharakat' || exMode === 'typeenglish') {
 const q = exQuestions[exCurrent];
 const existingType = document.getElementById('ex-tf-btns');
@@ -2130,6 +2150,18 @@ reveal.innerHTML = '✕ Not quite.<br>You typed: <strong>' + (typed || '(nothing
 }
 reveal.style.background = '#f0fdf4';
 reveal.style.borderColor = '#86efac';
+reveal.style.display = 'block';
+document.getElementById('ex-fill-input').style.display = 'none';
+const ratingEl = document.getElementById('ex-rating-area');
+ratingEl.style.display = 'flex';
+wireRatingButtons();
+}
+
+function exSubmitSuffixTrans() {
+const q = exQuestions[exCurrent];
+const typed = document.getElementById('ex-answer-input').value;
+const reveal = document.getElementById('ex-reveal');
+reveal.innerHTML = 'Correct answer: <strong>' + q.ar + '</strong>' + (typed ? '<br><span style="font-size:0.85em;color:#6b7280">You wrote: ' + typed + '</span>' : '') + '<br><span style="font-size:0.8em;color:#6b7280">Were you close enough? Grade yourself below.</span>';
 reveal.style.display = 'block';
 document.getElementById('ex-fill-input').style.display = 'none';
 const ratingEl = document.getElementById('ex-rating-area');
