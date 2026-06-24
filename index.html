@@ -1617,6 +1617,13 @@ pool.push({ ar: c.ar, target: exStripHarakat(c.ar), en: c.en });
 });
 return pool;
 }
+
+// Build a self-check session: 11 random words from the Lesson 1 pool
+function exBuildEngSelfCheckPool() {
+const full = exBuildLesson1Pool();
+const shuffled = exShuffle(full);
+return shuffled.slice(0, 11);
+}
   
 function exShowPicker() {
 const fillgapPct = window.getExerciseMasteryPercent('fillgap', FILL_GAP_QUESTIONS.length);
