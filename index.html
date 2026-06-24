@@ -1584,6 +1584,39 @@ function exRender(html) {
 document.getElementById('ex-root').innerHTML = html;
 }
 
+// Remove all harakat (vowel marks, tanwīn, shadda, sukūn) from a word
+function exStripHarakat(text) {
+return text.replace(/[\u064B-\u0652\u0670]/g, '').trim();
+}
+
+// English plural labels for the 6 Lesson 1 plural pairs
+const EX_L1_PLURAL_EN = {
+'يَوْمٌ / أَيَّامٌ': 'days',
+'رَجُلٌ / رِجَالٌ': 'men',
+'قَرْيَةٌ / قُرىً': 'villages',
+'اِسْمٌ / أَسْمَاءٌ': 'names',
+'صَنَمٌ / أَصْنَامٌ': 'idols',
+'عِبَادَةٌ / عِبَادَاتٌ': 'worships'
+};
+
+// Build the Lesson 1 typing pool: {ar (with harakat shown), target (bare), en}
+function exBuildLesson1Pool() {
+const cards = (LESSONS[1] && LESSONS[1].cards) ? LESSONS[1].cards : [];
+const pool = [];
+cards.forEach(c => {
+if (c.ar.includes('/')) {
+const parts = c.ar.split('/').map(s => s.trim());
+const singular = parts[0];
+const plural = parts[1];
+pool.push({ ar: singular, target: exStripHarakat(singular), en: c.en });
+pool.push({ ar: plural, target: exStripHarakat(plural), en: EX_L1_PLURAL_EN[c.ar] || c.en });
+} else {
+pool.push({ ar: c.ar, target: exStripHarakat(c.ar), en: c.en });
+}
+});
+return pool;
+}
+  
 function exShowPicker() {
 const fillgapPct = window.getExerciseMasteryPercent('fillgap', FILL_GAP_QUESTIONS.length);
 const wordorderPct = window.getExerciseMasteryPercent('wordorder', WORD_ORDER_QUESTIONS.length);
