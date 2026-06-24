@@ -1558,6 +1558,7 @@ let exMode = null, exQuestions = [], exCurrent = 0, exAnswered = 0;
 let exTimerSeconds = 0, exTimerInterval = null;
 let exGoalSeconds = 900, exDotEarned = false;
 let exWordSelected = [], exWordBank = [];
+let exFemSelected = [];
 
 function poolForMode(mode) {
 return mode === 'fillgap' ? FILL_GAP_QUESTIONS
@@ -1591,6 +1592,7 @@ const changewordPct = window.getExerciseMasteryPercent('changeword', CHANGE_WORD
 const demonstrativePct = window.getExerciseMasteryPercent('demonstrative', DEMONSTRATIVE_QUESTIONS.length);
 const adjectiveagreementPct = window.getExerciseMasteryPercent('adjectiveagreement', ADJECTIVE_AGREEMENT_QUESTIONS.length);
 const pluralPct = window.getExerciseMasteryPercent('plural', PLURAL_QUESTIONS.length);
+const femininePct = window.getExerciseMasteryPercent('feminine', FEMININE_QUESTIONS.length);
 
 exRender(`
    <div class="section-label">Choose an exercise</div>
@@ -1637,6 +1639,12 @@ exRender(`
   <div class="ex-card-desc">Two words appear — tap the one that is plural.</div>
   <div class="ex-card-note">${pluralPct}% mastered</div>
 </div>
+<div class="ex-card" id="btn-feminine">
+  ${window.miniRing(femininePct, '♀️')}
+  <div class="ex-card-title">Spot the Feminine</div>
+  <div class="ex-card-desc">Four words appear — tap the two that are feminine, then Check.</div>
+  <div class="ex-card-note">${femininePct}% mastered</div>
+</div>
      
    </div>
  `);
@@ -1647,6 +1655,7 @@ document.getElementById('btn-changeword').onclick = () => exShowSetup('changewor
 document.getElementById('btn-demonstrative').onclick = () => exShowSetup('demonstrative');
 document.getElementById('btn-adjectiveagreement').onclick = () => exShowSetup('adjectiveagreement');
 document.getElementById('btn-plural').onclick = () => exShowSetup('plural');
+document.getElementById('btn-feminine').onclick = () => exShowSetup('feminine');
 }
 
 function exShowSetup(mode) {
@@ -1657,6 +1666,7 @@ const title = mode === 'fillgap' ? '📝 Fill the Gap'
 : mode === 'demonstrative' ? '👉 Demonstrative Pronouns'
 : mode === 'suffixpronoun' ? '🔤 Suffix Pronouns'
 : mode === 'plural' ? '👥 Spot the Plural'
+: mode === 'feminine' ? '♀️ Spot the Feminine'
 : '✅ True or False';
 const isGrammarDrill = mode === 'demonstrative' || mode === 'suffixpronoun';
 exRender(`
@@ -1696,6 +1706,7 @@ exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS]
 : exMode === 'suffixpronoun' ? [...SUFFIX_PRONOUN_QUESTIONS]
 : exMode === 'adjectiveagreement' ? [...ADJECTIVE_AGREEMENT_QUESTIONS]
 : exMode === 'plural' ? [...PLURAL_QUESTIONS]
+: exMode === 'feminine' ? [...FEMININE_QUESTIONS]
 : [...TRUE_FALSE_QUESTIONS]
 );
 exRenderActive();
@@ -1763,6 +1774,7 @@ exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS]
 : exMode === 'suffixpronoun' ? [...SUFFIX_PRONOUN_QUESTIONS]
 : exMode === 'adjectiveagreement' ? [...ADJECTIVE_AGREEMENT_QUESTIONS]
 : exMode === 'plural' ? [...PLURAL_QUESTIONS]
+: exMode === 'feminine' ? [...FEMININE_QUESTIONS]
 : [...TRUE_FALSE_QUESTIONS]
 
 );
@@ -1848,6 +1860,38 @@ tile.onclick = () => exSubmitPlural(c.isPlural);
 pluralWrap.appendChild(tile);
 });
 document.getElementById('ex-sentence').after(pluralWrap);
+} else if (exMode === 'feminine') {
+const q = exQuestions[exCurrent];
+document.getElementById('ex-instruction').textContent = 'Tap the TWO feminine words, then press Check';
+document.getElementById('ex-sentence').textContent = '';
+document.getElementById('ex-fill-input').style.display = 'none';
+document.getElementById('ex-word-order').style.display = 'none';
+const existingFem = document.getElementById('ex-tf-btns');
+if (existingFem) existingFem.remove();
+exFemSelected = [];
+const shuffled = exShuffle(q.words.map((w, i) => ({ ...w, oid: i })));
+const femWrap = document.createElement('div');
+femWrap.id = 'ex-tf-btns';
+femWrap.style.cssText = 'display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:8px';
+shuffled.forEach(w => {
+const tile = document.createElement('button');
+tile.className = 'ex-word-tile';
+tile.textContent = w.text;
+tile.dataset.fem = w.feminine ? '1' : '0';
+tile.onclick = () => {
+tile.classList.toggle('selected');
+if (tile.classList.contains('selected')) exFemSelected.push(tile);
+else exFemSelected = exFemSelected.filter(t => t !== tile);
+};
+femWrap.appendChild(tile);
+});
+document.getElementById('ex-sentence').after(femWrap);
+const checkWrap = document.createElement('div');
+checkWrap.id = 'ex-fem-check-wrap';
+checkWrap.style.cssText = 'text-align:center;margin-top:16px';
+checkWrap.innerHTML = '<button id="ex-fem-check-btn" style="padding:12px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Check ←</button>';
+femWrap.after(checkWrap);
+document.getElementById('ex-fem-check-btn').onclick = exSubmitFeminine;
 } else {
 const q = exQuestions[exCurrent];
 document.getElementById('ex-instruction').textContent = 'Put the words in the correct order';
@@ -1935,6 +1979,31 @@ reveal.style.borderColor = '#86efac';
 reveal.style.display = 'block';
 const tfWrap = document.getElementById('ex-tf-btns');
 if (tfWrap) tfWrap.style.display = 'none';
+const ratingEl = document.getElementById('ex-rating-area');
+ratingEl.style.display = 'flex';
+wireRatingButtons();
+}
+
+function exSubmitFeminine() {
+const q = exQuestions[exCurrent];
+const reveal = document.getElementById('ex-reveal');
+const femWords = q.words.filter(w => w.feminine).map(w => w.text);
+const allTiles = Array.from(document.querySelectorAll('#ex-tf-btns .ex-word-tile'));
+let allCorrect = true;
+allTiles.forEach(tile => {
+const isFem = tile.dataset.fem === '1';
+const picked = tile.classList.contains('selected');
+if (isFem && picked) tile.style.background = '#16a34a', tile.style.color = 'white', tile.style.borderColor = '#16a34a';
+else if (isFem && !picked) { tile.style.borderColor = '#16a34a'; allCorrect = false; }
+else if (!isFem && picked) { tile.style.background = '#fee2e2', tile.style.color = '#b91c1c', tile.style.borderColor = '#fca5a5'; allCorrect = false; }
+tile.onclick = null;
+});
+reveal.innerHTML = (allCorrect ? '✓ Correct! ' : '✕ Not quite. ') + 'The feminine words are <strong>' + femWords.join('</strong> and <strong>') + '</strong>.';
+reveal.style.background = '#f0fdf4';
+reveal.style.borderColor = '#86efac';
+reveal.style.display = 'block';
+const checkWrap = document.getElementById('ex-fem-check-wrap');
+if (checkWrap) checkWrap.style.display = 'none';
 const ratingEl = document.getElementById('ex-rating-area');
 ratingEl.style.display = 'flex';
 wireRatingButtons();
