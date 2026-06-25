@@ -469,6 +469,15 @@ console.log("THE FILE IS LOADING!");
 <div id="tab-content-exercises" class="content" style="display:none">
 <div id="ex-root"></div>
 </div>
+<!-- STORY TAB -->
+<div id="tab-content-story" class="content" style="display:none">
+<div style="background:white;border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);font-family:'Scheherazade New', serif;font-size:28px;line-height:2;direction:rtl;text-align:right">
+<p><strong style="color:#8b2035">قَبْلَ أَيَّامٍ كَثِيرَةٍ جِدًّا، كَانَ هُنَاكَ رَجُلٌ</strong></p>
+<p>وَكَانَ <strong style="color:#8b2035">هَذَا</strong> الرَّجُلُ <strong style="color:#8b2035">يَسْكُنُ فِي قَرْيَةٍ</strong></p>
+<p>وَكَانَ <strong style="color:#8b2035">اسْمُ</strong> هَذَا الرَّجُلِ <strong style="color:#8b2035">آزَرَ</strong></p>
+<p>وَكَانَ آزَرُ <strong style="color:#8b2035">مُشْرِكًا</strong>.</p>
+</div>
+</div>
 <div class="modal-overlay" id="modal">
 <button class="modal-close" id="modal-close-btn">✕</button>
 <img class="modal-img" id="modal-img" src="" alt="">
@@ -881,10 +890,12 @@ document.getElementById('tab-content-home').style.display = tab==='home' ? 'bloc
 document.getElementById('tab-content-homework').style.display = tab==='homework' ? 'block' : 'none';
 document.getElementById('tab-content-flashcards').style.display = tab==='flashcards' ? 'block' : 'none';
 document.getElementById('tab-content-exercises').style.display = tab==='exercises' ? 'block' : 'none';
+document.getElementById('tab-content-story').style.display = tab==='story' ? 'block' : 'none';
 document.getElementById('tab-home').classList.toggle('active', tab==='home');
 document.getElementById('tab-homework').classList.toggle('active', tab==='homework');
 document.getElementById('tab-flashcards').classList.toggle('active', tab==='flashcards');
 document.getElementById('tab-exercises').classList.toggle('active', tab==='exercises');
+document.getElementById('tab-story').classList.toggle('active', tab==='story');
 if (tab==='flashcards') renderFlashcards();
 if (tab==='exercises' && typeof exShowPicker === 'function') exShowPicker();
 }
