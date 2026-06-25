@@ -2261,6 +2261,18 @@ window.dispatchEvent(new CustomEvent('ex-session-complete', { detail: { count: m
 }
 
 window.exShowPicker = exShowPicker;
+document.getElementById('ai-test-btn').addEventListener('click', async () => {
+const resultBox = document.getElementById('ai-test-result');
+resultBox.textContent = 'Loading...';
+try {
+const response = await fetch('https://ryanstanley.app.n8n.cloud/webhook/5be95748-57f4-48ff-8646-bc5bf5022791');
+const text = await response.text();
+resultBox.textContent = text;
+} catch (e) {
+resultBox.textContent = 'Error: could not reach the AI. ' + e.message;
+console.error('AI test error', e);
+}
+});
 </script>
 </body>
 </html>
