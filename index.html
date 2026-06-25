@@ -472,6 +472,11 @@ console.log("THE FILE IS LOADING!");
 <!-- STORY TAB -->
 <!-- STORY TAB -->
 <div id="tab-content-story" class="content" style="display:none">
+<style>
+.story-word { cursor:pointer; }
+.story-word.new { font-weight:700; color:#8b2035; }
+.story-word:hover { background:#fef3f2; border-radius:4px; }
+</style>
 <div style="background:white;border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08)">
 
 <div style="text-align:center;margin-bottom:20px">
@@ -482,20 +487,38 @@ console.log("THE FILE IS LOADING!");
 
 <div style="font-family:'Scheherazade New', serif;font-size:20px;font-weight:700;color:#1a1a2e;direction:rtl;text-align:right;border-top:1px solid #e5e7eb;padding-top:16px;margin-bottom:14px">STORY 1 — آزَرُ وَالْأَصْنَامُ</div>
 
+<button id="story-english-btn" onclick="toggleStoryEnglish()" style="padding:10px 20px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:16px">Show English</button>
+
+<div id="story-english" style="display:none;margin-bottom:20px;padding:16px;background:#f9fafb;border-radius:10px;font-size:15px;line-height:1.8;color:#374151">
+<p>Many days ago, there was a man.</p>
+<p>And this man lived in a village.</p>
+<p>And this man's name was Azar.</p>
+<p>And Azar was a polytheist.</p>
+<p>And with Azar were many people.</p>
+<p>And these people were polytheists too.</p>
+<p>And Azar lived with the polytheists in this village.</p>
+<p>And in this village there were very many idols.</p>
+<p>And the people worshipped these idols.</p>
+<p>And the people prostrated to them.</p>
+<p>And Azar worshipped the idols too, and Azar prostrated to them too.</p>
+<p>An idol here, and an idol there. Very many idols.</p>
+<p>Why do they worship the idols? Worship is for Allah alone.</p>
+</div>
+
 <div style="font-family:'Scheherazade New', serif;font-size:28px;line-height:2;direction:rtl;text-align:right">
-<p><strong style="color:#8b2035">قَبْلَ أَيَّامٍ كَثِيرَةٍ جِدًّا، كَانَ هُنَاكَ رَجُلٌ</strong></p>
-<p>وَكَانَ <strong style="color:#8b2035">هَذَا</strong> الرَّجُلُ <strong style="color:#8b2035">يَسْكُنُ فِي قَرْيَةٍ</strong></p>
-<p>وَكَانَ <strong style="color:#8b2035">اسْمُ</strong> هَذَا الرَّجُلِ <strong style="color:#8b2035">آزَرَ</strong></p>
-<p>وَكَانَ آزَرُ <strong style="color:#8b2035">مُشْرِكًا</strong></p>
-<p>وَكَانَ <strong style="color:#8b2035">مَعَ</strong> آزَرَ <strong style="color:#8b2035">نَاسٌ</strong> كَثِيرُونَ</p>
-<p>وَكَانَ <strong style="color:#8b2035">هَؤُلَاءِ</strong> النَّاسُ مُشْرِكِينَ <strong style="color:#8b2035">أَيْضًا</strong></p>
-<p>وَكَانَ آزَرُ يَسْكُنُ مَعَ الْمُشْرِكِينَ فِي <strong style="color:#8b2035">هَذِهِ</strong> الْقَرْيَةِ</p>
-<p>وَكَانَ فِي هَذِهِ الْقَرْيَةِ <strong style="color:#8b2035">أَصْنَامٌ</strong> كَثِيرَةٌ جِدًّا</p>
-<p>وَكَانَ النَّاسُ <strong style="color:#8b2035">يَعْبُدُونَ</strong> هَذِهِ الْأَصْنَامَ</p>
-<p>وَكَانَ النَّاسُ <strong style="color:#8b2035">يَسْجُدُونَ لَهَا</strong></p>
-<p>وَكَانَ آزَرُ يَعْبُدُ الْأَصْنَامَ أَيْضًا وَكَانَ آزَرُ يَسْجُدُ لَهَا أَيْضًا</p>
-<p>صَنَمٌ <strong style="color:#8b2035">هُنَا</strong>، وَصَنَمٌ هُنَاكَ. أَصْنَامٌ كَثِيرَةٌ جِدًّا</p>
-<p><strong style="color:#8b2035">لِمَاذَا</strong> يَعْبُدُونَ الْأَصْنَامَ؟ <strong style="color:#8b2035">الْعِبَادَةُ لِلَّهِ فَقَطْ</strong></p>
+<p><span class="story-word new" data-en="before" onclick="showWordMeaning(this)">قَبْلَ</span> <span class="story-word new" data-en="days" onclick="showWordMeaning(this)">أَيَّامٍ</span> <span class="story-word new" data-en="many" onclick="showWordMeaning(this)">كَثِيرَةٍ</span> <span class="story-word new" data-en="very" onclick="showWordMeaning(this)">جِدًّا</span>، <span class="story-word new" data-en="was" onclick="showWordMeaning(this)">كَانَ</span> <span class="story-word new" data-en="there" onclick="showWordMeaning(this)">هُنَاكَ</span> <span class="story-word new" data-en="a man" onclick="showWordMeaning(this)">رَجُلٌ</span></p>
+<p><span class="story-word" data-en="and" onclick="showWordMeaning(this)">وَ</span> <span class="story-word" data-en="was" onclick="showWordMeaning(this)">كَانَ</span> <span class="story-word new" data-en="this (m)" onclick="showWordMeaning(this)">هَذَا</span> <span class="story-word" data-en="the" onclick="showWordMeaning(this)">ال</span> <span class="story-word" data-en="man" onclick="showWordMeaning(this)">رَّجُلُ</span> <span class="story-word new" data-en="he lives" onclick="showWordMeaning(this)">يَسْكُنُ</span> <span class="story-word new" data-en="in" onclick="showWordMeaning(this)">فِي</span> <span class="story-word new" data-en="a village" onclick="showWordMeaning(this)">قَرْيَةٍ</span></p>
+<p><span class="story-word" data-en="and" onclick="showWordMeaning(this)">وَ</span> <span class="story-word" data-en="was" onclick="showWordMeaning(this)">كَانَ</span> <span class="story-word new" data-en="name of" onclick="showWordMeaning(this)">اسْمُ</span> <span class="story-word" data-en="this (m)" onclick="showWordMeaning(this)">هَذَا</span> <span class="story-word" data-en="the" onclick="showWordMeaning(this)">ال</span> <span class="story-word" data-en="man" onclick="showWordMeaning(this)">رَّجُلِ</span> <span class="story-word new" data-en="Azar (a name)" onclick="showWordMeaning(this)">آزَرَ</span></p>
+<p><span class="story-word" data-en="and" onclick="showWordMeaning(this)">وَ</span> <span class="story-word" data-en="was" onclick="showWordMeaning(this)">كَانَ</span> <span class="story-word" data-en="Azar (a name)" onclick="showWordMeaning(this)">آزَرُ</span> <span class="story-word new" data-en="a polytheist" onclick="showWordMeaning(this)">مُشْرِكًا</span></p>
+<p><span class="story-word" data-en="and" onclick="showWordMeaning(this)">وَ</span> <span class="story-word" data-en="was" onclick="showWordMeaning(this)">كَانَ</span> <span class="story-word new" data-en="with" onclick="showWordMeaning(this)">مَعَ</span> <span class="story-word" data-en="Azar (a name)" onclick="showWordMeaning(this)">آزَرَ</span> <span class="story-word new" data-en="people" onclick="showWordMeaning(this)">نَاسٌ</span> <span class="story-word" data-en="many" onclick="showWordMeaning(this)">كَثِيرُونَ</span></p>
+<p><span class="story-word" data-en="and" onclick="showWordMeaning(this)">وَ</span> <span class="story-word" data-en="was" onclick="showWordMeaning(this)">كَانَ</span> <span class="story-word new" data-en="these" onclick="showWordMeaning(this)">هَؤُلَاءِ</span> <span class="story-word" data-en="the" onclick="showWordMeaning(this)">ال</span> <span class="story-word" data-en="people" onclick="showWordMeaning(this)">نَّاسُ</span> <span class="story-word" data-en="polytheists" onclick="showWordMeaning(this)">مُشْرِكِينَ</span> <span class="story-word new" data-en="also" onclick="showWordMeaning(this)">أَيْضًا</span></p>
+<p><span class="story-word" data-en="and" onclick="showWordMeaning(this)">وَ</span> <span class="story-word" data-en="was" onclick="showWordMeaning(this)">كَانَ</span> <span class="story-word" data-en="Azar (a name)" onclick="showWordMeaning(this)">آزَرُ</span> <span class="story-word" data-en="he lives" onclick="showWordMeaning(this)">يَسْكُنُ</span> <span class="story-word" data-en="with" onclick="showWordMeaning(this)">مَعَ</span> <span class="story-word" data-en="the" onclick="showWordMeaning(this)">الْ</span> <span class="story-word" data-en="polytheists" onclick="showWordMeaning(this)">مُشْرِكِينَ</span> <span class="story-word" data-en="in" onclick="showWordMeaning(this)">فِي</span> <span class="story-word new" data-en="this (f)" onclick="showWordMeaning(this)">هَذِهِ</span> <span class="story-word" data-en="the" onclick="showWordMeaning(this)">الْ</span> <span class="story-word" data-en="a village" onclick="showWordMeaning(this)">قَرْيَةِ</span></p>
+<p><span class="story-word" data-en="and" onclick="showWordMeaning(this)">وَ</span> <span class="story-word" data-en="was" onclick="showWordMeaning(this)">كَانَ</span> <span class="story-word" data-en="in" onclick="showWordMeaning(this)">فِي</span> <span class="story-word" data-en="this (f)" onclick="showWordMeaning(this)">هَذِهِ</span> <span class="story-word" data-en="the" onclick="showWordMeaning(this)">الْ</span> <span class="story-word" data-en="a village" onclick="showWordMeaning(this)">قَرْيَةِ</span> <span class="story-word new" data-en="idols" onclick="showWordMeaning(this)">أَصْنَامٌ</span> <span class="story-word" data-en="many" onclick="showWordMeaning(this)">كَثِيرَةٌ</span> <span class="story-word" data-en="very" onclick="showWordMeaning(this)">جِدًّا</span></p>
+<p><span class="story-word" data-en="and" onclick="showWordMeaning(this)">وَ</span> <span class="story-word" data-en="was" onclick="showWordMeaning(this)">كَانَ</span> <span class="story-word" data-en="the" onclick="showWordMeaning(this)">ال</span> <span class="story-word" data-en="people" onclick="showWordMeaning(this)">نَّاسُ</span> <span class="story-word new" data-en="they worship" onclick="showWordMeaning(this)">يَعْبُدُونَ</span> <span class="story-word" data-en="this (f)" onclick="showWordMeaning(this)">هَذِهِ</span> <span class="story-word" data-en="the" onclick="showWordMeaning(this)">الْ</span> <span class="story-word" data-en="idols" onclick="showWordMeaning(this)">أَصْنَامَ</span></p>
+<p><span class="story-word" data-en="and" onclick="showWordMeaning(this)">وَ</span> <span class="story-word" data-en="was" onclick="showWordMeaning(this)">كَانَ</span> <span class="story-word" data-en="the" onclick="showWordMeaning(this)">ال</span> <span class="story-word" data-en="people" onclick="showWordMeaning(this)">نَّاسُ</span> <span class="story-word new" data-en="they prostrate" onclick="showWordMeaning(this)">يَسْجُدُونَ</span> <span class="story-word new" data-en="to them" onclick="showWordMeaning(this)">لَهَا</span></p>
+<p><span class="story-word" data-en="and" onclick="showWordMeaning(this)">وَ</span> <span class="story-word" data-en="was" onclick="showWordMeaning(this)">كَانَ</span> <span class="story-word" data-en="Azar (a name)" onclick="showWordMeaning(this)">آزَرُ</span> <span class="story-word" data-en="he worships" onclick="showWordMeaning(this)">يَعْبُدُ</span> <span class="story-word" data-en="the" onclick="showWordMeaning(this)">الْ</span> <span class="story-word" data-en="idols" onclick="showWordMeaning(this)">أَصْنَامَ</span> <span class="story-word" data-en="also" onclick="showWordMeaning(this)">أَيْضًا</span> <span class="story-word" data-en="and" onclick="showWordMeaning(this)">وَ</span> <span class="story-word" data-en="was" onclick="showWordMeaning(this)">كَانَ</span> <span class="story-word" data-en="Azar (a name)" onclick="showWordMeaning(this)">آزَرُ</span> <span class="story-word" data-en="he prostrates" onclick="showWordMeaning(this)">يَسْجُدُ</span> <span class="story-word" data-en="to them" onclick="showWordMeaning(this)">لَهَا</span> <span class="story-word" data-en="also" onclick="showWordMeaning(this)">أَيْضًا</span></p>
+<p><span class="story-word" data-en="an idol" onclick="showWordMeaning(this)">صَنَمٌ</span> <span class="story-word new" data-en="here" onclick="showWordMeaning(this)">هُنَا</span>، <span class="story-word" data-en="and" onclick="showWordMeaning(this)">وَ</span> <span class="story-word" data-en="an idol" onclick="showWordMeaning(this)">صَنَمٌ</span> <span class="story-word" data-en="there" onclick="showWordMeaning(this)">هُنَاكَ</span>. <span class="story-word" data-en="idols" onclick="showWordMeaning(this)">أَصْنَامٌ</span> <span class="story-word" data-en="many" onclick="showWordMeaning(this)">كَثِيرَةٌ</span> <span class="story-word" data-en="very" onclick="showWordMeaning(this)">جِدًّا</span></p>
+<p><span class="story-word new" data-en="why" onclick="showWordMeaning(this)">لِمَاذَا</span> <span class="story-word" data-en="they worship" onclick="showWordMeaning(this)">يَعْبُدُونَ</span> <span class="story-word" data-en="the" onclick="showWordMeaning(this)">الْ</span> <span class="story-word" data-en="idols" onclick="showWordMeaning(this)">أَصْنَامَ</span>؟ <span class="story-word new" data-en="the" onclick="showWordMeaning(this)">الْ</span> <span class="story-word new" data-en="worship" onclick="showWordMeaning(this)">عِبَادَةُ</span> <span class="story-word new" data-en="to Allah" onclick="showWordMeaning(this)">لِلَّهِ</span> <span class="story-word new" data-en="only" onclick="showWordMeaning(this)">فَقَطْ</span></p>
 </div>
 
 </div>
@@ -1459,6 +1482,14 @@ function closeModal(){document.getElementById('modal').classList.remove('open');
 // ── TOAST ──
 let toastTimer;
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2500);}
+function showWordMeaning(el) { showToast(el.textContent + ' = ' + el.dataset.en); }
+function toggleStoryEnglish() {
+  const box = document.getElementById('story-english');
+  const btn = document.getElementById('story-english-btn');
+  const isHidden = box.style.display === 'none';
+  box.style.display = isHidden ? 'block' : 'none';
+  btn.textContent = isHidden ? 'Hide English' : 'Show English';
+}
 
 // ── DOPAMINE BUTTON (Fahd only) ──
 let dopamineBoxPos = null;
