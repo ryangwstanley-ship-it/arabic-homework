@@ -1689,11 +1689,11 @@ exRender(`
   <div class="ex-card-desc">Does the attached pronoun (ـهُ / ـهَا / ـهُمْ) match the first word? True or false.</div>
   <div class="ex-card-note">${suffixpronounPct}% mastered</div>
 </div>
-<div class="ex-card" id="btn-suffixtrans">
-  ${window.miniRing(suffixtransPct, '✍️')}
-  <div class="ex-card-title">Suffix Pronouns — Translate</div>
-  <div class="ex-card-desc">Read the English, write the Arabic, then reveal and grade yourself.</div>
-  <div class="ex-card-note">${suffixtransPct}% mastered</div>
+<div class="ex-card" id="btn-demotrans">
+  ${window.miniRing(demotransPct, '👉')}
+  <div class="ex-card-title">Demonstrative Pronouns — Translate</div>
+  <div class="ex-card-desc">Read the English, write the Arabic demonstrative phrase, then reveal and grade yourself.</div>
+  <div class="ex-card-note">${demotransPct}% mastered</div>
 </div>
 <div class="ex-card" id="btn-adjectiveagreement">
   ${window.miniRing(adjectiveagreementPct, '✨')}
@@ -1735,6 +1735,7 @@ document.getElementById('btn-changeword').onclick = () => exShowSetup('changewor
 document.getElementById('btn-demonstrative').onclick = () => exShowSetup('demonstrative');
 document.getElementById('btn-suffixpronoun').onclick = () => exShowSetup('suffixpronoun');
 document.getElementById('btn-suffixtrans').onclick = () => exShowSetup('suffixtrans');
+document.getElementById('btn-demotrans').onclick = () => exShowSetup('demotrans');
 document.getElementById('btn-adjectiveagreement').onclick = () => exShowSetup('adjectiveagreement');
 document.getElementById('btn-plural').onclick = () => exShowSetup('plural');
 document.getElementById('btn-feminine').onclick = () => exShowSetup('feminine');
@@ -1754,6 +1755,7 @@ const title = mode === 'fillgap' ? '📝 Fill the Gap'
 : mode === 'typeharakat' ? '⌨️ Type Without Harakat'
 : mode === 'typeenglish' ? '🔤 English → Arabic'
 : mode === 'suffixtrans' ? '✍️ Suffix Pronouns — Translate'
+: mode === 'demotrans' ? '👉 Demonstrative Pronouns — Translate'
 : '✅ True or False';
 const isGrammarDrill = mode === 'demonstrative';
 exRender(`
@@ -1797,6 +1799,7 @@ exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS]
 : exMode === 'typeharakat' ? exBuildLesson1Pool()
 : exMode === 'typeenglish' ? exBuildLesson1Pool()
 : exMode === 'suffixtrans' ? exShuffle([...SUFFIX_TRANSLATION_QUESTIONS]).slice(0, 11)
+: exMode === 'demotrans' ? exShuffle([...DEMO_TRANSLATION_QUESTIONS]).slice(0, 11)
 : [...TRUE_FALSE_QUESTIONS]
 );
 exRenderActive();
@@ -1868,6 +1871,7 @@ exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS]
 : exMode === 'typeharakat' ? exBuildLesson1Pool()
 : exMode === 'typeenglish' ? exBuildLesson1Pool()
 : exMode === 'suffixtrans' ? exShuffle([...SUFFIX_TRANSLATION_QUESTIONS]).slice(0, 11)
+: exMode === 'demotrans' ? exShuffle([...DEMO_TRANSLATION_QUESTIONS]).slice(0, 11)
 : [...TRUE_FALSE_QUESTIONS]
   
 );
@@ -2005,7 +2009,29 @@ const freshBtn = document.getElementById('ex-check-btn');
 freshBtn.textContent = 'Reveal ←';
 freshBtn.onclick = exSubmitSuffixTrans;
 inp.onkeydown = e => { if (e.key === 'Enter') exSubmitSuffixTrans(); };
-} else if (exMode === 'typeharakat' || exMode === 'typeenglish') {
+} 
+else if (exMode === 'demotrans') {
+const q = exQuestions[exCurrent];
+const existingType = document.getElementById('ex-tf-btns');
+if (existingType) existingType.remove();
+document.getElementById('ex-instruction').textContent = 'Read the English, write the Arabic, then reveal';
+document.getElementById('ex-sentence').textContent = q.en;
+document.getElementById('ex-sentence').style.direction = 'ltr';
+const fillDiv = document.getElementById('ex-fill-input');
+fillDiv.style.display = 'flex';
+document.getElementById('ex-word-order').style.display = 'none';
+const inp = document.getElementById('ex-answer-input');
+inp.value = '';
+inp.placeholder = 'Write the Arabic here...';
+setTimeout(() => inp.focus(), 50);
+const checkBtn = document.getElementById('ex-check-btn');
+checkBtn.replaceWith(checkBtn.cloneNode(true));
+const freshBtn = document.getElementById('ex-check-btn');
+freshBtn.textContent = 'Reveal ←';
+freshBtn.onclick = exSubmitDemoTrans;
+inp.onkeydown = e => { if (e.key === 'Enter') exSubmitDemoTrans(); };
+}
+else if (exMode === 'typeharakat' || exMode === 'typeenglish') {
 const q = exQuestions[exCurrent];
 const existingType = document.getElementById('ex-tf-btns');
 if (existingType) existingType.remove();
@@ -2177,6 +2203,18 @@ ratingEl.style.display = 'flex';
 wireRatingButtons();
 }
 
+function exSubmitDemoTrans() {
+const q = exQuestions[exCurrent];
+const typed = document.getElementById('ex-answer-input').value;
+const reveal = document.getElementById('ex-reveal');
+reveal.innerHTML = 'Correct answer: <strong>' + q.ar + '</strong>' + (typed ? '<br><span style="font-size:0.85em;color:#6b7280">You wrote: ' + typed + '</span>' : '') + '<br><span style="font-size:0.8em;color:#6b7280">Were you close enough? Grade yourself below.</span>';
+reveal.style.display = 'block';
+document.getElementById('ex-fill-input').style.display = 'none';
+const ratingEl = document.getElementById('ex-rating-area');
+ratingEl.style.display = 'flex';
+wireRatingButtons();
+}
+  
 function exSubmitWordOrder() {
 const q = exQuestions[exCurrent];
 const reveal = document.getElementById('ex-reveal');
