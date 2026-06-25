@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title> DEV </title>
+<title> under development </title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Arabic Daily</title>
@@ -486,8 +486,7 @@ const db = getFirestore(firebaseApp);
 
 
 // ── FLASHCARD DATA (now loaded from GitHub) ──
-let DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS;
-
+let DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS, PLURAL_QUESTIONS, FEMININE_QUESTIONS, SUFFIX_TRANSLATION_QUESTIONS, DEMO_TRANSLATION_QUESTIONS;
 async function loadVocabData() {
 
   const url = 'https://raw.githubusercontent.com/ryangwstanley-ship-it/database/main/website%20data%20base?t=' + Date.now();
@@ -495,7 +494,7 @@ const res = await fetch(url);
 const code = await res.text();
 const runner = new Function(
 code.replaceAll('export const', 'const') +
-'; return { DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS };'
+'; return { DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS, PLURAL_QUESTIONS, FEMININE_QUESTIONS, SUFFIX_TRANSLATION_QUESTIONS, DEMO_TRANSLATION_QUESTIONS };'
 );
 const data = runner();
 DEFAULT_LESSONS = data.DEFAULT_LESSONS;
@@ -506,6 +505,10 @@ TRUE_FALSE_QUESTIONS = data.TRUE_FALSE_QUESTIONS;
 DEMONSTRATIVE_QUESTIONS = data.DEMONSTRATIVE_QUESTIONS;
 SUFFIX_PRONOUN_QUESTIONS = data.SUFFIX_PRONOUN_QUESTIONS;
 ADJECTIVE_AGREEMENT_QUESTIONS = data.ADJECTIVE_AGREEMENT_QUESTIONS;
+PLURAL_QUESTIONS = data.PLURAL_QUESTIONS;
+FEMININE_QUESTIONS = data.FEMININE_QUESTIONS;
+SUFFIX_TRANSLATION_QUESTIONS = data.SUFFIX_TRANSLATION_QUESTIONS;
+DEMO_TRANSLATION_QUESTIONS = data.DEMO_TRANSLATION_QUESTIONS;
 
 
 window.FILL_GAP_QUESTIONS = FILL_GAP_QUESTIONS;
@@ -515,7 +518,10 @@ window.TRUE_FALSE_QUESTIONS = TRUE_FALSE_QUESTIONS;
 window.DEMONSTRATIVE_QUESTIONS = DEMONSTRATIVE_QUESTIONS;
 window.SUFFIX_PRONOUN_QUESTIONS = SUFFIX_PRONOUN_QUESTIONS;
 window.ADJECTIVE_AGREEMENT_QUESTIONS = ADJECTIVE_AGREEMENT_QUESTIONS;
-
+window.PLURAL_QUESTIONS = PLURAL_QUESTIONS;
+window.FEMININE_QUESTIONS = FEMININE_QUESTIONS;
+window.SUFFIX_TRANSLATION_QUESTIONS = SUFFIX_TRANSLATION_QUESTIONS;
+window.DEMO_TRANSLATION_QUESTIONS = DEMO_TRANSLATION_QUESTIONS;
 }
 
 await loadVocabData();
@@ -526,6 +532,9 @@ window.TRUE_FALSE_QUESTIONS = TRUE_FALSE_QUESTIONS;
 window.DEMONSTRATIVE_QUESTIONS = DEMONSTRATIVE_QUESTIONS;
 window.SUFFIX_PRONOUN_QUESTIONS = SUFFIX_PRONOUN_QUESTIONS;
 window.ADJECTIVE_AGREEMENT_QUESTIONS = ADJECTIVE_AGREEMENT_QUESTIONS;
+window.PLURAL_QUESTIONS = PLURAL_QUESTIONS;
+window.FEMININE_QUESTIONS = FEMININE_QUESTIONS;
+window.SUFFIX_TRANSLATION_QUESTIONS = SUFFIX_TRANSLATION_QUESTIONS;
 
 const STUDENTS = {
 'FHD001': { name: 'Fahad',                display: 'فهد' },
@@ -563,6 +572,7 @@ const INSTRUCTOR_CODE = 'RYAN01';
 
 // Runtime lesson data (can be modified per user)
 let LESSONS = JSON.parse(JSON.stringify(DEFAULT_LESSONS));
+window.LESSONS = LESSONS;
 
 let currentUser = null, isInstructor = false, viewingStudent = null;
 let isStudentView = false, calYear, calMonth, selectedDate = null;
@@ -1263,9 +1273,9 @@ function renderFlashcards() {
     const lessonNum = parseInt(num);
     if (lessonNum > maxLesson) return; // Skip lessons beyond student's level
     const btn = document.createElement('button');
-    btn.className='fc-lesson-btn'+(lessonNum===fcCurrentLesson?' active':'');
+    btn.className='fc-lesson-btn'+(num==fcCurrentLesson?' active':'');
     btn.textContent=lesson.name;
-    btn.onclick=()=>{ fcCurrentLesson=lessonNum; buildFcQueue(); renderFlashcards(); };
+    btn.onclick=()=>{ fcCurrentLesson=num; buildFcQueue(); renderFlashcards(); };
     picker.appendChild(btn);
   });
 
@@ -1553,6 +1563,7 @@ let exMode = null, exQuestions = [], exCurrent = 0, exAnswered = 0;
 let exTimerSeconds = 0, exTimerInterval = null;
 let exGoalSeconds = 900, exDotEarned = false;
 let exWordSelected = [], exWordBank = [];
+let exFemSelected = [];
 
 function poolForMode(mode) {
 return mode === 'fillgap' ? FILL_GAP_QUESTIONS
@@ -1578,13 +1589,60 @@ function exRender(html) {
 document.getElementById('ex-root').innerHTML = html;
 }
 
+// Remove all harakat (vowel marks, tanwīn, shadda, sukūn) from a word
+function exStripHarakat(text) {
+return text.replace(/[\u064B-\u0652\u0670]/g, '').trim();
+}
+
+// English plural labels for the 6 Lesson 1 plural pairs
+const EX_L1_PLURAL_EN = {
+'يَوْمٌ / أَيَّامٌ': 'days',
+'رَجُلٌ / رِجَالٌ': 'men',
+'قَرْيَةٌ / قُرىً': 'villages',
+'اِسْمٌ / أَسْمَاءٌ': 'names',
+'صَنَمٌ / أَصْنَامٌ': 'idols',
+'عِبَادَةٌ / عِبَادَاتٌ': 'worships'
+};
+
+// Build the Lesson 1 typing pool: {ar (with harakat shown), target (bare), en}
+function exBuildLesson1Pool() {
+const cards = (window.LESSONS && window.LESSONS[1] && window.LESSONS[1].cards) ? window.LESSONS[1].cards : [];
+const pool = [];
+cards.forEach(c => {
+if (c.ar.includes('/')) {
+const parts = c.ar.split('/').map(s => s.trim());
+const singular = parts[0];
+const plural = parts[1];
+pool.push({ ar: singular, target: exStripHarakat(singular), en: c.en });
+pool.push({ ar: plural, target: exStripHarakat(plural), en: EX_L1_PLURAL_EN[c.ar] || c.en });
+} else {
+pool.push({ ar: c.ar, target: exStripHarakat(c.ar), en: c.en });
+}
+});
+return pool;
+}
+
+// Build a self-check session: 11 random words from the Lesson 1 pool
+function exBuildEngSelfCheckPool() {
+const full = exBuildLesson1Pool();
+const shuffled = exShuffle(full);
+return shuffled.slice(0, 11);
+}
+  
 function exShowPicker() {
 const fillgapPct = window.getExerciseMasteryPercent('fillgap', FILL_GAP_QUESTIONS.length);
 const wordorderPct = window.getExerciseMasteryPercent('wordorder', WORD_ORDER_QUESTIONS.length);
 const truefalsePct = window.getExerciseMasteryPercent('truefalse', TRUE_FALSE_QUESTIONS.length);
 const changewordPct = window.getExerciseMasteryPercent('changeword', CHANGE_WORD_QUESTIONS.length);
 const demonstrativePct = window.getExerciseMasteryPercent('demonstrative', DEMONSTRATIVE_QUESTIONS.length);
+const suffixpronounPct = window.getExerciseMasteryPercent('suffixpronoun', SUFFIX_PRONOUN_QUESTIONS.length);
+const suffixtransPct = window.getExerciseMasteryPercent('suffixtrans', SUFFIX_TRANSLATION_QUESTIONS.length);
+const demotransPct = window.getExerciseMasteryPercent('demotrans', DEMO_TRANSLATION_QUESTIONS.length);
 const adjectiveagreementPct = window.getExerciseMasteryPercent('adjectiveagreement', ADJECTIVE_AGREEMENT_QUESTIONS.length);
+const pluralPct = window.getExerciseMasteryPercent('plural', PLURAL_QUESTIONS.length);
+const femininePct = window.getExerciseMasteryPercent('feminine', FEMININE_QUESTIONS.length);
+const typeharakatPct = window.getExerciseMasteryPercent('typeharakat', exBuildLesson1Pool().length);
+const typeenglishPct = window.getExerciseMasteryPercent('typeenglish', exBuildLesson1Pool().length);
 
 exRender(`
    <div class="section-label">Choose an exercise</div>
@@ -1619,11 +1677,53 @@ exRender(`
   <div class="ex-card-desc">Practise هذا / هذه / هؤلاء agreement with true/false and correction questions.</div>
   <div class="ex-card-note">${demonstrativePct}% mastered</div>
 </div>
+<div class="ex-card" id="btn-demotrans">
+  ${window.miniRing(demotransPct, '👉')}
+  <div class="ex-card-title">Demonstrative Pronouns — Translate</div>
+  <div class="ex-card-desc">Read the English, write the Arabic demonstrative phrase, then reveal and grade yourself.</div>
+  <div class="ex-card-note">${demotransPct}% mastered</div>
+</div>
+<div class="ex-card" id="btn-suffixpronoun">
+  ${window.miniRing(suffixpronounPct, '🔤')}
+  <div class="ex-card-title">Suffix Pronouns</div>
+  <div class="ex-card-desc">Does the attached pronoun (ـهُ / ـهَا / ـهُمْ) match the first word? True or false.</div>
+  <div class="ex-card-note">${suffixpronounPct}% mastered</div>
+</div>
+<div class="ex-card" id="btn-suffixtrans">
+  ${window.miniRing(suffixtransPct, '✍️')}
+  <div class="ex-card-title">Suffix Pronouns — Translate</div>
+  <div class="ex-card-desc">Read the English, write the Arabic, then reveal and grade yourself.</div>
+  <div class="ex-card-note">${suffixtransPct}% mastered</div>
+</div>
 <div class="ex-card" id="btn-adjectiveagreement">
   ${window.miniRing(adjectiveagreementPct, '✨')}
   <div class="ex-card-title">Adjective Agreement</div>
   <div class="ex-card-desc">Noun-adjective agreement: is the adjective correctly matched to the noun?</div>
   <div class="ex-card-note">${adjectiveagreementPct}% mastered</div>
+</div>
+<div class="ex-card" id="btn-plural">
+  ${window.miniRing(pluralPct, '👥')}
+  <div class="ex-card-title">Spot the Plural</div>
+  <div class="ex-card-desc">Two words appear — tap the one that is plural.</div>
+  <div class="ex-card-note">${pluralPct}% mastered</div>
+</div>
+<div class="ex-card" id="btn-feminine">
+  ${window.miniRing(femininePct, '♀️')}
+  <div class="ex-card-title">Spot the Feminine</div>
+  <div class="ex-card-desc">Four words appear — tap the two that are feminine, then Check.</div>
+  <div class="ex-card-note">${femininePct}% mastered</div>
+</div>
+<div class="ex-card" id="btn-typeharakat">
+  ${window.miniRing(typeharakatPct, '⌨️')}
+  <div class="ex-card-title">Type Without Harakat (Lesson 1)</div>
+  <div class="ex-card-desc">See the word with harakat — type it using bare letters only.</div>
+  <div class="ex-card-note">${typeharakatPct}% mastered</div>
+</div>
+<div class="ex-card" id="btn-typeenglish">
+  ${window.miniRing(typeenglishPct, '🔤')}
+  <div class="ex-card-title">English → Arabic (Lesson 1)</div>
+  <div class="ex-card-desc">See the English — type the Arabic word from memory.</div>
+  <div class="ex-card-note">${typeenglishPct}% mastered</div>
 </div>
      
    </div>
@@ -1633,7 +1733,14 @@ document.getElementById('btn-wordorder').onclick = () => exShowSetup('wordorder'
 document.getElementById('btn-truefalse').onclick = () => exShowSetup('truefalse');
 document.getElementById('btn-changeword').onclick = () => exShowSetup('changeword');
 document.getElementById('btn-demonstrative').onclick = () => exShowSetup('demonstrative');
+document.getElementById('btn-suffixpronoun').onclick = () => exShowSetup('suffixpronoun');
+document.getElementById('btn-demotrans').onclick = () => exShowSetup('demotrans');
+document.getElementById('btn-suffixtrans').onclick = () => exShowSetup('suffixtrans');
 document.getElementById('btn-adjectiveagreement').onclick = () => exShowSetup('adjectiveagreement');
+document.getElementById('btn-plural').onclick = () => exShowSetup('plural');
+document.getElementById('btn-feminine').onclick = () => exShowSetup('feminine');
+document.getElementById('btn-typeharakat').onclick = () => exShowSetup('typeharakat');
+document.getElementById('btn-typeenglish').onclick = () => exShowSetup('typeenglish');
 }
 
 function exShowSetup(mode) {
@@ -1643,8 +1750,14 @@ const title = mode === 'fillgap' ? '📝 Fill the Gap'
 : mode === 'changeword' ? '✏️ Change One Word'
 : mode === 'demonstrative' ? '👉 Demonstrative Pronouns'
 : mode === 'suffixpronoun' ? '🔤 Suffix Pronouns'
+: mode === 'plural' ? '👥 Spot the Plural'
+: mode === 'feminine' ? '♀️ Spot the Feminine'
+: mode === 'typeharakat' ? '⌨️ Type Without Harakat'
+: mode === 'typeenglish' ? '🔤 English → Arabic'
+: mode === 'suffixtrans' ? '✍️ Suffix Pronouns — Translate'
+: mode === 'demotrans' ? '👉 Demonstrative Pronouns — Translate'
 : '✅ True or False';
-const isGrammarDrill = mode === 'demonstrative' || mode === 'suffixpronoun';
+const isGrammarDrill = mode === 'demonstrative';
 exRender(`
    <div class="section-label">${title}</div>
    <div style="background:white;border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
@@ -1681,6 +1794,12 @@ exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS]
 : exMode === 'demonstrative' ? [...DEMONSTRATIVE_QUESTIONS]
 : exMode === 'suffixpronoun' ? [...SUFFIX_PRONOUN_QUESTIONS]
 : exMode === 'adjectiveagreement' ? [...ADJECTIVE_AGREEMENT_QUESTIONS]
+: exMode === 'plural' ? [...PLURAL_QUESTIONS]
+: exMode === 'feminine' ? [...FEMININE_QUESTIONS]
+: exMode === 'typeharakat' ? exBuildLesson1Pool()
+: exMode === 'typeenglish' ? exBuildLesson1Pool()
+: exMode === 'suffixtrans' ? exShuffle([...SUFFIX_TRANSLATION_QUESTIONS]).slice(0, 11)
+: exMode === 'demotrans' ? exShuffle([...DEMO_TRANSLATION_QUESTIONS]).slice(0, 11)
 : [...TRUE_FALSE_QUESTIONS]
 );
 exRenderActive();
@@ -1747,7 +1866,14 @@ exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS]
 : exMode === 'demonstrative' ? [...DEMONSTRATIVE_QUESTIONS]
 : exMode === 'suffixpronoun' ? [...SUFFIX_PRONOUN_QUESTIONS]
 : exMode === 'adjectiveagreement' ? [...ADJECTIVE_AGREEMENT_QUESTIONS]
+: exMode === 'plural' ? [...PLURAL_QUESTIONS]
+: exMode === 'feminine' ? [...FEMININE_QUESTIONS]
+: exMode === 'typeharakat' ? exBuildLesson1Pool()
+: exMode === 'typeenglish' ? exBuildLesson1Pool()
+: exMode === 'suffixtrans' ? exShuffle([...SUFFIX_TRANSLATION_QUESTIONS]).slice(0, 11)
+: exMode === 'demotrans' ? exShuffle([...DEMO_TRANSLATION_QUESTIONS]).slice(0, 11)
 : [...TRUE_FALSE_QUESTIONS]
+  
 );
 exCurrent = 0;
 }
@@ -1806,6 +1932,129 @@ checkBtn.replaceWith(checkBtn.cloneNode(true));
 const freshBtn = document.getElementById('ex-check-btn');
 freshBtn.onclick = exSubmitChangeWord;
 inp.onkeydown = e => { if (e.key === 'Enter') exSubmitChangeWord(); };
+} else if (exMode === 'plural') {
+const q = exQuestions[exCurrent];
+document.getElementById('ex-instruction').textContent = 'Which word is the plural?';
+document.getElementById('ex-sentence').textContent = '';
+document.getElementById('ex-fill-input').style.display = 'none';
+document.getElementById('ex-word-order').style.display = 'none';
+const existingTiles = document.getElementById('ex-tf-btns');
+if (existingTiles) existingTiles.remove();
+const choices = exShuffle([
+  { text: q.singular, isPlural: false },
+  { text: q.plural, isPlural: true }
+]);
+const pluralWrap = document.createElement('div');
+pluralWrap.id = 'ex-tf-btns';
+pluralWrap.style.cssText = 'display:flex;gap:12px;justify-content:center;margin-top:8px';
+choices.forEach(c => {
+const tile = document.createElement('button');
+tile.className = 'ex-word-tile';
+tile.style.flex = '1';
+tile.style.textAlign = 'center';
+tile.textContent = c.text;
+tile.onclick = () => exSubmitPlural(c.isPlural);
+pluralWrap.appendChild(tile);
+});
+document.getElementById('ex-sentence').after(pluralWrap);
+} else if (exMode === 'feminine') {
+const q = exQuestions[exCurrent];
+document.getElementById('ex-instruction').textContent = 'Tap the TWO feminine words, then press Check';
+document.getElementById('ex-sentence').textContent = '';
+document.getElementById('ex-fill-input').style.display = 'none';
+document.getElementById('ex-word-order').style.display = 'none';
+const existingFem = document.getElementById('ex-tf-btns');
+if (existingFem) existingFem.remove();
+exFemSelected = [];
+const shuffled = exShuffle(q.words.map((w, i) => ({ ...w, oid: i })));
+const femWrap = document.createElement('div');
+femWrap.id = 'ex-tf-btns';
+femWrap.style.cssText = 'display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:8px';
+shuffled.forEach(w => {
+const tile = document.createElement('button');
+tile.className = 'ex-word-tile';
+tile.textContent = w.text;
+tile.dataset.fem = w.feminine ? '1' : '0';
+tile.onclick = () => {
+tile.classList.toggle('selected');
+if (tile.classList.contains('selected')) exFemSelected.push(tile);
+else exFemSelected = exFemSelected.filter(t => t !== tile);
+};
+femWrap.appendChild(tile);
+});
+document.getElementById('ex-sentence').after(femWrap);
+const checkWrap = document.createElement('div');
+checkWrap.id = 'ex-fem-check-wrap';
+checkWrap.style.cssText = 'text-align:center;margin-top:16px';
+checkWrap.innerHTML = '<button id="ex-fem-check-btn" style="padding:12px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Check ←</button>';
+femWrap.after(checkWrap);
+document.getElementById('ex-fem-check-btn').onclick = exSubmitFeminine;
+} else if (exMode === 'suffixtrans') {
+const q = exQuestions[exCurrent];
+const existingType = document.getElementById('ex-tf-btns');
+if (existingType) existingType.remove();
+document.getElementById('ex-instruction').textContent = 'Read the English, write the Arabic, then reveal';
+document.getElementById('ex-sentence').textContent = q.en;
+document.getElementById('ex-sentence').style.direction = 'ltr';
+const fillDiv = document.getElementById('ex-fill-input');
+fillDiv.style.display = 'flex';
+document.getElementById('ex-word-order').style.display = 'none';
+const inp = document.getElementById('ex-answer-input');
+inp.value = '';
+inp.placeholder = 'Write the Arabic here...';
+setTimeout(() => inp.focus(), 50);
+const checkBtn = document.getElementById('ex-check-btn');
+checkBtn.replaceWith(checkBtn.cloneNode(true));
+const freshBtn = document.getElementById('ex-check-btn');
+freshBtn.textContent = 'Reveal ←';
+freshBtn.onclick = exSubmitSuffixTrans;
+inp.onkeydown = e => { if (e.key === 'Enter') exSubmitSuffixTrans(); };
+} 
+else if (exMode === 'demotrans') {
+const q = exQuestions[exCurrent];
+const existingType = document.getElementById('ex-tf-btns');
+if (existingType) existingType.remove();
+document.getElementById('ex-instruction').textContent = 'Read the English, write the Arabic, then reveal';
+document.getElementById('ex-sentence').textContent = q.en;
+document.getElementById('ex-sentence').style.direction = 'ltr';
+const fillDiv = document.getElementById('ex-fill-input');
+fillDiv.style.display = 'flex';
+document.getElementById('ex-word-order').style.display = 'none';
+const inp = document.getElementById('ex-answer-input');
+inp.value = '';
+inp.placeholder = 'Write the Arabic here...';
+setTimeout(() => inp.focus(), 50);
+const checkBtn = document.getElementById('ex-check-btn');
+checkBtn.replaceWith(checkBtn.cloneNode(true));
+const freshBtn = document.getElementById('ex-check-btn');
+freshBtn.textContent = 'Reveal ←';
+freshBtn.onclick = exSubmitDemoTrans;
+inp.onkeydown = e => { if (e.key === 'Enter') exSubmitDemoTrans(); };
+}
+else if (exMode === 'typeharakat' || exMode === 'typeenglish') {
+const q = exQuestions[exCurrent];
+const existingType = document.getElementById('ex-tf-btns');
+if (existingType) existingType.remove();
+if (exMode === 'typeharakat') {
+document.getElementById('ex-instruction').textContent = 'Type this word using bare letters only (no harakat)';
+document.getElementById('ex-sentence').textContent = q.ar;
+} else {
+document.getElementById('ex-instruction').textContent = 'Type the Arabic word';
+document.getElementById('ex-sentence').textContent = q.en;
+document.getElementById('ex-sentence').style.direction = 'ltr';
+}
+const fillDiv = document.getElementById('ex-fill-input');
+fillDiv.style.display = 'flex';
+document.getElementById('ex-word-order').style.display = 'none';
+const inp = document.getElementById('ex-answer-input');
+inp.value = '';
+inp.placeholder = 'Type here...';
+setTimeout(() => inp.focus(), 50);
+const checkBtn = document.getElementById('ex-check-btn');
+checkBtn.replaceWith(checkBtn.cloneNode(true));
+const freshBtn = document.getElementById('ex-check-btn');
+freshBtn.onclick = exSubmitTyping;
+inp.onkeydown = e => { if (e.key === 'Enter') exSubmitTyping(); };
 } else {
 const q = exQuestions[exCurrent];
 document.getElementById('ex-instruction').textContent = 'Put the words in the correct order';
@@ -1880,6 +2129,92 @@ ratingEl.style.display = 'flex';
 wireRatingButtons();
 }
 
+function exSubmitPlural(chosenIsPlural) {
+const q = exQuestions[exCurrent];
+const reveal = document.getElementById('ex-reveal');
+if (chosenIsPlural) {
+reveal.innerHTML = '✓ Correct! <strong>' + q.plural + '</strong> is the plural of <strong>' + q.singular + '</strong>.';
+} else {
+reveal.innerHTML = '✕ Not quite. The plural is <strong>' + q.plural + '</strong> (singular: <strong>' + q.singular + '</strong>).';
+}
+reveal.style.background = '#f0fdf4';
+reveal.style.borderColor = '#86efac';
+reveal.style.display = 'block';
+const tfWrap = document.getElementById('ex-tf-btns');
+if (tfWrap) tfWrap.style.display = 'none';
+const ratingEl = document.getElementById('ex-rating-area');
+ratingEl.style.display = 'flex';
+wireRatingButtons();
+}
+
+function exSubmitFeminine() {
+const q = exQuestions[exCurrent];
+const reveal = document.getElementById('ex-reveal');
+const femWords = q.words.filter(w => w.feminine).map(w => w.text);
+const allTiles = Array.from(document.querySelectorAll('#ex-tf-btns .ex-word-tile'));
+let allCorrect = true;
+allTiles.forEach(tile => {
+const isFem = tile.dataset.fem === '1';
+const picked = tile.classList.contains('selected');
+if (isFem && picked) tile.style.background = '#16a34a', tile.style.color = 'white', tile.style.borderColor = '#16a34a';
+else if (isFem && !picked) { tile.style.borderColor = '#16a34a'; allCorrect = false; }
+else if (!isFem && picked) { tile.style.background = '#fee2e2', tile.style.color = '#b91c1c', tile.style.borderColor = '#fca5a5'; allCorrect = false; }
+tile.onclick = null;
+});
+reveal.innerHTML = (allCorrect ? '✓ Correct! ' : '✕ Not quite. ') + 'The feminine words are <strong>' + femWords.join('</strong> and <strong>') + '</strong>.';
+reveal.style.background = '#f0fdf4';
+reveal.style.borderColor = '#86efac';
+reveal.style.display = 'block';
+const checkWrap = document.getElementById('ex-fem-check-wrap');
+if (checkWrap) checkWrap.style.display = 'none';
+const ratingEl = document.getElementById('ex-rating-area');
+ratingEl.style.display = 'flex';
+wireRatingButtons();
+}
+
+function exSubmitTyping() {
+const q = exQuestions[exCurrent];
+const typed = document.getElementById('ex-answer-input').value;
+const correct = typed === q.target;
+const reveal = document.getElementById('ex-reveal');
+if (correct) {
+reveal.innerHTML = '✓ Correct! <strong>' + q.target + '</strong>';
+} else {
+reveal.innerHTML = '✕ Not quite.<br>You typed: <strong>' + (typed || '(nothing)') + '</strong><br>Correct answer: <strong>' + q.target + '</strong>';
+}
+reveal.style.background = '#f0fdf4';
+reveal.style.borderColor = '#86efac';
+reveal.style.display = 'block';
+document.getElementById('ex-fill-input').style.display = 'none';
+const ratingEl = document.getElementById('ex-rating-area');
+ratingEl.style.display = 'flex';
+wireRatingButtons();
+}
+
+function exSubmitSuffixTrans() {
+const q = exQuestions[exCurrent];
+const typed = document.getElementById('ex-answer-input').value;
+const reveal = document.getElementById('ex-reveal');
+reveal.innerHTML = 'Correct answer: <strong>' + q.ar + '</strong>' + (typed ? '<br><span style="font-size:0.85em;color:#6b7280">You wrote: ' + typed + '</span>' : '') + '<br><span style="font-size:0.8em;color:#6b7280">Were you close enough? Grade yourself below.</span>';
+reveal.style.display = 'block';
+document.getElementById('ex-fill-input').style.display = 'none';
+const ratingEl = document.getElementById('ex-rating-area');
+ratingEl.style.display = 'flex';
+wireRatingButtons();
+}
+
+function exSubmitDemoTrans() {
+const q = exQuestions[exCurrent];
+const typed = document.getElementById('ex-answer-input').value;
+const reveal = document.getElementById('ex-reveal');
+reveal.innerHTML = 'Correct answer: <strong>' + q.ar + '</strong>' + (typed ? '<br><span style="font-size:0.85em;color:#6b7280">You wrote: ' + typed + '</span>' : '') + '<br><span style="font-size:0.8em;color:#6b7280">Were you close enough? Grade yourself below.</span>';
+reveal.style.display = 'block';
+document.getElementById('ex-fill-input').style.display = 'none';
+const ratingEl = document.getElementById('ex-rating-area');
+ratingEl.style.display = 'flex';
+wireRatingButtons();
+}
+  
 function exSubmitWordOrder() {
 const q = exQuestions[exCurrent];
 const reveal = document.getElementById('ex-reveal');
