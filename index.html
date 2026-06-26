@@ -5,39 +5,41 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Arabic Daily</title>
+<link href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&display=swap" rel="stylesheet">
 <style>
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
---ink: #1a1a2e; --blue: #2563eb; --blue-light: #eff6ff;
+--ink: #2b2520; --blue: #8b2035; --blue-light: rgba(139,32,53,0.12);
 --green: #16a34a; --dot-green: #22c55e; --dot-blue: #3b82f6;
---dot-red: #ef4444; --dot-yellow: #eab308; --grey: #6b7280;
---grey-light: #f3f4f6; --border: #e5e7eb; --card-radius: 16px;
+--dot-red: #ef4444; --dot-yellow: #eab308; --grey: #8a7f6e;
+--grey-light: #ffffff; --border: rgba(139,32,53,0.14); --card-radius: 16px;
 --sidebar-w: 220px;
 }
-{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f4ff; color: var(--ink); min-height: 100vh; }
+{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f7f3ec; color: var(--ink); min-height: 100vh; }
 
 /* LOGIN */
-#login-screen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; background: linear-gradient(160deg, #1a1a2e 0%, #2563eb 100%); }
-.login-logo { width: 64px; height: 64px; background: white; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 28px; margin-bottom: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
-.login-title { color: white; font-size: 28px; font-weight: 700; margin-bottom: 6px; }
-.login-subtitle { color: rgba(255,255,255,0.6); font-size: 14px; margin-bottom: 40px; }
-.login-card { background: white; border-radius: var(--card-radius); padding: 28px; width: 100%; max-width: 360px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+#login-screen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; background: linear-gradient(160deg, #f7f3ec 0%, #efe4d4 100%); }
+.login-logo { color: #8b2035; font-size: 22px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 20px; text-align: center; }
+.app-logo-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.login-title { color: var(--ink); font-size: 28px; font-weight: 700; margin-bottom: 6px; }
+.login-subtitle { color: var(--grey); font-size: 14px; margin-bottom: 40px; }
+.login-card { background: var(--grey-light); border-radius: var(--card-radius); padding: 28px; width: 100%; max-width: 360px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
 .login-card label { display: block; font-size: 13px; font-weight: 600; color: var(--grey); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
 .login-card input { width: 100%; padding: 14px 16px; border: 2px solid var(--border); border-radius: 10px; font-size: 18px; letter-spacing: 4px; text-align: center; font-weight: 700; color: var(--ink); outline: none; transition: border-color 0.2s; text-transform: uppercase; }
 .login-card input:focus { border-color: var(--blue); }
 .login-btn { width: 100%; margin-top: 16px; padding: 14px; background: var(--blue); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; }
-.login-btn:hover { background: #1d4ed8; }
+.login-btn:hover { background: #6e1828; }
 .login-error { color: #ef4444; font-size: 13px; margin-top: 10px; text-align: center; display: none; }
 
 /* APP */
 #app { display: none; min-height: 100vh; }
 
 /* SIDEBAR */
-#sidebar { width: var(--sidebar-w); min-width: var(--sidebar-w); background: var(--ink); min-height: 100vh; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; overflow: hidden; transition: width 0.25s, min-width 0.25s; }
+#sidebar { width: var(--sidebar-w); min-width: var(--sidebar-w); background: #8b2035; min-height: 100vh; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; overflow: hidden; transition: width 0.25s, min-width 0.25s; }
 #sidebar.collapsed { width: 0; min-width: 0; }
 .sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 20px 16px 16px; border-bottom: 1px solid rgba(255,255,255,0.1); white-space: nowrap; }
-.sidebar-logo-icon { width: 32px; height: 32px; background: var(--blue); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.sidebar-logo-icon { width: 32px; height: 32px; background: var(--blue); border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: white; letter-spacing: 0.5px; flex-shrink: 0; }
 .sidebar-logo-text { color: white; font-size: 14px; font-weight: 700; }
 .sidebar-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.35); padding: 16px 16px 8px; white-space: nowrap; }
 .sidebar-students { flex: 1; overflow-y: auto; padding: 0 8px 16px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent; }
@@ -65,7 +67,7 @@
 .mini-ring-fg { fill: none; stroke: var(--dot-green); stroke-width: 4; stroke-linecap: round; transition: stroke-dashoffset 0.4s ease; }
 .mini-ring-emoji { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 20px; }
 
-.dopamine-box { background:white; border-radius:16px; padding:20px 24px; text-align:center; box-shadow:0 4px 16px rgba(0,0,0,0.12); cursor:pointer; user-select:none; transition:box-shadow 0.15s; }
+.dopamine-box { background:var(--grey-light); border-radius:16px; padding:20px 24px; text-align:center; box-shadow:0 4px 16px rgba(0,0,0,0.12); cursor:pointer; user-select:none; transition:box-shadow 0.15s; }
 .dopamine-box:hover { box-shadow:0 6px 22px rgba(0,0,0,0.18); }
 .dopamine-box.moved { position:fixed; z-index:55; max-width:220px; }
 
@@ -73,19 +75,19 @@
 #main { flex: 1; overflow-y: auto; min-width: 0; }
 
 /* HEADER */
-.header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; background: white; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10; gap: 12px; }
+.header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; background: var(--grey-light); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10; gap: 12px; }
 .header-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .sidebar-toggle { width: 36px; height: 36px; border: none; background: var(--grey-light); border-radius: 10px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.header-icon { width: 36px; height: 36px; background: var(--blue); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.header-icon { width: 36px; height: 36px; background: var(--blue); border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; color: white; letter-spacing: 0.5px; flex-shrink: 0; }
 .header-title { font-size: 17px; font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .header-sub { font-size: 12px; color: var(--grey); }
 .view-toggle { padding: 7px 14px; background: var(--grey-light); border: none; border-radius: 8px; font-size: 13px; font-weight: 600; color: var(--grey); cursor: pointer; flex-shrink: 0; }
 
 /* TABS */
-.tabs { display: flex; background: white; border-bottom: 1px solid var(--border); padding: 0 20px; }
+.tabs { display: flex; background: var(--grey-light); border-bottom: 1px solid var(--border); padding: 0 20px; }
 .tab { padding: 14px 18px; font-size: 14px; font-weight: 600; color: var(--grey); border: none; background: none; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; }
 .tab.active { color: var(--blue); border-bottom-color: var(--blue); }
-.revision-banner { display: none; align-items: center; gap: 16px; background: var(--ink); padding: 14px 20px; }
+.revision-banner { display: none; align-items: center; gap: 16px; background: #8b2035; padding: 14px 20px; }
 .revision-ring-wrap { position: relative; width: 56px; height: 56px; flex-shrink: 0; }
 .revision-ring { width: 56px; height: 56px; transform: rotate(-90deg); }
 .revision-ring-bg { fill: none; stroke: rgba(255,255,255,0.15); stroke-width: 6; }
@@ -100,19 +102,28 @@
 .revision-rank-label { color: rgba(255,255,255,0.5); font-size: 11px; }
 
 
-.home-card { background: white; border-radius: 18px; padding: 26px 22px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); cursor: pointer; border: 2px solid transparent; transition: border 0.2s, transform 0.15s; display: flex; align-items: center; gap: 18px; }
+.home-card { background: #ffffff; border-radius: 14px; padding: 18px 20px; cursor: pointer; border: 1px solid var(--border); box-shadow: 0 1px 4px rgba(0,0,0,0.05); transition: border 0.2s, transform 0.15s; display: flex; align-items: center; gap: 16px; }
 .home-card:hover { border-color: var(--blue); }
 .home-card:active { transform: scale(0.98); }
-.home-card-icon { font-size: 36px; flex-shrink: 0; }
-.home-card-title { font-size: 18px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
-.home-card-desc { font-size: 13px; color: var(--grey); }
+.home-card-icon { color: var(--blue); flex-shrink: 0; display: flex; }
+.home-card-divider { width: 1px; height: 30px; background: var(--border); flex-shrink: 0; }
+.home-card-text { flex: 1; min-width: 0; }
+.home-card-title { font-size: 15px; font-weight: 600; color: var(--ink); letter-spacing: 0.2px; margin-bottom: 3px; }
+.home-card-desc { font-size: 12.5px; color: var(--grey); }
+.home-card-arrow { color: var(--border); font-size: 16px; flex-shrink: 0; }
 
 /* CONTENT */
 .content { padding: 20px; max-width: 600px; }
 .section-label { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--grey); margin-bottom: 12px; }
+.back-row { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; cursor: pointer; }
+.back-btn { color: var(--blue); font-size: 20px; line-height: 1; }
+.back-row .screen-title { color: var(--ink); font-size: 16px; font-weight: 600; letter-spacing: 0.3px; margin: 0; }
+.revise-tab-row { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+.revise-tab-btn { flex: 1; text-align: center; padding: 12px 0; font-size: 13.5px; font-weight: 600; color: var(--grey); border: none; background: none; cursor: pointer; border-bottom: 2px solid transparent; }
+.revise-tab-btn.active { color: var(--blue); border-bottom-color: var(--blue); }
 
 /* STREAK CARD */
-.streak-card { background: var(--ink); border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; }
+.streak-card { background: #8b2035; border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; }
 .streak-left { display: flex; align-items: center; gap: 14px; }
 .streak-flame { font-size: 36px; }
 .streak-count { font-size: 32px; font-weight: 800; color: white; line-height: 1; }
@@ -130,7 +141,7 @@
 .banner-sub { font-size: 13px; color: var(--grey); }
 
 /* CALENDAR */
-.calendar-card { background: white; border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+.calendar-card { background: var(--grey-light); border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
 .cal-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
 .cal-nav-btn { width: 32px; height: 32px; border: none; background: none; font-size: 18px; cursor: pointer; color: var(--grey); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
 .cal-nav-btn:hover { background: var(--grey-light); }
@@ -176,7 +187,7 @@
 .day-date { font-size: 22px; font-weight: 700; line-height: 1.2; }
 .review-btn { padding: 10px 18px; border-radius: 10px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap; }
 .review-btn.reviewed { background: rgba(255,255,255,0.25); color: white; }
-.review-btn.not-reviewed { background: white; color: var(--blue); }
+.review-btn.not-reviewed { background: var(--grey-light); color: var(--blue); }
 
 /* SUBMISSIONS */
 .submissions-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px; }
@@ -188,12 +199,12 @@
 .submission-badge.makeup-badge { background: var(--dot-yellow); color: #1a1a2e; }
 
 /* TEXT SUBMISSION */
-.text-submission { background: white; border-radius: 12px; padding: 16px; margin-bottom: 16px; border: 1.5px solid var(--border); }
+.text-submission { background: var(--grey-light); border-radius: 12px; padding: 16px; margin-bottom: 16px; border: 1.5px solid var(--border); }
 .text-submission-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--grey); margin-bottom: 8px; }
 .text-submission-content { font-size: 15px; color: var(--ink); line-height: 1.6; direction: auto; }
 
 /* UPLOAD */
-.upload-section { background: white; border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; border: 1.5px solid var(--border); }
+.upload-section { background: var(--grey-light); border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; border: 1.5px solid var(--border); }
 .upload-section-title { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 16px; }
 .upload-area { border: 2px dashed var(--border); border-radius: 12px; padding: 24px; text-align: center; cursor: pointer; transition: all 0.2s; margin-bottom: 12px; }
 .upload-area:hover { border-color: var(--blue); background: var(--blue-light); }
@@ -208,16 +219,16 @@
 
 /* ── FLASHCARDS ── */
 .fc-lesson-picker { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
-.fc-lesson-btn { padding: 12px 14px; border-radius: 16px; border: 2px solid var(--border); background: white; cursor: pointer; color: var(--grey); transition: all 0.2s; text-align: center; min-width: 90px; }
+.fc-lesson-btn { padding: 12px 14px; border-radius: 16px; border: 2px solid var(--border); background: var(--grey-light); cursor: pointer; color: var(--grey); transition: all 0.2s; text-align: center; min-width: 90px; }
 .fc-lesson-btn.active { background: var(--blue-light); border-color: var(--blue); color: var(--ink); }
 
 .fc-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-.fc-stat { background: white; border-radius: 12px; padding: 14px; text-align: center; }
+.fc-stat { background: var(--grey-light); border-radius: 12px; padding: 14px; text-align: center; }
 .fc-stat-num { font-size: 22px; font-weight: 800; color: var(--ink); }
 .fc-stat-label { font-size: 11px; color: var(--grey); margin-top: 2px; }
 
 /* TIMER PANEL */
-.fc-timer-panel { background: white; border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+.fc-timer-panel { background: var(--grey-light); border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
 .fc-timer-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .fc-timer-display { font-size: 36px; font-weight: 800; color: var(--ink); font-variant-numeric: tabular-nums; letter-spacing: 2px; min-width: 90px; }
 .fc-timer-display.running { color: var(--green); }
@@ -234,7 +245,7 @@
 .fc-session-result { margin-top: 14px; padding: 12px 14px; background: #f0fdf4; border-radius: 10px; font-size: 14px; font-weight: 600; color: var(--green); display: none; }
 
 .fc-card-wrap { perspective: 1000px; margin-bottom: 20px; }
-.fc-card { background: white; border-radius: var(--card-radius); padding: 48px 28px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.08); min-height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.15s; position: relative; }
+.fc-card { background: var(--grey-light); border-radius: var(--card-radius); padding: 48px 28px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.08); min-height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.15s; position: relative; }
 .fc-card:active { transform: scale(0.98); }
 .fc-arabic { font-size: 42px; font-weight: 700; color: var(--ink); line-height: 1.3; direction: rtl; margin-bottom: 8px; }
 .fc-tap-hint { font-size: 13px; color: var(--grey); margin-top: 16px; }
@@ -256,14 +267,14 @@
 .fc-r4 { background: #f0fdf4; color: #15803d; }
 .fc-r5 { background: #eff6ff; color: #1d4ed8; }
 
-.fc-done { background: white; border-radius: var(--card-radius); padding: 40px 28px; text-align: center; margin-bottom: 20px; }
+.fc-done { background: var(--grey-light); border-radius: var(--card-radius); padding: 40px 28px; text-align: center; margin-bottom: 20px; }
 .fc-done-icon { font-size: 48px; margin-bottom: 12px; }
 .fc-done-title { font-size: 20px; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
 .fc-done-sub { font-size: 14px; color: var(--grey); margin-bottom: 20px; }
 .fc-restart-btn { padding: 12px 24px; background: var(--blue); color: white; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; }
 
 /* ADD CARD */
-.fc-add-section { background: white; border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; border: 1.5px dashed var(--border); }
+.fc-add-section { background: var(--grey-light); border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; border: 1.5px dashed var(--border); }
 .fc-add-section h3 { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 14px; }
 .fc-add-row { display: flex; gap: 10px; align-items: flex-end; }
 .fc-add-field { flex: 1; }
@@ -277,12 +288,12 @@
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100; align-items: center; justify-content: center; padding: 20px; }
 .modal-overlay.open { display: flex; }
 .modal-img { max-width: 100%; max-height: 80vh; border-radius: 12px; object-fit: contain; }
-.modal-close { position: absolute; top: 16px; right: 16px; background: white; border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.modal-close { position: absolute; top: 16px; right: 16px; background: var(--grey-light); border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
 /* TOAST */
-.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--ink); color: white; padding: 12px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; z-index: 200; transition: transform 0.3s; white-space: nowrap; }
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: #8b2035; color: white; padding: 12px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; z-index: 200; transition: transform 0.3s; white-space: nowrap; }
 .toast.show { transform: translateX(-50%) translateY(0); }
-.no-submission-msg { background: white; border-radius: var(--card-radius); padding: 20px; text-align: center; color: var(--grey); font-size: 14px; margin-bottom: 20px; }
+.no-submission-msg { background: var(--grey-light); border-radius: var(--card-radius); padding: 20px; text-align: center; color: var(--grey); font-size: 14px; margin-bottom: 20px; }
 .locked-msg { background: #fef2f2; border-radius: var(--card-radius); padding: 16px; text-align: center; color: #b91c1c; font-size: 14px; margin-bottom: 20px; border: 1.5px solid #fca5a5; }
 </style>
 </head>
@@ -292,7 +303,7 @@ console.log("THE FILE IS LOADING!");
 </script>
 
 <div id="login-screen">
-<div class="login-logo">🕌</div>
+<div class="login-logo">Yusr Arabic</div>
 <div class="login-title">Arabic Daily</div>
 <div class="login-subtitle">Daily homework tracker</div>
 <div class="login-card">
@@ -306,7 +317,7 @@ console.log("THE FILE IS LOADING!");
 <div id="app">
 <div id="sidebar" style="display:none">
 <div class="sidebar-logo">
-<div class="sidebar-logo-icon">🕌</div>
+<div class="sidebar-logo-icon">YA</div>
 <div class="sidebar-logo-text">Arabic Daily</div>
 </div>
 <div class="sidebar-label">Students</div>
@@ -314,10 +325,10 @@ console.log("THE FILE IS LOADING!");
 
 </div>
 <div id="main">
-<div class="header">
+<div class="header" id="app-header">
 <div class="header-left">
 <button class="sidebar-toggle" id="sidebar-toggle" style="display:none">☰</button>
-<div class="header-icon">🕌</div>
+<div class="header-icon">YA</div>
 <div>
 <div class="header-title" id="header-title">My Homework</div>
 <div class="header-sub" id="header-sub"></div>
@@ -351,43 +362,48 @@ console.log("THE FILE IS LOADING!");
 <button class="tab" id="tab-homework" onclick="switchTab('homework')">📚 Homework</button>
 <button class="tab" id="tab-flashcards" onclick="switchTab('flashcards')">🃏 Flashcards</button>
 <button class="tab" id="tab-exercises" onclick="switchTab('exercises')">✏️ Exercises</button>
+<button class="tab" id="tab-story" onclick="switchTab('story')">📖 Story</button>
 </div>
 
 <!-- HOME TAB -->
 <div id="tab-content-home" class="content" style="display:none">
 <div class="section-label">What would you like to do?</div>
 <div style="display:flex;flex-direction:column;gap:16px;margin-top:8px;max-width:420px">
-<div class="home-card" id="home-btn-homework">
-<div class="home-card-icon">📚</div>
-<div>
-<div class="home-card-title">Homework</div>
-<div class="home-card-desc">Submit today's homework and check your calendar</div>
+<div class="home-card" id="home-btn-start">
+<div class="home-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5.5C3 4.5 4 4 5.5 4C7.5 4 9.5 4.8 11 6V19C9.5 17.8 7.5 17 5.5 17C4 17 3 17.3 3 18V5.5Z"/><path d="M21 5.5C21 4.5 20 4 18.5 4C16.5 4 14.5 4.8 13 6V19C14.5 17.8 16.5 17 18.5 17C20 17 21 17.3 21 18V5.5Z"/></svg></div>
+<div class="home-card-divider"></div>
+<div class="home-card-text">
+<div class="home-card-title">Start Lesson</div>
+<div class="home-card-desc">Read today's story</div>
+</div>
+<div class="home-card-arrow">›</div>
+</div>
+<div class="home-card" id="home-btn-revise">
+<div class="home-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 4v4h-4"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 20v-4h4"/></svg></div>
+<div class="home-card-divider"></div>
+<div class="home-card-text">
+<div class="home-card-title">Revise Lesson</div>
+<div class="home-card-desc">Flashcards &amp; exercises</div>
+</div>
+<div class="home-card-arrow">›</div>
+</div>
+<div class="home-card" id="home-btn-upload">
+<div class="home-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg></div>
+<div class="home-card-divider"></div>
+<div class="home-card-text">
+<div class="home-card-title">Upload Homework</div>
+<div class="home-card-desc">Submit today's work</div>
+</div>
+<div class="home-card-arrow">›</div>
 </div>
 </div>
-<div class="home-card" id="home-btn-flashcards">
-<div class="home-card-icon">🃏</div>
-<div>
-<div class="home-card-title">Flashcards</div>
-<div class="home-card-desc">Review vocabulary with spaced repetition</div>
-</div>
-</div>
-<div class="home-card" id="home-btn-exercises">
-<div class="home-card-icon">✏️</div>
-<div>
-<div class="home-card-title">Exercises</div>
-<div class="home-card-desc">Practise grammar and vocabulary</div>
-</div>
-</div>
-</div>
-<div style="margin-top:20px">
-  <button id="ai-test-btn" style="padding:12px 24px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">Generate Test Story</button>
-  <div id="ai-test-result" style="margin-top:12px;padding:14px;background:white;border-radius:10px;font-size:14px;color:#1a1a2e;white-space:pre-wrap"></div>
-</div>
-<div id="dopamine-zone"></div>
+
+
 </div>
 
 <!-- HOMEWORK TAB -->
 <div id="tab-content-homework" class="content" style="display:none">
+<div class="back-row" onclick="switchTab('home')"><span class="back-btn">‹</span><span class="screen-title">Upload Homework</span></div>
 
 <div id="missed-banner" style="display:none"></div>
 <div class="section-label">Sessions</div>
@@ -419,11 +435,19 @@ console.log("THE FILE IS LOADING!");
 <div id="upload-area-wrap" style="display:none"></div>
 </div>
 
-<!-- FLASHCARDS TAB -->
-<div id="tab-content-flashcards" class="content" style="display:none">
+<!-- REVISE LESSON -->
+<div id="tab-content-revise" class="content" style="display:none">
+<div class="back-row" onclick="switchTab('home')"><span class="back-btn">‹</span><span class="screen-title">Revise Lesson</span></div>
+<div class="revise-tab-row">
+<button class="revise-tab-btn" id="revise-tab-flashcards" onclick="switchReviseSubTab('flashcards')">Flashcards</button>
+<button class="revise-tab-btn" id="revise-tab-exercises" onclick="switchReviseSubTab('exercises')">Exercises</button>
+</div>
+
+<!-- FLASHCARDS SUB-TAB -->
+<div id="tab-content-flashcards" style="display:none">
 <div class="section-label">Lessons</div>
 <div class="fc-lesson-picker" id="fc-lesson-picker"></div>
-<div class="fc-stats" id="fc-stats"></div>
+
 
 <!-- TIMER PANEL -->
 <div class="fc-timer-panel">
@@ -445,27 +469,68 @@ console.log("THE FILE IS LOADING!");
 
 <div id="fc-area"></div>
 
-<!-- ADD CARD -->
-<div class="fc-add-section">
-<h3>➕ Add a card to this lesson</h3>
-<div class="fc-add-row">
-<div class="fc-add-field">
-<label>Arabic</label>
-<input type="text" id="fc-add-ar" dir="rtl" placeholder="عَرَبِيٌّ">
-</div>
-<div class="fc-add-field">
-<label>English</label>
-<input type="text" id="fc-add-en" placeholder="meaning">
-</div>
-<button class="fc-add-submit" id="fc-add-btn">Add</button>
-</div>
-</div>
 
 </div>
-</div>
-<!-- EXERCISES TAB -->
-<div id="tab-content-exercises" class="content" style="display:none">
+<!-- EXERCISES SUB-TAB -->
+<div id="tab-content-exercises" style="display:none">
 <div id="ex-root"></div>
+</div>
+</div>
+<!-- STORY TAB -->
+<!-- STORY TAB -->
+<div id="tab-content-story" class="content" style="display:none">
+<div class="back-row" onclick="switchTab('home')"><span class="back-btn">‹</span><span class="screen-title">Start Lesson</span></div>
+<style>
+.story-word { cursor:pointer; }
+.story-word.new { font-weight:700; color:#8b2035; }
+.story-word:hover { background:#fef3f2; border-radius:4px; }
+.story-line-num { display:inline-block; direction:ltr; unicode-bidi:isolate; background:#8b2035; color:#fff; font-family:'Scheherazade New', serif; font-size:14px; font-weight:700; width:26px; height:26px; line-height:26px; text-align:center; border-radius:50%; margin-left:10px; vertical-align:middle; }
+.story-en-line { display:none; font-family:-apple-system,sans-serif; font-size:15px; line-height:1.7; color:#374151; background:#f9fafb; border-radius:8px; padding:10px 14px; margin:6px 0 16px 0; direction:ltr; text-align:left; }
+</style>
+<div style="background:var(--grey-light);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08)">
+
+<div style="text-align:center;margin-bottom:20px">
+<div style="font-family:'Scheherazade New', serif;font-size:26px;font-weight:700;color:#1a1a2e">الدَّرْسُ الأَوَّلُ</div>
+<div style="font-size:13px;font-weight:700;letter-spacing:1px;color:#6b7280;text-transform:uppercase;margin-top:2px">Lesson 1</div>
+<div style="font-size:14px;color:#6b7280;margin-top:10px;line-height:1.5">Today you will learn how to identify plural words.<br>You will also learn how to identify feminine words.</div>
+</div>
+
+<div style="font-family:'Scheherazade New', serif;font-size:20px;font-weight:700;color:#1a1a2e;direction:rtl;text-align:right;border-top:1px solid #e5e7eb;padding-top:16px;margin-bottom:14px">STORY 1 — آزَرُ وَالْأَصْنَامُ</div>
+
+<button id="story-english-btn" onclick="toggleStoryEnglish()" style="padding:10px 20px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:16px">Show English</button>
+
+<div style="font-family:'Scheherazade New', serif;font-size:28px;line-height:2;direction:rtl;text-align:right">
+<p><span class="story-line-num">١</span> <span class="story-word new" data-en="before" onclick="showWordMeaning(this)">قَبْلَ</span> <span class="story-word new" data-en="days" onclick="showWordMeaning(this)">أَيَّامٍ</span> <span class="story-word new" data-en="many" onclick="showWordMeaning(this)">كَثِيرَةٍ</span> <span class="story-word new" data-en="very" onclick="showWordMeaning(this)">جِدًّا</span>، <span class="story-word new" data-en="was" onclick="showWordMeaning(this)">كَانَ</span> <span class="story-word new" data-en="there" onclick="showWordMeaning(this)">هُنَاكَ</span> <span class="story-word new" data-en="a man" onclick="showWordMeaning(this)">رَجُلٌ</span></p>
+<p class="story-en-line">Many days ago, there was a man.</p>
+<p><span class="story-line-num">٢</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word new" data-en="this (m)" onclick="showWordMeaning(this)">هَذَا</span> <span class="story-word" data-en="the man" onclick="showWordMeaning(this)">الرَّجُلُ</span> <span class="story-word new" data-en="he lives" onclick="showWordMeaning(this)">يَسْكُنُ</span> <span class="story-word new" data-en="in" onclick="showWordMeaning(this)">فِي</span> <span class="story-word new" data-en="a village" onclick="showWordMeaning(this)">قَرْيَةٍ</span></p>
+<p class="story-en-line">And this man lived in a village.</p>
+<p><span class="story-line-num">٣</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word new" data-en="name of" onclick="showWordMeaning(this)">اسْمُ</span> <span class="story-word" data-en="this (m)" onclick="showWordMeaning(this)">هَذَا</span> <span class="story-word" data-en="the man" onclick="showWordMeaning(this)">الرَّجُلِ</span> <span class="story-word new" data-en="Azar (a name)" onclick="showWordMeaning(this)">آزَرَ</span></p>
+<p class="story-en-line">And this man's name was Azar.</p>
+<p><span class="story-line-num">٤</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word" data-en="Azar (a name)" onclick="showWordMeaning(this)">آزَرُ</span> <span class="story-word new" data-en="a polytheist" onclick="showWordMeaning(this)">مُشْرِكًا</span></p>
+<p class="story-en-line">And Azar was a polytheist.</p>
+<p><span class="story-line-num">٥</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word new" data-en="with" onclick="showWordMeaning(this)">مَعَ</span> <span class="story-word" data-en="Azar (a name)" onclick="showWordMeaning(this)">آزَرَ</span> <span class="story-word new" data-en="people" onclick="showWordMeaning(this)">نَاسٌ</span> <span class="story-word" data-en="many" onclick="showWordMeaning(this)">كَثِيرُونَ</span></p>
+<p class="story-en-line">And with Azar were many people.</p>
+<p><span class="story-line-num">٦</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word new" data-en="these" onclick="showWordMeaning(this)">هَؤُلَاءِ</span> <span class="story-word" data-en="the people" onclick="showWordMeaning(this)">النَّاسُ</span> <span class="story-word" data-en="polytheists" onclick="showWordMeaning(this)">مُشْرِكِينَ</span> <span class="story-word new" data-en="also" onclick="showWordMeaning(this)">أَيْضًا</span></p>
+<p class="story-en-line">And these people were polytheists too.</p>
+<p><span class="story-line-num">٧</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word" data-en="Azar (a name)" onclick="showWordMeaning(this)">آزَرُ</span> <span class="story-word" data-en="he lives" onclick="showWordMeaning(this)">يَسْكُنُ</span> <span class="story-word" data-en="with" onclick="showWordMeaning(this)">مَعَ</span> <span class="story-word" data-en="the polytheists" onclick="showWordMeaning(this)">الْمُشْرِكِينَ</span> <span class="story-word" data-en="in" onclick="showWordMeaning(this)">فِي</span> <span class="story-word new" data-en="this (f)" onclick="showWordMeaning(this)">هَذِهِ</span> <span class="story-word" data-en="the village" onclick="showWordMeaning(this)">الْقَرْيَةِ</span></p>
+<p class="story-en-line">And Azar lived with the polytheists in this village.</p>
+<p><span class="story-line-num">٨</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word" data-en="in" onclick="showWordMeaning(this)">فِي</span> <span class="story-word" data-en="this (f)" onclick="showWordMeaning(this)">هَذِهِ</span> <span class="story-word" data-en="the village" onclick="showWordMeaning(this)">الْقَرْيَةِ</span> <span class="story-word new" data-en="idols" onclick="showWordMeaning(this)">أَصْنَامٌ</span> <span class="story-word" data-en="many" onclick="showWordMeaning(this)">كَثِيرَةٌ</span> <span class="story-word" data-en="very" onclick="showWordMeaning(this)">جِدًّا</span></p>
+<p class="story-en-line">And in this village there were very many idols.</p>
+<p><span class="story-line-num">٩</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word" data-en="the people" onclick="showWordMeaning(this)">النَّاسُ</span> <span class="story-word new" data-en="they worship" onclick="showWordMeaning(this)">يَعْبُدُونَ</span> <span class="story-word" data-en="this (f)" onclick="showWordMeaning(this)">هَذِهِ</span> <span class="story-word" data-en="the idols" onclick="showWordMeaning(this)">الْأَصْنَامَ</span></p>
+<p class="story-en-line">And the people worshipped these idols.</p>
+<p><span class="story-line-num">١٠</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word" data-en="the people" onclick="showWordMeaning(this)">النَّاسُ</span> <span class="story-word new" data-en="they prostrate" onclick="showWordMeaning(this)">يَسْجُدُونَ</span> <span class="story-word new" data-en="to them" onclick="showWordMeaning(this)">لَهَا</span></p>
+<p class="story-en-line">And the people prostrated to them.</p>
+<p><span class="story-line-num">١١</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word" data-en="Azar (a name)" onclick="showWordMeaning(this)">آزَرُ</span> <span class="story-word" data-en="he worships" onclick="showWordMeaning(this)">يَعْبُدُ</span> <span class="story-word" data-en="the idols" onclick="showWordMeaning(this)">الْأَصْنَامَ</span> <span class="story-word" data-en="also" onclick="showWordMeaning(this)">أَيْضًا</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word" data-en="Azar (a name)" onclick="showWordMeaning(this)">آزَرُ</span> <span class="story-word" data-en="he prostrates" onclick="showWordMeaning(this)">يَسْجُدُ</span> <span class="story-word" data-en="to them" onclick="showWordMeaning(this)">لَهَا</span> <span class="story-word" data-en="also" onclick="showWordMeaning(this)">أَيْضًا</span></p>
+<p class="story-en-line">And Azar worshipped the idols too, and Azar prostrated to them too.</p>
+<p><span class="story-line-num">١٢</span> <span class="story-word" data-en="an idol" onclick="showWordMeaning(this)">صَنَمٌ</span> <span class="story-word new" data-en="here" onclick="showWordMeaning(this)">هُنَا</span>، <span class="story-word" data-en="and an idol" onclick="showWordMeaning(this)">وَصَنَمٌ</span> <span class="story-word" data-en="there" onclick="showWordMeaning(this)">هُنَاكَ</span>. <span class="story-word" data-en="idols" onclick="showWordMeaning(this)">أَصْنَامٌ</span> <span class="story-word" data-en="many" onclick="showWordMeaning(this)">كَثِيرَةٌ</span> <span class="story-word" data-en="very" onclick="showWordMeaning(this)">جِدًّا</span></p>
+<p class="story-en-line">An idol here, and an idol there. Very many idols.</p>
+<p><span class="story-line-num">١٣</span> <span class="story-word new" data-en="why" onclick="showWordMeaning(this)">لِمَاذَا</span> <span class="story-word" data-en="they worship" onclick="showWordMeaning(this)">يَعْبُدُونَ</span> <span class="story-word" data-en="the idols" onclick="showWordMeaning(this)">الْأَصْنَامَ</span>؟ <span class="story-word new" data-en="the worship" onclick="showWordMeaning(this)">الْعِبَادَةُ</span> <span class="story-word new" data-en="to Allah" onclick="showWordMeaning(this)">لِلَّهِ</span> <span class="story-word new" data-en="only" onclick="showWordMeaning(this)">فَقَطْ</span></p>
+<p class="story-en-line">Why do they worship the idols? Worship is for Allah alone.</p>
+</div>
+
+
+
+</div>
 </div>
 <div class="modal-overlay" id="modal">
 <button class="modal-close" id="modal-close-btn">✕</button>
@@ -601,8 +666,16 @@ let fcTimerStarted = false; // has session started at least once
 
 // Revision activity, per student: allFcActivity[code][dateKey] = minutes
 let allFcActivity = {};
+// Card/question completion count, per student: allCardActivity[code][dateKey] = number of flashcards + exercise questions done that day
+let allCardActivity = {};
 // Current lesson level, per student: studentLesson[code] = 1-16
 let studentLesson = {};
+
+function incrementCardActivity(code) {
+  const today = todayKey();
+  if (!allCardActivity[code]) allCardActivity[code] = {};
+  allCardActivity[code][today] = (allCardActivity[code][today] || 0) + 1;
+}
 // Per-exercise question mastery: exProgress[mode][questionIndex] = 1(Hard)/2(Medium)/3(Easy)
 let exProgress = {};
 
@@ -755,6 +828,7 @@ if (snap.exists()) {
 const data = snap.data();
 fcProgress = data.progress || data || {};
 allFcActivity[code] = data.activity || {};
+allCardActivity[code] = data.cardActivity || {};
 fcDeletedCards = data.deleted || {};
 studentLesson[code] = data.lesson || 1;
 exProgress = data.exProgress || {};
@@ -767,7 +841,7 @@ LESSONS[num].cards = [...DEFAULT_LESSONS[num]?.cards || [], ...cards];
 });
 }
 } else {
-fcProgress = {}; allFcActivity[code] = {}; fcDeletedCards = {}; studentLesson[code] = 1; exProgress = {};
+fcProgress = {}; allFcActivity[code] = {}; allCardActivity[code] = {}; fcDeletedCards = {}; studentLesson[code] = 1; exProgress = {};
 }
 } catch(e) { console.error('FC load error',e); }
 }
@@ -777,8 +851,9 @@ async function loadStudentMeta(code) {
     const snap = await getDoc(doc(db,'flashcards',code));
     const data = snap.exists() ? snap.data() : {};
     allFcActivity[code] = data.activity || {};
+    allCardActivity[code] = data.cardActivity || {};
     studentLesson[code] = data.lesson || 1;
-  } catch(e) { console.error('Meta load error',e); allFcActivity[code] = {}; studentLesson[code] = 1; }
+  } catch(e) { console.error('Meta load error',e); allFcActivity[code] = {}; allCardActivity[code] = {}; studentLesson[code] = 1; }
   if (!studentLesson[code]) studentLesson[code] = 1;
 }
 async function saveFlashcardData(code) {
@@ -792,6 +867,7 @@ if (extras.length) customCards[num] = extras;
 await setDoc(doc(db,'flashcards',code), {
 progress: fcProgress,
 activity: allFcActivity[code] || {},
+cardActivity: allCardActivity[code] || {},
 deleted: fcDeletedCards,
 lesson: studentLesson[code] || 1,
 exProgress,
@@ -812,6 +888,7 @@ window.recordExerciseRating = async function(mode, index, rating) {
 if (!exProgress[mode]) exProgress[mode] = {};
 exProgress[mode][index] = rating;
 const code = currentUser || viewingStudent;
+incrementCardActivity(code);
 await saveFlashcardData(code);
 };
 
@@ -865,9 +942,7 @@ buildSidebar(); updateHeaderForInstructor();
 app.style.display='block'; app.style.maxWidth='480px'; app.style.margin='0 auto';
 document.getElementById('header-title').textContent='My Homework';
 document.getElementById('header-sub').textContent=STUDENTS[currentUser]?.display||'';
-document.getElementById('tabs-bar').style.display='flex';
 switchTab('home');
-renderDopamineButton();
 }
 render();
 }
@@ -875,16 +950,24 @@ render();
 // ── TABS ──
 window.switchTab = function(tab) {
 currentTab = tab;
+document.getElementById('app-header').style.display = tab==='home' ? 'none' : 'flex';
 document.getElementById('tab-content-home').style.display = tab==='home' ? 'block' : 'none';
 document.getElementById('tab-content-homework').style.display = tab==='homework' ? 'block' : 'none';
-document.getElementById('tab-content-flashcards').style.display = tab==='flashcards' ? 'block' : 'none';
-document.getElementById('tab-content-exercises').style.display = tab==='exercises' ? 'block' : 'none';
+document.getElementById('tab-content-revise').style.display = tab==='revise' ? 'block' : 'none';
+document.getElementById('tab-content-story').style.display = tab==='story' ? 'block' : 'none';
 document.getElementById('tab-home').classList.toggle('active', tab==='home');
 document.getElementById('tab-homework').classList.toggle('active', tab==='homework');
-document.getElementById('tab-flashcards').classList.toggle('active', tab==='flashcards');
-document.getElementById('tab-exercises').classList.toggle('active', tab==='exercises');
-if (tab==='flashcards') renderFlashcards();
-if (tab==='exercises' && typeof exShowPicker === 'function') exShowPicker();
+document.getElementById('tab-story').classList.toggle('active', tab==='story');
+if (tab==='revise') switchReviseSubTab('flashcards');
+}
+
+window.switchReviseSubTab = function(sub) {
+document.getElementById('tab-content-flashcards').style.display = sub==='flashcards' ? 'block' : 'none';
+document.getElementById('tab-content-exercises').style.display = sub==='exercises' ? 'block' : 'none';
+document.getElementById('revise-tab-flashcards').classList.toggle('active', sub==='flashcards');
+document.getElementById('revise-tab-exercises').classList.toggle('active', sub==='exercises');
+if (sub==='flashcards') renderFlashcards();
+if (sub==='exercises' && typeof exShowPicker === 'function') exShowPicker();
 }
 
 
@@ -1002,7 +1085,7 @@ else if(sub.images?.length>0||sub.text){const sg=document.createElement('div');s
 if(sub.reviewed){const sb=document.createElement('div');sb.className='dot dot-blue';squares.appendChild(sb);}
 }
 // Flashcard activity square
-if((allFcActivity[code]||{})[key] >= 20){
+if((allCardActivity[code]||{})[key] >= 1){
 const sf=document.createElement('div');sf.className='dot dot-fc';squares.appendChild(sf);
 }
 cell.appendChild(squares); cell.onclick=()=>{selectedDate=key;renderDayPanel();renderCalendar();}; grid.appendChild(cell);
@@ -1275,24 +1358,17 @@ function renderFlashcards() {
   const maxLesson = (studentLesson[code] !== undefined) ? studentLesson[code] : 1;
   Object.entries(LESSONS).forEach(([num, lesson]) => {
     const lessonNum = parseInt(num);
+    if (lessonNum === 0) return; // Skip the unused "Advanced students" placeholder lesson
     if (lessonNum > maxLesson) return; // Skip lessons beyond student's level
+    const pct = getLessonMasteryPercent(lessonNum);
     const btn = document.createElement('button');
     btn.className='fc-lesson-btn'+(num==fcCurrentLesson?' active':'');
-    btn.textContent=lesson.name;
+    btn.innerHTML = miniRing(pct, '🃏', true) + `<div class="fc-lesson-name">${lesson.name}</div>`;
     btn.onclick=()=>{ fcCurrentLesson=num; buildFcQueue(); renderFlashcards(); };
     picker.appendChild(btn);
   });
 
-// Stats
-const lesson = LESSONS[fcCurrentLesson];
-const totalActive = lesson.cards.filter((_,i)=>!isCardDeleted(fcCurrentLesson,i)).length;
-const due = getDueCards(fcCurrentLesson).length;
-const learned = lesson.cards.filter((_,i)=>!isCardDeleted(fcCurrentLesson,i)&&getCardProgress(fcCurrentLesson,i).reps>0).length;
-const statsEl = document.getElementById('fc-stats');
-statsEl.innerHTML=`
-   <div class="fc-stat"><div class="fc-stat-num">${totalActive}</div><div class="fc-stat-label">Active cards</div></div>
-   <div class="fc-stat"><div class="fc-stat-num" style="color:var(--blue)">${due}</div><div class="fc-stat-label">Due today</div></div>
-   <div class="fc-stat"><div class="fc-stat-num" style="color:var(--green)">${learned}</div><div class="fc-stat-label">Learned</div></div>`;
+
 
 // Timer panel wiring (re-bind after render)
 updateTimerDisplay();
@@ -1351,7 +1427,6 @@ const cardEl = document.createElement('div');
 cardEl.className='fc-card-wrap';
 cardEl.innerHTML=`
    <div class="fc-card" id="fc-card">
-     <button class="fc-delete-btn" id="fc-delete-btn" title="Remove this card">✕</button>
      <div class="fc-arabic">${card.ar}</div>
      <div class="fc-english">${card.en}</div>
      <div class="fc-tap-hint">Tap to reveal</div>
@@ -1378,14 +1453,7 @@ document.getElementById('fc-card').classList.add('revealed');
 document.getElementById('fc-rating-wrap').classList.add('visible');
 });
 
-document.getElementById('fc-delete-btn').addEventListener('click', async (e) => {
-e.stopPropagation();
-deleteCard(fcCurrentLesson, card.idx);
-const code = currentUser || viewingStudent;
-await saveFlashcardData(code);
-showToast('Card removed ✓');
-renderFlashcards();
-});
+
 
 ratingWrap.querySelectorAll('.fc-rating-btn').forEach(btn=>{
 btn.addEventListener('click',async()=>{
@@ -1395,26 +1463,13 @@ if (rating === 1) fcQueue.push(card);
 fcCurrentIdx++;
 fcSessionCardsRead++;
 const code = currentUser || viewingStudent;
+incrementCardActivity(code);
 await saveFlashcardData(code);
 renderFlashcards();
 });
 });
 
-// Add card button
-document.getElementById('fc-add-btn').onclick = async () => {
-const ar = document.getElementById('fc-add-ar').value.trim();
-const en = document.getElementById('fc-add-en').value.trim();
-if (!ar || !en) { showToast('Enter both Arabic and English'); return; }
-const newIdx = LESSONS[fcCurrentLesson].cards.length;
-LESSONS[fcCurrentLesson].cards.push({ ar, en });
-document.getElementById('fc-add-ar').value = '';
-document.getElementById('fc-add-en').value = '';
-const code = currentUser || viewingStudent;
-await saveFlashcardData(code);
-showToast('Card added ✓');
-buildFcQueue();
-renderFlashcards();
-};
+
 }
 
 // ── MODAL ──
@@ -1424,89 +1479,17 @@ function closeModal(){document.getElementById('modal').classList.remove('open');
 // ── TOAST ──
 let toastTimer;
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2500);}
-
-// ── DOPAMINE BUTTON (Fahd only) ──
-let dopamineBoxPos = null;
-
-function getDopamineState() {
-try {
-const raw = localStorage.getItem('fahdDopamineState');
-const data = raw ? JSON.parse(raw) : null;
-if (!data || data.date !== todayKey()) {
-const fresh = { date: todayKey(), stage: 0 };
-localStorage.setItem('fahdDopamineState', JSON.stringify(fresh));
-return fresh;
+function showWordMeaning(el) { showToast(el.textContent + ' = ' + el.dataset.en); }
+function toggleStoryEnglish() {
+  const lines = document.querySelectorAll('.story-en-line');
+  const btn = document.getElementById('story-english-btn');
+  const isHidden = lines[0].style.display === 'none';
+  lines.forEach(line => { line.style.display = isHidden ? 'block' : 'none'; });
+  btn.textContent = isHidden ? 'Hide English' : 'Show English';
 }
-return data;
-} catch(e) { return { date: todayKey(), stage: 0 }; }
-}
-
-function randomDopaminePos() {
-return { top: (10 + Math.random()*60) + '%', left: (5 + Math.random()*70) + '%' };
-}
-
-function updateHeaderCoffee(show) {
-const el = document.getElementById('header-title');
-if (!el) return;
-el.textContent = show ? 'My Homework ☕' : 'My Homework';
-}
-
-window.dopamineClick = function() {
-const state = getDopamineState();
-localStorage.setItem('fahdDopamineState', JSON.stringify({ date: todayKey(), stage: state.stage + 1 }));
-renderDopamineButton();
-};
-
-function renderDopamineButton() {
-const zone = document.getElementById('dopamine-zone');
-if (!zone) return;
-if (currentUser !== 'FHD001') { zone.innerHTML = ''; return; }
-
-const stage = getDopamineState().stage;
-
-if (stage === 0) {
-dopamineBoxPos = null;
-zone.innerHTML = `<div style="display:flex;justify-content:center;margin-top:20px">
-     <div class="dopamine-box" onclick="window.dopamineClick()">
-       <div style="font-size:32px;margin-bottom:6px">🎯</div>
-       <div style="font-weight:800;font-size:14px;color:#1a1a2e">Dopamine Button — for my #1 student</div>
-     </div></div>`;
-updateHeaderCoffee(false);
-return;
-}
-
-if (stage >= 5) {
-zone.innerHTML = `<div style="margin-top:20px;text-align:center;color:#6b7280;font-size:14px;font-weight:600">you have lost your dopamine privileges, but here is a coffee ☕</div>`;
-updateHeaderCoffee(true);
-return;
-}
-
-if (!dopamineBoxPos) dopamineBoxPos = randomDopaminePos();
-
-let inner = '', label = '', scatter = '';
-if (stage === 1) {
-inner = `<div style="font-size:32px">🎯</div>`;
-label = 'did you actually do the homework, yaa Batal?';
-} else if (stage === 2) {
-inner = `<div style="font-size:48px">❌</div>`;
-label = 'oh no, you broke the website??';
-} else if (stage === 3) {
-inner = `<div style="font-size:64px">❌</div>`;
-label = 'STOP BREAKING THINGS';
-const p1 = randomDopaminePos(), p2 = randomDopaminePos();
-scatter = `<div style="position:fixed;top:${p1.top};left:${p1.left};font-size:64px;z-index:60;pointer-events:none">❌</div>
-     <div style="position:fixed;top:${p2.top};left:${p2.left};font-size:64px;z-index:60;pointer-events:none">❌</div>`;
-} else if (stage === 4) {
-inner = `<div style="font-size:48px">✅</div>`;
-label = "phew! don't press it again ya Fahd!";
-}
-
-zone.innerHTML = `<div class="dopamine-box moved" style="top:${dopamineBoxPos.top};left:${dopamineBoxPos.left}" onclick="window.dopamineClick()">
-     ${inner}
-     <div style="font-size:13px;font-weight:700;color:#1a1a2e;margin-top:8px;max-width:200px">${label}</div>
-   </div>${scatter}`;
-updateHeaderCoffee(false);
-}
+window.showWordMeaning = showWordMeaning;
+window.toggleStoryEnglish = toggleStoryEnglish;
+  
 
 // ── RENDER ──
 function render(){
@@ -1535,9 +1518,9 @@ renderCalendar();
 renderRevisionBanner();
 });
 // ── EVENTS ──
-document.getElementById('home-btn-homework').addEventListener('click', () => switchTab('homework'));
-document.getElementById('home-btn-flashcards').addEventListener('click', () => switchTab('flashcards'));
-document.getElementById('home-btn-exercises').addEventListener('click', () => switchTab('exercises'));
+document.getElementById('home-btn-start').addEventListener('click', () => switchTab('story'));
+document.getElementById('home-btn-revise').addEventListener('click', () => switchTab('revise'));
+document.getElementById('home-btn-upload').addEventListener('click', () => switchTab('homework'));
 document.getElementById('login-btn').addEventListener('click',handleLogin);
 document.getElementById('code-input').addEventListener('keydown',e=>{if(e.key==='Enter')handleLogin();});
 
@@ -1549,11 +1532,11 @@ document.getElementById('modal').addEventListener('click',closeModal);
 document.getElementById('modal-close-btn').addEventListener('click',e=>{e.stopPropagation();closeModal();});
 </script>
 <style>
-.ex-card { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 16px; cursor: pointer; border: 2px solid transparent; transition: border 0.2s; }
+.ex-card { background: var(--grey-light); border-radius: 16px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 16px; cursor: pointer; border: 2px solid transparent; transition: border 0.2s; }
 .ex-card:hover { border-color: #2563eb; }
 .ex-card-icon { font-size: 28px; margin-bottom: 8px; }
-.ex-card-title { font-size: 16px; font-weight: 700; color: #1a1a2e; margin-bottom: 4px; }
-.ex-card-desc { font-size: 13px; color: #6b7280; }
+.ex-card-title { font-size: 16px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+.ex-card-desc { font-size: 13px; color: var(--grey); }
 .ex-card-note { margin-top: 10px; font-size: 12px; color: #2563eb; font-weight: 600; }
 .ex-word-tile { padding: 10px 16px; background: #eff6ff; border: 2px solid #bfdbfe; border-radius: 10px; font-size: 1.1em; cursor: pointer; direction: rtl; font-family: inherit; transition: background 0.15s; }
 .ex-word-tile:hover { background: #dbeafe; }
@@ -1562,6 +1545,8 @@ document.getElementById('modal-close-btn').addEventListener('click',e=>{e.stopPr
 
 
 <script>
+
+
 // ── EXERCISE ENGINE ──
 let exMode = null, exQuestions = [], exCurrent = 0, exAnswered = 0;
 let exTimerSeconds = 0, exTimerInterval = null;
@@ -1764,7 +1749,7 @@ const title = mode === 'fillgap' ? '📝 Fill the Gap'
 const isGrammarDrill = mode === 'demonstrative';
 exRender(`
    <div class="section-label">${title}</div>
-   <div style="background:white;border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
+   <div style="background:var(--grey-light);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
      ${isGrammarDrill ? `<div style="background:#fffbeb;border:1.5px solid #fcd34d;border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:13px;color:#92400e;line-height:1.5">⚠️ These sentences are computer-generated, and the meanings are deliberately nonsensical so you can't guess the answer from context. Focus only on the grammar rule being tested — not what the sentence means.</div>` : ''}
      <div style="font-size:14px;font-weight:600;color:#6b7280;margin-bottom:12px">Choose session length</div>
      <select id="ex-timer-select" style="width:100%;font-size:16px;padding:12px;border:2px solid #e5e7eb;border-radius:10px;outline:none">
@@ -1813,11 +1798,11 @@ exShowQuestion();
 
 function exRenderActive() {
 exRender(`
-   <div style="display:flex;justify-content:space-between;align-items:center;background:white;padding:12px 20px;border-radius:12px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,0.06)">
+   <div style="display:flex;justify-content:space-between;align-items:center;background:var(--grey-light);padding:12px 20px;border-radius:12px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,0.06)">
      <div id="ex-timer-display" style="font-size:1.6em;font-weight:800;color:#2563eb;font-variant-numeric:tabular-nums">--:--</div>
      <div id="ex-progress" style="color:#6b7280;font-size:14px;font-weight:600">Question 1</div>
    </div>
-   <div style="background:white;border-radius:16px;padding:28px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
+   <div style="background:var(--grey-light);border-radius:16px;padding:28px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
      <div id="ex-instruction" style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6b7280;margin-bottom:16px"></div>
      <div id="ex-sentence" style="font-size:1.6em;line-height:2;text-align:center;direction:rtl;margin-bottom:20px"></div>
      <div id="ex-fill-input" style="display:none;flex-direction:column;align-items:center;gap:10px">
@@ -2261,6 +2246,7 @@ window.dispatchEvent(new CustomEvent('ex-session-complete', { detail: { count: m
 }
 
 window.exShowPicker = exShowPicker;
+
 </script>
 </body>
 </html>
