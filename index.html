@@ -1490,7 +1490,9 @@ function toggleStoryEnglish() {
   box.style.display = isHidden ? 'block' : 'none';
   btn.textContent = isHidden ? 'Hide English' : 'Show English';
 }
-
+window.showWordMeaning = showWordMeaning;
+window.toggleStoryEnglish = toggleStoryEnglish;
+  
 // ── DOPAMINE BUTTON (Fahd only) ──
 let dopamineBoxPos = null;
 
