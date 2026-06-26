@@ -18,18 +18,6 @@
 }
 { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f7f3ec; color: var(--ink); min-height: 100vh; }
 
-/* PUT THIS IN YOUR <style> BLOCK */
-.principle-q .story-word { 
-    cursor: pointer; 
-    color: #8b2035; 
-    font-weight: 700; 
-    text-decoration: underline; 
-    text-decoration-style: dotted;
-}
-.principle-q .story-word:hover { 
-    background: #fef3f2; 
-    border-radius: 4px; 
-}
     
 /* LOGIN */
 #login-screen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; background: linear-gradient(160deg, #f7f3ec 0%, #efe4d4 100%); }
@@ -1437,104 +1425,29 @@ function toggleStoryEnglish() {
 window.showWordMeaning = showWordMeaning;
 window.toggleStoryEnglish = toggleStoryEnglish;
 
-I apologize for the oversight. You are right to hold me to the instructions.
-
-Here is the exact code to replace in your <script type="module"> block (or the
-script block containing the PRINCIPLES array definition).
-
-1. Locate this in your code:
-
 const PRINCIPLES = [
   {
-    q: `Go back and look at the idol sentence — <span class="story-word new" data-en="before" onclick="showWordMeaning(this)">قَبْلَ</span> ...`, // (Your current lines)
-  },
-  // ... rest of your principles ...
-];
-
-2. Replace it with this code:
-
-const PRINCIPLES = [
-  {
-    q: `Go back and look at the idol sentence — <span class="story-word" data-en="idol">صَنَمٌ</span> shows up, then <span class="story-word" data-en="idols">أَصْنَامٌ</span> shows up right after it. What's different about how they're written?`,
+    q: `Go back and look at the idol sentence — <span class="pq-ar">صَنَمٌ</span> shows up, then <span class="pq-ar">أَصْنَامٌ</span> shows up right after it. What's different about how they're written?`,
     a: `Plurals usually have more letters than the singular.<br><span class="pa-ar">صَنَمٌ ← أَصْنَامٌ &nbsp;&nbsp; رَجُلٌ ← رِجَالٌ</span>`
   },
   {
-    q: `In the story, "the polytheists" is <span class="story-word" data-en="polytheists">مُشْرِكِينَ</span> — it looks like the singular word with something added on the end. But "the idols" is <span class="story-word" data-en="idols">أَصْنَامٌ</span> — a totally different shape. Why do you think that is?`,
+    q: `In the story, "the polytheists" is <span class="pq-ar">مُشْرِكِينَ</span> — it looks like the singular word with something added on the end. But "the idols" is <span class="pq-ar">أَصْنَامٌ</span> — a totally different shape. Why do you think that is?`,
     a: `Arabic plurals come in two types: one for people, one for everything else (objects, ideas, animals). People-plurals are regular — just add وْنَ / يْنَ / اتٌ. Everything-else plurals usually change shape entirely and must be memorised.<br><span class="pa-ar">مُشْرِكٌ ← مُشْرِكُونَ (people, regular) &nbsp;&nbsp; صَنَمٌ ← أَصْنَامٌ (everything-else, irregular)</span>`
   },
   {
-    q: `<span class="story-word" data-en="idols">أَصْنَامٌ</span> (idols) doesn't end in ة. So why does the adjective describing it — <span class="story-word" data-en="many">كَثِيرَةٌ</span> — take the feminine ending?`,
+    q: `<span class="pq-ar">أَصْنَامٌ</span> (idols) doesn't end in ة. So why does the adjective describing it — <span class="pq-ar">كَثِيرَةٌ</span> — take the feminine ending?`,
     a: `A word is feminine if it ends in taa marbuta (ة). Every "everything-else" plural is also treated as feminine — even ones with no ة at all.<br><span class="pa-ar">قَرْيَةٌ، عِبَادَةٌ (taa marbuta) &nbsp;&nbsp; أَصْنَامٌ، أَيَّامٌ، أَسْمَاءٌ (feminine anyway, no ة)</span>`
   },
   {
-    q: `Did you notice that "many" is written two different ways in the story? <span class="story-word" data-en="many">كَثِيرُونَ</span> for the people, but <span class="story-word" data-en="many">كَثِيرَةٌ</span> for the idols. Scroll up and find both lines — what's changing?`,
+    q: `Did you notice that "many" is written two different ways in the story? <span class="pq-ar">نَاسٌ كَثِيرُونَ</span> for the people, but <span class="pq-ar">أَصْنَامٌ كَثِيرَةٌ</span> for the idols. Scroll up and find both lines — what's changing?`,
     a: `Adjectives, verbs and pronouns must match whichever plural type is used — and "everything-else" plurals always take the feminine ending.<br><span class="pa-ar">مُشْرِكُونَ كَثِيرُونَ / مُشْرِكَاتٌ كَثِيرَاتٌ &nbsp;&nbsp; أَصْنَامٌ كَبِيرَةٌ</span>`,
     quote: `إِنَّ الْمُسْلِمِينَ وَالْمُسْلِمَاتِ وَالْمُؤْمِنِينَ وَالْمُؤْمِنَاتِ وَالْقَانِتِينَ وَالْقَانِتَاتِ وَالصَّادِقِينَ وَالصَّادِقَاتِ وَالصَّابِرِينَ وَالصَّابِرَاتِ وَالْخَاشِعِينَ وَالْخَاشِعَاتِ وَالْمُتَصَدِّقِينَ وَالْمُتَصَدِّقَاتِ وَالصَّائِمِينَ وَالصَّائِمَاتِ وَالْحَافِظِينَ فُرُوجَهُمْ وَالْحَافِظَاتِ وَالذَّاكِرِينَ اللَّهَ كَثِيرًا وَالذَّاكِرَاتِ أَعَدَّ اللَّهُ لَهُم مَّغْفِرَةً وَأَجْرًا عَظِيمًا`
   },
   {
-    q: `You met <span class="story-word" data-en="the man">الرَّجُلُ</span> (the man) and <span class="story-word" data-en="a village">قَرْيَةٍ</span> (a village) in the story. Based on what you just learned, what do you think "men" and "villages" look like?`,
+    q: `You met <span class="pq-ar">الرَّجُلُ</span> (the man) and <span class="pq-ar">قَرْيَةٍ</span> (a village) in the story. Based on what you just learned, what do you think "men" and "villages" look like?`,
     a: `Most principles have exceptions: رَجُلٌ → رِجَالٌ is irregular even though it's a people-word. قَرْيَةٌ → قُرًى is irregular too — and actually has fewer letters, breaking the usual "more letters" pattern.`
   }
 ];
-
-3. Add the Event Listener
-
-Scroll down to the bottom of your script section, locate the
-document.getElementById('principle-card').addEventListener('click', () => { ...
-}); block, and put this code below it:
-
-document.getElementById('principle-card').addEventListener('click', (e) => {
-    const target = e.target.closest('.story-word');
-    if (target) {
-        showWordMeaning(target);
-    } else {
-        principleRevealed = !principleRevealed;
-        renderPrinciple();
-    }
-});
-
-(Note: Once you add this, you can delete the old
-document.getElementById('principle-card').addEventListener('click', () => { ...
-}); block that only handled the toggle, as this new code handles both the
-click-to-toggle and the click-to-define.)
-
-    
-let principleIdx = 0;
-let principleRevealed = false;
-
-function renderPrinciple() {
-  const qEl = document.getElementById('principle-q');
-  const aEl = document.getElementById('principle-a');
-  const hintEl = document.getElementById('principle-hint');
-  const progEl = document.getElementById('principles-progress');
-  const dotsEl = document.getElementById('principles-dots');
-  const backBtn = document.getElementById('principle-back-btn');
-  const nextBtn = document.getElementById('principle-next-btn');
-  const p = PRINCIPLES[principleIdx];
-
-  qEl.innerHTML = p.q;
-  let answerHtml = p.a;
-  if (p.quote) {
-    answerHtml += `<div class="principle-quote"><div class="principle-quote-ar">${p.quote}</div></div>`;
-  }
-  aEl.innerHTML = answerHtml;
-  qEl.style.display = principleRevealed ? 'none' : 'block';
-  aEl.style.display = principleRevealed ? 'block' : 'none';
-  hintEl.textContent = principleRevealed ? "Tap to see the question again" : "Tap when you've found it";
-
-  progEl.textContent = (principleIdx + 1) + ' / ' + PRINCIPLES.length;
-
-  dotsEl.innerHTML = '';
-  PRINCIPLES.forEach((_, i) => {
-    const dot = document.createElement('div');
-    dot.className = 'principle-dot' + (i === principleIdx ? ' active' : '');
-    dotsEl.appendChild(dot);
-  });
-
-  backBtn.style.visibility = principleIdx === 0 ? 'hidden' : 'visible';
-  nextBtn.textContent = principleIdx === PRINCIPLES.length - 1 ? 'Done' : 'Next ›';
-}
-
 document.getElementById('principle-card').addEventListener('click', () => {
   principleRevealed = !principleRevealed;
   renderPrinciple();
@@ -1547,20 +1460,7 @@ document.getElementById('principle-next-btn').addEventListener('click', () => {
 });
 renderPrinciple();
 
-// PUT THIS BELOW YOUR renderPrinciple() FUNCTION
-document.getElementById('principle-card').addEventListener('click', (e) => {
-    // Check if the clicked element (or its parent) has the 'story-word' class
-    const target = e.target.closest('.story-word');
-    if (target) {
-        // If it's a word, trigger your function
-        showWordMeaning(target);
-    } else {
-        // Otherwise, it was a click on the card background, so toggle the card
-        principleRevealed = !principleRevealed;
-        renderPrinciple();
-    }
-});
-
+// ── RENDER ──
 // ── RENDER ──
 function render(){
 renderCalendar();renderDayPanel();renderMissedBanner();renderRevisionBanner();
