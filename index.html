@@ -456,7 +456,7 @@ console.log("THE FILE IS LOADING!");
 
 <!-- REVISE LESSON -->
 <div id="tab-content-revise" class="content" style="display:none">
-<div class="back-row" onclick="switchTab('home')"><span class="back-btn">‹</span><span class="screen-title">Revise Lesson</span></div>
+<div class="back-row" id="revise-back-row" onclick="switchTab('home')"><span class="back-btn">‹</span><span class="screen-title">Revise Lesson</span></div>
 <div class="revise-tab-row">
 <button class="revise-tab-btn" id="revise-tab-flashcards" onclick="switchReviseSubTab('flashcards')">Flashcards</button>
 <button class="revise-tab-btn" id="revise-tab-exercises" onclick="switchReviseSubTab('exercises')">Exercises</button>
@@ -479,7 +479,7 @@ console.log("THE FILE IS LOADING!");
 <!-- STORY TAB -->
 <!-- STORY TAB -->
 <div id="tab-content-story" class="content" style="display:none">
-<div class="back-row" onclick="switchTab('home')"><span class="back-btn">‹</span><span class="screen-title">Start Lesson</span></div>
+<div class="back-row" id="story-back-row" onclick="switchTab('home')"><span class="back-btn">‹</span><span class="screen-title">Start Lesson</span></div>
 <style>
 .story-word { cursor:pointer; }
 .story-word.new { font-weight:700; color:#8b2035; }
@@ -957,6 +957,8 @@ isGuestMode = true;
 currentUser = 'GUEST';
 isInstructor = false;
 document.getElementById('home-btn-upload').style.display = 'none';
+document.getElementById('story-back-row').style.display = 'none';
+document.getElementById('revise-back-row').style.display = 'none';
 startApp();
 };
 
@@ -977,13 +979,14 @@ buildSidebar(); updateHeaderForInstructor();
 app.style.display='block'; app.style.maxWidth='480px'; app.style.margin='0 auto';
 document.getElementById('header-title').textContent='My Homework';
 document.getElementById('header-sub').textContent=STUDENTS[currentUser]?.display||'';
-switchTab('home');
+switchTab(isGuestMode ? 'story' : 'home');
 }
 render();
 }
 
 // ── TABS ──
 window.switchTab = function(tab) {
+if (isGuestMode && tab === 'home') return;
 currentTab = tab;
 document.getElementById('app-header').style.display = tab==='home' ? 'none' : 'flex';
 document.getElementById('tab-content-home').style.display = tab==='home' ? 'block' : 'none';
