@@ -20,10 +20,10 @@
 
 /* LOGIN */
 #login-screen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; background: linear-gradient(160deg, #0c0c16 0%, #1f1a0d 100%); }
-.login-logo { width: 64px; height: 64px; background: white; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 28px; margin-bottom: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+.login-logo { width: 64px; height: 64px; background: var(--grey-light); border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 28px; margin-bottom: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
 .login-title { color: white; font-size: 28px; font-weight: 700; margin-bottom: 6px; }
 .login-subtitle { color: rgba(255,255,255,0.6); font-size: 14px; margin-bottom: 40px; }
-.login-card { background: white; border-radius: var(--card-radius); padding: 28px; width: 100%; max-width: 360px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+.login-card { background: var(--grey-light); border-radius: var(--card-radius); padding: 28px; width: 100%; max-width: 360px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
 .login-card label { display: block; font-size: 13px; font-weight: 600; color: var(--grey); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
 .login-card input { width: 100%; padding: 14px 16px; border: 2px solid var(--border); border-radius: 10px; font-size: 18px; letter-spacing: 4px; text-align: center; font-weight: 700; color: var(--ink); outline: none; transition: border-color 0.2s; text-transform: uppercase; }
 .login-card input:focus { border-color: var(--blue); }
@@ -66,7 +66,7 @@
 .mini-ring-fg { fill: none; stroke: var(--dot-green); stroke-width: 4; stroke-linecap: round; transition: stroke-dashoffset 0.4s ease; }
 .mini-ring-emoji { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 20px; }
 
-.dopamine-box { background:white; border-radius:16px; padding:20px 24px; text-align:center; box-shadow:0 4px 16px rgba(0,0,0,0.12); cursor:pointer; user-select:none; transition:box-shadow 0.15s; }
+.dopamine-box { background:var(--grey-light); border-radius:16px; padding:20px 24px; text-align:center; box-shadow:0 4px 16px rgba(0,0,0,0.12); cursor:pointer; user-select:none; transition:box-shadow 0.15s; }
 .dopamine-box:hover { box-shadow:0 6px 22px rgba(0,0,0,0.18); }
 .dopamine-box.moved { position:fixed; z-index:55; max-width:220px; }
 
@@ -74,7 +74,7 @@
 #main { flex: 1; overflow-y: auto; min-width: 0; }
 
 /* HEADER */
-.header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; background: white; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10; gap: 12px; }
+.header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; background: var(--grey-light); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10; gap: 12px; }
 .header-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .sidebar-toggle { width: 36px; height: 36px; border: none; background: var(--grey-light); border-radius: 10px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .header-icon { width: 36px; height: 36px; background: var(--blue); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
@@ -83,7 +83,7 @@
 .view-toggle { padding: 7px 14px; background: var(--grey-light); border: none; border-radius: 8px; font-size: 13px; font-weight: 600; color: var(--grey); cursor: pointer; flex-shrink: 0; }
 
 /* TABS */
-.tabs { display: flex; background: white; border-bottom: 1px solid var(--border); padding: 0 20px; }
+.tabs { display: flex; background: var(--grey-light); border-bottom: 1px solid var(--border); padding: 0 20px; }
 .tab { padding: 14px 18px; font-size: 14px; font-weight: 600; color: var(--grey); border: none; background: none; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; }
 .tab.active { color: var(--blue); border-bottom-color: var(--blue); }
 .revision-banner { display: none; align-items: center; gap: 16px; background: #0c0c16; padding: 14px 20px; }
@@ -101,7 +101,7 @@
 .revision-rank-label { color: rgba(255,255,255,0.5); font-size: 11px; }
 
 
-.home-card { background: white; border-radius: 18px; padding: 26px 22px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); cursor: pointer; border: 2px solid transparent; transition: border 0.2s, transform 0.15s; display: flex; align-items: center; gap: 18px; }
+.home-card { background: var(--grey-light); border-radius: 18px; padding: 26px 22px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); cursor: pointer; border: 2px solid transparent; transition: border 0.2s, transform 0.15s; display: flex; align-items: center; gap: 18px; }
 .home-card:hover { border-color: var(--blue); }
 .home-card:active { transform: scale(0.98); }
 .home-card-icon { font-size: 36px; flex-shrink: 0; }
@@ -131,7 +131,7 @@
 .banner-sub { font-size: 13px; color: var(--grey); }
 
 /* CALENDAR */
-.calendar-card { background: white; border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+.calendar-card { background: var(--grey-light); border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
 .cal-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
 .cal-nav-btn { width: 32px; height: 32px; border: none; background: none; font-size: 18px; cursor: pointer; color: var(--grey); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
 .cal-nav-btn:hover { background: var(--grey-light); }
@@ -177,7 +177,7 @@
 .day-date { font-size: 22px; font-weight: 700; line-height: 1.2; }
 .review-btn { padding: 10px 18px; border-radius: 10px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap; }
 .review-btn.reviewed { background: rgba(255,255,255,0.25); color: white; }
-.review-btn.not-reviewed { background: white; color: var(--blue); }
+.review-btn.not-reviewed { background: var(--grey-light); color: var(--blue); }
 
 /* SUBMISSIONS */
 .submissions-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px; }
@@ -189,12 +189,12 @@
 .submission-badge.makeup-badge { background: var(--dot-yellow); color: #1a1a2e; }
 
 /* TEXT SUBMISSION */
-.text-submission { background: white; border-radius: 12px; padding: 16px; margin-bottom: 16px; border: 1.5px solid var(--border); }
+.text-submission { background: var(--grey-light); border-radius: 12px; padding: 16px; margin-bottom: 16px; border: 1.5px solid var(--border); }
 .text-submission-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--grey); margin-bottom: 8px; }
 .text-submission-content { font-size: 15px; color: var(--ink); line-height: 1.6; direction: auto; }
 
 /* UPLOAD */
-.upload-section { background: white; border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; border: 1.5px solid var(--border); }
+.upload-section { background: var(--grey-light); border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; border: 1.5px solid var(--border); }
 .upload-section-title { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 16px; }
 .upload-area { border: 2px dashed var(--border); border-radius: 12px; padding: 24px; text-align: center; cursor: pointer; transition: all 0.2s; margin-bottom: 12px; }
 .upload-area:hover { border-color: var(--blue); background: var(--blue-light); }
@@ -209,16 +209,16 @@
 
 /* ── FLASHCARDS ── */
 .fc-lesson-picker { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
-.fc-lesson-btn { padding: 12px 14px; border-radius: 16px; border: 2px solid var(--border); background: white; cursor: pointer; color: var(--grey); transition: all 0.2s; text-align: center; min-width: 90px; }
+.fc-lesson-btn { padding: 12px 14px; border-radius: 16px; border: 2px solid var(--border); background: var(--grey-light); cursor: pointer; color: var(--grey); transition: all 0.2s; text-align: center; min-width: 90px; }
 .fc-lesson-btn.active { background: var(--blue-light); border-color: var(--blue); color: var(--ink); }
 
 .fc-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-.fc-stat { background: white; border-radius: 12px; padding: 14px; text-align: center; }
+.fc-stat { background: var(--grey-light); border-radius: 12px; padding: 14px; text-align: center; }
 .fc-stat-num { font-size: 22px; font-weight: 800; color: var(--ink); }
 .fc-stat-label { font-size: 11px; color: var(--grey); margin-top: 2px; }
 
 /* TIMER PANEL */
-.fc-timer-panel { background: white; border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+.fc-timer-panel { background: var(--grey-light); border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
 .fc-timer-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .fc-timer-display { font-size: 36px; font-weight: 800; color: var(--ink); font-variant-numeric: tabular-nums; letter-spacing: 2px; min-width: 90px; }
 .fc-timer-display.running { color: var(--green); }
@@ -235,7 +235,7 @@
 .fc-session-result { margin-top: 14px; padding: 12px 14px; background: #f0fdf4; border-radius: 10px; font-size: 14px; font-weight: 600; color: var(--green); display: none; }
 
 .fc-card-wrap { perspective: 1000px; margin-bottom: 20px; }
-.fc-card { background: white; border-radius: var(--card-radius); padding: 48px 28px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.08); min-height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.15s; position: relative; }
+.fc-card { background: var(--grey-light); border-radius: var(--card-radius); padding: 48px 28px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.08); min-height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.15s; position: relative; }
 .fc-card:active { transform: scale(0.98); }
 .fc-arabic { font-size: 42px; font-weight: 700; color: var(--ink); line-height: 1.3; direction: rtl; margin-bottom: 8px; }
 .fc-tap-hint { font-size: 13px; color: var(--grey); margin-top: 16px; }
@@ -257,14 +257,14 @@
 .fc-r4 { background: #f0fdf4; color: #15803d; }
 .fc-r5 { background: #eff6ff; color: #1d4ed8; }
 
-.fc-done { background: white; border-radius: var(--card-radius); padding: 40px 28px; text-align: center; margin-bottom: 20px; }
+.fc-done { background: var(--grey-light); border-radius: var(--card-radius); padding: 40px 28px; text-align: center; margin-bottom: 20px; }
 .fc-done-icon { font-size: 48px; margin-bottom: 12px; }
 .fc-done-title { font-size: 20px; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
 .fc-done-sub { font-size: 14px; color: var(--grey); margin-bottom: 20px; }
 .fc-restart-btn { padding: 12px 24px; background: var(--blue); color: white; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; }
 
 /* ADD CARD */
-.fc-add-section { background: white; border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; border: 1.5px dashed var(--border); }
+.fc-add-section { background: var(--grey-light); border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; border: 1.5px dashed var(--border); }
 .fc-add-section h3 { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 14px; }
 .fc-add-row { display: flex; gap: 10px; align-items: flex-end; }
 .fc-add-field { flex: 1; }
@@ -278,12 +278,12 @@
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100; align-items: center; justify-content: center; padding: 20px; }
 .modal-overlay.open { display: flex; }
 .modal-img { max-width: 100%; max-height: 80vh; border-radius: 12px; object-fit: contain; }
-.modal-close { position: absolute; top: 16px; right: 16px; background: white; border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.modal-close { position: absolute; top: 16px; right: 16px; background: var(--grey-light); border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
 /* TOAST */
 .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: #0c0c16; color: white; padding: 12px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; z-index: 200; transition: transform 0.3s; white-space: nowrap; }
 .toast.show { transform: translateX(-50%) translateY(0); }
-.no-submission-msg { background: white; border-radius: var(--card-radius); padding: 20px; text-align: center; color: var(--grey); font-size: 14px; margin-bottom: 20px; }
+.no-submission-msg { background: var(--grey-light); border-radius: var(--card-radius); padding: 20px; text-align: center; color: var(--grey); font-size: 14px; margin-bottom: 20px; }
 .locked-msg { background: #fef2f2; border-radius: var(--card-radius); padding: 16px; text-align: center; color: #b91c1c; font-size: 14px; margin-bottom: 20px; border: 1.5px solid #fca5a5; }
 </style>
 </head>
@@ -383,7 +383,7 @@ console.log("THE FILE IS LOADING!");
 </div>
 <div style="margin-top:20px">
   <button id="ai-test-btn" style="padding:12px 24px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">Generate Test Story</button>
-  <div id="ai-test-result" style="margin-top:12px;padding:14px;background:white;border-radius:10px;font-size:14px;color:#1a1a2e;white-space:pre-wrap"></div>
+  <div id="ai-test-result" style="margin-top:12px;padding:14px;background:var(--grey-light);border-radius:10px;font-size:14px;color:#1a1a2e;white-space:pre-wrap"></div>
 </div>
 <div id="dopamine-zone"></div>
 </div>
@@ -477,7 +477,7 @@ console.log("THE FILE IS LOADING!");
 .story-word.new { font-weight:700; color:#8b2035; }
 .story-word:hover { background:#fef3f2; border-radius:4px; }
 </style>
-<div style="background:white;border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08)">
+<div style="background:var(--grey-light);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08)">
 
 <div style="text-align:center;margin-bottom:20px">
 <div style="font-family:'Scheherazade New', serif;font-size:26px;font-weight:700;color:#1a1a2e">الدَّرْسُ الأَوَّلُ</div>
@@ -1617,7 +1617,7 @@ document.getElementById('modal').addEventListener('click',closeModal);
 document.getElementById('modal-close-btn').addEventListener('click',e=>{e.stopPropagation();closeModal();});
 </script>
 <style>
-.ex-card { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 16px; cursor: pointer; border: 2px solid transparent; transition: border 0.2s; }
+.ex-card { background: var(--grey-light); border-radius: 16px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 16px; cursor: pointer; border: 2px solid transparent; transition: border 0.2s; }
 .ex-card:hover { border-color: #2563eb; }
 .ex-card-icon { font-size: 28px; margin-bottom: 8px; }
 .ex-card-title { font-size: 16px; font-weight: 700; color: #1a1a2e; margin-bottom: 4px; }
@@ -1832,7 +1832,7 @@ const title = mode === 'fillgap' ? '📝 Fill the Gap'
 const isGrammarDrill = mode === 'demonstrative';
 exRender(`
    <div class="section-label">${title}</div>
-   <div style="background:white;border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
+   <div style="background:var(--grey-light);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
      ${isGrammarDrill ? `<div style="background:#fffbeb;border:1.5px solid #fcd34d;border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:13px;color:#92400e;line-height:1.5">⚠️ These sentences are computer-generated, and the meanings are deliberately nonsensical so you can't guess the answer from context. Focus only on the grammar rule being tested — not what the sentence means.</div>` : ''}
      <div style="font-size:14px;font-weight:600;color:#6b7280;margin-bottom:12px">Choose session length</div>
      <select id="ex-timer-select" style="width:100%;font-size:16px;padding:12px;border:2px solid #e5e7eb;border-radius:10px;outline:none">
@@ -1881,11 +1881,11 @@ exShowQuestion();
 
 function exRenderActive() {
 exRender(`
-   <div style="display:flex;justify-content:space-between;align-items:center;background:white;padding:12px 20px;border-radius:12px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,0.06)">
+   <div style="display:flex;justify-content:space-between;align-items:center;background:var(--grey-light);padding:12px 20px;border-radius:12px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,0.06)">
      <div id="ex-timer-display" style="font-size:1.6em;font-weight:800;color:#2563eb;font-variant-numeric:tabular-nums">--:--</div>
      <div id="ex-progress" style="color:#6b7280;font-size:14px;font-weight:600">Question 1</div>
    </div>
-   <div style="background:white;border-radius:16px;padding:28px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
+   <div style="background:var(--grey-light);border-radius:16px;padding:28px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
      <div id="ex-instruction" style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6b7280;margin-bottom:16px"></div>
      <div id="ex-sentence" style="font-size:1.6em;line-height:2;text-align:center;direction:rtl;margin-bottom:20px"></div>
      <div id="ex-fill-input" style="display:none;flex-direction:column;align-items:center;gap:10px">
