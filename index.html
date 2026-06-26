@@ -18,7 +18,6 @@
 }
 { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f7f3ec; color: var(--ink); min-height: 100vh; }
 
-    
 /* LOGIN */
 #login-screen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; background: linear-gradient(160deg, #f7f3ec 0%, #efe4d4 100%); }
 .login-logo { color: #8b2035; font-size: 22px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 20px; text-align: center; }
@@ -539,6 +538,7 @@ console.log("THE FILE IS LOADING!");
 <p class="story-en-line">Why do they worship the idols? Worship is for Allah alone.</p>
 </div>
 
+
 <div class="principles-wrap" id="principles-wrap">
 <div class="principles-header">
 <span class="section-label" style="margin-bottom:0">Key principles</span>
@@ -564,8 +564,6 @@ console.log("THE FILE IS LOADING!");
 </div>
 <div class="toast" id="toast"></div>
 
-
-  
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
 import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
@@ -586,7 +584,7 @@ const db = getFirestore(firebaseApp);
 let DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS, PLURAL_QUESTIONS, FEMININE_QUESTIONS, SUFFIX_TRANSLATION_QUESTIONS, DEMO_TRANSLATION_QUESTIONS;
 async function loadVocabData() {
 
-  const url = 'https://raw.githubusercontent.com/ryangwstanley-ship-it/database/main/website%20data%20base?t=' + Date.now();
+const url = 'https://raw.githubusercontent.com/ryangwstanley-ship-it/database/main/website%20data%20base?t=' + Date.now();
 const res = await fetch(url);
 const code = await res.text();
 const runner = new Function(
@@ -692,9 +690,9 @@ let allCardActivity = {};
 let studentLesson = {};
 
 function incrementCardActivity(code) {
-  const today = todayKey();
-  if (!allCardActivity[code]) allCardActivity[code] = {};
-  allCardActivity[code][today] = (allCardActivity[code][today] || 0) + 1;
+const today = todayKey();
+if (!allCardActivity[code]) allCardActivity[code] = {};
+allCardActivity[code][today] = (allCardActivity[code][today] || 0) + 1;
 }
 // Per-exercise question mastery: exProgress[mode][questionIndex] = 1(Hard)/2(Medium)/3(Easy)
 let exProgress = {};
@@ -708,12 +706,12 @@ function miniRing(percent, emoji, centered) {
 const r = 18, c = 2 * Math.PI * r;
 const offset = c - (percent/100)*c;
 return `<div class="mini-ring-wrap${centered?' centered':''}">
-   <svg class="mini-ring" viewBox="0 0 44 44">
-     <circle class="mini-ring-bg" cx="22" cy="22" r="${r}"></circle>
-     <circle class="mini-ring-fg" cx="22" cy="22" r="${r}" style="stroke-dasharray:${c};stroke-dashoffset:${offset}"></circle>
-   </svg>
-   <div class="mini-ring-emoji">${emoji}</div>
- </div>`;
+  <svg class="mini-ring" viewBox="0 0 44 44">
+    <circle class="mini-ring-bg" cx="22" cy="22" r="${r}"></circle>
+    <circle class="mini-ring-fg" cx="22" cy="22" r="${r}" style="stroke-dasharray:${c};stroke-dashoffset:${offset}"></circle>
+  </svg>
+  <div class="mini-ring-emoji">${emoji}</div>
+</div>`;
 }
 window.miniRing = miniRing;
 
@@ -866,14 +864,14 @@ fcProgress = {}; allFcActivity[code] = {}; allCardActivity[code] = {}; fcDeleted
 }
 
 async function loadStudentMeta(code) {
-  try {
-    const snap = await getDoc(doc(db,'flashcards',code));
-    const data = snap.exists() ? snap.data() : {};
-    allFcActivity[code] = data.activity || {};
-    allCardActivity[code] = data.cardActivity || {};
-    studentLesson[code] = data.lesson || 1;
-  } catch(e) { console.error('Meta load error',e); allFcActivity[code] = {}; allCardActivity[code] = {}; studentLesson[code] = 1; }
-  if (!studentLesson[code]) studentLesson[code] = 1;
+try {
+const snap = await getDoc(doc(db,'flashcards',code));
+const data = snap.exists() ? snap.data() : {};
+allFcActivity[code] = data.activity || {};
+allCardActivity[code] = data.cardActivity || {};
+studentLesson[code] = data.lesson || 1;
+} catch(e) { console.error('Meta load error',e); allFcActivity[code] = {}; allCardActivity[code] = {}; studentLesson[code] = 1; }
+if (!studentLesson[code]) studentLesson[code] = 1;
 }
 async function saveFlashcardData(code) {
 try {
@@ -923,25 +921,25 @@ async function saveDay(code, dateStr, data) { await setDoc(doc(db,'submissions',
 
 // ── LOGIN ──
 async function handleLogin() {
-  const code = document.getElementById('code-input').value.trim().toUpperCase();
-  const err = document.getElementById('login-error');
-  const btn = document.getElementById('login-btn');
-  btn.textContent='Signing in…'; btn.disabled=true;
-  if (code === INSTRUCTOR_CODE) {
-    currentUser=code; isInstructor=true;
-    viewingStudent=Object.keys(STUDENTS)[0];
-    await Promise.all(Object.keys(STUDENTS).map(c=>loadStudentData(c)));
-   await Promise.all(Object.keys(STUDENTS).map(c=>loadStudentMeta(c)));
-    startApp();
-  } else if (STUDENTS[code]) {
-    currentUser=code; isInstructor=false;
-    await loadStudentData(code);
-    await loadStudentMeta(code);
-    await loadFlashcardProgress(code);
-    startApp();
-  } else {
-    err.style.display='block'; btn.textContent='Enter'; btn.disabled=false;
-  }
+const code = document.getElementById('code-input').value.trim().toUpperCase();
+const err = document.getElementById('login-error');
+const btn = document.getElementById('login-btn');
+btn.textContent='Signing in…'; btn.disabled=true;
+if (code === INSTRUCTOR_CODE) {
+currentUser=code; isInstructor=true;
+viewingStudent=Object.keys(STUDENTS)[0];
+await Promise.all(Object.keys(STUDENTS).map(c=>loadStudentData(c)));
+await Promise.all(Object.keys(STUDENTS).map(c=>loadStudentMeta(c)));
+startApp();
+} else if (STUDENTS[code]) {
+currentUser=code; isInstructor=false;
+await loadStudentData(code);
+await loadStudentMeta(code);
+await loadFlashcardProgress(code);
+startApp();
+} else {
+err.style.display='block'; btn.textContent='Enter'; btn.disabled=false;
+}
 }
 
 // ── START ──
@@ -1180,10 +1178,10 @@ const section=document.createElement('div');section.className='upload-section';
 let title=hasContent?'Add another submission':'Submit today\'s homework';
 if(missed.length>0&&hasContent)title=`Make up a missed day (${missed.length} remaining)`;
 section.innerHTML=`<div class="upload-section-title">${title}</div>
-     <div class="upload-area" id="upload-trigger"><div class="upload-icon">📸</div><div class="upload-title">Upload a photo</div><div class="upload-sub">Tap to choose</div></div>
-     <input type="file" id="file-input" accept="image/*" multiple>
-     <div class="text-input-wrap" style="margin-top:12px"><textarea id="text-input" placeholder="Or type your Arabic homework here..."></textarea></div>
-     <button class="submit-btn" id="submit-btn">Submit</button>`;
+    <div class="upload-area" id="upload-trigger"><div class="upload-icon">📸</div><div class="upload-title">Upload a photo</div><div class="upload-sub">Tap to choose</div></div>
+    <input type="file" id="file-input" accept="image/*" multiple>
+    <div class="text-input-wrap" style="margin-top:12px"><textarea id="text-input" placeholder="Or type your Arabic homework here..."></textarea></div>
+    <button class="submit-btn" id="submit-btn">Submit</button>`;
 uploadWrap.appendChild(section); uploadWrap.style.display='block';
 document.getElementById('upload-trigger').addEventListener('click',()=>document.getElementById('file-input').click());
 document.getElementById('file-input').addEventListener('change',e=>{
@@ -1298,22 +1296,22 @@ setCardProgress(lessonNum, cardIdx, { interval, easeFactor, nextReview, reps, la
 }
 
 function renderFlashcards() {
-  // Lesson picker
-  const picker = document.getElementById('fc-lesson-picker');
-  picker.innerHTML='';
-  const code = currentUser || viewingStudent;
-  const maxLesson = (studentLesson[code] !== undefined) ? studentLesson[code] : 1;
-  Object.entries(LESSONS).forEach(([num, lesson]) => {
-    const lessonNum = parseInt(num);
-    if (lessonNum === 0) return; // Skip the unused "Advanced students" placeholder lesson
-    if (lessonNum > maxLesson) return; // Skip lessons beyond student's level
-    const pct = getLessonMasteryPercent(num);
-    const btn = document.createElement('button');
-    btn.className='fc-lesson-btn'+(num==fcCurrentLesson?' active':'');
-    btn.innerHTML = miniRing(pct, '🃏', true) + `<div class="fc-lesson-name">${lesson.name}</div>`;
-    btn.onclick=()=>{ fcCurrentLesson=num; buildFcQueue(); renderFlashcards(); };
-    picker.appendChild(btn);
-  });
+// Lesson picker
+const picker = document.getElementById('fc-lesson-picker');
+picker.innerHTML='';
+const code = currentUser || viewingStudent;
+const maxLesson = (studentLesson[code] !== undefined) ? studentLesson[code] : 1;
+Object.entries(LESSONS).forEach(([num, lesson]) => {
+const lessonNum = parseInt(num);
+if (lessonNum === 0) return; // Skip the unused "Advanced students" placeholder lesson
+if (lessonNum > maxLesson) return; // Skip lessons beyond student's level
+const pct = getLessonMasteryPercent(num);
+const btn = document.createElement('button');
+btn.className='fc-lesson-btn'+(num==fcCurrentLesson?' active':'');
+btn.innerHTML = miniRing(pct, '🃏', true) + `<div class="fc-lesson-name">${lesson.name}</div>`;
+btn.onclick=()=>{ fcCurrentLesson=num; buildFcQueue(); renderFlashcards(); };
+picker.appendChild(btn);
+});
 
 
 
@@ -1325,11 +1323,11 @@ area.innerHTML='';
 
 if (!fcQueue.length || fcCurrentIdx >= fcQueue.length) {
 area.innerHTML=`<div class="fc-done">
-     <div class="fc-done-icon">🎉</div>
-     <div class="fc-done-title">All done for now!</div>
-     <div class="fc-done-sub">You've reviewed all due cards. Come back tomorrow for more.</div>
-     <button class="fc-restart-btn" id="fc-restart">Review all again</button>
-   </div>`;
+    <div class="fc-done-icon">🎉</div>
+    <div class="fc-done-title">All done for now!</div>
+    <div class="fc-done-sub">You've reviewed all due cards. Come back tomorrow for more.</div>
+    <button class="fc-restart-btn" id="fc-restart">Review all again</button>
+  </div>`;
 document.getElementById('fc-restart').addEventListener('click',()=>{
 LESSONS[fcCurrentLesson].cards.forEach((_,i)=>{
 if (!isCardDeleted(fcCurrentLesson, i)) {
@@ -1347,28 +1345,28 @@ return;
 const card = fcQueue[fcCurrentIdx];
 const prevRating = getCardProgress(fcCurrentLesson, card.idx).lastRating;
 const diffBanner = prevRating === 1 ? '<div class="fc-diff-banner fc-diff-hard">Hard</div>'
-  : prevRating === 2 ? '<div class="fc-diff-banner fc-diff-medium">Medium</div>'
-  : prevRating === 3 ? '<div class="fc-diff-banner fc-diff-easy">Easy</div>'
-  : '';
+: prevRating === 2 ? '<div class="fc-diff-banner fc-diff-medium">Medium</div>'
+: prevRating === 3 ? '<div class="fc-diff-banner fc-diff-easy">Easy</div>'
+: '';
 
 const cardEl = document.createElement('div');
 cardEl.className='fc-card-wrap';
 cardEl.innerHTML=`
-   <div class="fc-card" id="fc-card">
-     ${diffBanner}
-     <div class="fc-arabic">${card.ar}</div>
-     <div class="fc-english">${card.en}</div>
-     <div class="fc-tap-hint">Tap to reveal</div>
-   </div>`;
+  <div class="fc-card" id="fc-card">
+    ${diffBanner}
+    <div class="fc-arabic">${card.ar}</div>
+    <div class="fc-english">${card.en}</div>
+    <div class="fc-tap-hint">Tap to reveal</div>
+  </div>`;
 area.appendChild(cardEl);
 
 const ratingWrap = document.createElement('div');
 ratingWrap.className='fc-rating-wrap';
 ratingWrap.id='fc-rating-wrap';
 ratingWrap.innerHTML=`
-   <button class="fc-rating-btn fc-r2" data-r="1">No idea</button>
-   <button class="fc-rating-btn fc-r3" data-r="2">Nearly got it</button>
-   <button class="fc-rating-btn fc-r4" data-r="3">Got it right!</button>`;
+  <button class="fc-rating-btn fc-r2" data-r="1">No idea</button>
+  <button class="fc-rating-btn fc-r3" data-r="2">Nearly got it</button>
+  <button class="fc-rating-btn fc-r4" data-r="3">Got it right!</button>`;
 area.appendChild(ratingWrap);
 
 const progress = document.createElement('div');
@@ -1416,11 +1414,11 @@ function showToast(msg){const t=document.getElementById('toast');t.textContent=m
 function showMasteryGain(diff){const el=document.createElement('div');el.className='mastery-gain-popup';el.textContent=`+${diff}%`;document.body.appendChild(el);setTimeout(()=>el.remove(),1400);}
 function showWordMeaning(el) { showToast(el.textContent + ' = ' + el.dataset.en); }
 function toggleStoryEnglish() {
-  const lines = document.querySelectorAll('.story-en-line');
-  const btn = document.getElementById('story-english-btn');
-  const isHidden = lines[0].style.display === 'none';
-  lines.forEach(line => { line.style.display = isHidden ? 'block' : 'none'; });
-  btn.textContent = isHidden ? 'Hide English' : 'Show English';
+const lines = document.querySelectorAll('.story-en-line');
+const btn = document.getElementById('story-english-btn');
+const isHidden = lines[0].style.display === 'none';
+lines.forEach(line => { line.style.display = isHidden ? 'block' : 'none'; });
+btn.textContent = isHidden ? 'Hide English' : 'Show English';
 }
 window.showWordMeaning = showWordMeaning;
 window.toggleStoryEnglish = toggleStoryEnglish;
@@ -1448,6 +1446,43 @@ const PRINCIPLES = [
     a: `Most principles have exceptions: رَجُلٌ → رِجَالٌ is irregular even though it's a people-word. قَرْيَةٌ → قُرًى is irregular too — and actually has fewer letters, breaking the usual "more letters" pattern.`
   }
 ];
+
+let principleIdx = 0;
+let principleRevealed = false;
+
+function renderPrinciple() {
+  const qEl = document.getElementById('principle-q');
+  const aEl = document.getElementById('principle-a');
+  const hintEl = document.getElementById('principle-hint');
+  const progEl = document.getElementById('principles-progress');
+  const dotsEl = document.getElementById('principles-dots');
+  const backBtn = document.getElementById('principle-back-btn');
+  const nextBtn = document.getElementById('principle-next-btn');
+  const p = PRINCIPLES[principleIdx];
+
+  qEl.innerHTML = p.q;
+  let answerHtml = p.a;
+  if (p.quote) {
+    answerHtml += `<div class="principle-quote"><div class="principle-quote-ar">${p.quote}</div></div>`;
+  }
+  aEl.innerHTML = answerHtml;
+  qEl.style.display = principleRevealed ? 'none' : 'block';
+  aEl.style.display = principleRevealed ? 'block' : 'none';
+  hintEl.textContent = principleRevealed ? "Tap to see the question again" : "Tap when you've found it";
+
+  progEl.textContent = (principleIdx + 1) + ' / ' + PRINCIPLES.length;
+
+  dotsEl.innerHTML = '';
+  PRINCIPLES.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'principle-dot' + (i === principleIdx ? ' active' : '');
+    dotsEl.appendChild(dot);
+  });
+
+  backBtn.style.visibility = principleIdx === 0 ? 'hidden' : 'visible';
+  nextBtn.textContent = principleIdx === PRINCIPLES.length - 1 ? 'Done' : 'Next ›';
+}
+
 document.getElementById('principle-card').addEventListener('click', () => {
   principleRevealed = !principleRevealed;
   renderPrinciple();
@@ -1460,7 +1495,7 @@ document.getElementById('principle-next-btn').addEventListener('click', () => {
 });
 renderPrinciple();
 
-// ── RENDER ──
+
 // ── RENDER ──
 function render(){
 renderCalendar();renderDayPanel();renderMissedBanner();renderRevisionBanner();
@@ -1578,7 +1613,7 @@ const full = exBuildLesson1Pool();
 const shuffled = exShuffle(full);
 return shuffled.slice(0, 11);
 }
-  
+
 function exShowPicker() {
 const fillgapPct = window.getExerciseMasteryPercent('fillgap', FILL_GAP_QUESTIONS.length);
 const wordorderPct = window.getExerciseMasteryPercent('wordorder', WORD_ORDER_QUESTIONS.length);
@@ -1595,89 +1630,89 @@ const typeharakatPct = window.getExerciseMasteryPercent('typeharakat', exBuildLe
 const typeenglishPct = window.getExerciseMasteryPercent('typeenglish', exBuildLesson1Pool().length);
 
 exRender(`
-   <div class="section-label">Choose an exercise</div>
-   <div style="display:flex;flex-direction:column;gap:14px;margin-top:8px">
-    <div class="ex-card" id="btn-fillgap">
-       ${window.miniRing(fillgapPct, '📝')}
-       <div class="ex-card-title">Fill the Gap</div>
-       <div class="ex-card-desc">A word is missing from a sentence. Type what you think it is.</div>
-       <div class="ex-card-note">${fillgapPct}% mastered</div>
-     </div>
-     <div class="ex-card" id="btn-wordorder">
-       ${window.miniRing(wordorderPct, '🔀')}
-       <div class="ex-card-title">Word Order</div>
-       <div class="ex-card-desc">Rearrange the words to form a correct sentence.</div>
-       <div class="ex-card-note">${wordorderPct}% mastered</div>
-     </div>
-    <div class="ex-card" id="btn-truefalse">
-       ${window.miniRing(truefalsePct, '✅')}
-       <div class="ex-card-title">True or False</div>
-       <div class="ex-card-desc">Is the sentence correct or does it contain an error?</div>
-       <div class="ex-card-note">${truefalsePct}% mastered</div>
-     </div>
-    <div class="ex-card" id="btn-changeword">
-       ${window.miniRing(changewordPct, '✏️')}
-       <div class="ex-card-title">Change One Word</div>
-       <div class="ex-card-desc">A sentence has one wrong word. Type the correct replacement.</div>
-       <div class="ex-card-note">${changewordPct}% mastered</div>
-     </div>
-  <div class="ex-card" id="btn-demonstrative">
-  ${window.miniRing(demonstrativePct, '👉')}
-  <div class="ex-card-title">Demonstrative Pronouns</div>
-  <div class="ex-card-desc">Practise هذا / هذه / هؤلاء agreement with true/false and correction questions.</div>
-  <div class="ex-card-note">${demonstrativePct}% mastered</div>
+  <div class="section-label">Choose an exercise</div>
+  <div style="display:flex;flex-direction:column;gap:14px;margin-top:8px">
+   <div class="ex-card" id="btn-fillgap">
+      ${window.miniRing(fillgapPct, '📝')}
+      <div class="ex-card-title">Fill the Gap</div>
+      <div class="ex-card-desc">A word is missing from a sentence. Type what you think it is.</div>
+      <div class="ex-card-note">${fillgapPct}% mastered</div>
+    </div>
+    <div class="ex-card" id="btn-wordorder">
+      ${window.miniRing(wordorderPct, '🔀')}
+      <div class="ex-card-title">Word Order</div>
+      <div class="ex-card-desc">Rearrange the words to form a correct sentence.</div>
+      <div class="ex-card-note">${wordorderPct}% mastered</div>
+    </div>
+   <div class="ex-card" id="btn-truefalse">
+      ${window.miniRing(truefalsePct, '✅')}
+      <div class="ex-card-title">True or False</div>
+      <div class="ex-card-desc">Is the sentence correct or does it contain an error?</div>
+      <div class="ex-card-note">${truefalsePct}% mastered</div>
+    </div>
+   <div class="ex-card" id="btn-changeword">
+      ${window.miniRing(changewordPct, '✏️')}
+      <div class="ex-card-title">Change One Word</div>
+      <div class="ex-card-desc">A sentence has one wrong word. Type the correct replacement.</div>
+      <div class="ex-card-note">${changewordPct}% mastered</div>
+    </div>
+ <div class="ex-card" id="btn-demonstrative">
+ ${window.miniRing(demonstrativePct, '👉')}
+ <div class="ex-card-title">Demonstrative Pronouns</div>
+ <div class="ex-card-desc">Practise هذا / هذه / هؤلاء agreement with true/false and correction questions.</div>
+ <div class="ex-card-note">${demonstrativePct}% mastered</div>
 </div>
 <div class="ex-card" id="btn-demotrans">
-  ${window.miniRing(demotransPct, '👉')}
-  <div class="ex-card-title">Demonstrative Pronouns — Translate</div>
-  <div class="ex-card-desc">Read the English, write the Arabic demonstrative phrase, then reveal and grade yourself.</div>
-  <div class="ex-card-note">${demotransPct}% mastered</div>
+ ${window.miniRing(demotransPct, '👉')}
+ <div class="ex-card-title">Demonstrative Pronouns — Translate</div>
+ <div class="ex-card-desc">Read the English, write the Arabic demonstrative phrase, then reveal and grade yourself.</div>
+ <div class="ex-card-note">${demotransPct}% mastered</div>
 </div>
 <div class="ex-card" id="btn-suffixpronoun">
-  ${window.miniRing(suffixpronounPct, '🔤')}
-  <div class="ex-card-title">Suffix Pronouns</div>
-  <div class="ex-card-desc">Does the attached pronoun (ـهُ / ـهَا / ـهُمْ) match the first word? True or false.</div>
-  <div class="ex-card-note">${suffixpronounPct}% mastered</div>
+ ${window.miniRing(suffixpronounPct, '🔤')}
+ <div class="ex-card-title">Suffix Pronouns</div>
+ <div class="ex-card-desc">Does the attached pronoun (ـهُ / ـهَا / ـهُمْ) match the first word? True or false.</div>
+ <div class="ex-card-note">${suffixpronounPct}% mastered</div>
 </div>
 <div class="ex-card" id="btn-suffixtrans">
-  ${window.miniRing(suffixtransPct, '✍️')}
-  <div class="ex-card-title">Suffix Pronouns — Translate</div>
-  <div class="ex-card-desc">Read the English, write the Arabic, then reveal and grade yourself.</div>
-  <div class="ex-card-note">${suffixtransPct}% mastered</div>
+ ${window.miniRing(suffixtransPct, '✍️')}
+ <div class="ex-card-title">Suffix Pronouns — Translate</div>
+ <div class="ex-card-desc">Read the English, write the Arabic, then reveal and grade yourself.</div>
+ <div class="ex-card-note">${suffixtransPct}% mastered</div>
 </div>
 <div class="ex-card" id="btn-adjectiveagreement">
-  ${window.miniRing(adjectiveagreementPct, '✨')}
-  <div class="ex-card-title">Adjective Agreement</div>
-  <div class="ex-card-desc">Noun-adjective agreement: is the adjective correctly matched to the noun?</div>
-  <div class="ex-card-note">${adjectiveagreementPct}% mastered</div>
+ ${window.miniRing(adjectiveagreementPct, '✨')}
+ <div class="ex-card-title">Adjective Agreement</div>
+ <div class="ex-card-desc">Noun-adjective agreement: is the adjective correctly matched to the noun?</div>
+ <div class="ex-card-note">${adjectiveagreementPct}% mastered</div>
 </div>
 <div class="ex-card" id="btn-plural">
-  ${window.miniRing(pluralPct, '👥')}
-  <div class="ex-card-title">Spot the Plural</div>
-  <div class="ex-card-desc">Two words appear — tap the one that is plural.</div>
-  <div class="ex-card-note">${pluralPct}% mastered</div>
+ ${window.miniRing(pluralPct, '👥')}
+ <div class="ex-card-title">Spot the Plural</div>
+ <div class="ex-card-desc">Two words appear — tap the one that is plural.</div>
+ <div class="ex-card-note">${pluralPct}% mastered</div>
 </div>
 <div class="ex-card" id="btn-feminine">
-  ${window.miniRing(femininePct, '♀️')}
-  <div class="ex-card-title">Spot the Feminine</div>
-  <div class="ex-card-desc">Four words appear — tap the two that are feminine, then Check.</div>
-  <div class="ex-card-note">${femininePct}% mastered</div>
+ ${window.miniRing(femininePct, '♀️')}
+ <div class="ex-card-title">Spot the Feminine</div>
+ <div class="ex-card-desc">Four words appear — tap the two that are feminine, then Check.</div>
+ <div class="ex-card-note">${femininePct}% mastered</div>
 </div>
 <div class="ex-card" id="btn-typeharakat">
-  ${window.miniRing(typeharakatPct, '⌨️')}
-  <div class="ex-card-title">Type Without Harakat (Lesson 1)</div>
-  <div class="ex-card-desc">See the word with harakat — type it using bare letters only.</div>
-  <div class="ex-card-note">${typeharakatPct}% mastered</div>
+ ${window.miniRing(typeharakatPct, '⌨️')}
+ <div class="ex-card-title">Type Without Harakat (Lesson 1)</div>
+ <div class="ex-card-desc">See the word with harakat — type it using bare letters only.</div>
+ <div class="ex-card-note">${typeharakatPct}% mastered</div>
 </div>
 <div class="ex-card" id="btn-typeenglish">
-  ${window.miniRing(typeenglishPct, '🔤')}
-  <div class="ex-card-title">English → Arabic (Lesson 1)</div>
-  <div class="ex-card-desc">See the English — type the Arabic word from memory.</div>
-  <div class="ex-card-note">${typeenglishPct}% mastered</div>
+ ${window.miniRing(typeenglishPct, '🔤')}
+ <div class="ex-card-title">English → Arabic (Lesson 1)</div>
+ <div class="ex-card-desc">See the English — type the Arabic word from memory.</div>
+ <div class="ex-card-note">${typeenglishPct}% mastered</div>
 </div>
-     
-   </div>
- `);
+    
+  </div>
+`);
 document.getElementById('btn-fillgap').onclick = () => exShowSetup('fillgap');
 document.getElementById('btn-wordorder').onclick = () => exShowSetup('wordorder');
 document.getElementById('btn-truefalse').onclick = () => exShowSetup('truefalse');
@@ -1709,14 +1744,14 @@ const title = mode === 'fillgap' ? '📝 Fill the Gap'
 : '✅ True or False';
 const isGrammarDrill = mode === 'demonstrative';
 exRender(`
-   <div class="section-label">${title}</div>
-   <div style="background:var(--grey-light);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
-     ${isGrammarDrill ? `<div style="background:#fffbeb;border:1.5px solid #fcd34d;border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:13px;color:#92400e;line-height:1.5">⚠️ These sentences are computer-generated, and the meanings are deliberately nonsensical so you can't guess the answer from context. Focus only on the grammar rule being tested — not what the sentence means.</div>` : ''}
-  <div style="font-size:14px;color:#6b7280;margin-bottom:12px;text-align:center">This session: 20 questions</div>
-     <button id="ex-start-btn" style="width:100%;margin-top:14px;padding:14px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">Start</button>
-     <button id="ex-back-btn" style="width:100%;margin-top:8px;padding:10px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">← Back</button>
-   </div>
- `);
+  <div class="section-label">${title}</div>
+  <div style="background:var(--grey-light);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
+    ${isGrammarDrill ? `<div style="background:#fffbeb;border:1.5px solid #fcd34d;border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:13px;color:#92400e;line-height:1.5">⚠️ These sentences are computer-generated, and the meanings are deliberately nonsensical so you can't guess the answer from context. Focus only on the grammar rule being tested — not what the sentence means.</div>` : ''}
+ <div style="font-size:14px;color:#6b7280;margin-bottom:12px;text-align:center">This session: 20 questions</div>
+    <button id="ex-start-btn" style="width:100%;margin-top:14px;padding:14px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">Start</button>
+    <button id="ex-back-btn" style="width:100%;margin-top:8px;padding:10px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">← Back</button>
+  </div>
+`);
 document.getElementById('ex-start-btn').onclick = exLaunch;
 document.getElementById('ex-back-btn').onclick = exShowPicker;
 }
@@ -1747,33 +1782,33 @@ exShowQuestion();
 
 function exRenderActive() {
 exRender(`
-   <div style="display:flex;justify-content:center;align-items:center;background:var(--grey-light);padding:12px 20px;border-radius:12px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,0.06)">
-     <div id="ex-progress" style="color:#6b7280;font-size:14px;font-weight:600">Question 1 / 20</div>
-   </div>
-   <div style="background:var(--grey-light);border-radius:16px;padding:28px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
-     <div id="ex-instruction" style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6b7280;margin-bottom:16px"></div>
-     <div id="ex-sentence" style="font-size:1.6em;line-height:2;text-align:center;direction:rtl;margin-bottom:20px"></div>
-     <div id="ex-fill-input" style="display:none;flex-direction:column;align-items:center;gap:10px">
-       <input id="ex-answer-input" type="text" placeholder="Type the missing word..." style="font-size:1.2em;padding:12px 16px;border:2px solid #e5e7eb;border-radius:10px;width:100%;max-width:320px;text-align:center;direction:rtl;outline:none">
-       <button id="ex-check-btn" style="padding:12px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Check ←</button>
-     </div>
-     <div id="ex-word-order" style="display:none">
-       <div style="font-size:13px;color:#6b7280;text-align:center;margin-bottom:12px">Click words in the correct order</div>
-       <div id="ex-word-bank" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;direction:rtl;margin-bottom:20px"></div>
-       <div id="ex-answer-row" style="min-height:48px;background:#f0f4ff;border-radius:10px;padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px;direction:rtl;align-items:center;margin-bottom:12px"></div>
-       <div style="text-align:center;display:flex;gap:10px;justify-content:center">
-         <button id="ex-wo-check-btn" style="padding:12px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Check ←</button>
-         <button id="ex-wo-clear-btn" style="padding:12px 20px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">Clear</button>
-       </div>
-     </div>
-     <div id="ex-reveal" style="display:none;background:#f0fdf4;border:2px solid #86efac;border-radius:10px;padding:16px;margin-top:16px;font-size:1.2em;text-align:center;direction:rtl"></div>
-   </div>
-   <div id="ex-rating-area" style="display:none;gap:10px;margin-bottom:16px">
-     <button id="ex-rate-hard" style="flex:1;padding:12px;background:#fee2e2;color:#b91c1c;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">No idea</button>
-     <button id="ex-rate-med" style="flex:1;padding:12px;background:#fff7ed;color:#c2410c;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">Nearly got it</button>
-     <button id="ex-rate-easy" style="flex:1;padding:12px;background:#f0fdf4;color:#15803d;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">Got it right!</button>
-   </div>
- `);
+  <div style="display:flex;justify-content:center;align-items:center;background:var(--grey-light);padding:12px 20px;border-radius:12px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,0.06)">
+    <div id="ex-progress" style="color:#6b7280;font-size:14px;font-weight:600">Question 1 / 20</div>
+  </div>
+  <div style="background:var(--grey-light);border-radius:16px;padding:28px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
+    <div id="ex-instruction" style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6b7280;margin-bottom:16px"></div>
+    <div id="ex-sentence" style="font-size:1.6em;line-height:2;text-align:center;direction:rtl;margin-bottom:20px"></div>
+    <div id="ex-fill-input" style="display:none;flex-direction:column;align-items:center;gap:10px">
+      <input id="ex-answer-input" type="text" placeholder="Type the missing word..." style="font-size:1.2em;padding:12px 16px;border:2px solid #e5e7eb;border-radius:10px;width:100%;max-width:320px;text-align:center;direction:rtl;outline:none">
+      <button id="ex-check-btn" style="padding:12px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Check ←</button>
+    </div>
+    <div id="ex-word-order" style="display:none">
+      <div style="font-size:13px;color:#6b7280;text-align:center;margin-bottom:12px">Click words in the correct order</div>
+      <div id="ex-word-bank" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;direction:rtl;margin-bottom:20px"></div>
+      <div id="ex-answer-row" style="min-height:48px;background:#f0f4ff;border-radius:10px;padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px;direction:rtl;align-items:center;margin-bottom:12px"></div>
+      <div style="text-align:center;display:flex;gap:10px;justify-content:center">
+        <button id="ex-wo-check-btn" style="padding:12px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Check ←</button>
+        <button id="ex-wo-clear-btn" style="padding:12px 20px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">Clear</button>
+      </div>
+    </div>
+    <div id="ex-reveal" style="display:none;background:#f0fdf4;border:2px solid #86efac;border-radius:10px;padding:16px;margin-top:16px;font-size:1.2em;text-align:center;direction:rtl"></div>
+  </div>
+  <div id="ex-rating-area" style="display:none;gap:10px;margin-bottom:16px">
+    <button id="ex-rate-hard" style="flex:1;padding:12px;background:#fee2e2;color:#b91c1c;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">No idea</button>
+    <button id="ex-rate-med" style="flex:1;padding:12px;background:#fff7ed;color:#c2410c;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">Nearly got it</button>
+    <button id="ex-rate-easy" style="flex:1;padding:12px;background:#f0fdf4;color:#15803d;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">Got it right!</button>
+  </div>
+`);
 }
 
 
@@ -1793,7 +1828,7 @@ exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS]
 : exMode === 'suffixtrans' ? exShuffle([...SUFFIX_TRANSLATION_QUESTIONS]).slice(0, 11)
 : exMode === 'demotrans' ? exShuffle([...DEMO_TRANSLATION_QUESTIONS]).slice(0, 11)
 : [...TRUE_FALSE_QUESTIONS]
-  
+
 );
 exCurrent = 0;
 }
@@ -1830,8 +1865,8 @@ const tfWrap = document.createElement('div');
 tfWrap.id = 'ex-tf-btns';
 tfWrap.style.cssText = 'display:flex;gap:12px;justify-content:center;margin-top:8px';
 tfWrap.innerHTML = `
-     <button id="ex-tf-true" style="flex:1;padding:14px;background:#f0fdf4;color:#15803d;border:2px solid #86efac;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">True</button>
-     <button id="ex-tf-false" style="flex:1;padding:14px;background:#fef2f2;color:#b91c1c;border:2px solid #fca5a5;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">False</button>`;
+    <button id="ex-tf-true" style="flex:1;padding:14px;background:#f0fdf4;color:#15803d;border:2px solid #86efac;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">True</button>
+    <button id="ex-tf-false" style="flex:1;padding:14px;background:#fef2f2;color:#b91c1c;border:2px solid #fca5a5;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">False</button>`;
 document.getElementById('ex-sentence').after(tfWrap);
 document.getElementById('ex-tf-true').onclick = () => exSubmitTrueFalse(true);
 document.getElementById('ex-tf-false').onclick = () => exSubmitTrueFalse(false);
@@ -1861,8 +1896,8 @@ document.getElementById('ex-word-order').style.display = 'none';
 const existingTiles = document.getElementById('ex-tf-btns');
 if (existingTiles) existingTiles.remove();
 const choices = exShuffle([
-  { text: q.singular, isPlural: false },
-  { text: q.plural, isPlural: true }
+{ text: q.singular, isPlural: false },
+{ text: q.plural, isPlural: true }
 ]);
 const pluralWrap = document.createElement('div');
 pluralWrap.id = 'ex-tf-btns';
@@ -2134,7 +2169,7 @@ const ratingEl = document.getElementById('ex-rating-area');
 ratingEl.style.display = 'flex';
 wireRatingButtons();
 }
-  
+
 function exSubmitWordOrder() {
 const q = exQuestions[exCurrent];
 const reveal = document.getElementById('ex-reveal');
@@ -2163,13 +2198,13 @@ document.getElementById('ex-rate-easy').onclick = () => exRate(3);
 
 async function exEndSession() {
 exRender(`
-   <div style="text-align:center;padding:40px 20px">
-     <div style="font-size:48px;margin-bottom:16px">🎉</div>
-     <div style="font-size:22px;font-weight:800;color:#1a1a2e;margin-bottom:8px">Session complete!</div>
-     <div style="font-size:15px;color:#6b7280;margin-bottom:24px">You answered ${exAnswered} question${exAnswered!==1?'s':''}.</div>
-     <button id="ex-again-btn" style="padding:14px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Choose another exercise</button>
-   </div>
- `);
+  <div style="text-align:center;padding:40px 20px">
+    <div style="font-size:48px;margin-bottom:16px">🎉</div>
+    <div style="font-size:22px;font-weight:800;color:#1a1a2e;margin-bottom:8px">Session complete!</div>
+    <div style="font-size:15px;color:#6b7280;margin-bottom:24px">You answered ${exAnswered} question${exAnswered!==1?'s':''}.</div>
+    <button id="ex-again-btn" style="padding:14px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Choose another exercise</button>
+  </div>
+`);
 document.getElementById('ex-again-btn').onclick = exShowPicker;
 }
 
