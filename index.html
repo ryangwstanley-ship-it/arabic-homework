@@ -115,6 +115,12 @@
 /* CONTENT */
 .content { padding: 20px; max-width: 600px; }
 .section-label { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--grey); margin-bottom: 12px; }
+.back-row { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; cursor: pointer; }
+.back-btn { color: var(--blue); font-size: 20px; line-height: 1; }
+.back-row .screen-title { color: var(--ink); font-size: 16px; font-weight: 600; letter-spacing: 0.3px; margin: 0; }
+.revise-tab-row { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+.revise-tab-btn { flex: 1; text-align: center; padding: 12px 0; font-size: 13.5px; font-weight: 600; color: var(--grey); border: none; background: none; cursor: pointer; border-bottom: 2px solid transparent; }
+.revise-tab-btn.active { color: var(--blue); border-bottom-color: var(--blue); }
 
 /* STREAK CARD */
 .streak-card { background: #0c0c16; border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; }
@@ -400,6 +406,7 @@ console.log("THE FILE IS LOADING!");
 
 <!-- HOMEWORK TAB -->
 <div id="tab-content-homework" class="content" style="display:none">
+<div class="back-row" onclick="switchTab('home')"><span class="back-btn">‹</span><span class="screen-title">Upload Homework</span></div>
 
 <div id="missed-banner" style="display:none"></div>
 <div class="section-label">Sessions</div>
@@ -431,8 +438,16 @@ console.log("THE FILE IS LOADING!");
 <div id="upload-area-wrap" style="display:none"></div>
 </div>
 
-<!-- FLASHCARDS TAB -->
-<div id="tab-content-flashcards" class="content" style="display:none">
+<!-- REVISE LESSON -->
+<div id="tab-content-revise" class="content" style="display:none">
+<div class="back-row" onclick="switchTab('home')"><span class="back-btn">‹</span><span class="screen-title">Revise Lesson</span></div>
+<div class="revise-tab-row">
+<button class="revise-tab-btn" id="revise-tab-flashcards" onclick="switchReviseSubTab('flashcards')">Flashcards</button>
+<button class="revise-tab-btn" id="revise-tab-exercises" onclick="switchReviseSubTab('exercises')">Exercises</button>
+</div>
+
+<!-- FLASHCARDS SUB-TAB -->
+<div id="tab-content-flashcards" style="display:none">
 <div class="section-label">Lessons</div>
 <div class="fc-lesson-picker" id="fc-lesson-picker"></div>
 <div class="fc-stats" id="fc-stats"></div>
@@ -474,14 +489,15 @@ console.log("THE FILE IS LOADING!");
 </div>
 
 </div>
-</div>
-<!-- EXERCISES TAB -->
-<div id="tab-content-exercises" class="content" style="display:none">
+<!-- EXERCISES SUB-TAB -->
+<div id="tab-content-exercises" style="display:none">
 <div id="ex-root"></div>
+</div>
 </div>
 <!-- STORY TAB -->
 <!-- STORY TAB -->
 <div id="tab-content-story" class="content" style="display:none">
+<div class="back-row" onclick="switchTab('home')"><span class="back-btn">‹</span><span class="screen-title">Start Lesson</span></div>
 <style>
 .story-word { cursor:pointer; }
 .story-word.new { font-weight:700; color:#8b2035; }
@@ -931,7 +947,7 @@ buildSidebar(); updateHeaderForInstructor();
 app.style.display='block'; app.style.maxWidth='480px'; app.style.margin='0 auto';
 document.getElementById('header-title').textContent='My Homework';
 document.getElementById('header-sub').textContent=STUDENTS[currentUser]?.display||'';
-document.getElementById('tabs-bar').style.display='flex';
+
 switchTab('home');
 renderDopamineButton();
 }
@@ -943,16 +959,21 @@ window.switchTab = function(tab) {
 currentTab = tab;
 document.getElementById('tab-content-home').style.display = tab==='home' ? 'block' : 'none';
 document.getElementById('tab-content-homework').style.display = tab==='homework' ? 'block' : 'none';
-document.getElementById('tab-content-flashcards').style.display = tab==='flashcards' ? 'block' : 'none';
-document.getElementById('tab-content-exercises').style.display = tab==='exercises' ? 'block' : 'none';
+document.getElementById('tab-content-revise').style.display = tab==='revise' ? 'block' : 'none';
 document.getElementById('tab-content-story').style.display = tab==='story' ? 'block' : 'none';
 document.getElementById('tab-home').classList.toggle('active', tab==='home');
 document.getElementById('tab-homework').classList.toggle('active', tab==='homework');
-document.getElementById('tab-flashcards').classList.toggle('active', tab==='flashcards');
-document.getElementById('tab-exercises').classList.toggle('active', tab==='exercises');
 document.getElementById('tab-story').classList.toggle('active', tab==='story');
-if (tab==='flashcards') renderFlashcards();
-if (tab==='exercises' && typeof exShowPicker === 'function') exShowPicker();
+if (tab==='revise') switchReviseSubTab('flashcards');
+}
+
+window.switchReviseSubTab = function(sub) {
+document.getElementById('tab-content-flashcards').style.display = sub==='flashcards' ? 'block' : 'none';
+document.getElementById('tab-content-exercises').style.display = sub==='exercises' ? 'block' : 'none';
+document.getElementById('revise-tab-flashcards').classList.toggle('active', sub==='flashcards');
+document.getElementById('revise-tab-exercises').classList.toggle('active', sub==='exercises');
+if (sub==='flashcards') renderFlashcards();
+if (sub==='exercises' && typeof exShowPicker === 'function') exShowPicker();
 }
 
 
@@ -1614,7 +1635,7 @@ renderRevisionBanner();
 });
 // ── EVENTS ──
 document.getElementById('home-btn-start').addEventListener('click', () => switchTab('story'));
-document.getElementById('home-btn-revise').addEventListener('click', () => switchTab('flashcards'));
+document.getElementById('home-btn-revise').addEventListener('click', () => switchTab('revise'));
 document.getElementById('home-btn-upload').addEventListener('click', () => switchTab('homework'));
 document.getElementById('login-btn').addEventListener('click',handleLogin);
 document.getElementById('code-input').addEventListener('keydown',e=>{if(e.key==='Enter')handleLogin();});
