@@ -249,6 +249,18 @@
 .fc-card:active { transform: scale(0.98); }
 .fc-arabic { font-size: 42px; font-weight: 700; color: var(--ink); line-height: 1.3; direction: rtl; margin-bottom: 8px; }
 .fc-tap-hint { font-size: 13px; color: var(--grey); margin-top: 16px; }
+.fc-diff-banner { position: absolute; top: 10px; right: 10px; padding: 3px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; opacity: 0.6; }
+.fc-diff-hard { background: #fee2e2; color: #b91c1c; }
+.fc-diff-medium { background: #fef3c7; color: #b45309; }
+.fc-diff-easy { background: #dcfce7; color: #15803d; }
+.mastery-gain-popup { position: fixed; top: 40%; left: 50%; font-size: 32px; font-weight: 800; color: #15803d; background: rgba(255,255,255,0.95); padding: 10px 22px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.18); z-index: 999; pointer-events: none; animation: masteryGainFloat 1.4s ease-out forwards; }
+@keyframes masteryGainFloat {
+0% { opacity: 0; transform: translate(-50%, -30%) scale(0.7); }
+15% { opacity: 1; transform: translate(-50%, -50%) scale(1.15); }
+30% { transform: translate(-50%, -50%) scale(1); }
+75% { opacity: 1; transform: translate(-50%, -90%) scale(1); }
+100% { opacity: 0; transform: translate(-50%, -110%) scale(1); }
+}
 .fc-english { font-size: 22px; font-weight: 600; color: var(--blue); margin-top: 12px; display: none; }
 .fc-card.revealed .fc-english { display: block; }
 .fc-card.revealed .fc-tap-hint { display: none; }
@@ -448,25 +460,6 @@ console.log("THE FILE IS LOADING!");
 <div class="section-label">Lessons</div>
 <div class="fc-lesson-picker" id="fc-lesson-picker"></div>
 
-
-<!-- TIMER PANEL -->
-<div class="fc-timer-panel">
-<div class="fc-timer-row">
-<div class="fc-timer-display" id="fc-timer-display">5:00</div>
-<div class="fc-timer-controls">
-<button class="fc-timer-btn fc-timer-start" id="fc-timer-start-btn">▶ Start</button>
-<button class="fc-timer-btn fc-timer-stop" id="fc-timer-stop-btn" style="display:none">⏸ Stop</button>
-<button class="fc-timer-btn fc-timer-reset" id="fc-timer-reset-btn">↺</button>
-</div>
-</div>
-<div class="fc-timer-goal">
-<label>Goal</label>
-<input type="range" id="fc-timer-range" min="1" max="5" step="1" value="5">
-<span class="fc-timer-goal-val" id="fc-timer-goal-val">5 min</span>
-</div>
-<div class="fc-session-result" id="fc-session-result"></div>
-</div>
-
 <div id="fc-area"></div>
 
 
@@ -486,6 +479,23 @@ console.log("THE FILE IS LOADING!");
 .story-word:hover { background:#fef3f2; border-radius:4px; }
 .story-line-num { display:inline-block; direction:ltr; unicode-bidi:isolate; background:#8b2035; color:#fff; font-family:'Scheherazade New', serif; font-size:14px; font-weight:700; width:26px; height:26px; line-height:26px; text-align:center; border-radius:50%; margin-left:10px; vertical-align:middle; }
 .story-en-line { display:none; font-family:-apple-system,sans-serif; font-size:15px; line-height:1.7; color:#374151; background:#f9fafb; border-radius:8px; padding:10px 14px; margin:6px 0 16px 0; direction:ltr; text-align:left; }
+.principles-wrap { margin-top:24px; border-top:1px solid #e5e7eb; padding-top:20px; }
+.principles-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+.principles-progress { font-size:12px; font-weight:600; color:#6b7280; }
+.principle-card { background:#f9fafb; border-radius:16px; padding:24px; box-shadow:0 2px 8px rgba(0,0,0,0.06); min-height:140px; cursor:pointer; text-align:center; }
+.principle-q { font-size:15px; color:#374151; line-height:1.7; }
+.principle-q .pq-ar { font-family:'Scheherazade New', serif; font-size:22px; direction:rtl; display:inline-block; color:#8b2035; font-weight:700; }
+.principle-a { font-size:14px; color:#374151; line-height:1.6; text-align:left; }
+.principle-a .pa-ar { font-family:'Scheherazade New', serif; font-size:20px; direction:rtl; display:block; color:#8b2035; font-weight:700; margin:8px 0; text-align:right; }
+.principle-quote { margin-top:14px; padding:10px 14px; border-left:3px solid #8b2035; background:#fdf6f3; }
+.principle-quote-ar { font-family:'Scheherazade New', serif; font-size:18px; direction:rtl; text-align:right; color:#2b2520; line-height:1.9; }
+.principle-hint { margin-top:16px; font-size:12px; color:#8b2035; font-weight:600; }
+.principles-nav { display:flex; justify-content:space-between; align-items:center; margin-top:14px; }
+.principles-nav-btn { padding:9px 16px; border-radius:10px; border:none; background:#f3f4f6; color:#6b7280; font-size:13px; font-weight:600; cursor:pointer; }
+.principles-nav-btn-primary { background:#8b2035; color:#fff; }
+.principles-dots { display:flex; gap:6px; }
+.principle-dot { width:6px; height:6px; border-radius:50%; background:#d8d2c4; }
+.principle-dot.active { background:#8b2035; }
 </style>
 <div style="background:var(--grey-light);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08)">
 
@@ -528,7 +538,22 @@ console.log("THE FILE IS LOADING!");
 <p class="story-en-line">Why do they worship the idols? Worship is for Allah alone.</p>
 </div>
 
-
+<div class="principles-wrap" id="principles-wrap">
+<div class="principles-header">
+<span class="section-label" style="margin-bottom:0">Key principles</span>
+<span class="principles-progress" id="principles-progress">1 / 5</span>
+</div>
+<div class="principle-card" id="principle-card">
+<div class="principle-q" id="principle-q"></div>
+<div class="principle-a" id="principle-a" style="display:none"></div>
+<div class="principle-hint" id="principle-hint">Tap when you've found it</div>
+</div>
+<div class="principles-nav">
+<button class="principles-nav-btn" id="principle-back-btn">‹ Back</button>
+<div class="principles-dots" id="principles-dots"></div>
+<button class="principles-nav-btn principles-nav-btn-primary" id="principle-next-btn">Next ›</button>
+</div>
+</div>
 
 </div>
 </div>
@@ -656,14 +681,6 @@ let fcCurrentIdx = 0;
 let fcRevealed = false;
 let fcDeletedCards = {}; // fcDeletedCards[lessonNum] = Set of card indices deleted
 
-// Timer state
-let fcTimerGoalMinutes = 5;
-let fcTimerSecondsLeft = 300;
-let fcTimerRunning = false;
-let fcTimerInterval = null;
-let fcSessionCardsRead = 0;
-let fcTimerStarted = false; // has session started at least once
-
 // Revision activity, per student: allFcActivity[code][dateKey] = minutes
 let allFcActivity = {};
 // Card/question completion count, per student: allCardActivity[code][dateKey] = number of flashcards + exercise questions done that day
@@ -727,7 +744,7 @@ return missed.sort();
 }
 
 function getStreak(code) {
-const activity = allFcActivity[code] || {};
+const activity = allCardActivity[code] || {};
 let streak = 0;
 const now = new Date();
 for (let i = 1; i <= 365; i++) {
@@ -741,7 +758,7 @@ return streak;
 }
 
 function getConsistency(code) {
-const activity = allFcActivity[code] || {};
+const activity = allCardActivity[code] || {};
 const keys = Object.keys(activity).filter(k => activity[k] >= 20);
 if (!keys.length) return 0;
 const firstDate = new Date(keys.sort()[0]);
@@ -750,7 +767,7 @@ return keys.length / daysSince;
 }
 
 function getConsecutiveMissed(code) {
-const activity = allFcActivity[code] || {};
+const activity = allCardActivity[code] || {};
 let count = 0;
 const now = new Date();
 for (let i = 1; i <= 60; i++) {
@@ -764,7 +781,7 @@ return count;
 }
 
 function getStudentStatus(code) {
-const activity = allFcActivity[code] || {};
+const activity = allCardActivity[code] || {};
 const today = todayKey();
 const d = new Date(); d.setDate(d.getDate()-1); const yesterday = dateKey(d);
 const hasToday = (activity[today]||0) >= 20;
@@ -775,7 +792,7 @@ return keys.length === 0 ? 'grey' : 'red';
 }
 
 function getMissedRevisionDays(code) {
-const activity = allFcActivity[code] || {};
+const activity = allCardActivity[code] || {};
 const missed = [], now = new Date();
 const allKeys = Object.keys(activity).sort();
 if (!allKeys.length) return [];
@@ -788,7 +805,6 @@ if (isMidnightPast(key) && (activity[key]||0) < 20) missed.push(key);
 }
 return missed.sort();
 }
-
 function getRankedStudents() { return Object.keys(STUDENTS).sort((a,b)=>getConsistency(b)-getConsistency(a)); }
 
 function fileToBase64(file) {
@@ -980,10 +996,10 @@ ranked.forEach((code, idx) => {
 const s = STUDENTS[code]; const status = getStudentStatus(code); const streak = getStreak(code);
 const todaySub = submissions[code]?.[today];
 const didHomework = !!(todaySub && (todaySub.images?.length || todaySub.text));
-const todayMinutes = (allFcActivity[code]||{})[today] || 0;
+const todayCount = (allCardActivity[code]||{})[today] || 0;
 const el = document.createElement('div');
 el.className='sidebar-student'+(code===viewingStudent?' active':'');
-el.innerHTML=`<div class="sidebar-avatar">${idx+1}</div><div class="sidebar-info"><div class="sidebar-name">${s.name}</div><div class="sidebar-streak">🔥 ${streak} day streak · ⏱ ${todayMinutes} min today</div></div><div class="hw-dot ${didHomework?'done':''}" title="Homework today"></div><div class="status-dot ${status}"></div>`;
+el.innerHTML=`<div class="sidebar-avatar">${idx+1}</div><div class="sidebar-info"><div class="sidebar-name">${s.name}</div><div class="sidebar-streak">🔥 ${streak} day streak · 📇 ${todayCount}/20 today</div></div><div class="hw-dot ${didHomework?'done':''}" title="Homework today"></div><div class="status-dot ${status}"></div>`;
 el.onclick=async()=>{ viewingStudent=code; updateHeaderForInstructor(); buildSidebar(); render(); };
 wrap.appendChild(el);
 });
@@ -1013,9 +1029,9 @@ const consecutive = getConsecutiveMissed(code);
 if (!missed.length) { banner.style.display='none'; return; }
 banner.style.display='block';
 if (consecutive >= 2) {
-banner.innerHTML=`<div class="banner red"><div class="banner-icon">🚨</div><div><div class="banner-title">You've missed ${consecutive} days of revision in a row — your streak has reset!</div><div class="banner-sub">Do at least 20 minutes of flashcards or exercises today to start a new streak.</div></div></div>`;
+banner.innerHTML=`<div class="banner red"><div class="banner-icon">🚨</div><div><div class="banner-title">You've missed ${consecutive} days of revision in a row — your streak has reset!</div><div class="banner-sub">Do at least 20 flashcards or exercise questions today to start a new streak.</div></div></div>`;
 } else {
-banner.innerHTML=`<div class="banner yellow"><div class="banner-icon">⚠️</div><div><div class="banner-title">You missed ${missed.length} day${missed.length>1?'s':''} of revision!</div><div class="banner-sub">Do at least 20 minutes of flashcards or exercises today to keep your streak alive.</div></div></div>`;
+banner.innerHTML=`<div class="banner yellow"><div class="banner-icon">⚠️</div><div><div class="banner-title">You missed ${missed.length} day${missed.length>1?'s':''} of revision!</div><div class="banner-sub">Do at least 20 flashcards or exercise questions today to keep your streak alive.</div></div></div>`;
 }
 }
 
@@ -1025,8 +1041,8 @@ const code = activeStudentCode();
 if (!code) { banner.style.display='none'; return; }
 banner.style.display='flex';
 
-const todayMinutes = (allFcActivity[code] || {})[todayKey()] || 0;
-const percent = Math.min(100, Math.round((todayMinutes/20)*100));
+const todayCount = (allCardActivity[code] || {})[todayKey()] || 0;
+const percent = Math.min(100, Math.round((todayCount/20)*100));
 const circumference = 2 * Math.PI * 34;
 const ringFg = document.getElementById('revision-ring-fg');
 ringFg.style.strokeDasharray = circumference;
@@ -1113,8 +1129,8 @@ document.getElementById('day-badge').textContent=dayNum?`Day ${dayNum}`:(hasCont
 document.getElementById('day-date').textContent=formatDateLong(selectedDate);
 document.getElementById('day-status').textContent=hasContent?(reviewed?'✓ Reviewed':(isMakeup?'• Made up':'• Uploaded')):'';
 
-// Show flashcard activity if any
-const fcCount = (allFcActivity[code] || {})[selectedDate];
+// Show flashcard/exercise activity if any
+const fcCount = (allCardActivity[code] || {})[selectedDate];
 if (fcCount) {
 const existing = document.getElementById('day-status');
 existing.textContent += (existing.textContent ? ' · ' : '') + `🃏 ${fcCount} cards`;
@@ -1217,79 +1233,7 @@ try{await updateDoc(doc(db,'submissions',code,'days',selectedDate),{reviewed:!cu
 catch(e){showToast('Error — try again');submissions[code][selectedDate].reviewed=current;render();}
 }
 
-// ── TIMER ──
-function formatTime(seconds) {
-const m = Math.floor(seconds / 60);
-const s = seconds % 60;
-return `${m}:${String(s).padStart(2,'0')}`;
-}
 
-function updateTimerDisplay() {
-const el = document.getElementById('fc-timer-display');
-if (!el) return;
-el.textContent = formatTime(fcTimerSecondsLeft);
-el.className = 'fc-timer-display';
-if (fcTimerRunning) el.classList.add('running');
-else if (fcTimerStarted && fcTimerSecondsLeft === 0) el.classList.add('done');
-}
-
-function startTimer() {
-if (fcTimerRunning) return;
-if (fcTimerSecondsLeft === 0) return;
-fcTimerRunning = true;
-fcTimerStarted = true;
-const resultEl = document.getElementById('fc-session-result');
-if (resultEl) resultEl.style.display = 'none';
-document.getElementById('fc-timer-start-btn').style.display = 'none';
-document.getElementById('fc-timer-stop-btn').style.display = 'inline-flex';
-fcTimerInterval = setInterval(() => {
-fcTimerSecondsLeft--;
-updateTimerDisplay();
-if (fcTimerSecondsLeft <= 0) {
-clearInterval(fcTimerInterval);
-fcTimerRunning = false;
-document.getElementById('fc-timer-start-btn').style.display = 'inline-flex';
-document.getElementById('fc-timer-stop-btn').style.display = 'none';
-onTimerEnd();
-}
-}, 1000);
-updateTimerDisplay();
-}
-
-function stopTimer() {
-if (!fcTimerRunning) return;
-clearInterval(fcTimerInterval);
-fcTimerRunning = false;
-document.getElementById('fc-timer-start-btn').style.display = 'inline-flex';
-document.getElementById('fc-timer-stop-btn').style.display = 'none';
-updateTimerDisplay();
-}
-
-function resetTimer() {
-stopTimer();
-fcTimerSecondsLeft = fcTimerGoalMinutes * 60;
-fcSessionCardsRead = 0;
-fcTimerStarted = false;
-const resultEl = document.getElementById('fc-session-result');
-if (resultEl) resultEl.style.display = 'none';
-updateTimerDisplay();
-}
-
-async function onTimerEnd() {
-const today = todayKey();
-const code = currentUser || viewingStudent;
-if (!allFcActivity[code]) allFcActivity[code] = {};
-allFcActivity[code][today] = (allFcActivity[code][today] || 0) + fcTimerGoalMinutes;
-await saveFlashcardData(code);
-renderCalendar();
-renderRevisionBanner();
-
-const resultEl = document.getElementById('fc-session-result');
-if (resultEl) {
-resultEl.style.display = 'block';
-resultEl.textContent = `✓ Session complete — ${fcTimerGoalMinutes} min added (${allFcActivity[code][today]} min total today)`;
-}
-}
 
 // ── FLASHCARDS ──
 function isCardDeleted(lessonNum, cardIdx) {
@@ -1360,7 +1304,7 @@ function renderFlashcards() {
     const lessonNum = parseInt(num);
     if (lessonNum === 0) return; // Skip the unused "Advanced students" placeholder lesson
     if (lessonNum > maxLesson) return; // Skip lessons beyond student's level
-    const pct = getLessonMasteryPercent(lessonNum);
+    const pct = getLessonMasteryPercent(num);
     const btn = document.createElement('button');
     btn.className='fc-lesson-btn'+(num==fcCurrentLesson?' active':'');
     btn.innerHTML = miniRing(pct, '🃏', true) + `<div class="fc-lesson-name">${lesson.name}</div>`;
@@ -1370,32 +1314,6 @@ function renderFlashcards() {
 
 
 
-// Timer panel wiring (re-bind after render)
-updateTimerDisplay();
-const startBtn = document.getElementById('fc-timer-start-btn');
-const stopBtn = document.getElementById('fc-timer-stop-btn');
-const resetBtn = document.getElementById('fc-timer-reset-btn');
-const rangeEl = document.getElementById('fc-timer-range');
-const goalValEl = document.getElementById('fc-timer-goal-val');
-
-if (startBtn) {
-startBtn.onclick = startTimer;
-stopBtn.onclick = stopTimer;
-resetBtn.onclick = resetTimer;
-}
-
-if (rangeEl) {
-rangeEl.value = fcTimerGoalMinutes;
-goalValEl.textContent = `${fcTimerGoalMinutes} min`;
-rangeEl.oninput = () => {
-fcTimerGoalMinutes = parseInt(rangeEl.value);
-goalValEl.textContent = `${fcTimerGoalMinutes} min`;
-if (!fcTimerRunning) {
-fcTimerSecondsLeft = fcTimerGoalMinutes * 60;
-updateTimerDisplay();
-}
-};
-}
 
 if (!fcQueue.length) buildFcQueue();
 
@@ -1413,7 +1331,9 @@ document.getElementById('fc-restart').addEventListener('click',()=>{
 LESSONS[fcCurrentLesson].cards.forEach((_,i)=>{
 if (!isCardDeleted(fcCurrentLesson, i)) {
 const p=getCardProgress(fcCurrentLesson,i);
+if (p.lastRating !== 3) {
 setCardProgress(fcCurrentLesson,i,{...p,nextReview:0});
+}
 }
 });
 buildFcQueue(); renderFlashcards();
@@ -1422,11 +1342,17 @@ return;
 }
 
 const card = fcQueue[fcCurrentIdx];
+const prevRating = getCardProgress(fcCurrentLesson, card.idx).lastRating;
+const diffBanner = prevRating === 1 ? '<div class="fc-diff-banner fc-diff-hard">Hard</div>'
+  : prevRating === 2 ? '<div class="fc-diff-banner fc-diff-medium">Medium</div>'
+  : prevRating === 3 ? '<div class="fc-diff-banner fc-diff-easy">Easy</div>'
+  : '';
 
 const cardEl = document.createElement('div');
 cardEl.className='fc-card-wrap';
 cardEl.innerHTML=`
    <div class="fc-card" id="fc-card">
+     ${diffBanner}
      <div class="fc-arabic">${card.ar}</div>
      <div class="fc-english">${card.en}</div>
      <div class="fc-tap-hint">Tap to reveal</div>
@@ -1458,13 +1384,18 @@ document.getElementById('fc-rating-wrap').classList.add('visible');
 ratingWrap.querySelectorAll('.fc-rating-btn').forEach(btn=>{
 btn.addEventListener('click',async()=>{
 const rating = parseInt(btn.dataset.r);
+const oldPct = getLessonMasteryPercent(fcCurrentLesson);
 applyRating(fcCurrentLesson, card.idx, rating);
 if (rating === 1) fcQueue.push(card);
 fcCurrentIdx++;
-fcSessionCardsRead++;
 const code = currentUser || viewingStudent;
 incrementCardActivity(code);
 await saveFlashcardData(code);
+if (prevRating !== 3 && rating === 3) {
+const newPct = getLessonMasteryPercent(fcCurrentLesson);
+const diff = newPct - oldPct;
+if (diff > 0) showMasteryGain(diff);
+}
 renderFlashcards();
 });
 });
@@ -1479,6 +1410,7 @@ function closeModal(){document.getElementById('modal').classList.remove('open');
 // ── TOAST ──
 let toastTimer;
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2500);}
+function showMasteryGain(diff){const el=document.createElement('div');el.className='mastery-gain-popup';el.textContent=`+${diff}%`;document.body.appendChild(el);setTimeout(()=>el.remove(),1400);}
 function showWordMeaning(el) { showToast(el.textContent + ' = ' + el.dataset.en); }
 function toggleStoryEnglish() {
   const lines = document.querySelectorAll('.story-en-line');
@@ -1489,6 +1421,78 @@ function toggleStoryEnglish() {
 }
 window.showWordMeaning = showWordMeaning;
 window.toggleStoryEnglish = toggleStoryEnglish;
+
+const PRINCIPLES = [
+  {
+    q: `Go back and look at the idol sentence — <span class="pq-ar">صَنَمٌ</span> shows up, then <span class="pq-ar">أَصْنَامٌ</span> shows up right after it. What's different about how they're written?`,
+    a: `Plurals usually have more letters than the singular.<br><span class="pa-ar">صَنَمٌ ← أَصْنَامٌ &nbsp;&nbsp; رَجُلٌ ← رِجَالٌ</span>`
+  },
+  {
+    q: `In the story, "the polytheists" is <span class="pq-ar">مُشْرِكِينَ</span> — it looks like the singular word with something added on the end. But "the idols" is <span class="pq-ar">أَصْنَامٌ</span> — a totally different shape. Why do you think that is?`,
+    a: `Arabic plurals come in two types: one for people, one for everything else (objects, ideas, animals). People-plurals are regular — just add وْنَ / يْنَ / اتٌ. Everything-else plurals usually change shape entirely and must be memorised.<br><span class="pa-ar">مُشْرِكٌ ← مُشْرِكُونَ (people, regular) &nbsp;&nbsp; صَنَمٌ ← أَصْنَامٌ (everything-else, irregular)</span>`
+  },
+  {
+    q: `<span class="pq-ar">أَصْنَامٌ</span> (idols) doesn't end in ة. So why does the adjective describing it — <span class="pq-ar">كَثِيرَةٌ</span> — take the feminine ending?`,
+    a: `A word is feminine if it ends in taa marbuta (ة). Every "everything-else" plural is also treated as feminine — even ones with no ة at all.<br><span class="pa-ar">قَرْيَةٌ، عِبَادَةٌ (taa marbuta) &nbsp;&nbsp; أَصْنَامٌ، أَيَّامٌ، أَسْمَاءٌ (feminine anyway, no ة)</span>`
+  },
+  {
+    q: `Did you notice that "many" is written two different ways in the story? <span class="pq-ar">نَاسٌ كَثِيرُونَ</span> for the people, but <span class="pq-ar">أَصْنَامٌ كَثِيرَةٌ</span> for the idols. Scroll up and find both lines — what's changing?`,
+    a: `Adjectives, verbs and pronouns must match whichever plural type is used — and "everything-else" plurals always take the feminine ending.<br><span class="pa-ar">مُشْرِكُونَ كَثِيرُونَ / مُشْرِكَاتٌ كَثِيرَاتٌ &nbsp;&nbsp; أَصْنَامٌ كَبِيرَةٌ</span>`,
+    quote: `إِنَّ الْمُسْلِمِينَ وَالْمُسْلِمَاتِ وَالْمُؤْمِنِينَ وَالْمُؤْمِنَاتِ وَالْقَانِتِينَ وَالْقَانِتَاتِ وَالصَّادِقِينَ وَالصَّادِقَاتِ وَالصَّابِرِينَ وَالصَّابِرَاتِ وَالْخَاشِعِينَ وَالْخَاشِعَاتِ وَالْمُتَصَدِّقِينَ وَالْمُتَصَدِّقَاتِ وَالصَّائِمِينَ وَالصَّائِمَاتِ وَالْحَافِظِينَ فُرُوجَهُمْ وَالْحَافِظَاتِ وَالذَّاكِرِينَ اللَّهَ كَثِيرًا وَالذَّاكِرَاتِ أَعَدَّ اللَّهُ لَهُم مَّغْفِرَةً وَأَجْرًا عَظِيمًا`
+  },
+  {
+    q: `You met <span class="pq-ar">الرَّجُلُ</span> (the man) and <span class="pq-ar">قَرْيَةٍ</span> (a village) in the story. Based on what you just learned, what do you think "men" and "villages" look like?`,
+    a: `Most principles have exceptions: رَجُلٌ → رِجَالٌ is irregular even though it's a people-word. قَرْيَةٌ → قُرًى is irregular too — and actually has fewer letters, breaking the usual "more letters" pattern.`
+  }
+];
+
+let principleIdx = 0;
+let principleRevealed = false;
+
+function renderPrinciple() {
+  const qEl = document.getElementById('principle-q');
+  const aEl = document.getElementById('principle-a');
+  const hintEl = document.getElementById('principle-hint');
+  const progEl = document.getElementById('principles-progress');
+  const dotsEl = document.getElementById('principles-dots');
+  const backBtn = document.getElementById('principle-back-btn');
+  const nextBtn = document.getElementById('principle-next-btn');
+  const p = PRINCIPLES[principleIdx];
+
+  qEl.innerHTML = p.q;
+  let answerHtml = p.a;
+  if (p.quote) {
+    answerHtml += `<div class="principle-quote"><div class="principle-quote-ar">${p.quote}</div></div>`;
+  }
+  aEl.innerHTML = answerHtml;
+  qEl.style.display = principleRevealed ? 'none' : 'block';
+  aEl.style.display = principleRevealed ? 'block' : 'none';
+  hintEl.textContent = principleRevealed ? "Tap to see the question again" : "Tap when you've found it";
+
+  progEl.textContent = (principleIdx + 1) + ' / ' + PRINCIPLES.length;
+
+  dotsEl.innerHTML = '';
+  PRINCIPLES.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'principle-dot' + (i === principleIdx ? ' active' : '');
+    dotsEl.appendChild(dot);
+  });
+
+  backBtn.style.visibility = principleIdx === 0 ? 'hidden' : 'visible';
+  nextBtn.textContent = principleIdx === PRINCIPLES.length - 1 ? 'Done' : 'Next ›';
+}
+
+document.getElementById('principle-card').addEventListener('click', () => {
+  principleRevealed = !principleRevealed;
+  renderPrinciple();
+});
+document.getElementById('principle-back-btn').addEventListener('click', () => {
+  if (principleIdx > 0) { principleIdx--; principleRevealed = false; renderPrinciple(); }
+});
+document.getElementById('principle-next-btn').addEventListener('click', () => {
+  if (principleIdx < PRINCIPLES.length - 1) { principleIdx++; principleRevealed = false; renderPrinciple(); }
+});
+renderPrinciple();
   
 
 // ── RENDER ──
@@ -1508,15 +1512,7 @@ if(currentTab==='flashcards')renderFlashcards();
 
 
 
-window.addEventListener('ex-session-complete', async (e) => {
-const today = todayKey();
-const code = currentUser || viewingStudent;
-if (!allFcActivity[code]) allFcActivity[code] = {};
-allFcActivity[code][today] = (allFcActivity[code][today] || 0) + e.detail.count;
-await saveFlashcardData(code);
-renderCalendar();
-renderRevisionBanner();
-});
+
 // ── EVENTS ──
 document.getElementById('home-btn-start').addEventListener('click', () => switchTab('story'));
 document.getElementById('home-btn-revise').addEventListener('click', () => switchTab('revise'));
@@ -1549,8 +1545,7 @@ document.getElementById('modal-close-btn').addEventListener('click',e=>{e.stopPr
 
 // ── EXERCISE ENGINE ──
 let exMode = null, exQuestions = [], exCurrent = 0, exAnswered = 0;
-let exTimerSeconds = 0, exTimerInterval = null;
-let exGoalSeconds = 900, exDotEarned = false;
+let exDotEarned = false;
 let exWordSelected = [], exWordBank = [];
 let exFemSelected = [];
 
@@ -1751,16 +1746,7 @@ exRender(`
    <div class="section-label">${title}</div>
    <div style="background:var(--grey-light);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
      ${isGrammarDrill ? `<div style="background:#fffbeb;border:1.5px solid #fcd34d;border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:13px;color:#92400e;line-height:1.5">⚠️ These sentences are computer-generated, and the meanings are deliberately nonsensical so you can't guess the answer from context. Focus only on the grammar rule being tested — not what the sentence means.</div>` : ''}
-     <div style="font-size:14px;font-weight:600;color:#6b7280;margin-bottom:12px">Choose session length</div>
-     <select id="ex-timer-select" style="width:100%;font-size:16px;padding:12px;border:2px solid #e5e7eb;border-radius:10px;outline:none">
-       <option value="60">1 minute</option>
-       <option value="120">2 minutes</option>
-       <option value="180">3 minutes</option>
-       <option value="300">5 minutes</option>
-       <option value="600">10 minutes</option>
-       <option value="900" selected>15 minutes</option>
-       <option value="1200">20 minutes</option>
-     </select>
+  <div style="font-size:14px;color:#6b7280;margin-bottom:12px;text-align:center">This session: 20 questions</div>
      <button id="ex-start-btn" style="width:100%;margin-top:14px;padding:14px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">Start</button>
      <button id="ex-back-btn" style="width:100%;margin-top:8px;padding:10px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">← Back</button>
    </div>
@@ -1770,8 +1756,6 @@ document.getElementById('ex-back-btn').onclick = exShowPicker;
 }
 
 function exLaunch() {
-exGoalSeconds = parseInt(document.getElementById('ex-timer-select').value);
-exTimerSeconds = exGoalSeconds;
 exAnswered = 0;
 exCurrent = 0;
 exDotEarned = false;
@@ -1792,15 +1776,13 @@ exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS]
 : [...TRUE_FALSE_QUESTIONS]
 );
 exRenderActive();
-exStartTimer();
 exShowQuestion();
 }
 
 function exRenderActive() {
 exRender(`
-   <div style="display:flex;justify-content:space-between;align-items:center;background:var(--grey-light);padding:12px 20px;border-radius:12px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,0.06)">
-     <div id="ex-timer-display" style="font-size:1.6em;font-weight:800;color:#2563eb;font-variant-numeric:tabular-nums">--:--</div>
-     <div id="ex-progress" style="color:#6b7280;font-size:14px;font-weight:600">Question 1</div>
+   <div style="display:flex;justify-content:center;align-items:center;background:var(--grey-light);padding:12px 20px;border-radius:12px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,0.06)">
+     <div id="ex-progress" style="color:#6b7280;font-size:14px;font-weight:600">Question 1 / 20</div>
    </div>
    <div style="background:var(--grey-light);border-radius:16px;padding:28px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
      <div id="ex-instruction" style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6b7280;margin-bottom:16px"></div>
@@ -1828,23 +1810,6 @@ exRender(`
  `);
 }
 
-function exStartTimer() {
-exUpdateTimer();
-exTimerInterval = setInterval(() => {
-exTimerSeconds--;
-exUpdateTimer();
-if (exTimerSeconds <= 0) { clearInterval(exTimerInterval); exEndSession(); }
-}, 1000);
-}
-
-function exUpdateTimer() {
-const el = document.getElementById('ex-timer-display');
-if (!el) return;
-const m = Math.floor(exTimerSeconds/60);
-const s = exTimerSeconds%60;
-el.textContent = m+':'+(s<10?'0':'')+s;
-el.style.color = exTimerSeconds <= 30 ? '#dc2626' : '#2563eb';
-}
 
 function exShowQuestion() {
 if (exCurrent >= exQuestions.length) {
@@ -1870,7 +1835,7 @@ const revealEl = document.getElementById('ex-reveal');
 const ratingEl = document.getElementById('ex-rating-area');
 if (revealEl) revealEl.style.display = 'none';
 if (ratingEl) ratingEl.style.display = 'none';
-document.getElementById('ex-progress').textContent = 'Question '+(exAnswered+1);
+document.getElementById('ex-progress').textContent = 'Question '+(exAnswered+1)+' / 20';
 
 if (exMode === 'fillgap') {
 const q = exQuestions[exCurrent];
@@ -2219,6 +2184,7 @@ function exRate(rating) {
 const q = exQuestions[exCurrent];
 if (window.recordExerciseRating) window.recordExerciseRating(exMode, q.__idx, rating);
 exAnswered++;
+if (exAnswered >= 20) { exEndSession(); return; }
 exCurrent++;
 exShowQuestion();
 }
@@ -2230,19 +2196,15 @@ document.getElementById('ex-rate-easy').onclick = () => exRate(3);
 }
 
 async function exEndSession() {
-clearInterval(exTimerInterval);
-const minutesThisSession = Math.round(exGoalSeconds / 60);
 exRender(`
    <div style="text-align:center;padding:40px 20px">
      <div style="font-size:48px;margin-bottom:16px">🎉</div>
      <div style="font-size:22px;font-weight:800;color:#1a1a2e;margin-bottom:8px">Session complete!</div>
-     <div style="font-size:15px;color:#6b7280;margin-bottom:24px">You answered ${exAnswered} question${exAnswered!==1?'s':''} in ${minutesThisSession} minute${minutesThisSession!==1?'s':''}.</div>
-     <div style="background:#f0fdf4;border:2px solid #86efac;border-radius:12px;padding:14px;margin-bottom:20px;font-size:14px;font-weight:600;color:#15803d">✓ ${minutesThisSession} minute${minutesThisSession!==1?'s':''} added to today's revision</div>
+     <div style="font-size:15px;color:#6b7280;margin-bottom:24px">You answered ${exAnswered} question${exAnswered!==1?'s':''}.</div>
      <button id="ex-again-btn" style="padding:14px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Choose another exercise</button>
    </div>
  `);
 document.getElementById('ex-again-btn').onclick = exShowPicker;
-window.dispatchEvent(new CustomEvent('ex-session-complete', { detail: { count: minutesThisSession } }));
 }
 
 window.exShowPicker = exShowPicker;
