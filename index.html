@@ -31,7 +31,12 @@
 .login-btn { width: 100%; margin-top: 16px; padding: 14px; background: var(--blue); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; }
 .login-btn:hover { background: #6e1828; }
 .login-error { color: #ef4444; font-size: 13px; margin-top: 10px; text-align: center; display: none; }
+.guest-btn { width: 100%; max-width: 360px; padding: 16px; background: #8b2035; color: white; border: none; border-radius: 10px; font-size: 17px; font-weight: 700; cursor: pointer; margin-bottom: 18px; }
+.guest-btn:hover { background: #6e1828; }
+.login-divider { color: var(--grey); font-size: 13px; margin-bottom: 12px; text-align: center; }
+.login-card-small { padding: 20px; max-width: 300px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
 
+  
 /* APP */
 #app { display: none; min-height: 100vh; }
 
@@ -318,7 +323,9 @@ console.log("THE FILE IS LOADING!");
 <div class="login-logo">Yusr Arabic</div>
 <div class="login-title">Arabic Daily</div>
 <div class="login-subtitle">Daily homework tracker</div>
-<div class="login-card">
+<button class="guest-btn" id="guest-start-btn">Start Your Journey</button>
+<div class="login-divider">For premium users, enter code</div>
+<div class="login-card login-card-small">
 <label>Your code</label>
 <input type="text" id="code-input" maxlength="6" placeholder="ABC123" autocomplete="off">
 <div class="login-error" id="login-error">Code not recognised. Try again.</div>
@@ -673,6 +680,7 @@ let currentUser = null, isInstructor = false, viewingStudent = null;
 let isStudentView = false, calYear, calMonth, selectedDate = null;
 let submissions = {}, sidebarCollapsed = false;
 let currentTab = 'homework';
+let isGuestMode = false;
 
 // Flashcard state
 let fcProgress = {};
@@ -874,6 +882,7 @@ studentLesson[code] = data.lesson || 1;
 if (!studentLesson[code]) studentLesson[code] = 1;
 }
 async function saveFlashcardData(code) {
+if (isGuestMode) return;
 try {
 const customCards = {};
 Object.entries(LESSONS).forEach(([num, lesson]) => {
@@ -917,7 +926,7 @@ for (let i = 0; i < poolLength; i++) { if (prog[i] === 3) easyCount++; }
 return Math.round((easyCount / poolLength) * 100);
 };
 
-async function saveDay(code, dateStr, data) { await setDoc(doc(db,'submissions',code,'days',dateStr), data); }
+async function saveDay(code, dateStr, data) { if (isGuestMode) return; await setDoc(doc(db,'submissions',code,'days',dateStr), data); }
 
 // ── LOGIN ──
 async function handleLogin() {
@@ -941,6 +950,15 @@ startApp();
 err.style.display='block'; btn.textContent='Enter'; btn.disabled=false;
 }
 }
+
+// ── GUEST ──
+window.startGuestJourney = function() {
+isGuestMode = true;
+currentUser = 'GUEST';
+isInstructor = false;
+document.getElementById('home-btn-upload').style.display = 'none';
+startApp();
+};
 
 // ── START ──
 function startApp() {
@@ -1519,6 +1537,7 @@ document.getElementById('home-btn-start').addEventListener('click', () => switch
 document.getElementById('home-btn-revise').addEventListener('click', () => switchTab('revise'));
 document.getElementById('home-btn-upload').addEventListener('click', () => switchTab('homework'));
 document.getElementById('login-btn').addEventListener('click',handleLogin);
+document.getElementById('guest-start-btn').addEventListener('click', startGuestJourney);
 document.getElementById('code-input').addEventListener('keydown',e=>{if(e.key==='Enter')handleLogin();});
 
 document.getElementById('sidebar-toggle').addEventListener('click',toggleSidebar);
