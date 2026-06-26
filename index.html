@@ -563,6 +563,18 @@ console.log("THE FILE IS LOADING!");
 </div>
 <div class="toast" id="toast"></div>
 
+.principle-q .story-word { 
+    cursor: pointer; 
+    color: #8b2035; 
+    font-weight: 700; 
+    text-decoration: underline; 
+    text-decoration-style: dotted;
+}
+.principle-q .story-word:hover { 
+    background: #fef3f2; 
+    border-radius: 4px; 
+}
+  
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
 import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
@@ -1424,24 +1436,24 @@ window.toggleStoryEnglish = toggleStoryEnglish;
 
 const PRINCIPLES = [
   {
-    q: `Go back and look at the idol sentence — <span class="pq-ar">صَنَمٌ</span> shows up, then <span class="pq-ar">أَصْنَامٌ</span> shows up right after it. What's different about how they're written?`,
+    q: `Go back and look at the idol sentence — <span class="story-word" onclick="showWordMeaning(this)" data-en="idol">صَنَمٌ</span> shows up, then <span class="story-word" onclick="showWordMeaning(this)" data-en="idols">أَصْنَامٌ</span> shows up right after it. What's different about how they're written?`,
     a: `Plurals usually have more letters than the singular.<br><span class="pa-ar">صَنَمٌ ← أَصْنَامٌ &nbsp;&nbsp; رَجُلٌ ← رِجَالٌ</span>`
   },
   {
-    q: `In the story, "the polytheists" is <span class="pq-ar">مُشْرِكِينَ</span> — it looks like the singular word with something added on the end. But "the idols" is <span class="pq-ar">أَصْنَامٌ</span> — a totally different shape. Why do you think that is?`,
+    q: `In the story, "the polytheists" is <span class="story-word" onclick="showWordMeaning(this)" data-en="polytheists">مُشْرِكِينَ</span> — it looks like the singular word with something added on the end. But "the idols" is <span class="story-word" onclick="showWordMeaning(this)" data-en="idols">أَصْنَامٌ</span> — a totally different shape. Why do you think that is?`,
     a: `Arabic plurals come in two types: one for people, one for everything else (objects, ideas, animals). People-plurals are regular — just add وْنَ / يْنَ / اتٌ. Everything-else plurals usually change shape entirely and must be memorised.<br><span class="pa-ar">مُشْرِكٌ ← مُشْرِكُونَ (people, regular) &nbsp;&nbsp; صَنَمٌ ← أَصْنَامٌ (everything-else, irregular)</span>`
   },
   {
-    q: `<span class="pq-ar">أَصْنَامٌ</span> (idols) doesn't end in ة. So why does the adjective describing it — <span class="pq-ar">كَثِيرَةٌ</span> — take the feminine ending?`,
+    q: `<span class="story-word" onclick="showWordMeaning(this)" data-en="idols">أَصْنَامٌ</span> (idols) doesn't end in ة. So why does the adjective describing it — <span class="story-word" onclick="showWordMeaning(this)" data-en="many">كَثِيرَةٌ</span> — take the feminine ending?`,
     a: `A word is feminine if it ends in taa marbuta (ة). Every "everything-else" plural is also treated as feminine — even ones with no ة at all.<br><span class="pa-ar">قَرْيَةٌ، عِبَادَةٌ (taa marbuta) &nbsp;&nbsp; أَصْنَامٌ، أَيَّامٌ، أَسْمَاءٌ (feminine anyway, no ة)</span>`
   },
   {
-    q: `Did you notice that "many" is written two different ways in the story? <span class="pq-ar">نَاسٌ كَثِيرُونَ</span> for the people, but <span class="pq-ar">أَصْنَامٌ كَثِيرَةٌ</span> for the idols. Scroll up and find both lines — what's changing?`,
+    q: `Did you notice that "many" is written two different ways in the story? <span class="story-word" onclick="showWordMeaning(this)" data-en="many">كَثِيرُونَ</span> for the people, but <span class="story-word" onclick="showWordMeaning(this)" data-en="many">كَثِيرَةٌ</span> for the idols. Scroll up and find both lines — what's changing?`,
     a: `Adjectives, verbs and pronouns must match whichever plural type is used — and "everything-else" plurals always take the feminine ending.<br><span class="pa-ar">مُشْرِكُونَ كَثِيرُونَ / مُشْرِكَاتٌ كَثِيرَاتٌ &nbsp;&nbsp; أَصْنَامٌ كَبِيرَةٌ</span>`,
-    quote: `إِنَّ الْمُسْلِمِينَ وَالْمُسْلِمَاتِ وَالْمُؤْمِنِينَ وَالْمُؤْمِنَاتِ وَالْقَانِتِينَ وَالْقَانِتَاتِ وَالصَّادِقِينَ وَالصَّادِقَاتِ وَالصَّابِرِينَ وَالصَّابِرَاتِ وَالْخَاشِعِينَ وَالْخَاشِعَاتِ وَالْمُتَصَدِّقِينَ وَالْمُتَصَدِّقَاتِ وَالصَّائِمِينَ وَالصَّائِمَاتِ وَالْحَافِظِينَ فُرُوجَهُمْ وَالْحَافِظَاتِ وَالذَّاكِرِينَ اللَّهَ كَثِيرًا وَالذَّاكِرَاتِ أَعَدَّ اللَّهُ لَهُم مَّغْفِرَةً وَأَجْرًا عَظِيمًا`
+    quote: `...` // (Keep your existing quote here)
   },
   {
-    q: `You met <span class="pq-ar">الرَّجُلُ</span> (the man) and <span class="pq-ar">قَرْيَةٍ</span> (a village) in the story. Based on what you just learned, what do you think "men" and "villages" look like?`,
+    q: `You met <span class="story-word" onclick="showWordMeaning(this)" data-en="the man">الرَّجُلُ</span> (the man) and <span class="story-word" onclick="showWordMeaning(this)" data-en="a village">قَرْيَةٍ</span> (a village) in the story. Based on what you just learned, what do you think "men" and "villages" look like?`,
     a: `Most principles have exceptions: رَجُلٌ → رِجَالٌ is irregular even though it's a people-word. قَرْيَةٌ → قُرًى is irregular too — and actually has fewer letters, breaking the usual "more letters" pattern.`
   }
 ];
