@@ -249,6 +249,18 @@
 .fc-card:active { transform: scale(0.98); }
 .fc-arabic { font-size: 42px; font-weight: 700; color: var(--ink); line-height: 1.3; direction: rtl; margin-bottom: 8px; }
 .fc-tap-hint { font-size: 13px; color: var(--grey); margin-top: 16px; }
+.fc-diff-banner { position: absolute; top: 10px; right: 10px; padding: 3px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; opacity: 0.6; }
+.fc-diff-hard { background: #fee2e2; color: #b91c1c; }
+.fc-diff-medium { background: #fef3c7; color: #b45309; }
+.fc-diff-easy { background: #dcfce7; color: #15803d; }
+.mastery-gain-popup { position: fixed; top: 40%; left: 50%; font-size: 32px; font-weight: 800; color: #15803d; background: rgba(255,255,255,0.95); padding: 10px 22px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.18); z-index: 999; pointer-events: none; animation: masteryGainFloat 1.4s ease-out forwards; }
+@keyframes masteryGainFloat {
+0% { opacity: 0; transform: translate(-50%, -30%) scale(0.7); }
+15% { opacity: 1; transform: translate(-50%, -50%) scale(1.15); }
+30% { transform: translate(-50%, -50%) scale(1); }
+75% { opacity: 1; transform: translate(-50%, -90%) scale(1); }
+100% { opacity: 0; transform: translate(-50%, -110%) scale(1); }
+}
 .fc-english { font-size: 22px; font-weight: 600; color: var(--blue); margin-top: 12px; display: none; }
 .fc-card.revealed .fc-english { display: block; }
 .fc-card.revealed .fc-tap-hint { display: none; }
@@ -1360,7 +1372,7 @@ function renderFlashcards() {
     const lessonNum = parseInt(num);
     if (lessonNum === 0) return; // Skip the unused "Advanced students" placeholder lesson
     if (lessonNum > maxLesson) return; // Skip lessons beyond student's level
-    const pct = getLessonMasteryPercent(lessonNum);
+    const pct = getLessonMasteryPercent(num);
     const btn = document.createElement('button');
     btn.className='fc-lesson-btn'+(num==fcCurrentLesson?' active':'');
     btn.innerHTML = miniRing(pct, '🃏', true) + `<div class="fc-lesson-name">${lesson.name}</div>`;
@@ -1413,7 +1425,9 @@ document.getElementById('fc-restart').addEventListener('click',()=>{
 LESSONS[fcCurrentLesson].cards.forEach((_,i)=>{
 if (!isCardDeleted(fcCurrentLesson, i)) {
 const p=getCardProgress(fcCurrentLesson,i);
+if (p.lastRating !== 3) {
 setCardProgress(fcCurrentLesson,i,{...p,nextReview:0});
+}
 }
 });
 buildFcQueue(); renderFlashcards();
@@ -1422,11 +1436,17 @@ return;
 }
 
 const card = fcQueue[fcCurrentIdx];
+const prevRating = getCardProgress(fcCurrentLesson, card.idx).lastRating;
+const diffBanner = prevRating === 1 ? '<div class="fc-diff-banner fc-diff-hard">Hard</div>'
+  : prevRating === 2 ? '<div class="fc-diff-banner fc-diff-medium">Medium</div>'
+  : prevRating === 3 ? '<div class="fc-diff-banner fc-diff-easy">Easy</div>'
+  : '';
 
 const cardEl = document.createElement('div');
 cardEl.className='fc-card-wrap';
 cardEl.innerHTML=`
    <div class="fc-card" id="fc-card">
+     ${diffBanner}
      <div class="fc-arabic">${card.ar}</div>
      <div class="fc-english">${card.en}</div>
      <div class="fc-tap-hint">Tap to reveal</div>
@@ -1458,6 +1478,7 @@ document.getElementById('fc-rating-wrap').classList.add('visible');
 ratingWrap.querySelectorAll('.fc-rating-btn').forEach(btn=>{
 btn.addEventListener('click',async()=>{
 const rating = parseInt(btn.dataset.r);
+const oldPct = getLessonMasteryPercent(fcCurrentLesson);
 applyRating(fcCurrentLesson, card.idx, rating);
 if (rating === 1) fcQueue.push(card);
 fcCurrentIdx++;
@@ -1465,6 +1486,11 @@ fcSessionCardsRead++;
 const code = currentUser || viewingStudent;
 incrementCardActivity(code);
 await saveFlashcardData(code);
+if (prevRating !== 3 && rating === 3) {
+const newPct = getLessonMasteryPercent(fcCurrentLesson);
+const diff = newPct - oldPct;
+if (diff > 0) showMasteryGain(diff);
+}
 renderFlashcards();
 });
 });
@@ -1479,6 +1505,7 @@ function closeModal(){document.getElementById('modal').classList.remove('open');
 // ── TOAST ──
 let toastTimer;
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2500);}
+function showMasteryGain(diff){const el=document.createElement('div');el.className='mastery-gain-popup';el.textContent=`+${diff}%`;document.body.appendChild(el);setTimeout(()=>el.remove(),1400);}
 function showWordMeaning(el) { showToast(el.textContent + ' = ' + el.dataset.en); }
 function toggleStoryEnglish() {
   const lines = document.querySelectorAll('.story-en-line');
