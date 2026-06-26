@@ -666,8 +666,16 @@ let fcTimerStarted = false; // has session started at least once
 
 // Revision activity, per student: allFcActivity[code][dateKey] = minutes
 let allFcActivity = {};
+// Card/question completion count, per student: allCardActivity[code][dateKey] = number of flashcards + exercise questions done that day
+let allCardActivity = {};
 // Current lesson level, per student: studentLesson[code] = 1-16
 let studentLesson = {};
+
+function incrementCardActivity(code) {
+  const today = todayKey();
+  if (!allCardActivity[code]) allCardActivity[code] = {};
+  allCardActivity[code][today] = (allCardActivity[code][today] || 0) + 1;
+}
 // Per-exercise question mastery: exProgress[mode][questionIndex] = 1(Hard)/2(Medium)/3(Easy)
 let exProgress = {};
 
@@ -820,6 +828,7 @@ if (snap.exists()) {
 const data = snap.data();
 fcProgress = data.progress || data || {};
 allFcActivity[code] = data.activity || {};
+allCardActivity[code] = data.cardActivity || {};
 fcDeletedCards = data.deleted || {};
 studentLesson[code] = data.lesson || 1;
 exProgress = data.exProgress || {};
@@ -832,7 +841,7 @@ LESSONS[num].cards = [...DEFAULT_LESSONS[num]?.cards || [], ...cards];
 });
 }
 } else {
-fcProgress = {}; allFcActivity[code] = {}; fcDeletedCards = {}; studentLesson[code] = 1; exProgress = {};
+fcProgress = {}; allFcActivity[code] = {}; allCardActivity[code] = {}; fcDeletedCards = {}; studentLesson[code] = 1; exProgress = {};
 }
 } catch(e) { console.error('FC load error',e); }
 }
@@ -842,8 +851,9 @@ async function loadStudentMeta(code) {
     const snap = await getDoc(doc(db,'flashcards',code));
     const data = snap.exists() ? snap.data() : {};
     allFcActivity[code] = data.activity || {};
+    allCardActivity[code] = data.cardActivity || {};
     studentLesson[code] = data.lesson || 1;
-  } catch(e) { console.error('Meta load error',e); allFcActivity[code] = {}; studentLesson[code] = 1; }
+  } catch(e) { console.error('Meta load error',e); allFcActivity[code] = {}; allCardActivity[code] = {}; studentLesson[code] = 1; }
   if (!studentLesson[code]) studentLesson[code] = 1;
 }
 async function saveFlashcardData(code) {
@@ -857,6 +867,7 @@ if (extras.length) customCards[num] = extras;
 await setDoc(doc(db,'flashcards',code), {
 progress: fcProgress,
 activity: allFcActivity[code] || {},
+cardActivity: allCardActivity[code] || {},
 deleted: fcDeletedCards,
 lesson: studentLesson[code] || 1,
 exProgress,
@@ -877,6 +888,7 @@ window.recordExerciseRating = async function(mode, index, rating) {
 if (!exProgress[mode]) exProgress[mode] = {};
 exProgress[mode][index] = rating;
 const code = currentUser || viewingStudent;
+incrementCardActivity(code);
 await saveFlashcardData(code);
 };
 
@@ -1073,7 +1085,7 @@ else if(sub.images?.length>0||sub.text){const sg=document.createElement('div');s
 if(sub.reviewed){const sb=document.createElement('div');sb.className='dot dot-blue';squares.appendChild(sb);}
 }
 // Flashcard activity square
-if((allFcActivity[code]||{})[key] >= 20){
+if((allCardActivity[code]||{})[key] >= 1){
 const sf=document.createElement('div');sf.className='dot dot-fc';squares.appendChild(sf);
 }
 cell.appendChild(squares); cell.onclick=()=>{selectedDate=key;renderDayPanel();renderCalendar();}; grid.appendChild(cell);
@@ -1346,10 +1358,12 @@ function renderFlashcards() {
   const maxLesson = (studentLesson[code] !== undefined) ? studentLesson[code] : 1;
   Object.entries(LESSONS).forEach(([num, lesson]) => {
     const lessonNum = parseInt(num);
+    if (lessonNum === 0) return; // Skip the unused "Advanced students" placeholder lesson
     if (lessonNum > maxLesson) return; // Skip lessons beyond student's level
+    const pct = getLessonMasteryPercent(lessonNum);
     const btn = document.createElement('button');
     btn.className='fc-lesson-btn'+(num==fcCurrentLesson?' active':'');
-    btn.textContent=lesson.name;
+    btn.innerHTML = miniRing(pct, '🃏', true) + `<div class="fc-lesson-name">${lesson.name}</div>`;
     btn.onclick=()=>{ fcCurrentLesson=num; buildFcQueue(); renderFlashcards(); };
     picker.appendChild(btn);
   });
@@ -1449,6 +1463,7 @@ if (rating === 1) fcQueue.push(card);
 fcCurrentIdx++;
 fcSessionCardsRead++;
 const code = currentUser || viewingStudent;
+incrementCardActivity(code);
 await saveFlashcardData(code);
 renderFlashcards();
 });
