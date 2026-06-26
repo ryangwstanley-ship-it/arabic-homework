@@ -479,6 +479,23 @@ console.log("THE FILE IS LOADING!");
 .story-word:hover { background:#fef3f2; border-radius:4px; }
 .story-line-num { display:inline-block; direction:ltr; unicode-bidi:isolate; background:#8b2035; color:#fff; font-family:'Scheherazade New', serif; font-size:14px; font-weight:700; width:26px; height:26px; line-height:26px; text-align:center; border-radius:50%; margin-left:10px; vertical-align:middle; }
 .story-en-line { display:none; font-family:-apple-system,sans-serif; font-size:15px; line-height:1.7; color:#374151; background:#f9fafb; border-radius:8px; padding:10px 14px; margin:6px 0 16px 0; direction:ltr; text-align:left; }
+.principles-wrap { margin-top:24px; border-top:1px solid #e5e7eb; padding-top:20px; }
+.principles-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+.principles-progress { font-size:12px; font-weight:600; color:#6b7280; }
+.principle-card { background:#f9fafb; border-radius:16px; padding:24px; box-shadow:0 2px 8px rgba(0,0,0,0.06); min-height:140px; cursor:pointer; text-align:center; }
+.principle-q { font-size:15px; color:#374151; line-height:1.7; }
+.principle-q .pq-ar { font-family:'Scheherazade New', serif; font-size:22px; direction:rtl; display:inline-block; color:#8b2035; font-weight:700; }
+.principle-a { font-size:14px; color:#374151; line-height:1.6; text-align:left; }
+.principle-a .pa-ar { font-family:'Scheherazade New', serif; font-size:20px; direction:rtl; display:block; color:#8b2035; font-weight:700; margin:8px 0; text-align:right; }
+.principle-quote { margin-top:14px; padding:10px 14px; border-left:3px solid #8b2035; background:#fdf6f3; }
+.principle-quote-ar { font-family:'Scheherazade New', serif; font-size:18px; direction:rtl; text-align:right; color:#2b2520; line-height:1.9; }
+.principle-hint { margin-top:16px; font-size:12px; color:#8b2035; font-weight:600; }
+.principles-nav { display:flex; justify-content:space-between; align-items:center; margin-top:14px; }
+.principles-nav-btn { padding:9px 16px; border-radius:10px; border:none; background:#f3f4f6; color:#6b7280; font-size:13px; font-weight:600; cursor:pointer; }
+.principles-nav-btn-primary { background:#8b2035; color:#fff; }
+.principles-dots { display:flex; gap:6px; }
+.principle-dot { width:6px; height:6px; border-radius:50%; background:#d8d2c4; }
+.principle-dot.active { background:#8b2035; }
 </style>
 <div style="background:var(--grey-light);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08)">
 
@@ -521,7 +538,22 @@ console.log("THE FILE IS LOADING!");
 <p class="story-en-line">Why do they worship the idols? Worship is for Allah alone.</p>
 </div>
 
-
+<div class="principles-wrap" id="principles-wrap">
+<div class="principles-header">
+<span class="section-label" style="margin-bottom:0">Key principles</span>
+<span class="principles-progress" id="principles-progress">1 / 5</span>
+</div>
+<div class="principle-card" id="principle-card">
+<div class="principle-q" id="principle-q"></div>
+<div class="principle-a" id="principle-a" style="display:none"></div>
+<div class="principle-hint" id="principle-hint">Tap when you've found it</div>
+</div>
+<div class="principles-nav">
+<button class="principles-nav-btn" id="principle-back-btn">‹ Back</button>
+<div class="principles-dots" id="principles-dots"></div>
+<button class="principles-nav-btn principles-nav-btn-primary" id="principle-next-btn">Next ›</button>
+</div>
+</div>
 
 </div>
 </div>
@@ -1389,6 +1421,78 @@ function toggleStoryEnglish() {
 }
 window.showWordMeaning = showWordMeaning;
 window.toggleStoryEnglish = toggleStoryEnglish;
+
+const PRINCIPLES = [
+  {
+    q: `Go back and look at the idol sentence — <span class="pq-ar">صَنَمٌ</span> shows up, then <span class="pq-ar">أَصْنَامٌ</span> shows up right after it. What's different about how they're written?`,
+    a: `Plurals usually have more letters than the singular.<br><span class="pa-ar">صَنَمٌ ← أَصْنَامٌ &nbsp;&nbsp; رَجُلٌ ← رِجَالٌ</span>`
+  },
+  {
+    q: `In the story, "the polytheists" is <span class="pq-ar">مُشْرِكِينَ</span> — it looks like the singular word with something added on the end. But "the idols" is <span class="pq-ar">أَصْنَامٌ</span> — a totally different shape. Why do you think that is?`,
+    a: `Arabic plurals come in two types: one for people, one for everything else (objects, ideas, animals). People-plurals are regular — just add وْنَ / يْنَ / اتٌ. Everything-else plurals usually change shape entirely and must be memorised.<br><span class="pa-ar">مُشْرِكٌ ← مُشْرِكُونَ (people, regular) &nbsp;&nbsp; صَنَمٌ ← أَصْنَامٌ (everything-else, irregular)</span>`
+  },
+  {
+    q: `<span class="pq-ar">أَصْنَامٌ</span> (idols) doesn't end in ة. So why does the adjective describing it — <span class="pq-ar">كَثِيرَةٌ</span> — take the feminine ending?`,
+    a: `A word is feminine if it ends in taa marbuta (ة). Every "everything-else" plural is also treated as feminine — even ones with no ة at all.<br><span class="pa-ar">قَرْيَةٌ، عِبَادَةٌ (taa marbuta) &nbsp;&nbsp; أَصْنَامٌ، أَيَّامٌ، أَسْمَاءٌ (feminine anyway, no ة)</span>`
+  },
+  {
+    q: `Did you notice that "many" is written two different ways in the story? <span class="pq-ar">نَاسٌ كَثِيرُونَ</span> for the people, but <span class="pq-ar">أَصْنَامٌ كَثِيرَةٌ</span> for the idols. Scroll up and find both lines — what's changing?`,
+    a: `Adjectives, verbs and pronouns must match whichever plural type is used — and "everything-else" plurals always take the feminine ending.<br><span class="pa-ar">مُشْرِكُونَ كَثِيرُونَ / مُشْرِكَاتٌ كَثِيرَاتٌ &nbsp;&nbsp; أَصْنَامٌ كَبِيرَةٌ</span>`,
+    quote: `إِنَّ الْمُسْلِمِينَ وَالْمُسْلِمَاتِ وَالْمُؤْمِنِينَ وَالْمُؤْمِنَاتِ وَالْقَانِتِينَ وَالْقَانِتَاتِ وَالصَّادِقِينَ وَالصَّادِقَاتِ وَالصَّابِرِينَ وَالصَّابِرَاتِ وَالْخَاشِعِينَ وَالْخَاشِعَاتِ وَالْمُتَصَدِّقِينَ وَالْمُتَصَدِّقَاتِ وَالصَّائِمِينَ وَالصَّائِمَاتِ وَالْحَافِظِينَ فُرُوجَهُمْ وَالْحَافِظَاتِ وَالذَّاكِرِينَ اللَّهَ كَثِيرًا وَالذَّاكِرَاتِ أَعَدَّ اللَّهُ لَهُم مَّغْفِرَةً وَأَجْرًا عَظِيمًا`
+  },
+  {
+    q: `You met <span class="pq-ar">الرَّجُلُ</span> (the man) and <span class="pq-ar">قَرْيَةٍ</span> (a village) in the story. Based on what you just learned, what do you think "men" and "villages" look like?`,
+    a: `Most principles have exceptions: رَجُلٌ → رِجَالٌ is irregular even though it's a people-word. قَرْيَةٌ → قُرًى is irregular too — and actually has fewer letters, breaking the usual "more letters" pattern.`
+  }
+];
+
+let principleIdx = 0;
+let principleRevealed = false;
+
+function renderPrinciple() {
+  const qEl = document.getElementById('principle-q');
+  const aEl = document.getElementById('principle-a');
+  const hintEl = document.getElementById('principle-hint');
+  const progEl = document.getElementById('principles-progress');
+  const dotsEl = document.getElementById('principles-dots');
+  const backBtn = document.getElementById('principle-back-btn');
+  const nextBtn = document.getElementById('principle-next-btn');
+  const p = PRINCIPLES[principleIdx];
+
+  qEl.innerHTML = p.q;
+  let answerHtml = p.a;
+  if (p.quote) {
+    answerHtml += `<div class="principle-quote"><div class="principle-quote-ar">${p.quote}</div></div>`;
+  }
+  aEl.innerHTML = answerHtml;
+  qEl.style.display = principleRevealed ? 'none' : 'block';
+  aEl.style.display = principleRevealed ? 'block' : 'none';
+  hintEl.textContent = principleRevealed ? "Tap to see the question again" : "Tap when you've found it";
+
+  progEl.textContent = (principleIdx + 1) + ' / ' + PRINCIPLES.length;
+
+  dotsEl.innerHTML = '';
+  PRINCIPLES.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'principle-dot' + (i === principleIdx ? ' active' : '');
+    dotsEl.appendChild(dot);
+  });
+
+  backBtn.style.visibility = principleIdx === 0 ? 'hidden' : 'visible';
+  nextBtn.textContent = principleIdx === PRINCIPLES.length - 1 ? 'Done' : 'Next ›';
+}
+
+document.getElementById('principle-card').addEventListener('click', () => {
+  principleRevealed = !principleRevealed;
+  renderPrinciple();
+});
+document.getElementById('principle-back-btn').addEventListener('click', () => {
+  if (principleIdx > 0) { principleIdx--; principleRevealed = false; renderPrinciple(); }
+});
+document.getElementById('principle-next-btn').addEventListener('click', () => {
+  if (principleIdx < PRINCIPLES.length - 1) { principleIdx++; principleRevealed = false; renderPrinciple(); }
+});
+renderPrinciple();
   
 
 // ── RENDER ──
