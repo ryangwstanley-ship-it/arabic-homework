@@ -1993,7 +1993,7 @@ exRender(`
         <button id="ex-wo-clear-btn" style="padding:12px 20px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">Clear</button>
       </div>
     </div>
-    <div id="ex-reveal" style="display:none;background:#f0fdf4;border:2px solid #86efac;border-radius:10px;padding:16px;margin-top:16px;font-size:1.2em;text-align:center;direction:rtl"></div>
+    <div id="ex-reveal" style="display:none;background:#f3f4f6;border:2px solid #d1d5db;border-radius:10px;padding:16px;margin-top:16px;font-size:1.2em;text-align:center;direction:rtl"></div>
   </div>
   <div id="ex-rating-area" style="display:none;gap:10px;margin-bottom:16px">
     <button id="ex-rate-hard" style="flex:1;padding:12px;background:#fee2e2;color:#b91c1c;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">No idea</button>
@@ -2255,8 +2255,8 @@ function exSubmitTrueFalse(chosen) {
 const q = exQuestions[exCurrent];
 const reveal = document.getElementById('ex-reveal');
 reveal.innerHTML = 'The sentence is <strong>' + (q.answer ? 'True' : 'False') + '</strong>.';
-reveal.style.background = '#f0fdf4';
-reveal.style.borderColor = '#86efac';
+reveal.style.background = '#f3f4f6';
+reveal.style.borderColor = '#d1d5db';
 reveal.style.display = 'block';
 const tfWrap = document.getElementById('ex-tf-btns');
 if (tfWrap) tfWrap.style.display = 'none';
@@ -2284,8 +2284,8 @@ reveal.innerHTML = '✓ Correct! <strong>' + q.plural + '</strong> is the plural
 } else {
 reveal.innerHTML = '✕ Not quite. The plural is <strong>' + q.plural + '</strong> (singular: <strong>' + q.singular + '</strong>).';
 }
-reveal.style.background = '#f0fdf4';
-reveal.style.borderColor = '#86efac';
+reveal.style.background = '#f3f4f6';
+reveal.style.borderColor = '#d1d5db';
 reveal.style.display = 'block';
 const tfWrap = document.getElementById('ex-tf-btns');
 if (tfWrap) tfWrap.style.display = 'none';
@@ -2309,8 +2309,8 @@ else if (!isFem && picked) { tile.style.background = '#fee2e2', tile.style.color
 tile.onclick = null;
 });
 reveal.innerHTML = (allCorrect ? '✓ Correct! ' : '✕ Not quite. ') + 'The feminine words are <strong>' + femWords.join('</strong> and <strong>') + '</strong>.';
-reveal.style.background = '#f0fdf4';
-reveal.style.borderColor = '#86efac';
+reveal.style.background = '#f3f4f6';
+reveal.style.borderColor = '#d1d5db';
 reveal.style.display = 'block';
 const checkWrap = document.getElementById('ex-fem-check-wrap');
 if (checkWrap) checkWrap.style.display = 'none';
@@ -2329,8 +2329,8 @@ reveal.innerHTML = '✓ Correct! <strong>' + q.target + '</strong>';
 } else {
 reveal.innerHTML = '✕ Not quite.<br>You typed: <strong>' + (typed || '(nothing)') + '</strong><br>Correct answer: <strong>' + q.target + '</strong>';
 }
-reveal.style.background = '#f0fdf4';
-reveal.style.borderColor = '#86efac';
+reveal.style.background = '#f3f4f6';
+reveal.style.borderColor = '#d1d5db';
 reveal.style.display = 'block';
 document.getElementById('ex-fill-input').style.display = 'none';
 const ratingEl = document.getElementById('ex-rating-area');
