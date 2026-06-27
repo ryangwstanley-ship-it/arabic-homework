@@ -838,6 +838,7 @@ function dateKey(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padSta
 function todayKey() { return dateKey(new Date()); }
 function formatDateLong(key) { const [y,m,d]=key.split('-').map(Number); return new Date(y,m-1,d).toLocaleDateString('en-GB',{weekday:'long',year:'numeric',month:'long',day:'numeric'}); }
 function activeStudentCode() { return isInstructor && !isStudentView ? viewingStudent : currentUser; }
+window.getCurrentLesson = function() { return studentLesson[activeStudentCode()] || 1; };
 function miniRing(percent, emoji, centered) {
 const r = 18, c = 2 * Math.PI * r;
 const offset = c - (percent/100)*c;
@@ -1941,7 +1942,7 @@ return mode==='fillgap' ? FILL_GAP_QUESTIONS.length
 }
 
 function exShowPicker() {
-const defaultLesson = Math.min(studentLesson[activeStudentCode()] || 1, EX_MAX_LESSON);
+const defaultLesson = Math.min(window.getCurrentLesson(), EX_MAX_LESSON);
 const viewingLesson = exPickerLesson || defaultLesson;
 const isPastLesson = viewingLesson < defaultLesson;
 
@@ -1974,7 +1975,7 @@ if (backBtn) backBtn.onclick = () => { exPickerLesson = null; exShowPicker(); };
 }
 
 function exShowLessonPicker() {
-const defaultLesson = Math.min(studentLesson[activeStudentCode()] || 1, EX_MAX_LESSON);
+const defaultLesson = Math.min(window.getCurrentLesson(), EX_MAX_LESSON);
 let html = '<div class="section-label">Choose a previous lesson</div><div style="display:flex;flex-direction:column;gap:10px;margin-top:8px">';
 for (let n = 1; n < defaultLesson; n++) {
 html += `<button class="ex-lesson-pick-btn" data-lesson="${n}" style="padding:14px;background:var(--grey-light);border:2px solid var(--border);border-radius:10px;font-size:15px;font-weight:600;color:#1a1a2e;cursor:pointer;text-align:left">Lesson ${n}</button>`;
