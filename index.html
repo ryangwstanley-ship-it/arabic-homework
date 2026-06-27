@@ -1194,7 +1194,7 @@ render();
 window.switchTab = function(tab) {
 if (isGuestMode && tab === 'home') return;
 currentTab = tab;
-document.getElementById('app-header').style.display = tab==='home' ? 'none' : 'flex';
+document.getElementById('app-header').style.display = (tab==='home' || !isInstructor) ? 'none' : 'flex';
 document.getElementById('tab-content-home').style.display = tab==='home' ? 'block' : 'none';
 document.getElementById('tab-content-homework').style.display = tab==='homework' ? 'block' : 'none';
 document.getElementById('tab-content-revise').style.display = tab==='revise' ? 'block' : 'none';
