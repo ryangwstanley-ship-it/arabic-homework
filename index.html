@@ -481,7 +481,8 @@ console.log("THE FILE IS LOADING!");
 <!-- FLASHCARDS SUB-TAB -->
 <div id="tab-content-flashcards" style="display:none">
 <div class="section-label">Lessons</div>
-<div class="fc-lesson-picker" id="fc-lesson-picker"></div>
+<button id="fc-prev-lessons-btn" style="margin-bottom:14px;padding:10px 16px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer">Previous Lessons</button>
+<div class="fc-lesson-picker" id="fc-lesson-picker" style="display:none"></div>
 
 <div id="fc-area"></div>
 
@@ -811,6 +812,7 @@ let guestLessonDone = false;
 // Flashcard state
 let fcProgress = {};
 let fcCurrentLesson = 1;
+let fcShowLessonPicker = false;
 let fcQueue = [];
 let fcCurrentIdx = 0;
 let fcRevealed = false;
@@ -1143,8 +1145,8 @@ document.getElementById('tab-content-flashcards').style.display = sub==='flashca
 document.getElementById('tab-content-exercises').style.display = sub==='exercises' ? 'block' : 'none';
 document.getElementById('revise-tab-flashcards').classList.toggle('active', sub==='flashcards');
 document.getElementById('revise-tab-exercises').classList.toggle('active', sub==='exercises');
-if (sub==='flashcards') renderFlashcards();
-if (sub==='exercises' && typeof exShowPicker === 'function') exShowPicker();
+if (sub==='flashcards') { fcCurrentLesson = studentLesson[activeStudentCode()] || 1; fcShowLessonPicker = false; renderFlashcards(); }
+if (sub==='exercises' && typeof exShowPicker === 'function') { exPickerLesson = null; exShowPicker(); }
 }
 
 
@@ -1461,6 +1463,13 @@ const picker = document.getElementById('fc-lesson-picker');
 picker.innerHTML='';
 const code = currentUser || viewingStudent;
 const maxLesson = (studentLesson[code] !== undefined) ? studentLesson[code] : 1;
+picker.style.display = fcShowLessonPicker ? 'flex' : 'none';
+const fcPrevBtn = document.getElementById('fc-prev-lessons-btn');
+if (fcPrevBtn) {
+fcPrevBtn.style.display = maxLesson > 1 ? 'inline-block' : 'none';
+fcPrevBtn.textContent = fcShowLessonPicker ? 'Hide Previous Lessons' : 'Previous Lessons';
+fcPrevBtn.onclick = () => { fcShowLessonPicker = !fcShowLessonPicker; renderFlashcards(); };
+}
 if (isGuestMode) {
 const principlesBtn = document.getElementById('guest-principles-btn');
 if (principlesBtn) principlesBtn.style.display = getLessonMasteryPercent(fcCurrentLesson) >= 75 ? 'block' : 'none';
@@ -1885,127 +1894,99 @@ const shuffled = exShuffle(full);
 return shuffled.slice(0, 11);
 }
 
+const EX_LESSON_MAP = {
+fillgap: 1, wordorder: 1, changeword: 1, truefalse: 1,
+plural: 1, feminine: 1, pluraltype: 1,
+typeharakat: 1, typeenglish: 1,
+suffixpronoun: 1, suffixtrans: 1,
+adjectiveagreement: 2,
+demonstrative: 2, demotrans: 2
+};
+const EX_MAX_LESSON = 2;
+let exPickerLesson = null;
+
+const EX_CARDS = [
+{ mode:'fillgap', icon:'📝', title:'Fill the Gap', desc:'A word is missing from a sentence. Type what you think it is.' },
+{ mode:'wordorder', icon:'🔀', title:'Word Order', desc:'Rearrange the words to form a correct sentence.' },
+{ mode:'truefalse', icon:'✅', title:'True or False', desc:'Is the sentence correct or does it contain an error?' },
+{ mode:'changeword', icon:'✏️', title:'Change One Word', desc:'A sentence has one wrong word. Type the correct replacement.' },
+{ mode:'demonstrative', icon:'👉', title:'Demonstrative Pronouns', desc:'Practise هذا / هذه / هؤلاء agreement with true/false and correction questions.' },
+{ mode:'demotrans', icon:'👉', title:'Demonstrative Pronouns — Translate', desc:'Read the English, write the Arabic demonstrative phrase, then reveal and grade yourself.' },
+{ mode:'suffixpronoun', icon:'🔤', title:'Suffix Pronouns', desc:'Does the attached pronoun (ـهُ / ـهَا / ـهُمْ) match the first word? True or false.' },
+{ mode:'suffixtrans', icon:'✍️', title:'Suffix Pronouns — Translate', desc:'Read the English, write the Arabic, then reveal and grade yourself.' },
+{ mode:'adjectiveagreement', icon:'✨', title:'Adjective Agreement', desc:'Noun-adjective agreement: is the adjective correctly matched to the noun?' },
+{ mode:'plural', icon:'👥', title:'Spot the Plural', desc:'Two words appear — tap the one that is plural.' },
+{ mode:'feminine', icon:'♀️', title:'Spot the Feminine', desc:'Four words appear — tap the two that are feminine, then Check.' },
+{ mode:'pluraltype', icon:'🧩', title:'Spot the Pattern', desc:'A plural shows up — is it regular or irregular? Human or non-human?' },
+{ mode:'typeharakat', icon:'⌨️', title:'Type Without Harakat', desc:'See the word with harakat — type it using bare letters only.' },
+{ mode:'typeenglish', icon:'🔤', title:'English → Arabic', desc:'See the English — type the Arabic word from memory.' }
+];
+
+function exGetQuestionCount(mode) {
+return mode==='fillgap' ? FILL_GAP_QUESTIONS.length
+: mode==='wordorder' ? WORD_ORDER_QUESTIONS.length
+: mode==='truefalse' ? TRUE_FALSE_QUESTIONS.length
+: mode==='changeword' ? CHANGE_WORD_QUESTIONS.length
+: mode==='demonstrative' ? DEMONSTRATIVE_QUESTIONS.length
+: mode==='demotrans' ? DEMO_TRANSLATION_QUESTIONS.length
+: mode==='suffixpronoun' ? SUFFIX_PRONOUN_QUESTIONS.length
+: mode==='suffixtrans' ? SUFFIX_TRANSLATION_QUESTIONS.length
+: mode==='adjectiveagreement' ? ADJECTIVE_AGREEMENT_QUESTIONS.length
+: mode==='plural' ? PLURAL_QUESTIONS.length
+: mode==='feminine' ? FEMININE_QUESTIONS.length
+: mode==='pluraltype' ? PLURAL_TYPE_QUESTIONS.length * 2
+: mode==='typeharakat' ? exBuildLesson1Pool().length
+: mode==='typeenglish' ? exBuildLesson1Pool().length
+: 0;
+}
+
 function exShowPicker() {
-const fillgapPct = window.getExerciseMasteryPercent('fillgap', FILL_GAP_QUESTIONS.length);
-const wordorderPct = window.getExerciseMasteryPercent('wordorder', WORD_ORDER_QUESTIONS.length);
-const truefalsePct = window.getExerciseMasteryPercent('truefalse', TRUE_FALSE_QUESTIONS.length);
-const changewordPct = window.getExerciseMasteryPercent('changeword', CHANGE_WORD_QUESTIONS.length);
-const demonstrativePct = window.getExerciseMasteryPercent('demonstrative', DEMONSTRATIVE_QUESTIONS.length);
-const suffixpronounPct = window.getExerciseMasteryPercent('suffixpronoun', SUFFIX_PRONOUN_QUESTIONS.length);
-const suffixtransPct = window.getExerciseMasteryPercent('suffixtrans', SUFFIX_TRANSLATION_QUESTIONS.length);
-const demotransPct = window.getExerciseMasteryPercent('demotrans', DEMO_TRANSLATION_QUESTIONS.length);
-const adjectiveagreementPct = window.getExerciseMasteryPercent('adjectiveagreement', ADJECTIVE_AGREEMENT_QUESTIONS.length);
-const pluralPct = window.getExerciseMasteryPercent('plural', PLURAL_QUESTIONS.length);
-const femininePct = window.getExerciseMasteryPercent('feminine', FEMININE_QUESTIONS.length);
-const typeharakatPct = window.getExerciseMasteryPercent('typeharakat', exBuildLesson1Pool().length);
-const typeenglishPct = window.getExerciseMasteryPercent('typeenglish', exBuildLesson1Pool().length);
-const pluraltypePct = window.getExerciseMasteryPercent('pluraltype', PLURAL_TYPE_QUESTIONS.length * 2);
+const defaultLesson = Math.min(studentLesson[activeStudentCode()] || 1, EX_MAX_LESSON);
+const viewingLesson = exPickerLesson || defaultLesson;
+const isPastLesson = viewingLesson < defaultLesson;
+
+const cardsHtml = EX_CARDS.filter(c => EX_LESSON_MAP[c.mode] === viewingLesson).map(c => {
+const pct = window.getExerciseMasteryPercent(c.mode, exGetQuestionCount(c.mode));
+return `<div class="ex-card" id="btn-${c.mode}">
+${window.miniRing(pct, c.icon)}
+<div class="ex-card-title">${c.title}</div>
+<div class="ex-card-desc">${c.desc}</div>
+<div class="ex-card-note">${pct}% mastered</div>
+</div>`;
+}).join('');
 
 exRender(`
-  <div class="section-label">Choose an exercise</div>
+  <div class="section-label">Lesson ${viewingLesson} exercises</div>
+  ${isPastLesson ? `<button id="ex-back-to-current-btn" style="margin-bottom:14px;padding:10px 16px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer">← Back to Lesson ${defaultLesson}</button>` : ''}
   <div style="display:flex;flex-direction:column;gap:14px;margin-top:8px">
-   <div class="ex-card" id="btn-fillgap">
-      ${window.miniRing(fillgapPct, '📝')}
-      <div class="ex-card-title">Fill the Gap</div>
-      <div class="ex-card-desc">A word is missing from a sentence. Type what you think it is.</div>
-      <div class="ex-card-note">${fillgapPct}% mastered</div>
-    </div>
-    <div class="ex-card" id="btn-wordorder">
-      ${window.miniRing(wordorderPct, '🔀')}
-      <div class="ex-card-title">Word Order</div>
-      <div class="ex-card-desc">Rearrange the words to form a correct sentence.</div>
-      <div class="ex-card-note">${wordorderPct}% mastered</div>
-    </div>
-   <div class="ex-card" id="btn-truefalse">
-      ${window.miniRing(truefalsePct, '✅')}
-      <div class="ex-card-title">True or False</div>
-      <div class="ex-card-desc">Is the sentence correct or does it contain an error?</div>
-      <div class="ex-card-note">${truefalsePct}% mastered</div>
-    </div>
-   <div class="ex-card" id="btn-changeword">
-      ${window.miniRing(changewordPct, '✏️')}
-      <div class="ex-card-title">Change One Word</div>
-      <div class="ex-card-desc">A sentence has one wrong word. Type the correct replacement.</div>
-      <div class="ex-card-note">${changewordPct}% mastered</div>
-    </div>
- <div class="ex-card" id="btn-demonstrative">
- ${window.miniRing(demonstrativePct, '👉')}
- <div class="ex-card-title">Demonstrative Pronouns</div>
- <div class="ex-card-desc">Practise هذا / هذه / هؤلاء agreement with true/false and correction questions.</div>
- <div class="ex-card-note">${demonstrativePct}% mastered</div>
-</div>
-<div class="ex-card" id="btn-demotrans">
- ${window.miniRing(demotransPct, '👉')}
- <div class="ex-card-title">Demonstrative Pronouns — Translate</div>
- <div class="ex-card-desc">Read the English, write the Arabic demonstrative phrase, then reveal and grade yourself.</div>
- <div class="ex-card-note">${demotransPct}% mastered</div>
-</div>
-<div class="ex-card" id="btn-suffixpronoun">
- ${window.miniRing(suffixpronounPct, '🔤')}
- <div class="ex-card-title">Suffix Pronouns</div>
- <div class="ex-card-desc">Does the attached pronoun (ـهُ / ـهَا / ـهُمْ) match the first word? True or false.</div>
- <div class="ex-card-note">${suffixpronounPct}% mastered</div>
-</div>
-<div class="ex-card" id="btn-suffixtrans">
- ${window.miniRing(suffixtransPct, '✍️')}
- <div class="ex-card-title">Suffix Pronouns — Translate</div>
- <div class="ex-card-desc">Read the English, write the Arabic, then reveal and grade yourself.</div>
- <div class="ex-card-note">${suffixtransPct}% mastered</div>
-</div>
-<div class="ex-card" id="btn-adjectiveagreement">
- ${window.miniRing(adjectiveagreementPct, '✨')}
- <div class="ex-card-title">Adjective Agreement</div>
- <div class="ex-card-desc">Noun-adjective agreement: is the adjective correctly matched to the noun?</div>
- <div class="ex-card-note">${adjectiveagreementPct}% mastered</div>
-</div>
-<div class="ex-card" id="btn-plural">
- ${window.miniRing(pluralPct, '👥')}
- <div class="ex-card-title">Spot the Plural</div>
- <div class="ex-card-desc">Two words appear — tap the one that is plural.</div>
- <div class="ex-card-note">${pluralPct}% mastered</div>
-</div>
-<div class="ex-card" id="btn-feminine">
- ${window.miniRing(femininePct, '♀️')}
- <div class="ex-card-title">Spot the Feminine</div>
- <div class="ex-card-desc">Four words appear — tap the two that are feminine, then Check.</div>
- <div class="ex-card-note">${femininePct}% mastered</div>
-</div>
-<div class="ex-card" id="btn-typeharakat">
- ${window.miniRing(typeharakatPct, '⌨️')}
- <div class="ex-card-title">Type Without Harakat (Lesson 1)</div>
- <div class="ex-card-desc">See the word with harakat — type it using bare letters only.</div>
- <div class="ex-card-note">${typeharakatPct}% mastered</div>
-</div>
-<div class="ex-card" id="btn-typeenglish">
- ${window.miniRing(typeenglishPct, '🔤')}
- <div class="ex-card-title">English → Arabic (Lesson 1)</div>
- <div class="ex-card-desc">See the English — type the Arabic word from memory.</div>
- <div class="ex-card-note">${typeenglishPct}% mastered</div>
-</div>
-<div class="ex-card" id="btn-pluraltype">
- ${window.miniRing(pluraltypePct, '🧩')}
- <div class="ex-card-title">Spot the Pattern</div>
- <div class="ex-card-desc">A plural shows up — is it regular or irregular? Human or non-human?</div>
- <div class="ex-card-note">${pluraltypePct}% mastered</div>
-</div>
-    
+${cardsHtml}
   </div>
+  ${(defaultLesson > 1 && !isPastLesson) ? `<button id="ex-prev-lessons-btn" style="width:100%;margin-top:18px;padding:12px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">Previous Lessons</button>` : ''}
 `);
-document.getElementById('btn-fillgap').onclick = () => exShowSetup('fillgap');
-document.getElementById('btn-wordorder').onclick = () => exShowSetup('wordorder');
-document.getElementById('btn-truefalse').onclick = () => exShowSetup('truefalse');
-document.getElementById('btn-changeword').onclick = () => exShowSetup('changeword');
-document.getElementById('btn-demonstrative').onclick = () => exShowSetup('demonstrative');
-document.getElementById('btn-suffixpronoun').onclick = () => exShowSetup('suffixpronoun');
-document.getElementById('btn-demotrans').onclick = () => exShowSetup('demotrans');
-document.getElementById('btn-suffixtrans').onclick = () => exShowSetup('suffixtrans');
-document.getElementById('btn-adjectiveagreement').onclick = () => exShowSetup('adjectiveagreement');
-document.getElementById('btn-plural').onclick = () => exShowSetup('plural');
-document.getElementById('btn-feminine').onclick = () => exShowSetup('feminine');
-document.getElementById('btn-typeharakat').onclick = () => exShowSetup('typeharakat');
-document.getElementById('btn-typeenglish').onclick = () => exShowSetup('typeenglish');
-document.getElementById('btn-pluraltype').onclick = () => exShowSetup('pluraltype');
+
+EX_CARDS.filter(c => EX_LESSON_MAP[c.mode] === viewingLesson).forEach(c => {
+document.getElementById('btn-' + c.mode).onclick = () => exShowSetup(c.mode);
+});
+const prevBtn = document.getElementById('ex-prev-lessons-btn');
+if (prevBtn) prevBtn.onclick = exShowLessonPicker;
+const backBtn = document.getElementById('ex-back-to-current-btn');
+if (backBtn) backBtn.onclick = () => { exPickerLesson = null; exShowPicker(); };
 }
+
+function exShowLessonPicker() {
+const defaultLesson = Math.min(studentLesson[activeStudentCode()] || 1, EX_MAX_LESSON);
+let html = '<div class="section-label">Choose a previous lesson</div><div style="display:flex;flex-direction:column;gap:10px;margin-top:8px">';
+for (let n = 1; n < defaultLesson; n++) {
+html += `<button class="ex-lesson-pick-btn" data-lesson="${n}" style="padding:14px;background:var(--grey-light);border:2px solid var(--border);border-radius:10px;font-size:15px;font-weight:600;color:#1a1a2e;cursor:pointer;text-align:left">Lesson ${n}</button>`;
+}
+html += '</div><button id="ex-lesson-pick-back" style="width:100%;margin-top:14px;padding:10px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">← Back</button>';
+exRender(html);
+document.querySelectorAll('.ex-lesson-pick-btn').forEach(btn => {
+btn.onclick = () => { exPickerLesson = parseInt(btn.dataset.lesson); exShowPicker(); };
+});
+document.getElementById('ex-lesson-pick-back').onclick = exShowPicker;
+}
+  
 function exShowSetup(mode) {
 exMode = mode;
 const title = mode === 'fillgap' ? '📝 Fill the Gap'
