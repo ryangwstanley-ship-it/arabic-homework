@@ -712,7 +712,7 @@ const db = getFirestore(firebaseApp);
 
 
 // ── FLASHCARD DATA (now loaded from GitHub) ──
-let DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS, PLURAL_QUESTIONS, FEMININE_QUESTIONS, SUFFIX_TRANSLATION_QUESTIONS, DEMO_TRANSLATION_QUESTIONS, PLURAL_TYPE_QUESTIONS, CHALLENGE_1_WORDS, TRANSLATION_1_QUESTIONS;
+let DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS, PLURAL_QUESTIONS, FEMININE_QUESTIONS, SUFFIX_TRANSLATION_QUESTIONS, DEMO_TRANSLATION_QUESTIONS, PLURAL_TYPE_QUESTIONS, CHALLENGE_1_WORDS, TRANSLATION_1_QUESTIONS, CHALLENGE_2_SENTENCES;
 async function loadVocabData() {
 
 const url = 'https://raw.githubusercontent.com/ryangwstanley-ship-it/database/main/website%20data%20base?t=' + Date.now();
@@ -720,7 +720,7 @@ const res = await fetch(url);
 const code = await res.text();
 const runner = new Function(
 code.replaceAll('export const', 'const') +
-'; return { DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS, PLURAL_QUESTIONS, FEMININE_QUESTIONS, SUFFIX_TRANSLATION_QUESTIONS, DEMO_TRANSLATION_QUESTIONS, PLURAL_TYPE_QUESTIONS, CHALLENGE_1_WORDS, TRANSLATION_1_QUESTIONS };'
+'; return { DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS, PLURAL_QUESTIONS, FEMININE_QUESTIONS, SUFFIX_TRANSLATION_QUESTIONS, DEMO_TRANSLATION_QUESTIONS, PLURAL_TYPE_QUESTIONS, CHALLENGE_1_WORDS, TRANSLATION_1_QUESTIONS, CHALLENGE_2_SENTENCES };'
 );
 const data = runner();
 DEFAULT_LESSONS = data.DEFAULT_LESSONS;
@@ -738,7 +738,7 @@ DEMO_TRANSLATION_QUESTIONS = data.DEMO_TRANSLATION_QUESTIONS;
 PLURAL_TYPE_QUESTIONS = data.PLURAL_TYPE_QUESTIONS;
 CHALLENGE_1_WORDS = data.CHALLENGE_1_WORDS;
 TRANSLATION_1_QUESTIONS = data.TRANSLATION_1_QUESTIONS;
-
+CHALLENGE_2_SENTENCES = data.CHALLENGE_2_SENTENCES;
 
 window.FILL_GAP_QUESTIONS = FILL_GAP_QUESTIONS;
 window.WORD_ORDER_QUESTIONS = WORD_ORDER_QUESTIONS;
@@ -754,6 +754,7 @@ window.DEMO_TRANSLATION_QUESTIONS = DEMO_TRANSLATION_QUESTIONS;
 window.PLURAL_TYPE_QUESTIONS = PLURAL_TYPE_QUESTIONS;
 window.CHALLENGE_1_WORDS = CHALLENGE_1_WORDS;
 window.TRANSLATION_1_QUESTIONS = TRANSLATION_1_QUESTIONS;
+window.CHALLENGE_2_SENTENCES = CHALLENGE_2_SENTENCES;
 }
 
 await loadVocabData();
@@ -1059,8 +1060,8 @@ for (let i = 0; i < poolLength; i++) { if (prog[i] === 3) easyCount++; }
 return Math.round((easyCount / poolLength) * 100);
 };
 
-window.hasSubmittedChallenge1 = function() {
-return !!exProgress['challenge1'];
+window.hasSubmittedChallenge = function(mode) {
+return !!exProgress[mode];
 };
 
 window.exSubmitChallenge1 = async function() {
@@ -1087,6 +1088,38 @@ submissions[code][today] = dayData;
 await saveDay(code, today, dayData);
 
 exProgress['challenge1'] = true;
+for (let i = 0; i < filled.length; i++) incrementCardActivity(code);
+await saveFlashcardData(code);
+
+showToast('Submitted! Your teacher will go over this with you in your next lesson.');
+render();
+if (typeof exShowPicker === 'function') exShowPicker();
+};
+
+window.exSubmitChallenge2 = async function() {
+const code = activeStudentCode();
+const today = todayKey();
+const sentences = window.CHALLENGE_2_SENTENCES || [];
+const answers = sentences.map((s, i) => {
+const el = document.getElementById('ch2-input-' + i);
+return { en: s.en, answer: el ? el.value.trim() : '' };
+});
+const filled = answers.filter(a => a.answer);
+if (!filled.length) { showToast('Translate at least one sentence first'); return; }
+
+let block = '📋 Challenge 2 — Lesson 1 (English → Arabic translation)';
+answers.forEach((a, i) => {
+block += `\n${i+1}. ${a.en}\n   ${a.answer || '—'}`;
+});
+
+const existing = submissions[code]?.[today] || {};
+const newText = (existing.text ? existing.text + '\n\n' : '') + block;
+const dayData = { images: existing.images || [], text: newText, reviewed: false };
+if (!submissions[code]) submissions[code] = {};
+submissions[code][today] = dayData;
+await saveDay(code, today, dayData);
+
+exProgress['challenge2'] = true;
 for (let i = 0; i < filled.length; i++) incrementCardActivity(code);
 await saveFlashcardData(code);
 
@@ -1939,9 +1972,9 @@ const EX_LESSON_MAP = {
 changeword: 1, truefalse: 1,
 plural: 1, feminine: 1, pluraltype: 1,
 typeharakat: 1, typeenglish: 1,
-suffixpronoun: 1, suffixtrans: 1, aetrans: 1,
+suffixpronoun: 1, suffixtrans: 1, aetrans: 1, challenge1: 1, challenge2: 1,
 adjectiveagreement: 2,
-demonstrative: 2, demotrans: 2, challenge1: 2
+demonstrative: 2, demotrans: 2
 };
 const EX_MAX_LESSON = 2;
 let exPickerLesson = null;
@@ -1952,7 +1985,6 @@ const EX_CARDS = [
 { mode:'changeword', icon:'✏️', title:'Change One Word', desc:'A sentence has one wrong word. Type the correct replacement.' },
 { mode:'demonstrative', icon:'👉', title:'Demonstrative Pronouns', desc:'Practise هذا / هذه / هؤلاء agreement with true/false and correction questions.' },
 { mode:'demotrans', icon:'👉', title:'Demonstrative Pronouns — Translate', desc:'Read the English, write the Arabic demonstrative phrase, then reveal and grade yourself.' },
-{ mode:'challenge1', icon:'🏆', title:'Challenge 1', desc:"Write your own sentence using each of 15 key words. We'll go over these together in lesson." },
 { mode:'suffixpronoun', icon:'🔤', title:'Suffix Pronouns', desc:'Does the attached pronoun (ـهُ / ـهَا / ـهُمْ) match the first word? True or false.' },
 { mode:'suffixtrans', icon:'✍️', title:'Suffix Pronouns — Translate', desc:'Read the English, write the Arabic, then reveal and grade yourself.' },
 { mode:'adjectiveagreement', icon:'✨', title:'Adjective Agreement', desc:'Noun-adjective agreement: is the adjective correctly matched to the noun?' },
@@ -1961,7 +1993,9 @@ const EX_CARDS = [
 { mode:'pluraltype', icon:'🧩', title:'Spot the Pattern', desc:'A plural shows up — is it regular or irregular? Human or non-human?' },
 { mode:'typeharakat', icon:'⌨️', title:'Type Without Harakat', desc:'See the word with harakat — type it using bare letters only.' },
 { mode:'typeenglish', icon:'🔤', title:'English → Arabic', desc:'See the English — type the Arabic word from memory.' },
-{ mode:'aetrans', icon:'🔁', title:'Arabic → English', desc:'Read the Arabic sentence, translate it in your head, then reveal and grade yourself.' }
+{ mode:'aetrans', icon:'🔁', title:'Arabic → English', desc:'Read the Arabic sentence, translate it in your head, then reveal and grade yourself.' },
+{ mode:'challenge1', icon:'🏆', title:'Challenge 1', desc:"Write your own sentence using each of 15 key words. We'll go over these together in lesson." },
+{ mode:'challenge2', icon:'🏆', title:'Challenge 2', desc:"Translate each English sentence into Arabic. We'll go over these together in lesson." }
 ];
 
 function exGetQuestionCount(mode) {
@@ -1989,8 +2023,8 @@ const viewingLesson = exPickerLesson || defaultLesson;
 const isPastLesson = viewingLesson < defaultLesson;
 
 const cardsHtml = EX_CARDS.filter(c => EX_LESSON_MAP[c.mode] === viewingLesson).map(c => {
-if (c.mode === 'challenge1') {
-const submitted = window.hasSubmittedChallenge1 && window.hasSubmittedChallenge1();
+if (c.mode === 'challenge1' || c.mode === 'challenge2') {
+const submitted = window.hasSubmittedChallenge && window.hasSubmittedChallenge(c.mode);
 return `<div class="ex-card" id="btn-${c.mode}">
 <div style="font-size:28px;margin-bottom:8px">${c.icon}</div>
 <div class="ex-card-title">${c.title}</div>
@@ -2019,6 +2053,7 @@ ${cardsHtml}
 EX_CARDS.filter(c => EX_LESSON_MAP[c.mode] === viewingLesson).forEach(c => {
 document.getElementById('btn-' + c.mode).onclick = () => {
 if (c.mode === 'challenge1') exShowChallenge1();
+else if (c.mode === 'challenge2') exShowChallenge2();
 else exShowSetup(c.mode);
 };
 });
@@ -2059,10 +2094,31 @@ html += `
 html += `
 <button id="ch1-submit-btn" style="width:100%;margin-top:8px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">Submit Challenge</button>
 <button id="ch1-back-btn" style="width:100%;margin-top:8px;padding:10px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">← Back</button>
-</div>`;
 exRender(html);
 document.getElementById('ch1-submit-btn').onclick = () => window.exSubmitChallenge1();
 document.getElementById('ch1-back-btn').onclick = exShowPicker;
+}
+
+function exShowChallenge2() {
+const sentences = window.CHALLENGE_2_SENTENCES || [];
+let html = `
+<div class="section-label">🏆 Challenge 2 — Translate to Arabic</div>
+<div style="background:var(--grey-light);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
+<div style="font-size:14px;color:#6b7280;margin-bottom:20px;line-height:1.6">Translate each English sentence into Arabic. Don't worry about getting it perfect — we'll go over these together in your next lesson.</div>`;
+sentences.forEach((s, i) => {
+html += `
+<div style="margin-bottom:18px">
+<div style="font-size:1em;direction:ltr;text-align:left;color:#1a1a2e;margin-bottom:6px">${i+1}. ${s.en}</div>
+<textarea id="ch2-input-${i}" placeholder="Write the Arabic translation..." style="width:100%;padding:10px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:1.2em;direction:rtl;text-align:right;font-family:'Scheherazade New', serif;min-height:50px;outline:none;box-sizing:border-box"></textarea>
+</div>`;
+});
+html += `
+<button id="ch2-submit-btn" style="width:100%;margin-top:8px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">Submit Challenge</button>
+<button id="ch2-back-btn" style="width:100%;margin-top:8px;padding:10px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">← Back</button>
+</div>`;
+exRender(html);
+document.getElementById('ch2-submit-btn').onclick = () => window.exSubmitChallenge2();
+document.getElementById('ch2-back-btn').onclick = exShowPicker;
 }
   
 function exShowSetup(mode) {
