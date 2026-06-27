@@ -695,7 +695,7 @@ const db = getFirestore(firebaseApp);
 
 
 // ── FLASHCARD DATA (now loaded from GitHub) ──
-let DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS, PLURAL_QUESTIONS, FEMININE_QUESTIONS, SUFFIX_TRANSLATION_QUESTIONS, DEMO_TRANSLATION_QUESTIONS;
+let DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS, PLURAL_QUESTIONS, FEMININE_QUESTIONS, SUFFIX_TRANSLATION_QUESTIONS, DEMO_TRANSLATION_QUESTIONS, PLURAL_TYPE_QUESTIONS;
 async function loadVocabData() {
 
 const url = 'https://raw.githubusercontent.com/ryangwstanley-ship-it/database/main/website%20data%20base?t=' + Date.now();
@@ -703,7 +703,7 @@ const res = await fetch(url);
 const code = await res.text();
 const runner = new Function(
 code.replaceAll('export const', 'const') +
-'; return { DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS, PLURAL_QUESTIONS, FEMININE_QUESTIONS, SUFFIX_TRANSLATION_QUESTIONS, DEMO_TRANSLATION_QUESTIONS };'
+'; return { DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS, PLURAL_QUESTIONS, FEMININE_QUESTIONS, SUFFIX_TRANSLATION_QUESTIONS, DEMO_TRANSLATION_QUESTIONS, PLURAL_TYPE_QUESTIONS };'
 );
 const data = runner();
 DEFAULT_LESSONS = data.DEFAULT_LESSONS;
@@ -718,6 +718,7 @@ PLURAL_QUESTIONS = data.PLURAL_QUESTIONS;
 FEMININE_QUESTIONS = data.FEMININE_QUESTIONS;
 SUFFIX_TRANSLATION_QUESTIONS = data.SUFFIX_TRANSLATION_QUESTIONS;
 DEMO_TRANSLATION_QUESTIONS = data.DEMO_TRANSLATION_QUESTIONS;
+PLURAL_TYPE_QUESTIONS = data.PLURAL_TYPE_QUESTIONS;
 
 
 window.FILL_GAP_QUESTIONS = FILL_GAP_QUESTIONS;
@@ -731,6 +732,7 @@ window.PLURAL_QUESTIONS = PLURAL_QUESTIONS;
 window.FEMININE_QUESTIONS = FEMININE_QUESTIONS;
 window.SUFFIX_TRANSLATION_QUESTIONS = SUFFIX_TRANSLATION_QUESTIONS;
 window.DEMO_TRANSLATION_QUESTIONS = DEMO_TRANSLATION_QUESTIONS;
+window.PLURAL_TYPE_QUESTIONS = PLURAL_TYPE_QUESTIONS;
 }
 
 await loadVocabData();
@@ -1782,6 +1784,29 @@ const EX_L1_PLURAL_EN = {
 };
 
 // Build the Lesson 1 typing pool: {ar (with harakat shown), target (bare), en}
+function exBuildPluralTypeDeck() {
+const cards = [];
+PLURAL_TYPE_QUESTIONS.forEach((w, i) => {
+cards.push({ ar: w.ar, en: w.en, cardType: 'regularity', answer: w.regular, wordIdx: i });
+cards.push({ ar: w.ar, en: w.en, cardType: 'animacy', answer: w.human, wordIdx: i });
+});
+return cards;
+}
+
+function exFixAdjacency(cards) {
+const arr = [...cards];
+for (let i = 1; i < arr.length; i++) {
+if (arr[i].wordIdx !== undefined && arr[i].wordIdx === arr[i-1].wordIdx) {
+for (let j = i+1; j < arr.length; j++) {
+if (arr[j].wordIdx !== arr[i-1].wordIdx) {
+[arr[i], arr[j]] = [arr[j], arr[i]];
+break;
+}
+}
+}
+}
+return arr;
+}
 function exBuildLesson1Pool() {
 const cards = (window.LESSONS && window.LESSONS[1] && window.LESSONS[1].cards) ? window.LESSONS[1].cards : [];
 const pool = [];
@@ -1820,6 +1845,7 @@ const pluralPct = window.getExerciseMasteryPercent('plural', PLURAL_QUESTIONS.le
 const femininePct = window.getExerciseMasteryPercent('feminine', FEMININE_QUESTIONS.length);
 const typeharakatPct = window.getExerciseMasteryPercent('typeharakat', exBuildLesson1Pool().length);
 const typeenglishPct = window.getExerciseMasteryPercent('typeenglish', exBuildLesson1Pool().length);
+const pluraltypePct = window.getExerciseMasteryPercent('pluraltype', PLURAL_TYPE_QUESTIONS.length * 2);
 
 exRender(`
   <div class="section-label">Choose an exercise</div>
@@ -1902,6 +1928,12 @@ exRender(`
  <div class="ex-card-desc">See the English — type the Arabic word from memory.</div>
  <div class="ex-card-note">${typeenglishPct}% mastered</div>
 </div>
+<div class="ex-card" id="btn-pluraltype">
+ ${window.miniRing(pluraltypePct, '🧩')}
+ <div class="ex-card-title">Spot the Pattern</div>
+ <div class="ex-card-desc">A plural shows up — is it regular or irregular? Human or non-human?</div>
+ <div class="ex-card-note">${pluraltypePct}% mastered</div>
+</div>
     
   </div>
 `);
@@ -1918,8 +1950,8 @@ document.getElementById('btn-plural').onclick = () => exShowSetup('plural');
 document.getElementById('btn-feminine').onclick = () => exShowSetup('feminine');
 document.getElementById('btn-typeharakat').onclick = () => exShowSetup('typeharakat');
 document.getElementById('btn-typeenglish').onclick = () => exShowSetup('typeenglish');
+document.getElementById('btn-pluraltype').onclick = () => exShowSetup('pluraltype');
 }
-
 function exShowSetup(mode) {
 exMode = mode;
 const title = mode === 'fillgap' ? '📝 Fill the Gap'
@@ -1933,6 +1965,7 @@ const title = mode === 'fillgap' ? '📝 Fill the Gap'
 : mode === 'typeenglish' ? '🔤 English → Arabic'
 : mode === 'suffixtrans' ? '✍️ Suffix Pronouns — Translate'
 : mode === 'demotrans' ? '👉 Demonstrative Pronouns — Translate'
+: mode === 'pluraltype' ? '🧩 Spot the Pattern'
 : '✅ True or False';
 const isGrammarDrill = mode === 'demonstrative';
 exRender(`
@@ -1966,8 +1999,10 @@ exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS]
 : exMode === 'typeenglish' ? exBuildLesson1Pool()
 : exMode === 'suffixtrans' ? exShuffle([...SUFFIX_TRANSLATION_QUESTIONS]).slice(0, 11)
 : exMode === 'demotrans' ? exShuffle([...DEMO_TRANSLATION_QUESTIONS]).slice(0, 11)
+: exMode === 'pluraltype' ? exBuildPluralTypeDeck()
 : [...TRUE_FALSE_QUESTIONS]
 );
+if (exMode === 'pluraltype') exQuestions = exFixAdjacency(exQuestions);
 exRenderActive();
 exShowQuestion();
 }
@@ -2019,9 +2054,11 @@ exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS]
 : exMode === 'typeenglish' ? exBuildLesson1Pool()
 : exMode === 'suffixtrans' ? exShuffle([...SUFFIX_TRANSLATION_QUESTIONS]).slice(0, 11)
 : exMode === 'demotrans' ? exShuffle([...DEMO_TRANSLATION_QUESTIONS]).slice(0, 11)
+: exMode === 'pluraltype' ? exBuildPluralTypeDeck()
 : [...TRUE_FALSE_QUESTIONS]
 
 );
+if (exMode === 'pluraltype') exQuestions = exFixAdjacency(exQuestions);
 exCurrent = 0;
 }
 const revealEl = document.getElementById('ex-reveal');
@@ -2202,6 +2239,27 @@ checkBtn.replaceWith(checkBtn.cloneNode(true));
 const freshBtn = document.getElementById('ex-check-btn');
 freshBtn.onclick = exSubmitTyping;
 inp.onkeydown = e => { if (e.key === 'Enter') exSubmitTyping(); };
+} else if (exMode === 'pluraltype') {
+const q = exQuestions[exCurrent];
+const isRegularity = q.cardType === 'regularity';
+document.getElementById('ex-instruction').textContent = isRegularity ? 'Is this plural regular or irregular?' : 'Is this plural human or non-human?';
+document.getElementById('ex-sentence').innerHTML = isRegularity ? q.ar : (q.ar + '<br><span style="font-size:0.5em;color:#6b7280;direction:ltr;display:block;margin-top:8px">' + q.en + '</span>');
+document.getElementById('ex-sentence').style.fontSize = '1.4em';
+document.getElementById('ex-fill-input').style.display = 'none';
+document.getElementById('ex-word-order').style.display = 'none';
+const existingPt = document.getElementById('ex-tf-btns');
+if (existingPt) existingPt.remove();
+const ptWrap = document.createElement('div');
+ptWrap.id = 'ex-tf-btns';
+ptWrap.style.cssText = 'display:flex;gap:12px;justify-content:center;margin-top:8px';
+ptWrap.innerHTML = isRegularity ? `
+    <button id="ex-pt-a" style="flex:1;padding:14px;background:#eff6ff;color:#1d4ed8;border:2px solid #93c5fd;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">Regular</button>
+    <button id="ex-pt-b" style="flex:1;padding:14px;background:#f1f5f9;color:#334155;border:2px solid #94a3b8;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">Irregular</button>` : `
+    <button id="ex-pt-a" style="flex:1;padding:14px;background:#eff6ff;color:#1d4ed8;border:2px solid #93c5fd;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">Human</button>
+    <button id="ex-pt-b" style="flex:1;padding:14px;background:#f1f5f9;color:#334155;border:2px solid #94a3b8;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">Non-human</button>`;
+document.getElementById('ex-sentence').after(ptWrap);
+document.getElementById('ex-pt-a').onclick = () => exSubmitPluralType(true);
+document.getElementById('ex-pt-b').onclick = () => exSubmitPluralType(false);
 } else {
 const q = exQuestions[exCurrent];
 document.getElementById('ex-instruction').textContent = 'Put the words in the correct order';
@@ -2260,6 +2318,24 @@ reveal.style.borderColor = '#d1d5db';
 reveal.style.display = 'block';
 const tfWrap = document.getElementById('ex-tf-btns');
 if (tfWrap) tfWrap.style.display = 'none';
+const ratingEl = document.getElementById('ex-rating-area');
+ratingEl.style.display = 'flex';
+wireRatingButtons();
+}
+function exSubmitPluralType(chosen) {
+const q = exQuestions[exCurrent];
+const correct = chosen === q.answer;
+const reveal = document.getElementById('ex-reveal');
+if (q.cardType === 'regularity') {
+reveal.innerHTML = (correct ? '✓ Correct! ' : '✕ Not quite. ') + 'This plural is <strong>' + (q.answer ? 'Regular' : 'Irregular') + '</strong>.';
+} else {
+reveal.innerHTML = (correct ? '✓ Correct! ' : '✕ Not quite. ') + 'This plural is <strong>' + (q.answer ? 'Human' : 'Non-human') + '</strong>.';
+}
+reveal.style.background = '#f3f4f6';
+reveal.style.borderColor = '#d1d5db';
+reveal.style.display = 'block';
+const ptWrap = document.getElementById('ex-tf-btns');
+if (ptWrap) ptWrap.style.display = 'none';
 const ratingEl = document.getElementById('ex-rating-area');
 ratingEl.style.display = 'flex';
 wireRatingButtons();
