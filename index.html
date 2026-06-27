@@ -1544,7 +1544,11 @@ const PRINCIPLES_L2 = [
   },
   {
     q: `Look at these pairs from the story: <span class="pq-ar">رَجُلٌ</span> → <span class="pq-ar">الرَّجُلُ</span>, and <span class="pq-ar">مُشْرِكٌ كَبِيرٌ</span> → <span class="pq-ar">الْمُشْرِكُ الْكَبِيرُ</span>. When "ال" gets added to the noun, what happens to its adjective?`,
-    a:
+    a: `A word is definite when it begins with "ال" (this usually translates to "the" in English). Adjectives must match their noun — if the noun has "ال", the adjective must also have "ال". If the noun has no "ال", the adjective must have no "ال" either.<br><span class="pa-ar">مُشْرِكٌ كَبِيرٌ ← الْمُشْرِكُ الْكَبِيرُ &nbsp;&nbsp; أَصْنَامٌ كَثِيرَةٌ ← الْأَصْنَامُ الْكَثِيرَةُ</span>`
+  }
+];
+
+let activePrinciples = PRINCIPLES;
 
 let principleIdx = 0;
 let principleRevealed = false;
