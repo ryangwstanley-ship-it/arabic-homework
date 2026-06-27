@@ -1128,18 +1128,6 @@ render();
 if (typeof exShowPicker === 'function') exShowPicker();
 };
 
-window.markTest1Passed = async function() {
-exProgress['test1'] = true;
-const code = activeStudentCode();
-await saveFlashcardData(code);
-};
-
-window.recordTestActivity = async function() {
-const code = activeStudentCode();
-incrementCardActivity(code);
-await saveFlashcardData(code);
-};
-
 async function saveDay(code, dateStr, data) { if (isGuestMode) return; await setDoc(doc(db,'submissions',code,'days',dateStr), data); }
 
 // ── LOGIN ──
@@ -1829,7 +1817,8 @@ ${built
   : `<div style="font-size:12px;color:#9ca3af;margin-top:2px">Locked</div>`}
 </div>
 <div style="text-align:center;flex-shrink:0">
-${n===1 && exProgress['test1'] ? '<div style="font-size:16px;color:var(--dot-green)">✓</div><div style="font-size:10px;color:var(--dot-green);margin-top:2px">Test '+n+'</div>' : '<div style="font-size:16px;color:#9ca3af">🔒</div><div style="font-size:10px;color:#9ca3af;margin-top:2px">Test '+n+'</div>'}
+<div style="font-size:16px;color:#9ca3af">🔒</div>
+<div style="font-size:10px;color:#9ca3af;margin-top:2px">Test ${n}</div>
 </div>
 </div>`;
 }
@@ -1983,7 +1972,7 @@ const EX_LESSON_MAP = {
 changeword: 1, truefalse: 1,
 plural: 1, feminine: 1, pluraltype: 1,
 typeharakat: 1, typeenglish: 1,
-suffixpronoun: 1, suffixtrans: 1, aetrans: 1, challenge1: 1, challenge2: 1, test1: 1,
+suffixpronoun: 1, suffixtrans: 1, aetrans: 1, challenge1: 1, challenge2: 1,
 adjectiveagreement: 2,
 demonstrative: 2, demotrans: 2
 };
@@ -2006,20 +1995,8 @@ const EX_CARDS = [
 { mode:'typeenglish', icon:'🔤', title:'English → Arabic', desc:'See the English — type the Arabic word from memory.' },
 { mode:'aetrans', icon:'🔁', title:'Arabic → English', desc:'Read the Arabic sentence, translate it in your head, then reveal and grade yourself.' },
 { mode:'challenge1', icon:'🏆', title:'Challenge 1', desc:"Write your own sentence using each of 15 key words. We'll go over these together in lesson." },
-{ mode:'challenge2', icon:'🏆', title:'Challenge 2', desc:"Translate each English sentence into Arabic. We'll go over these together in lesson." },
-{ mode:'test1', icon:'📝', title:'Test 1', desc:'4 quick translation questions — your reward for finishing everything else in Lesson 1.' }
+{ mode:'challenge2', icon:'🏆', title:'Challenge 2', desc:"Translate each English sentence into Arabic. We'll go over these together in lesson." }
 ];
-
-  
-function exIsLesson1Complete() {
-const regularTypes = ['truefalse','changeword','plural','feminine','pluraltype','typeharakat','typeenglish','suffixpronoun','suffixtrans','aetrans'];
-const allMastered = regularTypes.every(function(mode) {
-return window.getExerciseMasteryPercent(mode, exGetQuestionCount(mode)) >= 100;
-});
-const ch1Done = window.hasSubmittedChallenge && window.hasSubmittedChallenge('challenge1');
-const ch2Done = window.hasSubmittedChallenge && window.hasSubmittedChallenge('challenge2');
-return allMastered && ch1Done && ch2Done;
-}
 
 function exGetQuestionCount(mode) {
 return mode==='fillgap' ? FILL_GAP_QUESTIONS.length
@@ -2055,15 +2032,6 @@ return `<div class="ex-card" id="btn-${c.mode}">
 <div class="ex-card-note">${submitted ? '✓ Submitted' : 'Not submitted yet'}</div>
 </div>`;
 }
-if (c.mode === 'test1') {
-const passed = window.hasSubmittedChallenge && window.hasSubmittedChallenge('test1');
-return `<div class="ex-card" id="btn-${c.mode}">
-<div style="font-size:28px;margin-bottom:8px">${c.icon}</div>
-<div class="ex-card-title">${c.title}</div>
-<div class="ex-card-desc">${c.desc}</div>
-<div class="ex-card-note">${passed ? '✓ Passed' : 'Not passed yet'}</div>
-</div>`;
-}
 const pct = window.getExerciseMasteryPercent(c.mode, exGetQuestionCount(c.mode));
 return `<div class="ex-card" id="btn-${c.mode}">
 ${window.miniRing(pct, c.icon)}
@@ -2086,7 +2054,6 @@ EX_CARDS.filter(c => EX_LESSON_MAP[c.mode] === viewingLesson).forEach(c => {
 document.getElementById('btn-' + c.mode).onclick = () => {
 if (c.mode === 'challenge1') exShowChallenge1();
 else if (c.mode === 'challenge2') exShowChallenge2();
-else if (c.mode === 'test1') exShowTest1();
 else exShowSetup(c.mode);
 };
 });
@@ -2154,82 +2121,7 @@ exRender(html);
 document.getElementById('ch2-submit-btn').onclick = () => window.exSubmitChallenge2();
 document.getElementById('ch2-back-btn').onclick = exShowPicker;
 }
-
-let test1Questions = [];
-let test1Idx = 0;
-
-function exBuildTest1Questions() {
-const enToArPool = [].concat(SUFFIX_TRANSLATION_QUESTIONS, DEMO_TRANSLATION_QUESTIONS, window.CHALLENGE_2_SENTENCES || []);
-const arToEnPool = [].concat(TRANSLATION_1_QUESTIONS);
-const enToArPicks = exShuffle(enToArPool).slice(0, 2).map(function(item) {
-return { dir: 'entoar', en: item.en, ar: item.ar };
-});
-const arToEnPicks = exShuffle(arToEnPool).slice(0, 2).map(function(item) {
-return { dir: 'artoen', en: item.en, ar: item.ar };
-});
-return exShuffle(enToArPicks.concat(arToEnPicks));
-}
-
-function exShowTest1() {
-if (!exIsLesson1Complete()) { showToast('Complete all exercises and challenges first!'); return; }
-test1Questions = exBuildTest1Questions();
-test1Idx = 0;
-exRenderTest1();
-}
-
-function exRenderTest1() {
-const q = test1Questions[test1Idx];
-const total = test1Questions.length;
-const isEnToAr = q.dir === 'entoar';
-const promptText = isEnToAr ? q.en : q.ar;
-const promptDir = isEnToAr ? 'ltr' : 'rtl';
-const promptFontSize = isEnToAr ? '1.1em' : '1.4em';
-const instructionText = isEnToAr ? 'Translate this into Arabic' : 'Translate this into English';
-const inputDir = isEnToAr ? 'rtl' : 'ltr';
-const inputAlign = isEnToAr ? 'right' : 'left';
-const inputFontFamily = isEnToAr ? "'Scheherazade New', serif" : 'inherit';
-const placeholderText = isEnToAr ? 'Write your Arabic translation...' : 'Write your English translation...';
-const btnLabel = (test1Idx === total - 1) ? 'Finish ✓' : 'Next ›';
-
-exRender(
-'<div style="display:flex;justify-content:center;align-items:center;background:var(--grey-light);padding:12px 20px;border-radius:12px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,0.06)">'
-+ '<div style="color:#6b7280;font-size:14px;font-weight:600">Question ' + (test1Idx + 1) + ' / ' + total + '</div>'
-+ '</div>'
-+ '<div style="background:var(--grey-light);border-radius:16px;padding:28px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">'
-+ '<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6b7280;margin-bottom:16px;text-align:center">' + instructionText + '</div>'
-+ '<div style="font-size:' + promptFontSize + ';direction:' + promptDir + ';text-align:center;margin-bottom:20px">' + promptText + '</div>'
-+ '<textarea id="t1-input" placeholder="' + placeholderText + '" style="width:100%;padding:10px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:1.2em;direction:' + inputDir + ';text-align:' + inputAlign + ';font-family:' + inputFontFamily + ';min-height:60px;outline:none;box-sizing:border-box"></textarea>'
-+ '</div>'
-+ '<button id="t1-next" style="width:100%;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">' + btnLabel + '</button>'
-);
-
-document.getElementById('t1-next').onclick = exTest1Next;
-}
-
-function exTest1Next() {
-if (window.recordTestActivity) window.recordTestActivity();
-test1Idx++;
-if (test1Idx >= test1Questions.length) {
-exTest1ShowResults();
-} else {
-exRenderTest1();
-}
-}
-
-async function exTest1ShowResults() {
-if (window.markTest1Passed) await window.markTest1Passed();
-exRender(
-'<div style="text-align:center;padding:40px 20px">'
-+ '<div style="font-size:48px;margin-bottom:16px">🎉</div>'
-+ '<div style="font-size:22px;font-weight:800;color:#1a1a2e;margin-bottom:8px">You are qualified to move to the next level!</div>'
-+ '<button id="t1-done-btn" style="padding:14px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px">Back to exercises</button>'
-+ '</div>'
-);
-document.getElementById('t1-done-btn').onclick = exShowPicker;
-}
-
-function exShowSetup(mode) {
-
+  
 function exShowSetup(mode) {
 exMode = mode;
 const title = mode === 'fillgap' ? '📝 Fill the Gap'
