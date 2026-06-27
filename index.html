@@ -415,6 +415,15 @@ console.log("THE FILE IS LOADING!");
 </div>
 <div class="home-card-arrow">›</div>
 </div>
+<div class="home-card" id="home-btn-milestones">
+<div class="home-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="19" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="5" r="2"/><path d="M6.5 17.5L10.5 13.5"/><path d="M13.5 10.5L17.5 6.5"/></svg></div>
+<div class="home-card-divider"></div>
+<div class="home-card-text">
+<div class="home-card-title">View Your Journey</div>
+<div class="home-card-desc">See your progress through the curriculum</div>
+</div>
+<div class="home-card-arrow">›</div>
+</div>
 </div>
 
 
@@ -452,6 +461,13 @@ console.log("THE FILE IS LOADING!");
 </div>
 <div id="submissions-area"></div>
 <div id="upload-area-wrap" style="display:none"></div>
+</div>
+
+<!-- MILESTONES TAB -->
+<div id="tab-content-milestones" class="content" style="display:none">
+<div class="back-row" onclick="switchTab('home')"><span class="back-btn">‹</span><span class="screen-title">Your Journey</span></div>
+<div class="section-label">Curriculum</div>
+<div id="milestone-root" style="margin-top:8px"></div>
 </div>
 
 <!-- REVISE LESSON -->
@@ -1105,11 +1121,13 @@ document.getElementById('tab-content-home').style.display = tab==='home' ? 'bloc
 document.getElementById('tab-content-homework').style.display = tab==='homework' ? 'block' : 'none';
 document.getElementById('tab-content-revise').style.display = tab==='revise' ? 'block' : 'none';
 document.getElementById('tab-content-story').style.display = tab==='story' ? 'block' : 'none';
+document.getElementById('tab-content-milestones').style.display = tab==='milestones' ? 'block' : 'none';
 document.getElementById('tab-home').classList.toggle('active', tab==='home');
 document.getElementById('tab-homework').classList.toggle('active', tab==='homework');
 document.getElementById('tab-story').classList.toggle('active', tab==='story');
 if (tab==='revise') switchReviseSubTab('flashcards');
 if (tab==='story') setStoryLesson(studentLesson[activeStudentCode()] || 1);
+if (tab==='milestones') renderMilestones();
 }
 
 window.switchReviseSubTab = function(sub) {
@@ -1688,6 +1706,41 @@ if(isInstructor&&!isStudentView)buildSidebar();
 if(currentTab==='flashcards')renderFlashcards();
 }
 
+const MILESTONE_BUILT_LESSONS = 3;
+
+function renderMilestones() {
+const code = activeStudentCode();
+const currentLevel = studentLesson[code] || 1;
+let html = '';
+for (let n = 1; n <= 16; n++) {
+const built = n <= MILESTONE_BUILT_LESSONS;
+const status = n < currentLevel ? 'done' : n === currentLevel ? 'active' : 'locked';
+const principlesArr = n===1 ? PRINCIPLES : n===2 ? PRINCIPLES_L2 : n===3 ? PRINCIPLES_L3 : [];
+const wordCount = built && LESSONS[n] && LESSONS[n].cards ? LESSONS[n].cards.length : 0;
+const principleCount = principlesArr.length;
+const badgeBg = status==='done' ? 'var(--dot-green)' : status==='active' ? '#8b2035' : '#ffffff';
+const badgeBorder = status==='locked' ? 'border:2px solid #e5e7eb;' : '';
+const badgeColor = status==='locked' ? '#9ca3af' : '#ffffff';
+const badgeText = status==='done' ? '✓' : n;
+html += `
+<div style="background:var(--grey-light);border-radius:10px;border-left:4px solid ${status==='locked' ? '#e5e7eb' : '#8b2035'};padding:14px 16px;display:flex;gap:12px;align-items:flex-start;margin-bottom:12px;${status==='locked'?'opacity:0.6':''}">
+<div style="width:38px;height:38px;border-radius:50%;background:${badgeBg};${badgeBorder}display:flex;align-items:center;justify-content:center;flex-shrink:0">
+<span style="color:${badgeColor};font-size:15px;font-weight:700">${badgeText}</span>
+</div>
+<div style="flex:1">
+<div style="font-size:14px;font-weight:600;color:#1a1a2e">Lesson ${n}</div>
+${built
+  ? `<span style="display:inline-block;margin-top:6px;font-size:11px;background:#f3f4f6;color:#6b7280;padding:3px 9px;border-radius:8px">${wordCount} words · ${principleCount} principle${principleCount===1?'':'s'}</span>`
+  : `<div style="font-size:12px;color:#9ca3af;margin-top:2px">Locked</div>`}
+</div>
+<div style="text-align:center;flex-shrink:0">
+<div style="font-size:16px;color:#9ca3af">🔒</div>
+<div style="font-size:10px;color:#9ca3af;margin-top:2px">Test ${n}</div>
+</div>
+</div>`;
+}
+document.getElementById('milestone-root').innerHTML = html;
+}
 
 
 
@@ -1703,6 +1756,7 @@ if(currentTab==='flashcards')renderFlashcards();
 document.getElementById('home-btn-start').addEventListener('click', () => switchTab('story'));
 document.getElementById('home-btn-revise').addEventListener('click', () => switchTab('revise'));
 document.getElementById('home-btn-upload').addEventListener('click', () => switchTab('homework'));
+document.getElementById('home-btn-milestones').addEventListener('click', () => switchTab('milestones'));
 document.getElementById('login-btn').addEventListener('click',handleLogin);
 document.getElementById('guest-start-btn').addEventListener('click', startGuestJourney);
 document.getElementById('guest-start-btn').addEventListener('click', startGuestJourney);
