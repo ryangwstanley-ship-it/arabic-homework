@@ -1128,6 +1128,18 @@ render();
 if (typeof exShowPicker === 'function') exShowPicker();
 };
 
+window.markTest1Passed = async function() {
+exProgress['test1'] = true;
+const code = activeStudentCode();
+await saveFlashcardData(code);
+};
+
+window.recordTestActivity = async function() {
+const code = activeStudentCode();
+incrementCardActivity(code);
+await saveFlashcardData(code);
+};
+
 async function saveDay(code, dateStr, data) { if (isGuestMode) return; await setDoc(doc(db,'submissions',code,'days',dateStr), data); }
 
 // ── LOGIN ──
@@ -1817,8 +1829,7 @@ ${built
   : `<div style="font-size:12px;color:#9ca3af;margin-top:2px">Locked</div>`}
 </div>
 <div style="text-align:center;flex-shrink:0">
-<div style="font-size:16px;color:#9ca3af">🔒</div>
-<div style="font-size:10px;color:#9ca3af;margin-top:2px">Test ${n}</div>
+${n===1 && exProgress['test1'] ? '<div style="font-size:16px;color:var(--dot-green)">✓</div><div style="font-size:10px;color:var(--dot-green);margin-top:2px">Test '+n+'</div>' : '<div style="font-size:16px;color:#9ca3af">🔒</div><div style="font-size:10px;color:#9ca3af;margin-top:2px">Test '+n+'</div>'}
 </div>
 </div>`;
 }
@@ -1972,7 +1983,7 @@ const EX_LESSON_MAP = {
 changeword: 1, truefalse: 1,
 plural: 1, feminine: 1, pluraltype: 1,
 typeharakat: 1, typeenglish: 1,
-suffixpronoun: 1, suffixtrans: 1, aetrans: 1, challenge1: 1, challenge2: 1,
+suffixpronoun: 1, suffixtrans: 1, aetrans: 1, challenge1: 1, challenge2: 1, test1: 1,
 adjectiveagreement: 2,
 demonstrative: 2, demotrans: 2
 };
@@ -1995,7 +2006,8 @@ const EX_CARDS = [
 { mode:'typeenglish', icon:'🔤', title:'English → Arabic', desc:'See the English — type the Arabic word from memory.' },
 { mode:'aetrans', icon:'🔁', title:'Arabic → English', desc:'Read the Arabic sentence, translate it in your head, then reveal and grade yourself.' },
 { mode:'challenge1', icon:'🏆', title:'Challenge 1', desc:"Write your own sentence using each of 15 key words. We'll go over these together in lesson." },
-{ mode:'challenge2', icon:'🏆', title:'Challenge 2', desc:"Translate each English sentence into Arabic. We'll go over these together in lesson." }
+{ mode:'challenge2', icon:'🏆', title:'Challenge 2', desc:"Translate each English sentence into Arabic. We'll go over these together in lesson." },
+{ mode:'test1', icon:'📝', title:'Test 1', desc:'10 mixed questions pulled from everything in Lesson 1. Score 7/10 or higher to pass.' }
 ];
 
 function exGetQuestionCount(mode) {
@@ -2032,6 +2044,15 @@ return `<div class="ex-card" id="btn-${c.mode}">
 <div class="ex-card-note">${submitted ? '✓ Submitted' : 'Not submitted yet'}</div>
 </div>`;
 }
+if (c.mode === 'test1') {
+const passed = window.hasSubmittedChallenge && window.hasSubmittedChallenge('test1');
+return `<div class="ex-card" id="btn-${c.mode}">
+<div style="font-size:28px;margin-bottom:8px">${c.icon}</div>
+<div class="ex-card-title">${c.title}</div>
+<div class="ex-card-desc">${c.desc}</div>
+<div class="ex-card-note">${passed ? '✓ Passed' : 'Not passed yet'}</div>
+</div>`;
+}
 const pct = window.getExerciseMasteryPercent(c.mode, exGetQuestionCount(c.mode));
 return `<div class="ex-card" id="btn-${c.mode}">
 ${window.miniRing(pct, c.icon)}
@@ -2054,6 +2075,7 @@ EX_CARDS.filter(c => EX_LESSON_MAP[c.mode] === viewingLesson).forEach(c => {
 document.getElementById('btn-' + c.mode).onclick = () => {
 if (c.mode === 'challenge1') exShowChallenge1();
 else if (c.mode === 'challenge2') exShowChallenge2();
+else if (c.mode === 'test1') exShowTest1();
 else exShowSetup(c.mode);
 };
 });
@@ -2121,7 +2143,237 @@ exRender(html);
 document.getElementById('ch2-submit-btn').onclick = () => window.exSubmitChallenge2();
 document.getElementById('ch2-back-btn').onclick = exShowPicker;
 }
-  
+
+const TEST1_TYPES = ['truefalse','changeword','plural','feminine','pluraltype','typeharakat','typeenglish','suffixpronoun','suffixtrans','aetrans'];
+const TEST1_PASS_SCORE = 7;
+let test1Questions = [];
+let test1Idx = 0;
+let test1Score = 0;
+
+function exBuildTest1Questions() {
+const picks = TEST1_TYPES.map(function(type) {
+const pool = type === 'truefalse' ? TRUE_FALSE_QUESTIONS
+: type === 'changeword' ? CHANGE_WORD_QUESTIONS
+: type === 'plural' ? PLURAL_QUESTIONS
+: type === 'feminine' ? FEMININE_QUESTIONS
+: type === 'pluraltype' ? exBuildPluralTypeDeck()
+: type === 'typeharakat' ? exBuildLesson1Pool()
+: type === 'typeenglish' ? exBuildLesson1Pool()
+: type === 'suffixpronoun' ? SUFFIX_PRONOUN_QUESTIONS
+: type === 'suffixtrans' ? SUFFIX_TRANSLATION_QUESTIONS
+: type === 'aetrans' ? TRANSLATION_1_QUESTIONS
+: [];
+const item = pool[Math.floor(Math.random() * pool.length)];
+return { type: type, data: item };
+});
+picks.splice(Math.floor(Math.random() * picks.length), 1);
+const ch2Pool = window.CHALLENGE_2_SENTENCES || [];
+const ch2Item = ch2Pool[Math.floor(Math.random() * ch2Pool.length)];
+picks.push({ type: 'challenge2', data: ch2Item });
+return exShuffle(picks);
+}
+
+function exShowTest1() {
+test1Questions = exBuildTest1Questions();
+test1Idx = 0;
+test1Score = 0;
+exRenderTest1();
+}
+
+function exRenderTest1() {
+const q = test1Questions[test1Idx];
+const total = test1Questions.length;
+let promptHtml = '';
+let controlsHtml = '';
+
+if (q.type === 'truefalse' || q.type === 'suffixpronoun') {
+promptHtml = '<div style="font-size:1.4em;line-height:2;text-align:center;direction:rtl">' + q.data.sentence + '</div>';
+controlsHtml = '<div style="display:flex;gap:12px;justify-content:center;margin-top:8px">'
++ '<button id="t1-true" style="flex:1;padding:14px;background:#f0fdf4;color:#15803d;border:2px solid #86efac;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">True</button>'
++ '<button id="t1-false" style="flex:1;padding:14px;background:#fef2f2;color:#b91c1c;border:2px solid #fca5a5;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">False</button>'
++ '</div>';
+} else if (q.type === 'changeword') {
+promptHtml = '<div style="font-size:1.4em;line-height:2;text-align:center;direction:rtl">' + q.data.sentence + '</div>';
+controlsHtml = '<div style="display:flex;flex-direction:column;align-items:center;gap:10px">'
++ '<input id="t1-input" type="text" placeholder="Type the correct word..." style="font-size:1.2em;padding:12px 16px;border:2px solid #e5e7eb;border-radius:10px;width:100%;max-width:320px;text-align:center;direction:rtl;outline:none">'
++ '<button id="t1-check" style="padding:12px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Check ←</button>'
++ '</div>';
+} else if (q.type === 'plural') {
+const choices = exShuffle([{ text: q.data.singular, isPlural: false }, { text: q.data.plural, isPlural: true }]);
+controlsHtml = '<div style="display:flex;gap:12px;justify-content:center;margin-top:8px">';
+choices.forEach(function(c) {
+controlsHtml += '<button class="ex-word-tile t1-plural-btn" data-plural="' + c.isPlural + '" style="flex:1;text-align:center">' + c.text + '</button>';
+});
+controlsHtml += '</div>';
+} else if (q.type === 'feminine') {
+promptHtml = '<div style="font-size:13px;color:#6b7280;text-align:center;margin-bottom:8px">Tap the TWO feminine words, then press Check</div>';
+const shuffled = exShuffle(q.data.words.map(function(w, i) { return Object.assign({}, w, { oid: i }); }));
+controlsHtml = '<div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center">';
+shuffled.forEach(function(w) {
+controlsHtml += '<button class="ex-word-tile t1-fem-btn" data-fem="' + (w.feminine ? 1 : 0) + '">' + w.text + '</button>';
+});
+controlsHtml += '</div><div style="text-align:center;margin-top:16px"><button id="t1-fem-check" style="padding:12px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Check ←</button></div>';
+} else if (q.type === 'pluraltype') {
+const isRegularity = q.data.cardType === 'regularity';
+promptHtml = '<div style="font-size:13px;color:#6b7280;text-align:center;margin-bottom:8px">' + (isRegularity ? 'Is this plural regular or irregular?' : 'Is this plural human or non-human?') + '</div><div style="font-size:1.4em;direction:rtl;text-align:center">' + q.data.ar;
+if (!isRegularity) promptHtml += '<br><span style="font-size:0.5em;color:#6b7280;direction:ltr;display:block">' + q.data.en + '</span>';
+promptHtml += '</div>';
+const labelA = isRegularity ? 'Regular' : 'Human';
+const labelB = isRegularity ? 'Irregular' : 'Non-human';
+controlsHtml = '<div style="display:flex;gap:12px;justify-content:center;margin-top:8px">'
++ '<button id="t1-pt-a" style="flex:1;padding:14px;background:#eff6ff;color:#1d4ed8;border:2px solid #93c5fd;border-radius:10px;font-weight:700;cursor:pointer">' + labelA + '</button>'
++ '<button id="t1-pt-b" style="flex:1;padding:14px;background:#f1f5f9;color:#334155;border:2px solid #94a3b8;border-radius:10px;font-weight:700;cursor:pointer">' + labelB + '</button>'
++ '</div>';
+} else if (q.type === 'typeharakat') {
+promptHtml = '<div style="font-size:13px;color:#6b7280;text-align:center;margin-bottom:8px">Type this word using bare letters only (no harakat)</div><div style="font-size:1.6em;direction:rtl;text-align:center">' + q.data.ar + '</div>';
+controlsHtml = '<div style="display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:10px">'
++ '<input id="t1-input" type="text" placeholder="Type here..." style="font-size:1.2em;padding:12px 16px;border:2px solid #e5e7eb;border-radius:10px;width:100%;max-width:320px;text-align:center;direction:rtl;outline:none">'
++ '<button id="t1-check" style="padding:12px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-weight:700;cursor:pointer">Check ←</button>'
++ '</div>';
+} else if (q.type === 'typeenglish') {
+promptHtml = '<div style="font-size:13px;color:#6b7280;text-align:center;margin-bottom:8px">Type the Arabic word</div><div style="font-size:1.4em;direction:ltr;text-align:center">' + q.data.en + '</div>';
+controlsHtml = '<div style="display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:10px">'
++ '<input id="t1-input" type="text" placeholder="Type here..." style="font-size:1.2em;padding:12px 16px;border:2px solid #e5e7eb;border-radius:10px;width:100%;max-width:320px;text-align:center;direction:rtl;outline:none">'
++ '<button id="t1-check" style="padding:12px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-weight:700;cursor:pointer">Check ←</button>'
++ '</div>';
+} else {
+const promptText = q.type === 'suffixtrans' ? q.data.en : q.type === 'aetrans' ? q.data.ar : q.data.en;
+const dir = q.type === 'aetrans' ? 'rtl' : 'ltr';
+const fontSize = q.type === 'aetrans' ? '1.4em' : '1.1em';
+const inputDir = (q.type === 'suffixtrans' || q.type === 'challenge2') ? 'rtl' : 'ltr';
+const inputAlign = inputDir === 'rtl' ? 'right' : 'left';
+const placeholderText = inputDir === 'rtl' ? 'Write the Arabic translation...' : 'Write the English translation...';
+promptHtml = '<div style="font-size:13px;color:#6b7280;text-align:center;margin-bottom:8px">Read this, write your translation, then reveal</div><div style="font-size:' + fontSize + ';direction:' + dir + ';text-align:center">' + promptText + '</div>';
+controlsHtml = '<div style="display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:10px">'
++ '<textarea id="t1-input" placeholder="' + placeholderText + '" style="width:100%;max-width:380px;padding:10px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:1.1em;direction:' + inputDir + ';text-align:' + inputAlign + ';font-family:inherit;min-height:50px;outline:none;box-sizing:border-box"></textarea>'
++ '<button id="t1-reveal" style="padding:12px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-weight:700;cursor:pointer">Reveal ←</button>'
++ '</div>';
+}
+
+exRender(
+'<div style="display:flex;justify-content:center;align-items:center;background:var(--grey-light);padding:12px 20px;border-radius:12px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,0.06)">'
++ '<div style="color:#6b7280;font-size:14px;font-weight:600">Question ' + (test1Idx+1) + ' / ' + total + '</div>'
++ '</div>'
++ '<div style="background:var(--grey-light);border-radius:16px;padding:28px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">'
++ promptHtml
++ '<div style="margin-top:16px">' + controlsHtml + '</div>'
++ '<div id="t1-reveal-box" style="display:none;background:#f3f4f6;border:2px solid #d1d5db;border-radius:10px;padding:16px;margin-top:16px;font-size:1.1em;text-align:center"></div>'
++ '</div>'
++ '<div id="t1-next-wrap" style="display:none"><button id="t1-next" style="width:100%;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">Next ›</button></div>'
+);
+
+exWireTest1Controls(q);
+}
+
+function exWireTest1Controls(q) {
+function revealAndScore(isCorrect, answerHtml) {
+const box = document.getElementById('t1-reveal-box');
+box.innerHTML = answerHtml;
+box.style.display = 'block';
+if (isCorrect) test1Score++;
+document.getElementById('t1-next-wrap').style.display = 'block';
+document.getElementById('t1-next').onclick = exTest1Next;
+}
+
+if (q.type === 'truefalse' || q.type === 'suffixpronoun') {
+document.getElementById('t1-true').onclick = function() {
+revealAndScore(q.data.answer === true, 'The sentence is <strong>' + (q.data.answer ? 'True' : 'False') + '</strong>.');
+};
+document.getElementById('t1-false').onclick = function() {
+revealAndScore(q.data.answer === false, 'The sentence is <strong>' + (q.data.answer ? 'True' : 'False') + '</strong>.');
+};
+} else if (q.type === 'changeword') {
+document.getElementById('t1-check').onclick = function() {
+const typed = document.getElementById('t1-input').value.trim();
+revealAndScore(typed === q.data.correct, '✓ Correct word: <strong>' + q.data.correct + '</strong>');
+};
+} else if (q.type === 'plural') {
+document.querySelectorAll('.t1-plural-btn').forEach(function(btn) {
+btn.onclick = function() {
+const chosen = btn.dataset.plural === 'true';
+revealAndScore(chosen, 'The plural is <strong>' + q.data.plural + '</strong> (singular: <strong>' + q.data.singular + '</strong>).');
+};
+});
+} else if (q.type === 'feminine') {
+document.querySelectorAll('.t1-fem-btn').forEach(function(t) {
+t.onclick = function() { t.classList.toggle('selected'); };
+});
+document.getElementById('t1-fem-check').onclick = function() {
+const tiles = Array.from(document.querySelectorAll('.t1-fem-btn'));
+let allCorrect = true;
+tiles.forEach(function(t) {
+const isFem = t.dataset.fem === '1';
+const picked = t.classList.contains('selected');
+if (isFem !== picked) allCorrect = false;
+});
+const femWords = q.data.words.filter(function(w) { return w.feminine; }).map(function(w) { return w.text; }).join(', ');
+revealAndScore(allCorrect, 'The feminine words are <strong>' + femWords + '</strong>.');
+};
+} else if (q.type === 'pluraltype') {
+const isRegularity = q.data.cardType === 'regularity';
+const labelTrue = isRegularity ? 'Regular' : 'Human';
+const labelFalse = isRegularity ? 'Irregular' : 'Non-human';
+document.getElementById('t1-pt-a').onclick = function() {
+revealAndScore(q.data.answer === true, 'This plural is <strong>' + (q.data.answer ? labelTrue : labelFalse) + '</strong>.');
+};
+document.getElementById('t1-pt-b').onclick = function() {
+revealAndScore(q.data.answer === false, 'This plural is <strong>' + (q.data.answer ? labelTrue : labelFalse) + '</strong>.');
+};
+} else if (q.type === 'typeharakat' || q.type === 'typeenglish') {
+document.getElementById('t1-check').onclick = function() {
+const typed = document.getElementById('t1-input').value.trim();
+revealAndScore(typed === q.data.target, '✓ Correct: <strong>' + q.data.target + '</strong>');
+};
+} else {
+document.getElementById('t1-reveal').onclick = function() {
+const modelAnswer = q.type === 'suffixtrans' ? q.data.ar : q.type === 'aetrans' ? q.data.en : q.data.ar;
+const box = document.getElementById('t1-reveal-box');
+box.innerHTML = 'Model answer: <strong>' + modelAnswer + '</strong><br><span style="font-size:0.85em;color:#6b7280">Close enough?</span>'
++ '<div style="display:flex;gap:10px;margin-top:12px">'
++ '<button id="t1-self-yes" style="flex:1;padding:10px;background:#f0fdf4;color:#15803d;border:none;border-radius:8px;font-weight:700;cursor:pointer">Got it right</button>'
++ '<button id="t1-self-no" style="flex:1;padding:10px;background:#fef2f2;color:#b91c1c;border:none;border-radius:8px;font-weight:700;cursor:pointer">Did not get it</button>'
++ '</div>';
+box.style.display = 'block';
+document.getElementById('t1-reveal').style.display = 'none';
+document.getElementById('t1-self-yes').onclick = function() {
+test1Score++;
+document.getElementById('t1-next-wrap').style.display = 'block';
+document.getElementById('t1-next').onclick = exTest1Next;
+};
+document.getElementById('t1-self-no').onclick = function() {
+document.getElementById('t1-next-wrap').style.display = 'block';
+document.getElementById('t1-next').onclick = exTest1Next;
+};
+};
+}
+}
+
+function exTest1Next() {
+if (window.recordTestActivity) window.recordTestActivity();
+test1Idx++;
+if (test1Idx >= test1Questions.length) {
+exTest1ShowResults();
+} else {
+exRenderTest1();
+}
+}
+
+async function exTest1ShowResults() {
+const total = test1Questions.length;
+const pct = Math.round((test1Score / total) * 100);
+const passed = test1Score >= TEST1_PASS_SCORE;
+if (passed && window.markTest1Passed) await window.markTest1Passed();
+exRender(
+'<div style="text-align:center;padding:40px 20px">'
++ '<div style="font-size:48px;margin-bottom:16px">' + (passed ? '🎉' : '📝') + '</div>'
++ '<div style="font-size:22px;font-weight:800;color:#1a1a2e;margin-bottom:8px">' + (passed ? 'Test 1 passed!' : 'Almost there') + '</div>'
++ '<div style="font-size:15px;color:#6b7280;margin-bottom:24px">You scored ' + test1Score + ' / ' + total + ' (' + pct + '%)' + (passed ? '' : ' — ' + TEST1_PASS_SCORE + '/' + total + ' needed to pass') + '</div>'
++ '<button id="t1-done-btn" style="padding:14px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-weight:700;cursor:pointer">Back to exercises</button>'
++ '</div>'
+);
+document.getElementById('t1-done-btn').onclick = exShowPicker;
+}
+
 function exShowSetup(mode) {
 exMode = mode;
 const title = mode === 'fillgap' ? '📝 Fill the Gap'
