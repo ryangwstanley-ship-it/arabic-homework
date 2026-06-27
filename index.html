@@ -31,7 +31,12 @@
 .login-btn { width: 100%; margin-top: 16px; padding: 14px; background: var(--blue); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; }
 .login-btn:hover { background: #6e1828; }
 .login-error { color: #ef4444; font-size: 13px; margin-top: 10px; text-align: center; display: none; }
+.guest-btn { width: 100%; max-width: 360px; padding: 16px; background: #8b2035; color: white; border: none; border-radius: 10px; font-size: 17px; font-weight: 700; cursor: pointer; margin-bottom: 18px; }
+.guest-btn:hover { background: #6e1828; }
+.login-divider { color: var(--grey); font-size: 13px; margin-bottom: 12px; text-align: center; }
+.login-card-small { padding: 20px; max-width: 300px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
 
+  
 /* APP */
 #app { display: none; min-height: 100vh; }
 
@@ -318,7 +323,9 @@ console.log("THE FILE IS LOADING!");
 <div class="login-logo">Yusr Arabic</div>
 <div class="login-title">Arabic Daily</div>
 <div class="login-subtitle">Daily homework tracker</div>
-<div class="login-card">
+<button class="guest-btn" id="guest-start-btn">Start Your Journey</button>
+<div class="login-divider">For premium users, enter code</div>
+<div class="login-card login-card-small">
 <label>Your code</label>
 <input type="text" id="code-input" maxlength="6" placeholder="ABC123" autocomplete="off">
 <div class="login-error" id="login-error">Code not recognised. Try again.</div>
@@ -449,7 +456,7 @@ console.log("THE FILE IS LOADING!");
 
 <!-- REVISE LESSON -->
 <div id="tab-content-revise" class="content" style="display:none">
-<div class="back-row" onclick="switchTab('home')"><span class="back-btn">‹</span><span class="screen-title">Revise Lesson</span></div>
+<div class="back-row" id="revise-back-row" onclick="switchTab('home')"><span class="back-btn">‹</span><span class="screen-title">Revise Lesson</span></div>
 <div class="revise-tab-row">
 <button class="revise-tab-btn" id="revise-tab-flashcards" onclick="switchReviseSubTab('flashcards')">Flashcards</button>
 <button class="revise-tab-btn" id="revise-tab-exercises" onclick="switchReviseSubTab('exercises')">Exercises</button>
@@ -462,6 +469,7 @@ console.log("THE FILE IS LOADING!");
 
 <div id="fc-area"></div>
 
+<button id="guest-principles-btn" style="display:none;width:100%;margin-top:20px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Continue to Grammar Principles →</button>
 
 </div>
 <!-- EXERCISES SUB-TAB -->
@@ -472,7 +480,7 @@ console.log("THE FILE IS LOADING!");
 <!-- STORY TAB -->
 <!-- STORY TAB -->
 <div id="tab-content-story" class="content" style="display:none">
-<div class="back-row" onclick="switchTab('home')"><span class="back-btn">‹</span><span class="screen-title">Start Lesson</span></div>
+<div class="back-row" id="story-back-row" onclick="switchTab('home')"><span class="back-btn">‹</span><span class="screen-title">Start Lesson</span></div>
 <style>
 .story-word { cursor:pointer; }
 .story-word.new { font-weight:700; color:#8b2035; }
@@ -497,7 +505,7 @@ console.log("THE FILE IS LOADING!");
 .principle-dot { width:6px; height:6px; border-radius:50%; background:#d8d2c4; }
 .principle-dot.active { background:#8b2035; }
 </style>
-<div style="background:var(--grey-light);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08)">
+<div id="story-lesson-1" style="background:var(--grey-light);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08)">
 
 <div style="text-align:center;margin-bottom:20px">
 <div style="font-family:'Scheherazade New', serif;font-size:26px;font-weight:700;color:#1a1a2e">الدَّرْسُ الأَوَّلُ</div>
@@ -538,6 +546,7 @@ console.log("THE FILE IS LOADING!");
 <p class="story-en-line">Why do they worship the idols? Worship is for Allah alone.</p>
 </div>
 
+
 <div class="principles-wrap" id="principles-wrap">
 <div class="principles-header">
 <span class="section-label" style="margin-bottom:0">Key principles</span>
@@ -553,6 +562,112 @@ console.log("THE FILE IS LOADING!");
 <div class="principles-dots" id="principles-dots"></div>
 <button class="principles-nav-btn principles-nav-btn-primary" id="principle-next-btn">Next ›</button>
 </div>
+</div>
+
+<button id="guest-flashcards-btn" style="display:none;width:100%;margin-top:24px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Continue to Flashcards →</button>
+
+</div>
+
+<div id="story-lesson-2" style="display:none;background:var(--grey-light);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08)">
+
+<div style="text-align:center;margin-bottom:20px">
+<div style="font-family:'Scheherazade New', serif;font-size:26px;font-weight:700;color:#1a1a2e">الدَّرْسُ الثَّانِي</div>
+<div style="font-size:13px;font-weight:700;letter-spacing:1px;color:#6b7280;text-transform:uppercase;margin-top:2px">Lesson 2</div>
+<div style="font-size:13px;color:#8b2035;font-weight:700;margin-top:10px">[■■□□□□□□□□□] 9 steps to understanding 61% of Quran</div>
+<div style="font-size:14px;color:#6b7280;margin-top:8px;line-height:1.5">In this lesson, you will learn about definite nouns and how they affect adjectives</div>
+</div>
+
+<div style="font-family:'Scheherazade New', serif;font-size:20px;font-weight:700;color:#1a1a2e;direction:rtl;text-align:right;border-top:1px solid #e5e7eb;padding-top:16px;margin-bottom:14px">STORY 2 — إِبْرَاهِيمُ يَرَى الشِّرْكَ</div>
+
+<button id="story-english-btn-l2" onclick="toggleStoryEnglish()" style="padding:10px 20px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:16px">Show English</button>
+
+<div style="font-family:'Scheherazade New', serif;font-size:28px;line-height:2;direction:rtl;text-align:right">
+<p><span class="story-line-num">١</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word" data-en="to Azar" onclick="showWordMeaning(this)">لِآزَرَ</span> <span class="story-word new" data-en="a son" onclick="showWordMeaning(this)">وَلَدٌ</span></p>
+<p class="story-en-line">And Azar had a son.</p>
+<p><span class="story-line-num">٢</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word" data-en="name of" onclick="showWordMeaning(this)">اسْمُ</span> <span class="story-word" data-en="this (m)" onclick="showWordMeaning(this)">هَذَا</span> <span class="story-word" data-en="the boy" onclick="showWordMeaning(this)">الْوَلَدِ</span> <span class="story-word new" data-en="Ibrahim (a name)" onclick="showWordMeaning(this)">إِبْرَاهِيمَ</span></p>
+<p class="story-en-line">And this boy's name was Ibrahim.</p>
+<p><span class="story-line-num">٣</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word" data-en="Azar (a name)" onclick="showWordMeaning(this)">آزَرُ</span> <span class="story-word new" data-en="father of" onclick="showWordMeaning(this)">أَبَا</span> <span class="story-word" data-en="Ibrahim (a name)" onclick="showWordMeaning(this)">إِبْرَاهِيمَ</span></p>
+<p class="story-en-line">And Azar was Ibrahim's father.</p>
+<p><span class="story-line-num">٤</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word" data-en="Ibrahim" onclick="showWordMeaning(this)">إِبْرَاهِيمُ</span> <span class="story-word" data-en="he lives" onclick="showWordMeaning(this)">يَسْكُنُ</span> <span class="story-word" data-en="with" onclick="showWordMeaning(this)">مَعَ</span> <span class="story-word" data-en="his father" onclick="showWordMeaning(this)">أَبِيهِ</span> <span class="story-word" data-en="in" onclick="showWordMeaning(this)">فِي</span> <span class="story-word" data-en="the village" onclick="showWordMeaning(this)">الْقَرْيَةِ</span></p>
+<p class="story-en-line">And Ibrahim lived with his father in the village.</p>
+<p><span class="story-line-num">٥</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word" data-en="Ibrahim" onclick="showWordMeaning(this)">إِبْرَاهِيمُ</span> <span class="story-word new" data-en="he sees" onclick="showWordMeaning(this)">يَرَى</span> <span class="story-word" data-en="the people" onclick="showWordMeaning(this)">النَّاسَ</span> <span class="story-word" data-en="they prostrate" onclick="showWordMeaning(this)">يَسْجُدُونَ</span> <span class="story-word" data-en="to the idols" onclick="showWordMeaning(this)">لِلْأَصْنَامِ</span></p>
+<p class="story-en-line">And Ibrahim saw the people prostrating to the idols.</p>
+<p><span class="story-line-num">٦</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word" data-en="he sees" onclick="showWordMeaning(this)">يَرَى</span> <span class="story-word" data-en="the people" onclick="showWordMeaning(this)">النَّاسَ</span> <span class="story-word" data-en="they worship" onclick="showWordMeaning(this)">يَعْبُدُونَ</span> <span class="story-word new" data-en="the stones" onclick="showWordMeaning(this)">الْحِجَارَةَ</span></p>
+<p class="story-en-line">And he saw the people worshipping the stones.</p>
+<p><span class="story-line-num">٧</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word" data-en="he sees" onclick="showWordMeaning(this)">يَرَى</span> <span class="story-word new" data-en="that (m)" onclick="showWordMeaning(this)">ذَلِكَ</span> <span class="story-word new" data-en="every" onclick="showWordMeaning(this)">كُلَّ</span> <span class="story-word" data-en="a day" onclick="showWordMeaning(this)">يَوْمٍ</span></p>
+<p class="story-en-line">And he saw that every day.</p>
+<p><span class="story-line-num">٨</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word" data-en="Ibrahim" onclick="showWordMeaning(this)">إِبْرَاهِيمُ</span> <span class="story-word new" data-en="he knows" onclick="showWordMeaning(this)">يَعْرِفُ</span> <span class="story-word new" data-en="that" onclick="showWordMeaning(this)">أَنَّ</span> <span class="story-word new" data-en="that (f)" onclick="showWordMeaning(this)">تِلْكَ</span> <span class="story-word" data-en="the worship" onclick="showWordMeaning(this)">الْعِبَادَةَ</span> <span class="story-word new" data-en="bad (f)" onclick="showWordMeaning(this)">سَيِّئَةٌ</span></p>
+<p class="story-en-line">And Ibrahim knew that this worship was bad.</p>
+<p><span class="story-line-num">٩</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word" data-en="he knows" onclick="showWordMeaning(this)">يَعْرِفُ</span> <span class="story-word" data-en="that" onclick="showWordMeaning(this)">أَنَّ</span> <span class="story-word" data-en="the idols" onclick="showWordMeaning(this)">الْأَصْنَامَ</span> <span class="story-word" data-en="stones" onclick="showWordMeaning(this)">حِجَارَةٌ</span> <span class="story-word" data-en="only" onclick="showWordMeaning(this)">فَقَطْ</span></p>
+<p class="story-en-line">And he knew the idols were only stones.</p>
+<p><span class="story-line-num">١٠</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word" data-en="Ibrahim" onclick="showWordMeaning(this)">إِبْرَاهِيمُ</span> <span class="story-word new" data-en="he says" onclick="showWordMeaning(this)">يَقُولُ</span> <span class="story-word" data-en="in" onclick="showWordMeaning(this)">فِي</span> <span class="story-word new" data-en="himself" onclick="showWordMeaning(this)">نَفْسِهِ</span>: <span class="story-word" data-en="why" onclick="showWordMeaning(this)">لِمَاذَا</span> <span class="story-word" data-en="they prostrate" onclick="showWordMeaning(this)">يَسْجُدُونَ</span> <span class="story-word" data-en="to the idols" onclick="showWordMeaning(this)">لِلْأَصْنَامِ</span>؟</p>
+<p class="story-en-line">And Ibrahim said to himself: Why do they prostrate to the idols?</p>
+<p><span class="story-line-num">١١</span> <span class="story-word new" data-en="they" onclick="showWordMeaning(this)">هُمْ</span> <span class="story-word" data-en="they worship" onclick="showWordMeaning(this)">يَعْبُدُونَ</span> <span class="story-word" data-en="the stones" onclick="showWordMeaning(this)">الْحِجَارَةَ</span> — <span class="story-word" data-en="and the stones" onclick="showWordMeaning(this)">وَالْحِجَارَةُ</span> <span class="story-word new" data-en="not" onclick="showWordMeaning(this)">لَا</span> <span class="story-word new" data-en="it benefits" onclick="showWordMeaning(this)">تَنْفَعُ</span> <span class="story-word new" data-en="a thing" onclick="showWordMeaning(this)">شَيْئًا</span></p>
+<p class="story-en-line">They worship the stones — but the stones are of no benefit at all.</p>
+<p><span class="story-line-num">١٢</span> <span class="story-word new" data-en="and not" onclick="showWordMeaning(this)">وَمَا</span> <span class="story-word" data-en="was" onclick="showWordMeaning(this)">كَانَ</span> <span class="story-word" data-en="Ibrahim" onclick="showWordMeaning(this)">إِبْرَاهِيمُ</span> <span class="story-word new" data-en="from" onclick="showWordMeaning(this)">مِنَ</span> <span class="story-word" data-en="the polytheists" onclick="showWordMeaning(this)">الْمُشْرِكِينَ</span></p>
+<p class="story-en-line">And Ibrahim was not one of the polytheists.</p>
+<p><span class="story-line-num">١٣</span> <span class="story-word new" data-en="rather" onclick="showWordMeaning(this)">بَلْ</span> <span class="story-word" data-en="was" onclick="showWordMeaning(this)">كَانَ</span> <span class="story-word new" data-en="on/upon" onclick="showWordMeaning(this)">عَلَى</span> <span class="story-word new" data-en="a religion" onclick="showWordMeaning(this)">دِينٍ</span> <span class="story-word new" data-en="another" onclick="showWordMeaning(this)">آخَرَ</span></p>
+<p class="story-en-line">Rather, he followed another religion.</p>
+<p><span class="story-line-num">١٤</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word new" data-en="his Lord" onclick="showWordMeaning(this)">رَبُّهُ</span> <span class="story-word" data-en="Allah" onclick="showWordMeaning(this)">اللَّهَ</span></p>
+<p class="story-en-line">And his Lord was Allah.</p>
+<p><span class="story-line-num">١٥</span> <span class="story-word new" data-en="and did not" onclick="showWordMeaning(this)">وَلَمْ</span> <span class="story-word" data-en="worship" onclick="showWordMeaning(this)">يَعْبُدْ</span> <span class="story-word" data-en="Ibrahim" onclick="showWordMeaning(this)">إِبْرَاهِيمُ</span> <span class="story-word" data-en="the idols" onclick="showWordMeaning(this)">الْأَصْنَامَ</span></p>
+<p class="story-en-line">And Ibrahim did not worship the idols.</p>
+<p><span class="story-line-num">١٦</span> <span class="story-word new" data-en="and will not" onclick="showWordMeaning(this)">وَلَنْ</span> <span class="story-word new" data-en="leave/abandon" onclick="showWordMeaning(this)">يَتْرُكَ</span> <span class="story-word" data-en="Ibrahim" onclick="showWordMeaning(this)">إِبْرَاهِيمُ</span> <span class="story-word" data-en="the people" onclick="showWordMeaning(this)">النَّاسَ</span> <span class="story-word" data-en="in" onclick="showWordMeaning(this)">فِي</span> <span class="story-word new" data-en="the polytheism" onclick="showWordMeaning(this)">الشِّرْكِ</span></p>
+<p class="story-en-line">And Ibrahim will not abandon the people to polytheism.</p>
+</div>
+
+</div>
+
+<div id="story-lesson-3" style="display:none;background:var(--grey-light);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08)">
+
+<div style="text-align:center;margin-bottom:20px">
+<div style="font-family:'Scheherazade New', serif;font-size:26px;font-weight:700;color:#1a1a2e">الدَّرْسُ الثَّالِثُ</div>
+<div style="font-size:13px;font-weight:700;letter-spacing:1px;color:#6b7280;text-transform:uppercase;margin-top:2px">Lesson 3</div>
+<div style="font-size:13px;color:#8b2035;font-weight:700;margin-top:10px">[■■■□□□□□□□□] 8 steps to understanding 61% of Quran</div>
+<div style="font-size:14px;color:#6b7280;margin-top:8px;line-height:1.5">In this lesson, you will learn about present tense verbs and their pronouns</div>
+</div>
+
+<div style="font-family:'Scheherazade New', serif;font-size:20px;font-weight:700;color:#1a1a2e;direction:rtl;text-align:right;border-top:1px solid #e5e7eb;padding-top:16px;margin-bottom:14px">STORY 3 — التَّوْحِيدُ</div>
+
+<button id="story-english-btn-l3" onclick="toggleStoryEnglish()" style="padding:10px 20px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:16px">Show English</button>
+
+<div style="font-family:'Scheherazade New', serif;font-size:28px;line-height:2;direction:rtl;text-align:right">
+<p><span class="story-line-num">١</span> <span class="story-word" data-en="said" onclick="showWordMeaning(this)">قَالَ</span> <span class="story-word" data-en="Allah" onclick="showWordMeaning(this)">اللَّهُ</span> <span class="story-word new" data-en="the Most High" onclick="showWordMeaning(this)">تَعَالَى</span>:<br>
+<span class="story-word" data-en="say" onclick="showWordMeaning(this)">قُلْ</span> <span class="story-word new" data-en="O" onclick="showWordMeaning(this)">يَا</span> <span class="story-word new" data-en="you" onclick="showWordMeaning(this)">أَيُّهَا</span> <span class="story-word new" data-en="the disbelievers" onclick="showWordMeaning(this)">الْكَافِرُونَ</span><br>
+<span class="story-word" data-en="not" onclick="showWordMeaning(this)">لَا</span> <span class="story-word" data-en="I worship" onclick="showWordMeaning(this)">أَعْبُدُ</span> <span class="story-word" data-en="what" onclick="showWordMeaning(this)">مَا</span> <span class="story-word" data-en="you (pl) worship" onclick="showWordMeaning(this)">تَعْبُدُونَ</span><br>
+<span class="story-word" data-en="and not" onclick="showWordMeaning(this)">وَلَا</span> <span class="story-word new" data-en="you (pl)" onclick="showWordMeaning(this)">أَنْتُمْ</span> <span class="story-word" data-en="worshippers" onclick="showWordMeaning(this)">عَابِدُونَ</span> <span class="story-word" data-en="what" onclick="showWordMeaning(this)">مَا</span> <span class="story-word" data-en="I worship" onclick="showWordMeaning(this)">أَعْبُدُ</span><br>
+<span class="story-word" data-en="and not" onclick="showWordMeaning(this)">وَلَا</span> <span class="story-word new" data-en="I" onclick="showWordMeaning(this)">أَنَا</span> <span class="story-word" data-en="worshipper" onclick="showWordMeaning(this)">عَابِدٌ</span> <span class="story-word" data-en="what" onclick="showWordMeaning(this)">مَا</span> <span class="story-word" data-en="you (pl) worshipped" onclick="showWordMeaning(this)">عَبَدْتُمْ</span><br>
+<span class="story-word" data-en="and not" onclick="showWordMeaning(this)">وَلَا</span> <span class="story-word" data-en="you (pl)" onclick="showWordMeaning(this)">أَنْتُمْ</span> <span class="story-word" data-en="worshippers" onclick="showWordMeaning(this)">عَابِدُونَ</span> <span class="story-word" data-en="what" onclick="showWordMeaning(this)">مَا</span> <span class="story-word" data-en="I worship" onclick="showWordMeaning(this)">أَعْبُدُ</span><br>
+<span class="story-word new" data-en="for you (pl)" onclick="showWordMeaning(this)">لَكُمْ</span> <span class="story-word" data-en="your religion" onclick="showWordMeaning(this)">دِينُكُمْ</span> <span class="story-word new" data-en="and for me" onclick="showWordMeaning(this)">وَلِيَ</span> <span class="story-word" data-en="my religion" onclick="showWordMeaning(this)">دِينِ</span></p>
+<p class="story-en-line">Allah the Most High said: "Say, 'O disbelievers, I do not worship what you worship, nor do you worship what I worship, nor will I worship what you worship, nor will you worship what I worship. For you is your religion, and for me is my religion.'"</p>
+<p><span class="story-line-num">٢</span> <span class="story-word" data-en="Ibrahim" onclick="showWordMeaning(this)">إِبْرَاهِيمُ</span> <span class="story-word" data-en="upon" onclick="showWordMeaning(this)">عَلَى</span> <span class="story-word new" data-en="monotheism" onclick="showWordMeaning(this)">التَّوْحِيدِ</span>، <span class="story-word" data-en="and the polytheists" onclick="showWordMeaning(this)">وَالْمُشْرِكُونَ</span> <span class="story-word" data-en="upon" onclick="showWordMeaning(this)">عَلَى</span> <span class="story-word" data-en="disbelief" onclick="showWordMeaning(this)">الْكُفْرِ</span></p>
+<p class="story-en-line">Ibrahim follows monotheism, and the polytheists follow disbelief.</p>
+<p><span class="story-line-num">٣</span> <span class="story-word new" data-en="he" onclick="showWordMeaning(this)">هُوَ</span> <span class="story-word" data-en="worships" onclick="showWordMeaning(this)">يَعْبُدُ</span> <span class="story-word" data-en="Allah" onclick="showWordMeaning(this)">اللَّهَ</span>، <span class="story-word" data-en="and they" onclick="showWordMeaning(this)">وَهُمْ</span> <span class="story-word" data-en="worship" onclick="showWordMeaning(this)">يَعْبُدُونَ</span> <span class="story-word" data-en="the stones" onclick="showWordMeaning(this)">الْحِجَارَةَ</span></p>
+<p class="story-en-line">He worships Allah, and they worship the stones.</p>
+<p><span class="story-line-num">٤</span> <span class="story-word new" data-en="is not" onclick="showWordMeaning(this)">لَيْسَ</span> <span class="story-word" data-en="the idol" onclick="showWordMeaning(this)">الصَّنَمُ</span> <span class="story-word new" data-en="a god" onclick="showWordMeaning(this)">إِلَهًا</span> — <span class="story-word" data-en="he/it" onclick="showWordMeaning(this)">هُوَ</span> <span class="story-word new" data-en="a stone" onclick="showWordMeaning(this)">حَجَرٌ</span> <span class="story-word" data-en="only" onclick="showWordMeaning(this)">فَقَطْ</span></p>
+<p class="story-en-line">The idol is not a god — it is only a stone.</p>
+<p><span class="story-line-num">٥</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word" data-en="Ibrahim" onclick="showWordMeaning(this)">إِبْرَاهِيمُ</span> <span class="story-word" data-en="knew" onclick="showWordMeaning(this)">يَعْرِفُ</span> <span class="story-word" data-en="that" onclick="showWordMeaning(this)">أَنَّ</span> <span class="story-word" data-en="his Lord" onclick="showWordMeaning(this)">رَبَّهُ</span> <span class="story-word" data-en="Allah" onclick="showWordMeaning(this)">اللَّهُ</span> <span class="story-word new" data-en="alone" onclick="showWordMeaning(this)">وَحْدَهُ</span></p>
+<p class="story-en-line">And Ibrahim knew his Lord was Allah alone.</p>
+<p><span class="story-line-num">٦</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word" data-en="knew" onclick="showWordMeaning(this)">يَعْرِفُ</span> <span class="story-word" data-en="that" onclick="showWordMeaning(this)">أَنَّ</span> <span class="story-word" data-en="the worship" onclick="showWordMeaning(this)">الْعِبَادَةَ</span> <span class="story-word" data-en="to Allah" onclick="showWordMeaning(this)">لِلَّهِ</span> <span class="story-word" data-en="only" onclick="showWordMeaning(this)">فَقَطْ</span></p>
+<p class="story-en-line">And he knew that worship is for Allah only.</p>
+<p><span class="story-line-num">٧</span> <span class="story-word" data-en="and abandoned" onclick="showWordMeaning(this)">وَتَرَكَ</span> <span class="story-word" data-en="Ibrahim" onclick="showWordMeaning(this)">إِبْرَاهِيمُ</span> <span class="story-word" data-en="polytheism" onclick="showWordMeaning(this)">الشِّرْكَ</span> — <span class="story-word" data-en="and did not" onclick="showWordMeaning(this)">وَلَمْ</span> <span class="story-word" data-en="abandon" onclick="showWordMeaning(this)">يَتْرُكْ</span> <span class="story-word" data-en="religion of" onclick="showWordMeaning(this)">دِينَ</span> <span class="story-word" data-en="monotheism" onclick="showWordMeaning(this)">التَّوْحِيدِ</span></p>
+<p class="story-en-line">And Ibrahim abandoned polytheism — but did not abandon the religion of monotheism.</p>
+<p><span class="story-line-num">٨</span> <span class="story-word" data-en="used to" onclick="showWordMeaning(this)">كَانَ</span> <span class="story-word new" data-en="advise" onclick="showWordMeaning(this)">يَنْصَحُ</span> <span class="story-word" data-en="the people" onclick="showWordMeaning(this)">النَّاسَ</span> <span class="story-word new" data-en="and invite them" onclick="showWordMeaning(this)">وَيَدْعُوهُمْ</span> <span class="story-word new" data-en="to" onclick="showWordMeaning(this)">إِلَى</span> <span class="story-word" data-en="Allah" onclick="showWordMeaning(this)">اللَّهِ</span></p>
+<p class="story-en-line">He used to advise the people and invite them to Allah.</p>
+<p><span class="story-line-num">٩</span> <span class="story-word new" data-en="we" onclick="showWordMeaning(this)">نَحْنُ</span> <span class="story-word new" data-en="the Muslims" onclick="showWordMeaning(this)">الْـمُسْلِمُونَ</span> <span class="story-word" data-en="worship" onclick="showWordMeaning(this)">نَعْبُدُ</span> <span class="story-word" data-en="Allah" onclick="showWordMeaning(this)">اللَّهَ</span> <span class="story-word" data-en="alone" onclick="showWordMeaning(this)">وَحْدَهُ</span></p>
+<p class="story-en-line">We, the Muslims, worship Allah alone.</p>
+<p><span class="story-line-num">١٠</span> <span class="story-word new" data-en="our Lord" onclick="showWordMeaning(this)">رَبُّنَا</span> <span class="story-word" data-en="Allah" onclick="showWordMeaning(this)">اللَّهُ</span>، <span class="story-word" data-en="and our religion" onclick="showWordMeaning(this)">وَدِينُنَا</span> <span class="story-word" data-en="monotheism" onclick="showWordMeaning(this)">التَّوْحِيدُ</span></p>
+<p class="story-en-line">Our Lord is Allah, and our religion is monotheism.</p>
+<p><span class="story-line-num">١١</span> <span class="story-word new" data-en="and you" onclick="showWordMeaning(this)">وَأَنْتَ</span> <span class="story-word" data-en="O" onclick="showWordMeaning(this)">يَا</span> <span class="story-word new" data-en="seeker" onclick="showWordMeaning(this)">طَالِبَ</span> <span class="story-word new" data-en="of knowledge" onclick="showWordMeaning(this)">الْعِلْمِ</span> — <span class="story-word new" data-en="(question particle)" onclick="showWordMeaning(this)">هَلْ</span> <span class="story-word" data-en="you" onclick="showWordMeaning(this)">أَنْتَ</span> <span class="story-word new" data-en="like" onclick="showWordMeaning(this)">مِثْلُ</span> <span class="story-word" data-en="Ibrahim" onclick="showWordMeaning(this)">إِبْرَاهِيمَ</span>؟</p>
+<p class="story-en-line">And you, O seeker of knowledge — are you like Ibrahim?</p>
+<p><span class="story-line-num">١٢</span> <span class="story-word" data-en="I" onclick="showWordMeaning(this)">أَنَا</span> <span class="story-word" data-en="a Muslim" onclick="showWordMeaning(this)">مُسْلِمٌ</span>، <span class="story-word" data-en="and you" onclick="showWordMeaning(this)">وَأَنْتَ</span> <span class="story-word" data-en="a Muslim" onclick="showWordMeaning(this)">مُسْلِمٌ</span>، <span class="story-word" data-en="and you all" onclick="showWordMeaning(this)">وَأَنْتُمُ</span> <span class="story-word" data-en="the Muslims" onclick="showWordMeaning(this)">الْمُسْلِمُونَ</span> <span class="story-word" data-en="upon" onclick="showWordMeaning(this)">عَلَى</span> <span class="story-word" data-en="religion of" onclick="showWordMeaning(this)">دِينِ</span> <span class="story-word" data-en="Ibrahim" onclick="showWordMeaning(this)">إِبْرَاهِيمَ</span> — <span class="story-word new" data-en="if" onclick="showWordMeaning(this)">إِنْ</span> <span class="story-word new" data-en="willed" onclick="showWordMeaning(this)">شَاءَ</span> <span class="story-word" data-en="Allah" onclick="showWordMeaning(this)">اللَّهُ</span></p>
+<p class="story-en-line">I am a Muslim, you are a Muslim, and you are all Muslims upon the religion of Ibrahim — if Allah wills.</p>
+<p><span class="story-line-num">١٣</span> <span class="story-word" data-en="and you" onclick="showWordMeaning(this)">وَأَنْتَ</span> <span class="story-word" data-en="O" onclick="showWordMeaning(this)">يَا</span> <span class="story-word" data-en="seeker" onclick="showWordMeaning(this)">طَالِبَ</span> <span class="story-word" data-en="of knowledge" onclick="showWordMeaning(this)">الْعِلْمِ</span> — <span class="story-word new" data-en="your religion" onclick="showWordMeaning(this)">دِينُكَ</span> <span class="story-word" data-en="monotheism" onclick="showWordMeaning(this)">التَّوْحِيدُ</span>، <span class="story-word" data-en="and your Lord" onclick="showWordMeaning(this)">وَرَبُّكَ</span> <span class="story-word" data-en="Allah" onclick="showWordMeaning(this)">اللَّهُ</span></p>
+<p class="story-en-line">And you, O seeker of knowledge — your religion is monotheism, and your Lord is Allah.</p>
+<p><span class="story-line-num">١٤</span> <span class="story-word new" data-en="so worship Him" onclick="showWordMeaning(this)">فَاعْبُدْهُ</span> <span class="story-word" data-en="alone" onclick="showWordMeaning(this)">وَحْدَهُ</span>، <span class="story-word" data-en="and not" onclick="showWordMeaning(this)">وَلَا</span> <span class="story-word" data-en="abandon" onclick="showWordMeaning(this)">تَتْرُكْ</span> <span class="story-word" data-en="your religion" onclick="showWordMeaning(this)">دِينَكَ</span> <span class="story-word new" data-en="ever" onclick="showWordMeaning(this)">أَبَدًا</span></p>
+<p class="story-en-line">So worship Him alone, and never abandon your religion.</p>
+</div>
+
 </div>
 
 </div>
@@ -583,7 +698,7 @@ const db = getFirestore(firebaseApp);
 let DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS, PLURAL_QUESTIONS, FEMININE_QUESTIONS, SUFFIX_TRANSLATION_QUESTIONS, DEMO_TRANSLATION_QUESTIONS;
 async function loadVocabData() {
 
-  const url = 'https://raw.githubusercontent.com/ryangwstanley-ship-it/database/main/website%20data%20base?t=' + Date.now();
+const url = 'https://raw.githubusercontent.com/ryangwstanley-ship-it/database/main/website%20data%20base?t=' + Date.now();
 const res = await fetch(url);
 const code = await res.text();
 const runner = new Function(
@@ -672,6 +787,8 @@ let currentUser = null, isInstructor = false, viewingStudent = null;
 let isStudentView = false, calYear, calMonth, selectedDate = null;
 let submissions = {}, sidebarCollapsed = false;
 let currentTab = 'homework';
+let isGuestMode = false;
+let guestLessonDone = false;
 
 // Flashcard state
 let fcProgress = {};
@@ -689,9 +806,9 @@ let allCardActivity = {};
 let studentLesson = {};
 
 function incrementCardActivity(code) {
-  const today = todayKey();
-  if (!allCardActivity[code]) allCardActivity[code] = {};
-  allCardActivity[code][today] = (allCardActivity[code][today] || 0) + 1;
+const today = todayKey();
+if (!allCardActivity[code]) allCardActivity[code] = {};
+allCardActivity[code][today] = (allCardActivity[code][today] || 0) + 1;
 }
 // Per-exercise question mastery: exProgress[mode][questionIndex] = 1(Hard)/2(Medium)/3(Easy)
 let exProgress = {};
@@ -705,12 +822,12 @@ function miniRing(percent, emoji, centered) {
 const r = 18, c = 2 * Math.PI * r;
 const offset = c - (percent/100)*c;
 return `<div class="mini-ring-wrap${centered?' centered':''}">
-   <svg class="mini-ring" viewBox="0 0 44 44">
-     <circle class="mini-ring-bg" cx="22" cy="22" r="${r}"></circle>
-     <circle class="mini-ring-fg" cx="22" cy="22" r="${r}" style="stroke-dasharray:${c};stroke-dashoffset:${offset}"></circle>
-   </svg>
-   <div class="mini-ring-emoji">${emoji}</div>
- </div>`;
+  <svg class="mini-ring" viewBox="0 0 44 44">
+    <circle class="mini-ring-bg" cx="22" cy="22" r="${r}"></circle>
+    <circle class="mini-ring-fg" cx="22" cy="22" r="${r}" style="stroke-dasharray:${c};stroke-dashoffset:${offset}"></circle>
+  </svg>
+  <div class="mini-ring-emoji">${emoji}</div>
+</div>`;
 }
 window.miniRing = miniRing;
 
@@ -863,16 +980,17 @@ fcProgress = {}; allFcActivity[code] = {}; allCardActivity[code] = {}; fcDeleted
 }
 
 async function loadStudentMeta(code) {
-  try {
-    const snap = await getDoc(doc(db,'flashcards',code));
-    const data = snap.exists() ? snap.data() : {};
-    allFcActivity[code] = data.activity || {};
-    allCardActivity[code] = data.cardActivity || {};
-    studentLesson[code] = data.lesson || 1;
-  } catch(e) { console.error('Meta load error',e); allFcActivity[code] = {}; allCardActivity[code] = {}; studentLesson[code] = 1; }
-  if (!studentLesson[code]) studentLesson[code] = 1;
+try {
+const snap = await getDoc(doc(db,'flashcards',code));
+const data = snap.exists() ? snap.data() : {};
+allFcActivity[code] = data.activity || {};
+allCardActivity[code] = data.cardActivity || {};
+studentLesson[code] = data.lesson || 1;
+} catch(e) { console.error('Meta load error',e); allFcActivity[code] = {}; allCardActivity[code] = {}; studentLesson[code] = 1; }
+if (!studentLesson[code]) studentLesson[code] = 1;
 }
 async function saveFlashcardData(code) {
+if (isGuestMode) return;
 try {
 const customCards = {};
 Object.entries(LESSONS).forEach(([num, lesson]) => {
@@ -916,30 +1034,43 @@ for (let i = 0; i < poolLength; i++) { if (prog[i] === 3) easyCount++; }
 return Math.round((easyCount / poolLength) * 100);
 };
 
-async function saveDay(code, dateStr, data) { await setDoc(doc(db,'submissions',code,'days',dateStr), data); }
+async function saveDay(code, dateStr, data) { if (isGuestMode) return; await setDoc(doc(db,'submissions',code,'days',dateStr), data); }
 
 // ── LOGIN ──
 async function handleLogin() {
-  const code = document.getElementById('code-input').value.trim().toUpperCase();
-  const err = document.getElementById('login-error');
-  const btn = document.getElementById('login-btn');
-  btn.textContent='Signing in…'; btn.disabled=true;
-  if (code === INSTRUCTOR_CODE) {
-    currentUser=code; isInstructor=true;
-    viewingStudent=Object.keys(STUDENTS)[0];
-    await Promise.all(Object.keys(STUDENTS).map(c=>loadStudentData(c)));
-   await Promise.all(Object.keys(STUDENTS).map(c=>loadStudentMeta(c)));
-    startApp();
-  } else if (STUDENTS[code]) {
-    currentUser=code; isInstructor=false;
-    await loadStudentData(code);
-    await loadStudentMeta(code);
-    await loadFlashcardProgress(code);
-    startApp();
-  } else {
-    err.style.display='block'; btn.textContent='Enter'; btn.disabled=false;
-  }
+const code = document.getElementById('code-input').value.trim().toUpperCase();
+const err = document.getElementById('login-error');
+const btn = document.getElementById('login-btn');
+btn.textContent='Signing in…'; btn.disabled=true;
+if (code === INSTRUCTOR_CODE) {
+currentUser=code; isInstructor=true;
+viewingStudent=Object.keys(STUDENTS)[0];
+await Promise.all(Object.keys(STUDENTS).map(c=>loadStudentData(c)));
+await Promise.all(Object.keys(STUDENTS).map(c=>loadStudentMeta(c)));
+startApp();
+} else if (STUDENTS[code]) {
+currentUser=code; isInstructor=false;
+await loadStudentData(code);
+await loadStudentMeta(code);
+await loadFlashcardProgress(code);
+startApp();
+} else {
+err.style.display='block'; btn.textContent='Enter'; btn.disabled=false;
 }
+}
+
+// ── GUEST ──
+window.startGuestJourney = function() {
+isGuestMode = true;
+currentUser = 'GUEST';
+isInstructor = false;
+document.getElementById('home-btn-upload').style.display = 'none';
+document.getElementById('story-back-row').style.display = 'none';
+document.getElementById('revise-back-row').style.display = 'none';
+document.getElementById('principles-wrap').style.display = 'none';
+document.getElementById('guest-flashcards-btn').style.display = 'block';
+startApp();
+};
 
 // ── START ──
 function startApp() {
@@ -958,13 +1089,14 @@ buildSidebar(); updateHeaderForInstructor();
 app.style.display='block'; app.style.maxWidth='480px'; app.style.margin='0 auto';
 document.getElementById('header-title').textContent='My Homework';
 document.getElementById('header-sub').textContent=STUDENTS[currentUser]?.display||'';
-switchTab('home');
+switchTab(isGuestMode ? 'story' : 'home');
 }
 render();
 }
 
 // ── TABS ──
 window.switchTab = function(tab) {
+if (isGuestMode && tab === 'home') return;
 currentTab = tab;
 document.getElementById('app-header').style.display = tab==='home' ? 'none' : 'flex';
 document.getElementById('tab-content-home').style.display = tab==='home' ? 'block' : 'none';
@@ -975,9 +1107,18 @@ document.getElementById('tab-home').classList.toggle('active', tab==='home');
 document.getElementById('tab-homework').classList.toggle('active', tab==='homework');
 document.getElementById('tab-story').classList.toggle('active', tab==='story');
 if (tab==='revise') switchReviseSubTab('flashcards');
+if (tab==='story') setStoryLesson(studentLesson[activeStudentCode()] || 1);
 }
 
 window.switchReviseSubTab = function(sub) {
+if (isGuestMode && sub === 'exercises' && !guestLessonDone) {
+document.getElementById('tab-content-flashcards').style.display = 'none';
+document.getElementById('tab-content-exercises').style.display = 'block';
+document.getElementById('revise-tab-flashcards').classList.remove('active');
+document.getElementById('revise-tab-exercises').classList.add('active');
+document.getElementById('ex-root').innerHTML = '<div class="locked-msg">🔒 Finish the Grammar Principles to unlock exercises.</div>';
+return;
+}
 document.getElementById('tab-content-flashcards').style.display = sub==='flashcards' ? 'block' : 'none';
 document.getElementById('tab-content-exercises').style.display = sub==='exercises' ? 'block' : 'none';
 document.getElementById('revise-tab-flashcards').classList.toggle('active', sub==='flashcards');
@@ -1177,10 +1318,10 @@ const section=document.createElement('div');section.className='upload-section';
 let title=hasContent?'Add another submission':'Submit today\'s homework';
 if(missed.length>0&&hasContent)title=`Make up a missed day (${missed.length} remaining)`;
 section.innerHTML=`<div class="upload-section-title">${title}</div>
-     <div class="upload-area" id="upload-trigger"><div class="upload-icon">📸</div><div class="upload-title">Upload a photo</div><div class="upload-sub">Tap to choose</div></div>
-     <input type="file" id="file-input" accept="image/*" multiple>
-     <div class="text-input-wrap" style="margin-top:12px"><textarea id="text-input" placeholder="Or type your Arabic homework here..."></textarea></div>
-     <button class="submit-btn" id="submit-btn">Submit</button>`;
+    <div class="upload-area" id="upload-trigger"><div class="upload-icon">📸</div><div class="upload-title">Upload a photo</div><div class="upload-sub">Tap to choose</div></div>
+    <input type="file" id="file-input" accept="image/*" multiple>
+    <div class="text-input-wrap" style="margin-top:12px"><textarea id="text-input" placeholder="Or type your Arabic homework here..."></textarea></div>
+    <button class="submit-btn" id="submit-btn">Submit</button>`;
 uploadWrap.appendChild(section); uploadWrap.style.display='block';
 document.getElementById('upload-trigger').addEventListener('click',()=>document.getElementById('file-input').click());
 document.getElementById('file-input').addEventListener('change',e=>{
@@ -1295,22 +1436,26 @@ setCardProgress(lessonNum, cardIdx, { interval, easeFactor, nextReview, reps, la
 }
 
 function renderFlashcards() {
-  // Lesson picker
-  const picker = document.getElementById('fc-lesson-picker');
-  picker.innerHTML='';
-  const code = currentUser || viewingStudent;
-  const maxLesson = (studentLesson[code] !== undefined) ? studentLesson[code] : 1;
-  Object.entries(LESSONS).forEach(([num, lesson]) => {
-    const lessonNum = parseInt(num);
-    if (lessonNum === 0) return; // Skip the unused "Advanced students" placeholder lesson
-    if (lessonNum > maxLesson) return; // Skip lessons beyond student's level
-    const pct = getLessonMasteryPercent(num);
-    const btn = document.createElement('button');
-    btn.className='fc-lesson-btn'+(num==fcCurrentLesson?' active':'');
-    btn.innerHTML = miniRing(pct, '🃏', true) + `<div class="fc-lesson-name">${lesson.name}</div>`;
-    btn.onclick=()=>{ fcCurrentLesson=num; buildFcQueue(); renderFlashcards(); };
-    picker.appendChild(btn);
-  });
+// Lesson picker
+const picker = document.getElementById('fc-lesson-picker');
+picker.innerHTML='';
+const code = currentUser || viewingStudent;
+const maxLesson = (studentLesson[code] !== undefined) ? studentLesson[code] : 1;
+if (isGuestMode) {
+const principlesBtn = document.getElementById('guest-principles-btn');
+if (principlesBtn) principlesBtn.style.display = getLessonMasteryPercent(fcCurrentLesson) >= 75 ? 'block' : 'none';
+}
+Object.entries(LESSONS).forEach(([num, lesson]) => {
+const lessonNum = parseInt(num);
+if (lessonNum === 0) return; // Skip the unused "Advanced students" placeholder lesson
+if (lessonNum > maxLesson) return; // Skip lessons beyond student's level
+const pct = getLessonMasteryPercent(num);
+const btn = document.createElement('button');
+btn.className='fc-lesson-btn'+(num==fcCurrentLesson?' active':'');
+btn.innerHTML = miniRing(pct, '🃏', true) + `<div class="fc-lesson-name">${lesson.name}</div>`;
+btn.onclick=()=>{ fcCurrentLesson=num; buildFcQueue(); renderFlashcards(); };
+picker.appendChild(btn);
+});
 
 
 
@@ -1322,11 +1467,11 @@ area.innerHTML='';
 
 if (!fcQueue.length || fcCurrentIdx >= fcQueue.length) {
 area.innerHTML=`<div class="fc-done">
-     <div class="fc-done-icon">🎉</div>
-     <div class="fc-done-title">All done for now!</div>
-     <div class="fc-done-sub">You've reviewed all due cards. Come back tomorrow for more.</div>
-     <button class="fc-restart-btn" id="fc-restart">Review all again</button>
-   </div>`;
+    <div class="fc-done-icon">🎉</div>
+    <div class="fc-done-title">All done for now!</div>
+    <div class="fc-done-sub">You've reviewed all due cards. Come back tomorrow for more.</div>
+    <button class="fc-restart-btn" id="fc-restart">Review all again</button>
+  </div>`;
 document.getElementById('fc-restart').addEventListener('click',()=>{
 LESSONS[fcCurrentLesson].cards.forEach((_,i)=>{
 if (!isCardDeleted(fcCurrentLesson, i)) {
@@ -1344,28 +1489,28 @@ return;
 const card = fcQueue[fcCurrentIdx];
 const prevRating = getCardProgress(fcCurrentLesson, card.idx).lastRating;
 const diffBanner = prevRating === 1 ? '<div class="fc-diff-banner fc-diff-hard">Hard</div>'
-  : prevRating === 2 ? '<div class="fc-diff-banner fc-diff-medium">Medium</div>'
-  : prevRating === 3 ? '<div class="fc-diff-banner fc-diff-easy">Easy</div>'
-  : '';
+: prevRating === 2 ? '<div class="fc-diff-banner fc-diff-medium">Medium</div>'
+: prevRating === 3 ? '<div class="fc-diff-banner fc-diff-easy">Easy</div>'
+: '';
 
 const cardEl = document.createElement('div');
 cardEl.className='fc-card-wrap';
 cardEl.innerHTML=`
-   <div class="fc-card" id="fc-card">
-     ${diffBanner}
-     <div class="fc-arabic">${card.ar}</div>
-     <div class="fc-english">${card.en}</div>
-     <div class="fc-tap-hint">Tap to reveal</div>
-   </div>`;
+  <div class="fc-card" id="fc-card">
+    ${diffBanner}
+    <div class="fc-arabic">${card.ar}</div>
+    <div class="fc-english">${card.en}</div>
+    <div class="fc-tap-hint">Tap to reveal</div>
+  </div>`;
 area.appendChild(cardEl);
 
 const ratingWrap = document.createElement('div');
 ratingWrap.className='fc-rating-wrap';
 ratingWrap.id='fc-rating-wrap';
 ratingWrap.innerHTML=`
-   <button class="fc-rating-btn fc-r2" data-r="1">No idea</button>
-   <button class="fc-rating-btn fc-r3" data-r="2">Nearly got it</button>
-   <button class="fc-rating-btn fc-r4" data-r="3">Got it right!</button>`;
+  <button class="fc-rating-btn fc-r2" data-r="1">No idea</button>
+  <button class="fc-rating-btn fc-r3" data-r="2">Nearly got it</button>
+  <button class="fc-rating-btn fc-r4" data-r="3">Got it right!</button>`;
 area.appendChild(ratingWrap);
 
 const progress = document.createElement('div');
@@ -1413,11 +1558,15 @@ function showToast(msg){const t=document.getElementById('toast');t.textContent=m
 function showMasteryGain(diff){const el=document.createElement('div');el.className='mastery-gain-popup';el.textContent=`+${diff}%`;document.body.appendChild(el);setTimeout(()=>el.remove(),1400);}
 function showWordMeaning(el) { showToast(el.textContent + ' = ' + el.dataset.en); }
 function toggleStoryEnglish() {
-  const lines = document.querySelectorAll('.story-en-line');
-  const btn = document.getElementById('story-english-btn');
-  const isHidden = lines[0].style.display === 'none';
-  lines.forEach(line => { line.style.display = isHidden ? 'block' : 'none'; });
-  btn.textContent = isHidden ? 'Hide English' : 'Show English';
+const lines = document.querySelectorAll('.story-en-line');
+const isHidden = lines[0].style.display === 'none';
+lines.forEach(line => { line.style.display = isHidden ? 'block' : 'none'; });
+const btn1 = document.getElementById('story-english-btn');
+const btn2 = document.getElementById('story-english-btn-l2');
+const btn3 = document.getElementById('story-english-btn-l3');
+if (btn1) btn1.textContent = isHidden ? 'Hide English' : 'Show English';
+if (btn2) btn2.textContent = isHidden ? 'Hide English' : 'Show English';
+if (btn3) btn3.textContent = isHidden ? 'Hide English' : 'Show English';
 }
 window.showWordMeaning = showWordMeaning;
 window.toggleStoryEnglish = toggleStoryEnglish;
@@ -1432,6 +1581,13 @@ const PRINCIPLES = [
     a: `Arabic plurals come in two types: one for people, one for everything else (objects, ideas, animals). People-plurals are regular — just add وْنَ / يْنَ / اتٌ. Everything-else plurals usually change shape entirely and must be memorised.<br><span class="pa-ar">مُشْرِكٌ ← مُشْرِكُونَ (people, regular) &nbsp;&nbsp; صَنَمٌ ← أَصْنَامٌ (everything-else, irregular)</span>`
   },
   {
+    q: `You met <span class="pq-ar">الرَّجُلُ</span> (the man) and <span class="pq-ar">قَرْيَةٍ</span> (a village) in the story. Based on what you just learned, what do you think "men" and "villages" look like?`,
+    a: `Most principles have exceptions: رَجُلٌ → رِجَالٌ is irregular even though it's a people-word. قَرْيَةٌ → قُرًى is irregular too — and actually has fewer letters, breaking the usual "more letters" pattern.`
+  }
+];
+
+const PRINCIPLES_L2 = [
+  {
     q: `<span class="pq-ar">أَصْنَامٌ</span> (idols) doesn't end in ة. So why does the adjective describing it — <span class="pq-ar">كَثِيرَةٌ</span> — take the feminine ending?`,
     a: `A word is feminine if it ends in taa marbuta (ة). Every "everything-else" plural is also treated as feminine — even ones with no ة at all.<br><span class="pa-ar">قَرْيَةٌ، عِبَادَةٌ (taa marbuta) &nbsp;&nbsp; أَصْنَامٌ، أَيَّامٌ، أَسْمَاءٌ (feminine anyway, no ة)</span>`
   },
@@ -1441,10 +1597,23 @@ const PRINCIPLES = [
     quote: `إِنَّ الْمُسْلِمِينَ وَالْمُسْلِمَاتِ وَالْمُؤْمِنِينَ وَالْمُؤْمِنَاتِ وَالْقَانِتِينَ وَالْقَانِتَاتِ وَالصَّادِقِينَ وَالصَّادِقَاتِ وَالصَّابِرِينَ وَالصَّابِرَاتِ وَالْخَاشِعِينَ وَالْخَاشِعَاتِ وَالْمُتَصَدِّقِينَ وَالْمُتَصَدِّقَاتِ وَالصَّائِمِينَ وَالصَّائِمَاتِ وَالْحَافِظِينَ فُرُوجَهُمْ وَالْحَافِظَاتِ وَالذَّاكِرِينَ اللَّهَ كَثِيرًا وَالذَّاكِرَاتِ أَعَدَّ اللَّهُ لَهُم مَّغْفِرَةً وَأَجْرًا عَظِيمًا`
   },
   {
-    q: `You met <span class="pq-ar">الرَّجُلُ</span> (the man) and <span class="pq-ar">قَرْيَةٍ</span> (a village) in the story. Based on what you just learned, what do you think "men" and "villages" look like?`,
-    a: `Most principles have exceptions: رَجُلٌ → رِجَالٌ is irregular even though it's a people-word. قَرْيَةٌ → قُرًى is irregular too — and actually has fewer letters, breaking the usual "more letters" pattern.`
+    q: `Look at these pairs from the story: <span class="pq-ar">رَجُلٌ</span> → <span class="pq-ar">الرَّجُلُ</span>, and <span class="pq-ar">مُشْرِكٌ كَبِيرٌ</span> → <span class="pq-ar">الْمُشْرِكُ الْكَبِيرُ</span>. When "ال" gets added to the noun, what happens to its adjective?`,
+    a: `A word is definite when it begins with "ال" (this usually translates to "the" in English). Adjectives must match their noun — if the noun has "ال", the adjective must also have "ال". If the noun has no "ال", the adjective must have no "ال" either.<br><span class="pa-ar">مُشْرِكٌ كَبِيرٌ ← الْمُشْرِكُ الْكَبِيرُ &nbsp;&nbsp; أَصْنَامٌ كَثِيرَةٌ ← الْأَصْنَامُ الْكَثِيرَةُ</span>`
   }
 ];
+
+const PRINCIPLES_L3 = [
+  {
+    q: `Look at these pairs from the lessons so far: <span class="pq-ar">يَعْبُدُ</span> vs <span class="pq-ar">عَبَدَ</span>, <span class="pq-ar">يَسْكُنُ</span> vs <span class="pq-ar">سَكَنَ</span>, <span class="pq-ar">يَعْرِفُ</span> vs <span class="pq-ar">عَرَفَ</span>. One of each pair is present tense, the other past. What pattern do you notice in the spelling — not the meaning — that tells them apart?`,
+    a: `Present tense verbs begin with a prefix. Past tense verbs have no prefix, and usually have many fathas ("a" sounds) running through them. This makes it possible to tell them apart even without knowing the meaning.<br><span class="pa-ar">يَعْبُدُ ← عَبَدَ &nbsp;&nbsp; يَسْكُنُ ← سَكَنَ &nbsp;&nbsp; يَعْرِفُ ← عَرَفَ &nbsp;&nbsp; يَقُولُ ← قَالَ &nbsp;&nbsp; يَتْرُكُ ← تَرَكَ</span>`
+  },
+  {
+    q: `Look at <span class="pq-ar">أَعْبُدُ</span>، <span class="pq-ar">تَعْبُدُ</span>، <span class="pq-ar">يَعْبُدُ</span>، <span class="pq-ar">نَعْبُدُ</span> — same verb, four different beginnings. What do you think each prefix tells you?`,
+    a: `The present tense has 4 main prefixes: أَـ means "I", يَـ means "he", تَـ means "she" or "you", and نَـ means "we". When the suffix ـونَ is added, the verb becomes plural.<br><span class="pa-ar">أَعْبُدُ (I worship) &nbsp;&nbsp; تَعْبُدُ (she/you worship) &nbsp;&nbsp; يَعْبُدُ (he worships) &nbsp;&nbsp; نَعْبُدُ (we worship) &nbsp;&nbsp; تَعْبُدُونَ / يَعْبُدُونَ (you all / they worship)</span>`
+  }
+];
+
+let activePrinciples = PRINCIPLES;
 
 let principleIdx = 0;
 let principleRevealed = false;
@@ -1457,7 +1626,7 @@ function renderPrinciple() {
   const dotsEl = document.getElementById('principles-dots');
   const backBtn = document.getElementById('principle-back-btn');
   const nextBtn = document.getElementById('principle-next-btn');
-  const p = PRINCIPLES[principleIdx];
+  const p = activePrinciples[principleIdx];
 
   qEl.innerHTML = p.q;
   let answerHtml = p.a;
@@ -1469,17 +1638,31 @@ function renderPrinciple() {
   aEl.style.display = principleRevealed ? 'block' : 'none';
   hintEl.textContent = principleRevealed ? "Tap to see the question again" : "Tap when you've found it";
 
-  progEl.textContent = (principleIdx + 1) + ' / ' + PRINCIPLES.length;
+  progEl.textContent = (principleIdx + 1) + ' / ' + activePrinciples.length;
 
   dotsEl.innerHTML = '';
-  PRINCIPLES.forEach((_, i) => {
+  activePrinciples.forEach((_, i) => {
     const dot = document.createElement('div');
     dot.className = 'principle-dot' + (i === principleIdx ? ' active' : '');
     dotsEl.appendChild(dot);
   });
 
   backBtn.style.visibility = principleIdx === 0 ? 'hidden' : 'visible';
-  nextBtn.textContent = principleIdx === PRINCIPLES.length - 1 ? 'Done' : 'Next ›';
+  nextBtn.textContent = principleIdx === activePrinciples.length - 1 ? 'Done' : 'Next ›';
+}
+
+function setStoryLesson(lesson) {
+const shown = Math.min(lesson, 3);
+document.getElementById('story-lesson-1').style.display = shown === 1 ? 'block' : 'none';
+document.getElementById('story-lesson-2').style.display = shown === 2 ? 'block' : 'none';
+document.getElementById('story-lesson-3').style.display = shown === 3 ? 'block' : 'none';
+const newPrinciples = shown === 3 ? PRINCIPLES_L3 : shown === 2 ? PRINCIPLES_L2 : PRINCIPLES;
+if (activePrinciples !== newPrinciples) {
+activePrinciples = newPrinciples;
+principleIdx = 0;
+principleRevealed = false;
+}
+renderPrinciple();
 }
 
 document.getElementById('principle-card').addEventListener('click', () => {
@@ -1490,10 +1673,11 @@ document.getElementById('principle-back-btn').addEventListener('click', () => {
   if (principleIdx > 0) { principleIdx--; principleRevealed = false; renderPrinciple(); }
 });
 document.getElementById('principle-next-btn').addEventListener('click', () => {
-  if (principleIdx < PRINCIPLES.length - 1) { principleIdx++; principleRevealed = false; renderPrinciple(); }
+  if (principleIdx < activePrinciples.length - 1) { principleIdx++; principleRevealed = false; renderPrinciple(); }
+  else if (isGuestMode) { guestLessonDone = true; switchTab('revise'); switchReviseSubTab('exercises'); }
 });
 renderPrinciple();
-  
+
 
 // ── RENDER ──
 function render(){
@@ -1518,6 +1702,15 @@ document.getElementById('home-btn-start').addEventListener('click', () => switch
 document.getElementById('home-btn-revise').addEventListener('click', () => switchTab('revise'));
 document.getElementById('home-btn-upload').addEventListener('click', () => switchTab('homework'));
 document.getElementById('login-btn').addEventListener('click',handleLogin);
+document.getElementById('guest-start-btn').addEventListener('click', startGuestJourney);
+document.getElementById('guest-start-btn').addEventListener('click', startGuestJourney);
+document.getElementById('guest-flashcards-btn').addEventListener('click', () => switchTab('revise'));
+document.getElementById('guest-flashcards-btn').addEventListener('click', () => switchTab('revise'));
+document.getElementById('guest-principles-btn').addEventListener('click', () => {
+document.getElementById('principles-wrap').style.display = 'block';
+document.getElementById('guest-flashcards-btn').style.display = 'none';
+switchTab('story');
+});
 document.getElementById('code-input').addEventListener('keydown',e=>{if(e.key==='Enter')handleLogin();});
 
 document.getElementById('sidebar-toggle').addEventListener('click',toggleSidebar);
@@ -1612,7 +1805,7 @@ const full = exBuildLesson1Pool();
 const shuffled = exShuffle(full);
 return shuffled.slice(0, 11);
 }
-  
+
 function exShowPicker() {
 const fillgapPct = window.getExerciseMasteryPercent('fillgap', FILL_GAP_QUESTIONS.length);
 const wordorderPct = window.getExerciseMasteryPercent('wordorder', WORD_ORDER_QUESTIONS.length);
@@ -1629,89 +1822,89 @@ const typeharakatPct = window.getExerciseMasteryPercent('typeharakat', exBuildLe
 const typeenglishPct = window.getExerciseMasteryPercent('typeenglish', exBuildLesson1Pool().length);
 
 exRender(`
-   <div class="section-label">Choose an exercise</div>
-   <div style="display:flex;flex-direction:column;gap:14px;margin-top:8px">
-    <div class="ex-card" id="btn-fillgap">
-       ${window.miniRing(fillgapPct, '📝')}
-       <div class="ex-card-title">Fill the Gap</div>
-       <div class="ex-card-desc">A word is missing from a sentence. Type what you think it is.</div>
-       <div class="ex-card-note">${fillgapPct}% mastered</div>
-     </div>
-     <div class="ex-card" id="btn-wordorder">
-       ${window.miniRing(wordorderPct, '🔀')}
-       <div class="ex-card-title">Word Order</div>
-       <div class="ex-card-desc">Rearrange the words to form a correct sentence.</div>
-       <div class="ex-card-note">${wordorderPct}% mastered</div>
-     </div>
-    <div class="ex-card" id="btn-truefalse">
-       ${window.miniRing(truefalsePct, '✅')}
-       <div class="ex-card-title">True or False</div>
-       <div class="ex-card-desc">Is the sentence correct or does it contain an error?</div>
-       <div class="ex-card-note">${truefalsePct}% mastered</div>
-     </div>
-    <div class="ex-card" id="btn-changeword">
-       ${window.miniRing(changewordPct, '✏️')}
-       <div class="ex-card-title">Change One Word</div>
-       <div class="ex-card-desc">A sentence has one wrong word. Type the correct replacement.</div>
-       <div class="ex-card-note">${changewordPct}% mastered</div>
-     </div>
-  <div class="ex-card" id="btn-demonstrative">
-  ${window.miniRing(demonstrativePct, '👉')}
-  <div class="ex-card-title">Demonstrative Pronouns</div>
-  <div class="ex-card-desc">Practise هذا / هذه / هؤلاء agreement with true/false and correction questions.</div>
-  <div class="ex-card-note">${demonstrativePct}% mastered</div>
+  <div class="section-label">Choose an exercise</div>
+  <div style="display:flex;flex-direction:column;gap:14px;margin-top:8px">
+   <div class="ex-card" id="btn-fillgap">
+      ${window.miniRing(fillgapPct, '📝')}
+      <div class="ex-card-title">Fill the Gap</div>
+      <div class="ex-card-desc">A word is missing from a sentence. Type what you think it is.</div>
+      <div class="ex-card-note">${fillgapPct}% mastered</div>
+    </div>
+    <div class="ex-card" id="btn-wordorder">
+      ${window.miniRing(wordorderPct, '🔀')}
+      <div class="ex-card-title">Word Order</div>
+      <div class="ex-card-desc">Rearrange the words to form a correct sentence.</div>
+      <div class="ex-card-note">${wordorderPct}% mastered</div>
+    </div>
+   <div class="ex-card" id="btn-truefalse">
+      ${window.miniRing(truefalsePct, '✅')}
+      <div class="ex-card-title">True or False</div>
+      <div class="ex-card-desc">Is the sentence correct or does it contain an error?</div>
+      <div class="ex-card-note">${truefalsePct}% mastered</div>
+    </div>
+   <div class="ex-card" id="btn-changeword">
+      ${window.miniRing(changewordPct, '✏️')}
+      <div class="ex-card-title">Change One Word</div>
+      <div class="ex-card-desc">A sentence has one wrong word. Type the correct replacement.</div>
+      <div class="ex-card-note">${changewordPct}% mastered</div>
+    </div>
+ <div class="ex-card" id="btn-demonstrative">
+ ${window.miniRing(demonstrativePct, '👉')}
+ <div class="ex-card-title">Demonstrative Pronouns</div>
+ <div class="ex-card-desc">Practise هذا / هذه / هؤلاء agreement with true/false and correction questions.</div>
+ <div class="ex-card-note">${demonstrativePct}% mastered</div>
 </div>
 <div class="ex-card" id="btn-demotrans">
-  ${window.miniRing(demotransPct, '👉')}
-  <div class="ex-card-title">Demonstrative Pronouns — Translate</div>
-  <div class="ex-card-desc">Read the English, write the Arabic demonstrative phrase, then reveal and grade yourself.</div>
-  <div class="ex-card-note">${demotransPct}% mastered</div>
+ ${window.miniRing(demotransPct, '👉')}
+ <div class="ex-card-title">Demonstrative Pronouns — Translate</div>
+ <div class="ex-card-desc">Read the English, write the Arabic demonstrative phrase, then reveal and grade yourself.</div>
+ <div class="ex-card-note">${demotransPct}% mastered</div>
 </div>
 <div class="ex-card" id="btn-suffixpronoun">
-  ${window.miniRing(suffixpronounPct, '🔤')}
-  <div class="ex-card-title">Suffix Pronouns</div>
-  <div class="ex-card-desc">Does the attached pronoun (ـهُ / ـهَا / ـهُمْ) match the first word? True or false.</div>
-  <div class="ex-card-note">${suffixpronounPct}% mastered</div>
+ ${window.miniRing(suffixpronounPct, '🔤')}
+ <div class="ex-card-title">Suffix Pronouns</div>
+ <div class="ex-card-desc">Does the attached pronoun (ـهُ / ـهَا / ـهُمْ) match the first word? True or false.</div>
+ <div class="ex-card-note">${suffixpronounPct}% mastered</div>
 </div>
 <div class="ex-card" id="btn-suffixtrans">
-  ${window.miniRing(suffixtransPct, '✍️')}
-  <div class="ex-card-title">Suffix Pronouns — Translate</div>
-  <div class="ex-card-desc">Read the English, write the Arabic, then reveal and grade yourself.</div>
-  <div class="ex-card-note">${suffixtransPct}% mastered</div>
+ ${window.miniRing(suffixtransPct, '✍️')}
+ <div class="ex-card-title">Suffix Pronouns — Translate</div>
+ <div class="ex-card-desc">Read the English, write the Arabic, then reveal and grade yourself.</div>
+ <div class="ex-card-note">${suffixtransPct}% mastered</div>
 </div>
 <div class="ex-card" id="btn-adjectiveagreement">
-  ${window.miniRing(adjectiveagreementPct, '✨')}
-  <div class="ex-card-title">Adjective Agreement</div>
-  <div class="ex-card-desc">Noun-adjective agreement: is the adjective correctly matched to the noun?</div>
-  <div class="ex-card-note">${adjectiveagreementPct}% mastered</div>
+ ${window.miniRing(adjectiveagreementPct, '✨')}
+ <div class="ex-card-title">Adjective Agreement</div>
+ <div class="ex-card-desc">Noun-adjective agreement: is the adjective correctly matched to the noun?</div>
+ <div class="ex-card-note">${adjectiveagreementPct}% mastered</div>
 </div>
 <div class="ex-card" id="btn-plural">
-  ${window.miniRing(pluralPct, '👥')}
-  <div class="ex-card-title">Spot the Plural</div>
-  <div class="ex-card-desc">Two words appear — tap the one that is plural.</div>
-  <div class="ex-card-note">${pluralPct}% mastered</div>
+ ${window.miniRing(pluralPct, '👥')}
+ <div class="ex-card-title">Spot the Plural</div>
+ <div class="ex-card-desc">Two words appear — tap the one that is plural.</div>
+ <div class="ex-card-note">${pluralPct}% mastered</div>
 </div>
 <div class="ex-card" id="btn-feminine">
-  ${window.miniRing(femininePct, '♀️')}
-  <div class="ex-card-title">Spot the Feminine</div>
-  <div class="ex-card-desc">Four words appear — tap the two that are feminine, then Check.</div>
-  <div class="ex-card-note">${femininePct}% mastered</div>
+ ${window.miniRing(femininePct, '♀️')}
+ <div class="ex-card-title">Spot the Feminine</div>
+ <div class="ex-card-desc">Four words appear — tap the two that are feminine, then Check.</div>
+ <div class="ex-card-note">${femininePct}% mastered</div>
 </div>
 <div class="ex-card" id="btn-typeharakat">
-  ${window.miniRing(typeharakatPct, '⌨️')}
-  <div class="ex-card-title">Type Without Harakat (Lesson 1)</div>
-  <div class="ex-card-desc">See the word with harakat — type it using bare letters only.</div>
-  <div class="ex-card-note">${typeharakatPct}% mastered</div>
+ ${window.miniRing(typeharakatPct, '⌨️')}
+ <div class="ex-card-title">Type Without Harakat (Lesson 1)</div>
+ <div class="ex-card-desc">See the word with harakat — type it using bare letters only.</div>
+ <div class="ex-card-note">${typeharakatPct}% mastered</div>
 </div>
 <div class="ex-card" id="btn-typeenglish">
-  ${window.miniRing(typeenglishPct, '🔤')}
-  <div class="ex-card-title">English → Arabic (Lesson 1)</div>
-  <div class="ex-card-desc">See the English — type the Arabic word from memory.</div>
-  <div class="ex-card-note">${typeenglishPct}% mastered</div>
+ ${window.miniRing(typeenglishPct, '🔤')}
+ <div class="ex-card-title">English → Arabic (Lesson 1)</div>
+ <div class="ex-card-desc">See the English — type the Arabic word from memory.</div>
+ <div class="ex-card-note">${typeenglishPct}% mastered</div>
 </div>
-     
-   </div>
- `);
+    
+  </div>
+`);
 document.getElementById('btn-fillgap').onclick = () => exShowSetup('fillgap');
 document.getElementById('btn-wordorder').onclick = () => exShowSetup('wordorder');
 document.getElementById('btn-truefalse').onclick = () => exShowSetup('truefalse');
@@ -1743,14 +1936,14 @@ const title = mode === 'fillgap' ? '📝 Fill the Gap'
 : '✅ True or False';
 const isGrammarDrill = mode === 'demonstrative';
 exRender(`
-   <div class="section-label">${title}</div>
-   <div style="background:var(--grey-light);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
-     ${isGrammarDrill ? `<div style="background:#fffbeb;border:1.5px solid #fcd34d;border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:13px;color:#92400e;line-height:1.5">⚠️ These sentences are computer-generated, and the meanings are deliberately nonsensical so you can't guess the answer from context. Focus only on the grammar rule being tested — not what the sentence means.</div>` : ''}
-  <div style="font-size:14px;color:#6b7280;margin-bottom:12px;text-align:center">This session: 20 questions</div>
-     <button id="ex-start-btn" style="width:100%;margin-top:14px;padding:14px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">Start</button>
-     <button id="ex-back-btn" style="width:100%;margin-top:8px;padding:10px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">← Back</button>
-   </div>
- `);
+  <div class="section-label">${title}</div>
+  <div style="background:var(--grey-light);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
+    ${isGrammarDrill ? `<div style="background:#fffbeb;border:1.5px solid #fcd34d;border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:13px;color:#92400e;line-height:1.5">⚠️ These sentences are computer-generated, and the meanings are deliberately nonsensical so you can't guess the answer from context. Focus only on the grammar rule being tested — not what the sentence means.</div>` : ''}
+ <div style="font-size:14px;color:#6b7280;margin-bottom:12px;text-align:center">This session: 20 questions</div>
+    <button id="ex-start-btn" style="width:100%;margin-top:14px;padding:14px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">Start</button>
+    <button id="ex-back-btn" style="width:100%;margin-top:8px;padding:10px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">← Back</button>
+  </div>
+`);
 document.getElementById('ex-start-btn').onclick = exLaunch;
 document.getElementById('ex-back-btn').onclick = exShowPicker;
 }
@@ -1781,33 +1974,33 @@ exShowQuestion();
 
 function exRenderActive() {
 exRender(`
-   <div style="display:flex;justify-content:center;align-items:center;background:var(--grey-light);padding:12px 20px;border-radius:12px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,0.06)">
-     <div id="ex-progress" style="color:#6b7280;font-size:14px;font-weight:600">Question 1 / 20</div>
-   </div>
-   <div style="background:var(--grey-light);border-radius:16px;padding:28px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
-     <div id="ex-instruction" style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6b7280;margin-bottom:16px"></div>
-     <div id="ex-sentence" style="font-size:1.6em;line-height:2;text-align:center;direction:rtl;margin-bottom:20px"></div>
-     <div id="ex-fill-input" style="display:none;flex-direction:column;align-items:center;gap:10px">
-       <input id="ex-answer-input" type="text" placeholder="Type the missing word..." style="font-size:1.2em;padding:12px 16px;border:2px solid #e5e7eb;border-radius:10px;width:100%;max-width:320px;text-align:center;direction:rtl;outline:none">
-       <button id="ex-check-btn" style="padding:12px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Check ←</button>
-     </div>
-     <div id="ex-word-order" style="display:none">
-       <div style="font-size:13px;color:#6b7280;text-align:center;margin-bottom:12px">Click words in the correct order</div>
-       <div id="ex-word-bank" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;direction:rtl;margin-bottom:20px"></div>
-       <div id="ex-answer-row" style="min-height:48px;background:#f0f4ff;border-radius:10px;padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px;direction:rtl;align-items:center;margin-bottom:12px"></div>
-       <div style="text-align:center;display:flex;gap:10px;justify-content:center">
-         <button id="ex-wo-check-btn" style="padding:12px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Check ←</button>
-         <button id="ex-wo-clear-btn" style="padding:12px 20px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">Clear</button>
-       </div>
-     </div>
-     <div id="ex-reveal" style="display:none;background:#f0fdf4;border:2px solid #86efac;border-radius:10px;padding:16px;margin-top:16px;font-size:1.2em;text-align:center;direction:rtl"></div>
-   </div>
-   <div id="ex-rating-area" style="display:none;gap:10px;margin-bottom:16px">
-     <button id="ex-rate-hard" style="flex:1;padding:12px;background:#fee2e2;color:#b91c1c;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">No idea</button>
-     <button id="ex-rate-med" style="flex:1;padding:12px;background:#fff7ed;color:#c2410c;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">Nearly got it</button>
-     <button id="ex-rate-easy" style="flex:1;padding:12px;background:#f0fdf4;color:#15803d;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">Got it right!</button>
-   </div>
- `);
+  <div style="display:flex;justify-content:center;align-items:center;background:var(--grey-light);padding:12px 20px;border-radius:12px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,0.06)">
+    <div id="ex-progress" style="color:#6b7280;font-size:14px;font-weight:600">Question 1 / 20</div>
+  </div>
+  <div style="background:var(--grey-light);border-radius:16px;padding:28px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
+    <div id="ex-instruction" style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6b7280;margin-bottom:16px"></div>
+    <div id="ex-sentence" style="font-size:1.6em;line-height:2;text-align:center;direction:rtl;margin-bottom:20px"></div>
+    <div id="ex-fill-input" style="display:none;flex-direction:column;align-items:center;gap:10px">
+      <input id="ex-answer-input" type="text" placeholder="Type the missing word..." style="font-size:1.2em;padding:12px 16px;border:2px solid #e5e7eb;border-radius:10px;width:100%;max-width:320px;text-align:center;direction:rtl;outline:none">
+      <button id="ex-check-btn" style="padding:12px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Check ←</button>
+    </div>
+    <div id="ex-word-order" style="display:none">
+      <div style="font-size:13px;color:#6b7280;text-align:center;margin-bottom:12px">Click words in the correct order</div>
+      <div id="ex-word-bank" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;direction:rtl;margin-bottom:20px"></div>
+      <div id="ex-answer-row" style="min-height:48px;background:#f0f4ff;border-radius:10px;padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px;direction:rtl;align-items:center;margin-bottom:12px"></div>
+      <div style="text-align:center;display:flex;gap:10px;justify-content:center">
+        <button id="ex-wo-check-btn" style="padding:12px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Check ←</button>
+        <button id="ex-wo-clear-btn" style="padding:12px 20px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">Clear</button>
+      </div>
+    </div>
+    <div id="ex-reveal" style="display:none;background:#f0fdf4;border:2px solid #86efac;border-radius:10px;padding:16px;margin-top:16px;font-size:1.2em;text-align:center;direction:rtl"></div>
+  </div>
+  <div id="ex-rating-area" style="display:none;gap:10px;margin-bottom:16px">
+    <button id="ex-rate-hard" style="flex:1;padding:12px;background:#fee2e2;color:#b91c1c;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">No idea</button>
+    <button id="ex-rate-med" style="flex:1;padding:12px;background:#fff7ed;color:#c2410c;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">Nearly got it</button>
+    <button id="ex-rate-easy" style="flex:1;padding:12px;background:#f0fdf4;color:#15803d;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">Got it right!</button>
+  </div>
+`);
 }
 
 
@@ -1827,7 +2020,7 @@ exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS]
 : exMode === 'suffixtrans' ? exShuffle([...SUFFIX_TRANSLATION_QUESTIONS]).slice(0, 11)
 : exMode === 'demotrans' ? exShuffle([...DEMO_TRANSLATION_QUESTIONS]).slice(0, 11)
 : [...TRUE_FALSE_QUESTIONS]
-  
+
 );
 exCurrent = 0;
 }
@@ -1864,8 +2057,8 @@ const tfWrap = document.createElement('div');
 tfWrap.id = 'ex-tf-btns';
 tfWrap.style.cssText = 'display:flex;gap:12px;justify-content:center;margin-top:8px';
 tfWrap.innerHTML = `
-     <button id="ex-tf-true" style="flex:1;padding:14px;background:#f0fdf4;color:#15803d;border:2px solid #86efac;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">True</button>
-     <button id="ex-tf-false" style="flex:1;padding:14px;background:#fef2f2;color:#b91c1c;border:2px solid #fca5a5;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">False</button>`;
+    <button id="ex-tf-true" style="flex:1;padding:14px;background:#f0fdf4;color:#15803d;border:2px solid #86efac;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">True</button>
+    <button id="ex-tf-false" style="flex:1;padding:14px;background:#fef2f2;color:#b91c1c;border:2px solid #fca5a5;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">False</button>`;
 document.getElementById('ex-sentence').after(tfWrap);
 document.getElementById('ex-tf-true').onclick = () => exSubmitTrueFalse(true);
 document.getElementById('ex-tf-false').onclick = () => exSubmitTrueFalse(false);
@@ -1895,8 +2088,8 @@ document.getElementById('ex-word-order').style.display = 'none';
 const existingTiles = document.getElementById('ex-tf-btns');
 if (existingTiles) existingTiles.remove();
 const choices = exShuffle([
-  { text: q.singular, isPlural: false },
-  { text: q.plural, isPlural: true }
+{ text: q.singular, isPlural: false },
+{ text: q.plural, isPlural: true }
 ]);
 const pluralWrap = document.createElement('div');
 pluralWrap.id = 'ex-tf-btns';
@@ -2168,7 +2361,7 @@ const ratingEl = document.getElementById('ex-rating-area');
 ratingEl.style.display = 'flex';
 wireRatingButtons();
 }
-  
+
 function exSubmitWordOrder() {
 const q = exQuestions[exCurrent];
 const reveal = document.getElementById('ex-reveal');
@@ -2197,13 +2390,13 @@ document.getElementById('ex-rate-easy').onclick = () => exRate(3);
 
 async function exEndSession() {
 exRender(`
-   <div style="text-align:center;padding:40px 20px">
-     <div style="font-size:48px;margin-bottom:16px">🎉</div>
-     <div style="font-size:22px;font-weight:800;color:#1a1a2e;margin-bottom:8px">Session complete!</div>
-     <div style="font-size:15px;color:#6b7280;margin-bottom:24px">You answered ${exAnswered} question${exAnswered!==1?'s':''}.</div>
-     <button id="ex-again-btn" style="padding:14px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Choose another exercise</button>
-   </div>
- `);
+  <div style="text-align:center;padding:40px 20px">
+    <div style="font-size:48px;margin-bottom:16px">🎉</div>
+    <div style="font-size:22px;font-weight:800;color:#1a1a2e;margin-bottom:8px">Session complete!</div>
+    <div style="font-size:15px;color:#6b7280;margin-bottom:24px">You answered ${exAnswered} question${exAnswered!==1?'s':''}.</div>
+    <button id="ex-again-btn" style="padding:14px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Choose another exercise</button>
+  </div>
+`);
 document.getElementById('ex-again-btn').onclick = exShowPicker;
 }
 
