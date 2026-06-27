@@ -822,6 +822,7 @@ let fcQueue = [];
 let fcCurrentIdx = 0;
 let fcRevealed = false;
 let fcDeletedCards = {}; // fcDeletedCards[lessonNum] = Set of card indices deleted
+let guestActiveWordCount = 5; // Guests start with 5 words; +5 each time the active batch is all "Easy"
 
 // Revision activity, per student: allFcActivity[code][dateKey] = minutes
 let allFcActivity = {};
@@ -1156,6 +1157,7 @@ err.style.display='block'; btn.textContent='Enter'; btn.disabled=false;
 // ── GUEST ──
 window.startGuestJourney = function() {
 isGuestMode = true;
+guestActiveWordCount = 5;
 currentUser = 'GUEST';
 isInstructor = false;
 document.getElementById('home-btn-upload').style.display = 'none';
@@ -1513,6 +1515,47 @@ fcCurrentIdx = 0;
 fcRevealed = false;
 }
 
+// Plain shuffle helper (same shuffle pattern as buildFcQueue, just reusable for any list)
+function fcShuffleArr(arr) {
+const a = [...arr];
+for (let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+return a;
+}
+
+// Which cards a guest currently has "unlocked" — the first N non-deleted cards, N = guestActiveWordCount
+function getGuestActiveCardIdxs(lessonNum) {
+const lesson = LESSONS[lessonNum];
+if (!lesson) return [];
+const nonDeleted = lesson.cards.map((_,i)=>i).filter(i => !isCardDeleted(lessonNum, i));
+return nonDeleted.slice(0, guestActiveWordCount);
+}
+
+// Builds a guest's card list: not-yet-"Easy" cards shuffled and cycling, with one already-"Easy" card slotted in after every 5
+function buildGuestFcQueue() {
+const lesson = LESSONS[fcCurrentLesson];
+const activeIdxs = getGuestActiveCardIdxs(fcCurrentLesson);
+const normalIdxs = fcShuffleArr(activeIdxs.filter(i => getCardProgress(fcCurrentLesson, i).lastRating !== 3));
+const easyIdxs = fcShuffleArr(activeIdxs.filter(i => getCardProgress(fcCurrentLesson, i).lastRating === 3));
+
+const queue = [];
+let easyPtr = 0;
+normalIdxs.forEach((idx, i) => {
+queue.push({ ...lesson.cards[idx], idx });
+if ((i + 1) % 5 === 0 && easyIdxs.length) {
+const eIdx = easyIdxs[easyPtr % easyIdxs.length];
+queue.push({ ...lesson.cards[eIdx], idx: eIdx });
+easyPtr++;
+}
+});
+if (!normalIdxs.length) {
+easyIdxs.forEach(idx => queue.push({ ...lesson.cards[idx], idx }));
+}
+
+fcQueue = queue;
+fcCurrentIdx = 0;
+fcRevealed = false;
+}
+
 // SM-2 algorithm
 // rating: 1=Hard, 2=Medium, 3=Easy
 function applyRating(lessonNum, cardIdx, rating) {
@@ -1563,12 +1606,26 @@ picker.appendChild(btn);
 
 
 
-if (!fcQueue.length) buildFcQueue();
+if (!fcQueue.length) { if (isGuestMode) buildGuestFcQueue(); else buildFcQueue(); }
 
 const area = document.getElementById('fc-area');
 area.innerHTML='';
 
 if (!fcQueue.length || fcCurrentIdx >= fcQueue.length) {
+if (isGuestMode) {
+const activeIdxs = getGuestActiveCardIdxs(fcCurrentLesson);
+const totalNonDeleted = LESSONS[fcCurrentLesson].cards.filter((_,i)=>!isCardDeleted(fcCurrentLesson,i)).length;
+if (activeIdxs.length > 0) {
+const allEasy = activeIdxs.every(i => getCardProgress(fcCurrentLesson, i).lastRating === 3);
+const moreToUnlock = guestActiveWordCount < totalNonDeleted;
+if (!allEasy || moreToUnlock) {
+if (allEasy && moreToUnlock) guestActiveWordCount = Math.min(guestActiveWordCount + 5, totalNonDeleted);
+buildGuestFcQueue();
+renderFlashcards();
+return;
+}
+}
+}
 area.innerHTML=`<div class="fc-done">
     <div class="fc-done-icon">🎉</div>
     <div class="fc-done-title">All done for now!</div>
@@ -1584,7 +1641,8 @@ setCardProgress(fcCurrentLesson,i,{...p,nextReview:0});
 }
 }
 });
-buildFcQueue(); renderFlashcards();
+if (isGuestMode) buildGuestFcQueue(); else buildFcQueue();
+renderFlashcards();
 });
 return;
 }
@@ -1634,7 +1692,7 @@ btn.addEventListener('click',async()=>{
 const rating = parseInt(btn.dataset.r);
 const oldPct = getLessonMasteryPercent(fcCurrentLesson);
 applyRating(fcCurrentLesson, card.idx, rating);
-if (rating === 1) fcQueue.push(card);
+if (rating === 1 && !isGuestMode) fcQueue.push(card);
 fcCurrentIdx++;
 const code = currentUser || viewingStudent;
 incrementCardActivity(code);
