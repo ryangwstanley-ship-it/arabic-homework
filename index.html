@@ -1981,23 +1981,22 @@ let exPickerLesson = null;
 
 const EX_CARDS = [
 
-{ mode:'truefalse', icon:'✅', title:'True or False', desc:'Is the sentence correct or does it contain an error?' },
-{ mode:'changeword', icon:'✏️', title:'Change One Word', desc:'A sentence has one wrong word. Type the correct replacement.' },
-{ mode:'demonstrative', icon:'👉', title:'Demonstrative Pronouns', desc:'Practise هذا / هذه / هؤلاء agreement with true/false and correction questions.' },
-{ mode:'demotrans', icon:'👉', title:'Demonstrative Pronouns — Translate', desc:'Read the English, write the Arabic demonstrative phrase, then reveal and grade yourself.' },
-{ mode:'suffixpronoun', icon:'🔤', title:'Suffix Pronouns', desc:'Does the attached pronoun (ـهُ / ـهَا / ـهُمْ) match the first word? True or false.' },
-{ mode:'suffixtrans', icon:'✍️', title:'Suffix Pronouns — Translate', desc:'Read the English, write the Arabic, then reveal and grade yourself.' },
-{ mode:'adjectiveagreement', icon:'✨', title:'Adjective Agreement', desc:'Noun-adjective agreement: is the adjective correctly matched to the noun?' },
-{ mode:'plural', icon:'👥', title:'Spot the Plural', desc:'Two words appear — tap the one that is plural.' },
-{ mode:'feminine', icon:'♀️', title:'Spot the Feminine', desc:'Four words appear — tap the two that are feminine, then Check.' },
-{ mode:'pluraltype', icon:'🧩', title:'Spot the Pattern', desc:'A plural shows up — is it regular or irregular? Human or non-human?' },
 { mode:'typeharakat', icon:'⌨️', title:'Type Without Harakat', desc:'See the word with harakat — type it using bare letters only.' },
 { mode:'typeenglish', icon:'🔤', title:'English → Arabic', desc:'See the English — type the Arabic word from memory.' },
+{ mode:'plural', icon:'👥', title:'Spot the Plural', desc:'Two words appear — tap the one that is plural.' },
+{ mode:'pluraltype', icon:'🧩', title:'Spot the Pattern', desc:'A plural shows up — is it regular or irregular? Human or non-human?' },
+{ mode:'feminine', icon:'♀️', title:'Spot the Feminine', desc:'Four words appear — tap the two that are feminine, then Check.' },
+{ mode:'suffixpronoun', icon:'🔤', title:'Suffix Pronouns', desc:'Does the attached pronoun (ـهُ / ـهَا / ـهُمْ) match the first word? True or false.' },
+{ mode:'suffixtrans', icon:'✍️', title:'Suffix Pronouns — Translate', desc:'Read the English, write the Arabic, then reveal and grade yourself.' },
+{ mode:'changeword', icon:'✏️', title:'Change One Word', desc:'A sentence has one wrong word. Type the correct replacement.' },
+{ mode:'truefalse', icon:'✅', title:'True or False', desc:'Is the sentence correct or does it contain an error?' },
 { mode:'aetrans', icon:'🔁', title:'Arabic → English', desc:'Read the Arabic sentence, translate it in your head, then reveal and grade yourself.' },
 { mode:'challenge1', icon:'🏆', title:'Challenge 1', desc:"Write your own sentence using each of 15 key words. We'll go over these together in lesson." },
-{ mode:'challenge2', icon:'🏆', title:'Challenge 2', desc:"Translate each English sentence into Arabic. We'll go over these together in lesson." }
+{ mode:'challenge2', icon:'🏆', title:'Challenge 2', desc:"Translate each English sentence into Arabic. We'll go over these together in lesson." },
+{ mode:'demonstrative', icon:'👉', title:'Demonstrative Pronouns', desc:'Practise هذا / هذه / هؤلاء agreement with true/false and correction questions.' },
+{ mode:'demotrans', icon:'👉', title:'Demonstrative Pronouns — Translate', desc:'Read the English, write the Arabic demonstrative phrase, then reveal and grade yourself.' },
+{ mode:'adjectiveagreement', icon:'✨', title:'Adjective Agreement', desc:'Noun-adjective agreement: is the adjective correctly matched to the noun?' }
 ];
-
 function exGetQuestionCount(mode) {
 return mode==='fillgap' ? FILL_GAP_QUESTIONS.length
 : mode==='wordorder' ? WORD_ORDER_QUESTIONS.length
