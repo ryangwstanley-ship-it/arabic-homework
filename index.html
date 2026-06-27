@@ -712,7 +712,7 @@ const db = getFirestore(firebaseApp);
 
 
 // ── FLASHCARD DATA (now loaded from GitHub) ──
-let DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS, PLURAL_QUESTIONS, FEMININE_QUESTIONS, SUFFIX_TRANSLATION_QUESTIONS, DEMO_TRANSLATION_QUESTIONS, PLURAL_TYPE_QUESTIONS;
+let DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS, PLURAL_QUESTIONS, FEMININE_QUESTIONS, SUFFIX_TRANSLATION_QUESTIONS, DEMO_TRANSLATION_QUESTIONS, PLURAL_TYPE_QUESTIONS, CHALLENGE_1_WORDS;
 async function loadVocabData() {
 
 const url = 'https://raw.githubusercontent.com/ryangwstanley-ship-it/database/main/website%20data%20base?t=' + Date.now();
@@ -720,7 +720,7 @@ const res = await fetch(url);
 const code = await res.text();
 const runner = new Function(
 code.replaceAll('export const', 'const') +
-'; return { DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS, PLURAL_QUESTIONS, FEMININE_QUESTIONS, SUFFIX_TRANSLATION_QUESTIONS, DEMO_TRANSLATION_QUESTIONS, PLURAL_TYPE_QUESTIONS };'
+'; return { DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS, PLURAL_QUESTIONS, FEMININE_QUESTIONS, SUFFIX_TRANSLATION_QUESTIONS, DEMO_TRANSLATION_QUESTIONS, PLURAL_TYPE_QUESTIONS, CHALLENGE_1_WORDS };'
 );
 const data = runner();
 DEFAULT_LESSONS = data.DEFAULT_LESSONS;
@@ -736,6 +736,7 @@ FEMININE_QUESTIONS = data.FEMININE_QUESTIONS;
 SUFFIX_TRANSLATION_QUESTIONS = data.SUFFIX_TRANSLATION_QUESTIONS;
 DEMO_TRANSLATION_QUESTIONS = data.DEMO_TRANSLATION_QUESTIONS;
 PLURAL_TYPE_QUESTIONS = data.PLURAL_TYPE_QUESTIONS;
+CHALLENGE_1_WORDS = data.CHALLENGE_1_WORDS;
 
 
 window.FILL_GAP_QUESTIONS = FILL_GAP_QUESTIONS;
@@ -750,6 +751,7 @@ window.FEMININE_QUESTIONS = FEMININE_QUESTIONS;
 window.SUFFIX_TRANSLATION_QUESTIONS = SUFFIX_TRANSLATION_QUESTIONS;
 window.DEMO_TRANSLATION_QUESTIONS = DEMO_TRANSLATION_QUESTIONS;
 window.PLURAL_TYPE_QUESTIONS = PLURAL_TYPE_QUESTIONS;
+window.CHALLENGE_1_WORDS = CHALLENGE_1_WORDS;
 }
 
 await loadVocabData();
@@ -1053,6 +1055,42 @@ if (!poolLength) return 0;
 let easyCount = 0;
 for (let i = 0; i < poolLength; i++) { if (prog[i] === 3) easyCount++; }
 return Math.round((easyCount / poolLength) * 100);
+};
+
+window.hasSubmittedChallenge1 = function() {
+return !!exProgress['challenge1'];
+};
+
+window.exSubmitChallenge1 = async function() {
+const code = activeStudentCode();
+const today = todayKey();
+const words = window.CHALLENGE_1_WORDS || [];
+const answers = words.map((w, i) => {
+const el = document.getElementById('ch1-input-' + i);
+return { ar: w.ar, en: w.en, answer: el ? el.value.trim() : '' };
+});
+const filled = answers.filter(a => a.answer);
+if (!filled.length) { showToast('Write at least one sentence first'); return; }
+
+let block = '📋 Challenge 1 — Lesson 1 (a sentence with each word)';
+answers.forEach((a, i) => {
+block += `\n${i+1}. ${a.ar} (${a.en}): ${a.answer || '—'}`;
+});
+
+const existing = submissions[code]?.[today] || {};
+const newText = (existing.text ? existing.text + '\n\n' : '') + block;
+const dayData = { images: existing.images || [], text: newText, reviewed: false };
+if (!submissions[code]) submissions[code] = {};
+submissions[code][today] = dayData;
+await saveDay(code, today, dayData);
+
+exProgress['challenge1'] = true;
+for (let i = 0; i < filled.length; i++) incrementCardActivity(code);
+await saveFlashcardData(code);
+
+showToast('Submitted! Your teacher will go over this with you in your next lesson.');
+render();
+if (typeof exShowPicker === 'function') exShowPicker();
 };
 
 async function saveDay(code, dateStr, data) { if (isGuestMode) return; await setDoc(doc(db,'submissions',code,'days',dateStr), data); }
@@ -1901,7 +1939,7 @@ plural: 1, feminine: 1, pluraltype: 1,
 typeharakat: 1, typeenglish: 1,
 suffixpronoun: 1, suffixtrans: 1,
 adjectiveagreement: 2,
-demonstrative: 2, demotrans: 2
+demonstrative: 2, demotrans: 2, challenge1: 2
 };
 const EX_MAX_LESSON = 2;
 let exPickerLesson = null;
@@ -1913,6 +1951,7 @@ const EX_CARDS = [
 { mode:'changeword', icon:'✏️', title:'Change One Word', desc:'A sentence has one wrong word. Type the correct replacement.' },
 { mode:'demonstrative', icon:'👉', title:'Demonstrative Pronouns', desc:'Practise هذا / هذه / هؤلاء agreement with true/false and correction questions.' },
 { mode:'demotrans', icon:'👉', title:'Demonstrative Pronouns — Translate', desc:'Read the English, write the Arabic demonstrative phrase, then reveal and grade yourself.' },
+{ mode:'challenge1', icon:'🏆', title:'Challenge 1', desc:"Write your own sentence using each of 15 key words. We'll go over these together in lesson." },
 { mode:'suffixpronoun', icon:'🔤', title:'Suffix Pronouns', desc:'Does the attached pronoun (ـهُ / ـهَا / ـهُمْ) match the first word? True or false.' },
 { mode:'suffixtrans', icon:'✍️', title:'Suffix Pronouns — Translate', desc:'Read the English, write the Arabic, then reveal and grade yourself.' },
 { mode:'adjectiveagreement', icon:'✨', title:'Adjective Agreement', desc:'Noun-adjective agreement: is the adjective correctly matched to the noun?' },
@@ -1947,6 +1986,15 @@ const viewingLesson = exPickerLesson || defaultLesson;
 const isPastLesson = viewingLesson < defaultLesson;
 
 const cardsHtml = EX_CARDS.filter(c => EX_LESSON_MAP[c.mode] === viewingLesson).map(c => {
+if (c.mode === 'challenge1') {
+const submitted = window.hasSubmittedChallenge1 && window.hasSubmittedChallenge1();
+return `<div class="ex-card" id="btn-${c.mode}">
+<div style="font-size:28px;margin-bottom:8px">${c.icon}</div>
+<div class="ex-card-title">${c.title}</div>
+<div class="ex-card-desc">${c.desc}</div>
+<div class="ex-card-note">${submitted ? '✓ Submitted' : 'Not submitted yet'}</div>
+</div>`;
+}
 const pct = window.getExerciseMasteryPercent(c.mode, exGetQuestionCount(c.mode));
 return `<div class="ex-card" id="btn-${c.mode}">
 ${window.miniRing(pct, c.icon)}
@@ -1966,7 +2014,10 @@ ${cardsHtml}
 `);
 
 EX_CARDS.filter(c => EX_LESSON_MAP[c.mode] === viewingLesson).forEach(c => {
-document.getElementById('btn-' + c.mode).onclick = () => exShowSetup(c.mode);
+document.getElementById('btn-' + c.mode).onclick = () => {
+if (c.mode === 'challenge1') exShowChallenge1();
+else exShowSetup(c.mode);
+};
 });
 const prevBtn = document.getElementById('ex-prev-lessons-btn');
 if (prevBtn) prevBtn.onclick = exShowLessonPicker;
@@ -1986,6 +2037,29 @@ document.querySelectorAll('.ex-lesson-pick-btn').forEach(btn => {
 btn.onclick = () => { exPickerLesson = parseInt(btn.dataset.lesson); exShowPicker(); };
 });
 document.getElementById('ex-lesson-pick-back').onclick = exShowPicker;
+}
+
+function exShowChallenge1() {
+const words = window.CHALLENGE_1_WORDS || [];
+let html = `
+<div class="section-label">🏆 Challenge 1 — Make a sentence</div>
+<div style="background:var(--grey-light);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
+<div style="font-size:14px;color:#6b7280;margin-bottom:20px;line-height:1.6">Write your own Arabic sentence using each word below. Don't worry about getting it perfect — we'll go over these together in your next lesson.</div>`;
+words.forEach((w, i) => {
+html += `
+<div style="margin-bottom:18px">
+<div style="font-family:'Scheherazade New', serif;font-size:1.4em;direction:rtl;text-align:right;color:#8b2035;font-weight:700">${w.ar}</div>
+<div style="font-size:12px;color:#6b7280;margin-bottom:6px">${w.en}</div>
+<textarea id="ch1-input-${i}" placeholder="Write your sentence..." style="width:100%;padding:10px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:1.1em;direction:rtl;text-align:right;font-family:inherit;min-height:50px;outline:none;box-sizing:border-box"></textarea>
+</div>`;
+});
+html += `
+<button id="ch1-submit-btn" style="width:100%;margin-top:8px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">Submit Challenge</button>
+<button id="ch1-back-btn" style="width:100%;margin-top:8px;padding:10px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">← Back</button>
+</div>`;
+exRender(html);
+document.getElementById('ch1-submit-btn').onclick = () => window.exSubmitChallenge1();
+document.getElementById('ch1-back-btn').onclick = exShowPicker;
 }
   
 function exShowSetup(mode) {
