@@ -469,6 +469,7 @@ console.log("THE FILE IS LOADING!");
 
 <div id="fc-area"></div>
 
+<button id="guest-principles-btn" style="display:none;width:100%;margin-top:20px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Continue to Grammar Principles →</button>
 
 </div>
 <!-- EXERCISES SUB-TAB -->
@@ -562,6 +563,8 @@ console.log("THE FILE IS LOADING!");
 <button class="principles-nav-btn principles-nav-btn-primary" id="principle-next-btn">Next ›</button>
 </div>
 </div>
+
+<button id="guest-flashcards-btn" style="display:none;width:100%;margin-top:24px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Continue to Flashcards →</button>
 
 </div>
 </div>
@@ -681,6 +684,7 @@ let isStudentView = false, calYear, calMonth, selectedDate = null;
 let submissions = {}, sidebarCollapsed = false;
 let currentTab = 'homework';
 let isGuestMode = false;
+let guestLessonDone = false;
 
 // Flashcard state
 let fcProgress = {};
@@ -959,6 +963,8 @@ isInstructor = false;
 document.getElementById('home-btn-upload').style.display = 'none';
 document.getElementById('story-back-row').style.display = 'none';
 document.getElementById('revise-back-row').style.display = 'none';
+document.getElementById('principles-wrap').style.display = 'none';
+document.getElementById('guest-flashcards-btn').style.display = 'block';
 startApp();
 };
 
@@ -1000,6 +1006,14 @@ if (tab==='revise') switchReviseSubTab('flashcards');
 }
 
 window.switchReviseSubTab = function(sub) {
+if (isGuestMode && sub === 'exercises' && !guestLessonDone) {
+document.getElementById('tab-content-flashcards').style.display = 'none';
+document.getElementById('tab-content-exercises').style.display = 'block';
+document.getElementById('revise-tab-flashcards').classList.remove('active');
+document.getElementById('revise-tab-exercises').classList.add('active');
+document.getElementById('ex-root').innerHTML = '<div class="locked-msg">🔒 Finish the Grammar Principles to unlock exercises.</div>';
+return;
+}
 document.getElementById('tab-content-flashcards').style.display = sub==='flashcards' ? 'block' : 'none';
 document.getElementById('tab-content-exercises').style.display = sub==='exercises' ? 'block' : 'none';
 document.getElementById('revise-tab-flashcards').classList.toggle('active', sub==='flashcards');
@@ -1322,6 +1336,10 @@ const picker = document.getElementById('fc-lesson-picker');
 picker.innerHTML='';
 const code = currentUser || viewingStudent;
 const maxLesson = (studentLesson[code] !== undefined) ? studentLesson[code] : 1;
+if (isGuestMode) {
+const principlesBtn = document.getElementById('guest-principles-btn');
+if (principlesBtn) principlesBtn.style.display = getLessonMasteryPercent(fcCurrentLesson) >= 75 ? 'block' : 'none';
+}
 Object.entries(LESSONS).forEach(([num, lesson]) => {
 const lessonNum = parseInt(num);
 if (lessonNum === 0) return; // Skip the unused "Advanced students" placeholder lesson
@@ -1513,6 +1531,7 @@ document.getElementById('principle-back-btn').addEventListener('click', () => {
 });
 document.getElementById('principle-next-btn').addEventListener('click', () => {
   if (principleIdx < PRINCIPLES.length - 1) { principleIdx++; principleRevealed = false; renderPrinciple(); }
+  else if (isGuestMode) { guestLessonDone = true; switchTab('revise'); switchReviseSubTab('exercises'); }
 });
 renderPrinciple();
 
@@ -1541,6 +1560,14 @@ document.getElementById('home-btn-revise').addEventListener('click', () => switc
 document.getElementById('home-btn-upload').addEventListener('click', () => switchTab('homework'));
 document.getElementById('login-btn').addEventListener('click',handleLogin);
 document.getElementById('guest-start-btn').addEventListener('click', startGuestJourney);
+document.getElementById('guest-start-btn').addEventListener('click', startGuestJourney);
+document.getElementById('guest-flashcards-btn').addEventListener('click', () => switchTab('revise'));
+document.getElementById('guest-flashcards-btn').addEventListener('click', () => switchTab('revise'));
+document.getElementById('guest-principles-btn').addEventListener('click', () => {
+document.getElementById('principles-wrap').style.display = 'block';
+document.getElementById('guest-flashcards-btn').style.display = 'none';
+switchTab('story');
+});
 document.getElementById('code-input').addEventListener('keydown',e=>{if(e.key==='Enter')handleLogin();});
 
 document.getElementById('sidebar-toggle').addEventListener('click',toggleSidebar);
