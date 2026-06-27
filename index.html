@@ -1977,8 +1977,8 @@ return mode==='fillgap' ? FILL_GAP_QUESTIONS.length
 : mode==='plural' ? PLURAL_QUESTIONS.length
 : mode==='feminine' ? FEMININE_QUESTIONS.length
 : mode==='pluraltype' ? PLURAL_TYPE_QUESTIONS.length * 2
-: mode==='typeharakat' ? exBuildLesson1Pool()
-: mode==='typeenglish' ? exBuildLesson1Pool()
+: mode==='typeharakat' ? exBuildLesson1Pool().length
+: mode==='typeenglish' ? exBuildLesson1Pool().length
 : mode==='aetrans' ? TRANSLATION_1_QUESTIONS.length
 : 0;
 }
@@ -2575,7 +2575,7 @@ ratingEl.style.display = 'flex';
 wireRatingButtons();
 }
 
-function exSubmitDemoTrans() {
+
 function exSubmitDemoTrans() {
 const q = exQuestions[exCurrent];
 const typed = document.getElementById('ex-answer-input').value;
