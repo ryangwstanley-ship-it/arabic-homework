@@ -712,7 +712,7 @@ const db = getFirestore(firebaseApp);
 
 
 // ── FLASHCARD DATA (now loaded from GitHub) ──
-let DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS, PLURAL_QUESTIONS, FEMININE_QUESTIONS, SUFFIX_TRANSLATION_QUESTIONS, DEMO_TRANSLATION_QUESTIONS, PLURAL_TYPE_QUESTIONS, CHALLENGE_1_WORDS;
+let DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS, PLURAL_QUESTIONS, FEMININE_QUESTIONS, SUFFIX_TRANSLATION_QUESTIONS, DEMO_TRANSLATION_QUESTIONS, PLURAL_TYPE_QUESTIONS, CHALLENGE_1_WORDS, TRANSLATION_1_QUESTIONS;
 async function loadVocabData() {
 
 const url = 'https://raw.githubusercontent.com/ryangwstanley-ship-it/database/main/website%20data%20base?t=' + Date.now();
@@ -737,6 +737,7 @@ SUFFIX_TRANSLATION_QUESTIONS = data.SUFFIX_TRANSLATION_QUESTIONS;
 DEMO_TRANSLATION_QUESTIONS = data.DEMO_TRANSLATION_QUESTIONS;
 PLURAL_TYPE_QUESTIONS = data.PLURAL_TYPE_QUESTIONS;
 CHALLENGE_1_WORDS = data.CHALLENGE_1_WORDS;
+TRANSLATION_1_QUESTIONS = data.TRANSLATION_1_QUESTIONS;
 
 
 window.FILL_GAP_QUESTIONS = FILL_GAP_QUESTIONS;
@@ -752,6 +753,7 @@ window.SUFFIX_TRANSLATION_QUESTIONS = SUFFIX_TRANSLATION_QUESTIONS;
 window.DEMO_TRANSLATION_QUESTIONS = DEMO_TRANSLATION_QUESTIONS;
 window.PLURAL_TYPE_QUESTIONS = PLURAL_TYPE_QUESTIONS;
 window.CHALLENGE_1_WORDS = CHALLENGE_1_WORDS;
+window.TRANSLATION_1_QUESTIONS = TRANSLATION_1_QUESTIONS;
 }
 
 await loadVocabData();
@@ -1937,7 +1939,7 @@ const EX_LESSON_MAP = {
 changeword: 1, truefalse: 1,
 plural: 1, feminine: 1, pluraltype: 1,
 typeharakat: 1, typeenglish: 1,
-suffixpronoun: 1, suffixtrans: 1,
+suffixpronoun: 1, suffixtrans: 1, aetrans: 1,
 adjectiveagreement: 2,
 demonstrative: 2, demotrans: 2, challenge1: 2
 };
@@ -1958,7 +1960,8 @@ const EX_CARDS = [
 { mode:'feminine', icon:'♀️', title:'Spot the Feminine', desc:'Four words appear — tap the two that are feminine, then Check.' },
 { mode:'pluraltype', icon:'🧩', title:'Spot the Pattern', desc:'A plural shows up — is it regular or irregular? Human or non-human?' },
 { mode:'typeharakat', icon:'⌨️', title:'Type Without Harakat', desc:'See the word with harakat — type it using bare letters only.' },
-{ mode:'typeenglish', icon:'🔤', title:'English → Arabic', desc:'See the English — type the Arabic word from memory.' }
+{ mode:'typeenglish', icon:'🔤', title:'English → Arabic', desc:'See the English — type the Arabic word from memory.' },
+{ mode:'aetrans', icon:'🔁', title:'Arabic → English', desc:'Read the Arabic sentence, translate it in your head, then reveal and grade yourself.' }
 ];
 
 function exGetQuestionCount(mode) {
@@ -1974,8 +1977,9 @@ return mode==='fillgap' ? FILL_GAP_QUESTIONS.length
 : mode==='plural' ? PLURAL_QUESTIONS.length
 : mode==='feminine' ? FEMININE_QUESTIONS.length
 : mode==='pluraltype' ? PLURAL_TYPE_QUESTIONS.length * 2
-: mode==='typeharakat' ? exBuildLesson1Pool().length
-: mode==='typeenglish' ? exBuildLesson1Pool().length
+: mode==='typeharakat' ? exBuildLesson1Pool()
+: mode==='typeenglish' ? exBuildLesson1Pool()
+: mode==='aetrans' ? TRANSLATION_1_QUESTIONS.length
 : 0;
 }
 
@@ -2075,6 +2079,7 @@ const title = mode === 'fillgap' ? '📝 Fill the Gap'
 : mode === 'suffixtrans' ? '✍️ Suffix Pronouns — Translate'
 : mode === 'demotrans' ? '👉 Demonstrative Pronouns — Translate'
 : mode === 'pluraltype' ? '🧩 Spot the Pattern'
+: mode === 'aetrans' ? '🔁 Arabic → English'
 : '✅ True or False';
 const isGrammarDrill = mode === 'demonstrative';
 exRender(`
@@ -2109,6 +2114,7 @@ exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS]
 : exMode === 'suffixtrans' ? exShuffle([...SUFFIX_TRANSLATION_QUESTIONS]).slice(0, 11)
 : exMode === 'demotrans' ? exShuffle([...DEMO_TRANSLATION_QUESTIONS]).slice(0, 11)
 : exMode === 'pluraltype' ? exBuildPluralTypeDeck()
+: exMode === 'aetrans' ? [...TRANSLATION_1_QUESTIONS]
 : [...TRUE_FALSE_QUESTIONS]
 );
 if (exMode === 'pluraltype') exQuestions = exFixAdjacency(exQuestions);
@@ -2164,6 +2170,7 @@ exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS]
 : exMode === 'suffixtrans' ? exShuffle([...SUFFIX_TRANSLATION_QUESTIONS]).slice(0, 11)
 : exMode === 'demotrans' ? exShuffle([...DEMO_TRANSLATION_QUESTIONS]).slice(0, 11)
 : exMode === 'pluraltype' ? exBuildPluralTypeDeck()
+: exMode === 'aetrans' ? [...TRANSLATION_1_QUESTIONS]
 : [...TRUE_FALSE_QUESTIONS]
 
 );
@@ -2348,6 +2355,26 @@ checkBtn.replaceWith(checkBtn.cloneNode(true));
 const freshBtn = document.getElementById('ex-check-btn');
 freshBtn.onclick = exSubmitTyping;
 inp.onkeydown = e => { if (e.key === 'Enter') exSubmitTyping(); };
+} else if (exMode === 'aetrans') {
+const q = exQuestions[exCurrent];
+const existingType = document.getElementById('ex-tf-btns');
+if (existingType) existingType.remove();
+document.getElementById('ex-instruction').textContent = 'Read the Arabic, write the English translation, then reveal';
+document.getElementById('ex-sentence').innerHTML = q.ar;
+const fillDiv = document.getElementById('ex-fill-input');
+fillDiv.style.display = 'flex';
+document.getElementById('ex-word-order').style.display = 'none';
+const inp = document.getElementById('ex-answer-input');
+inp.value = '';
+inp.placeholder = 'Write the English translation...';
+inp.style.direction = 'ltr';
+setTimeout(() => inp.focus(), 50);
+const checkBtn = document.getElementById('ex-check-btn');
+checkBtn.replaceWith(checkBtn.cloneNode(true));
+const freshBtn = document.getElementById('ex-check-btn');
+freshBtn.textContent = 'Reveal ←';
+freshBtn.onclick = exSubmitAeTrans;
+inp.onkeydown = e => { if (e.key === 'Enter') exSubmitAeTrans(); };
 } else if (exMode === 'pluraltype') {
 const q = exQuestions[exCurrent];
 const isRegularity = q.cardType === 'regularity';
@@ -2534,7 +2561,21 @@ const ratingEl = document.getElementById('ex-rating-area');
 ratingEl.style.display = 'flex';
 wireRatingButtons();
 }
+function exSubmitAeTrans() {
+const q = exQuestions[exCurrent];
+const typed = document.getElementById('ex-answer-input').value;
+const reveal = document.getElementById('ex-reveal');
+reveal.innerHTML = 'Model translation: <strong>' + q.en + '</strong>' + (typed ? '<br><span style="font-size:0.85em;color:#6b7280">You wrote: ' + typed + '</span>' : '') + '<br><span style="font-size:0.8em;color:#6b7280">Close enough? Grade yourself below.</span>';
+reveal.style.background = '#f3f4f6';
+reveal.style.borderColor = '#d1d5db';
+reveal.style.display = 'block';
+document.getElementById('ex-fill-input').style.display = 'none';
+const ratingEl = document.getElementById('ex-rating-area');
+ratingEl.style.display = 'flex';
+wireRatingButtons();
+}
 
+function exSubmitDemoTrans() {
 function exSubmitDemoTrans() {
 const q = exQuestions[exCurrent];
 const typed = document.getElementById('ex-answer-input').value;
