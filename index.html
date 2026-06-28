@@ -512,6 +512,12 @@ console.log("THE FILE IS LOADING!");
 <div id="tab-content-milestones" class="content" style="display:none">
 <div class="back-row" onclick="switchTab('home')"><span class="back-btn">‹</span><span class="screen-title">Your Journey</span></div>
 <div class="section-label">Curriculum</div>
+<div id="milestone-intro" class="fc-done" style="display:none">
+<div class="fc-done-icon">🗺️</div>
+<div class="fc-done-title">Welcome to your journey!</div>
+<div class="fc-done-sub" style="text-align:left;line-height:1.6">Each lesson has three steps: <strong>Flashcards</strong> to learn new words, <strong>Exercises</strong> to practise using them, and <strong>Challenges</strong> to test yourself. Master all three and you'll see your character walk further along the path below, lesson by lesson.</div>
+<button class="guest-btn" id="milestone-intro-next-btn" style="margin-bottom:0">Next →</button>
+</div>
 <div id="milestone-root" style="margin-top:8px"></div>
 </div>
 
@@ -1534,6 +1540,7 @@ err.style.display='block'; btn.textContent='Enter'; btn.disabled=false;
 }
 // ── GUEST ──
 let guestName = '';
+let pendingMilestoneIntro = false;
 let guestCodeEdited = false;
 
 function suggestGuestCode(name) {
@@ -1578,6 +1585,7 @@ codeInput.value = code;
 errEl.style.display = 'none';
 try { await setDoc(doc(db,'guests',code), { name, code, createdAt: Date.now() }); } catch(e) { console.error('Guest create error', e); }
 guestName = name;
+pendingMilestoneIntro = true;
 enterAsGuest(code);
 await loadFlashcardProgress(code);
 startApp();
@@ -1625,7 +1633,7 @@ buildSidebar(); updateHeaderForInstructor();
 app.style.display='block'; app.style.maxWidth='480px'; app.style.margin='0 auto';
 document.getElementById('header-title').textContent='My Homework';
 document.getElementById('header-sub').textContent = isGuestMode ? guestName : (STUDENTS[currentUser]?.display||'');
-switchTab(isGuestMode ? 'story' : 'home');
+switchTab(isGuestMode ? 'milestones' : 'home');
 }
 render();
 }
@@ -1646,7 +1654,14 @@ document.getElementById('tab-homework').classList.toggle('active', tab==='homewo
 document.getElementById('tab-story').classList.toggle('active', tab==='story');
 if (tab==='revise') switchReviseSubTab('flashcards');
 if (tab==='story') setStoryLesson(studentLesson[activeStudentCode()] || 1);
-if (tab==='milestones') renderMilestones();
+if (tab==='milestones') {
+renderMilestones();
+if (pendingMilestoneIntro) {
+document.getElementById('milestone-root').style.display = 'none';
+document.getElementById('milestone-intro').style.display = 'block';
+pendingMilestoneIntro = false;
+}
+}
 if (tab==='guests') renderGuestsTab();
 }
 
@@ -2317,6 +2332,10 @@ document.getElementById('home-btn-start').addEventListener('click', () => switch
 document.getElementById('home-btn-revise').addEventListener('click', () => switchTab('revise'));
 document.getElementById('home-btn-upload').addEventListener('click', () => switchTab('homework'));
 document.getElementById('home-btn-milestones').addEventListener('click', () => switchTab('milestones'));
+document.getElementById('milestone-intro-next-btn').addEventListener('click', () => {
+document.getElementById('milestone-intro').style.display = 'none';
+document.getElementById('milestone-root').style.display = 'block';
+});
 document.getElementById('login-btn').addEventListener('click',handleLogin);
 document.getElementById('guest-start-btn').addEventListener('click', () => {
 document.getElementById('login-screen').style.display = 'none';
