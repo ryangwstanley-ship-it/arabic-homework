@@ -2853,7 +2853,7 @@ return mode==='fillgap' ? FILL_GAP_QUESTIONS.length
 : mode==='aetrans' ? TRANSLATION_1_QUESTIONS.length
 : 0;
 }
-
+window.exGetQuestionCount = exGetQuestionCount;
 function exShowPicker() {
 const defaultLesson = Math.min(window.getCurrentLesson(), EX_MAX_LESSON);
 const viewingLesson = exPickerLesson || defaultLesson;
