@@ -511,7 +511,7 @@ console.log("THE FILE IS LOADING!");
 
 <!-- MILESTONES TAB -->
 <div id="tab-content-milestones" class="content" style="display:none">
-<div class="back-row" onclick="switchTab('home')"><span class="back-btn">‹</span><span class="screen-title">Your Journey</span></div>
+<div class="back-row" onclick="window.goHomeOrStory()"><span class="back-btn">‹</span><span class="screen-title">Your Journey</span></div>
 <div class="section-label">Curriculum</div>
 <div id="milestone-intro" class="fc-done" style="display:none">
 <div class="fc-done-icon">🗺️</div>
@@ -1175,6 +1175,12 @@ requestAnimationFrame(step);
 // challenge that's already fully mastered: shows the milestone screen at its
 // current (static) position with a "Review again" button rather than
 // re-walking, so the sense of permanent progress is never undone.
+window.goHomeOrStory = function() {
+if (isGuestMode) switchTab('story');
+else switchTab('home');
+};
+
+window.showMasteredMilestone = function(category, lessonNum, reviewCallback) {
 window.showMasteredMilestone = function(category, lessonNum, reviewCallback) {
 window.switchTab('milestones');
 renderMilestones();
@@ -3205,6 +3211,8 @@ document.getElementById('ex-rate-med').onclick = () => exRate(2);
 document.getElementById('ex-rate-easy').onclick = () => exRate(3);
 }
 
+
+  
 async function exEndSession() {
 exRender(`
   <div style="text-align:center;padding:40px 20px">
