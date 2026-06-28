@@ -318,6 +318,11 @@
 .milestone-mastered-title { font-size: 16px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
 .milestone-mastered-sub { font-size: 13px; color: var(--grey); margin-bottom: 12px; }
 .milestone-review-btn { padding: 10px 22px; background: var(--blue); color: white; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; }
+.guest-coachmark { position: fixed; z-index: 900; width: 260px; background: var(--ink); color: white; border-radius: 12px; padding: 12px 16px; font-size: 13.5px; line-height: 1.5; box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+.guest-coachmark-close { position: absolute; top: 4px; right: 8px; background: none; border: none; color: rgba(255,255,255,0.6); font-size: 16px; cursor: pointer; line-height: 1; padding: 4px; }
+.guest-coachmark-text { padding-right: 14px; font-weight: 600; }
+.guest-coachmark-arrow { position: absolute; top: -7px; width: 14px; height: 14px; background: var(--ink); transform: rotate(45deg); }
+.guest-coachmark.above .guest-coachmark-arrow { top: auto; bottom: -7px; }
 .sidebar-nav-btn { width: 100%; text-align: left; background: rgba(255,255,255,0.08); color: white; border: none; border-radius: 10px; padding: 10px 14px; font-size: 13px; font-weight: 600; cursor: pointer; margin-bottom: 14px; }
 .sidebar-nav-btn:hover { background: rgba(255,255,255,0.16); }
 .guest-card { background: var(--grey-light); border-radius: var(--card-radius); padding: 16px 18px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
@@ -1121,7 +1126,7 @@ const figureSvg = figurePoint ? `<circle cx="${figurePoint.x}" cy="${figurePoint
 
 const endOpen = (n+1) <= currentLevel;
 const endTentPiece = desertTentSvg(segs[3].p2.x, segs[3].p2.y, endOpen) + `<text x="${segs[3].p2.x}" y="${segs[3].p2.y+28}" font-size="12" fill="${endOpen ? '#E8DFC8' : '#C9A8A0'}" text-anchor="middle" style="font-weight:500">Lesson ${n+1}</text>`;
-const endTentSvg = (n+1) === currentLevel ? `<g style="cursor:pointer" onclick="window.openLessonTentMenu(${n+1})">${endTentPiece}</g>` : endTentPiece;
+const endTentSvg = (n+1) === currentLevel ? `<g id="ms-tent-${n+1}" style="cursor:pointer" onclick="window.openLessonTentMenu(${n+1})">${endTentPiece}</g>` : endTentPiece;
 return `${pathSvg}
 ${torchSvg}
 ${figureSvg}
@@ -1148,7 +1153,7 @@ const currentLevel = studentLesson[code] || 1;
 const totalHeight = msTentY(MILESTONE_BUILT_LESSONS) + 280;
 let inner = msRippleBands(totalHeight);
 const firstTentPiece = desertTentSvg(msTentX(1), msTentY(1), 1 <= currentLevel) + `<text x="${msTentX(1)}" y="${msTentY(1)+28}" font-size="12" fill="#E8DFC8" text-anchor="middle" style="font-weight:500">Lesson 1</text>`;
-inner += currentLevel === 1 ? `<g style="cursor:pointer" onclick="window.openLessonTentMenu(1)">${firstTentPiece}</g>` : firstTentPiece;
+inner += currentLevel === 1 ? `<g id="ms-tent-1" style="cursor:pointer" onclick="window.openLessonTentMenu(1)">${firstTentPiece}</g>` : firstTentPiece;
 for (let n = 1; n < MILESTONE_BUILT_LESSONS; n++) {
 inner += renderMilestoneSegmentFragment(n, currentLevel, overrideNumLit);
 }
@@ -1216,6 +1221,36 @@ exPickerLesson = lessonNum;
 if (typeof exShowPicker === 'function') exShowPicker();
 };
 
+// Shows a small callout box pointing at any element on screen — used for the
+// new-guest step-by-step tour. position:fixed + raw getBoundingClientRect()
+// values are used deliberately, since the app's scrolling happens inside
+// #main rather than the window, so window.scrollY wouldn't be reliable here.
+function showGuestCoachmark(targetEl, message) {
+hideGuestCoachmark();
+if (!targetEl) return;
+const rect = targetEl.getBoundingClientRect();
+const showAbove = rect.bottom > window.innerHeight - 140;
+const cm = document.createElement('div');
+cm.className = 'guest-coachmark' + (showAbove ? ' above' : '');
+cm.id = 'guest-coachmark';
+cm.innerHTML = `<button class="guest-coachmark-close" id="guest-coachmark-close">×</button><div class="guest-coachmark-text">${message}</div><div class="guest-coachmark-arrow"></div>`;
+document.body.appendChild(cm);
+const cmWidth = 260;
+let left = rect.left + rect.width/2 - cmWidth/2;
+left = Math.min(Math.max(left, 12), window.innerWidth - cmWidth - 12);
+cm.style.left = left + 'px';
+if (showAbove) { cm.style.top = (rect.top - 14) + 'px'; cm.style.transform = 'translateY(-100%)'; }
+else { cm.style.top = (rect.bottom + 14) + 'px'; }
+const targetCenter = rect.left + rect.width/2;
+const arrowLeft = Math.min(Math.max(targetCenter - left - 7, 14), cmWidth - 28);
+cm.querySelector('.guest-coachmark-arrow').style.left = arrowLeft + 'px';
+document.getElementById('guest-coachmark-close').onclick = (e) => { e.stopPropagation(); guestTourActive = false; hideGuestCoachmark(); };
+}
+function hideGuestCoachmark() {
+const existing = document.getElementById('guest-coachmark');
+if (existing) existing.remove();
+}
+
 window.openLessonTentMenu = function(lessonNum) {
 const overlay = document.createElement('div');
 overlay.className = 'milestone-celebrate-overlay';
@@ -1236,7 +1271,15 @@ overlay.innerHTML = `<div class="milestone-celebrate-card" style="text-align:lef
 <button class="milestone-review-btn" id="tent-menu-close" style="width:100%;margin-top:16px;background:var(--grey-light);color:var(--grey);border:1.5px solid var(--border)">Close</button>
 </div>`;
 document.body.appendChild(overlay);
-document.getElementById('tent-menu-story').onclick = () => { overlay.remove(); switchTab('story'); };
+document.getElementById('tent-menu-story').onclick = () => {
+overlay.remove();
+switchTab('story');
+if (guestTourActive && lessonNum === 1) {
+guestTourStep = 1;
+hideGuestCoachmark();
+setTimeout(() => showGuestCoachmark(document.getElementById('guest-flashcards-btn'), '👉 Next, go to Flashcards!'), 150);
+}
+};
 document.getElementById('tent-menu-homework').onclick = () => { overlay.remove(); switchTab('homework'); };
 document.getElementById('tent-menu-close').onclick = () => overlay.remove();
 overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
@@ -1645,6 +1688,8 @@ err.style.display='block'; btn.textContent='Enter'; btn.disabled=false;
 let guestName = '';
 let pendingMilestoneIntro = false;
 let guestCodeEdited = false;
+let guestTourActive = false;
+let guestTourStep = 0;
 
 function suggestGuestCode(name) {
 const clean = (name || '').toUpperCase().replace(/[^A-Z]/g, '');
@@ -1689,6 +1734,8 @@ errEl.style.display = 'none';
 try { await setDoc(doc(db,'guests',code), { name, code, createdAt: Date.now() }); } catch(e) { console.error('Guest create error', e); }
 guestName = name;
 pendingMilestoneIntro = true;
+guestTourActive = true;
+guestTourStep = 0;
 enterAsGuest(code);
 await loadFlashcardProgress(code);
 startApp();
@@ -2156,7 +2203,12 @@ fcPrevBtn.onclick = () => { fcShowLessonPicker = !fcShowLessonPicker; renderFlas
 }
 if (isGuestMode) {
 const principlesBtn = document.getElementById('guest-principles-btn');
-if (principlesBtn) principlesBtn.style.display = getLessonMasteryPercent(fcCurrentLesson) >= 75 ? 'block' : 'none';
+const unlocked = getLessonMasteryPercent(fcCurrentLesson) >= 75;
+if (principlesBtn) principlesBtn.style.display = unlocked ? 'block' : 'none';
+if (unlocked && guestTourActive && guestTourStep === 2) {
+guestTourStep = 2.5;
+setTimeout(() => showGuestCoachmark(document.getElementById('guest-principles-btn'), '👉 Next, go to the Grammar Principles!'), 150);
+}
 }
 Object.entries(LESSONS).forEach(([num, lesson]) => {
 const lessonNum = parseInt(num);
@@ -2449,6 +2501,10 @@ document.getElementById('home-btn-milestones').addEventListener('click', () => s
 document.getElementById('milestone-intro-next-btn').addEventListener('click', () => {
 document.getElementById('milestone-intro').style.display = 'none';
 document.getElementById('milestone-root').style.display = 'block';
+if (guestTourActive) {
+setTimeout(() => showGuestCoachmark(document.getElementById('ms-tent-1'), '👉 Tap here to start your first lesson!'), 150);
+}
+});
 });
 document.getElementById('login-btn').addEventListener('click',handleLogin);
 document.getElementById('guest-start-btn').addEventListener('click', () => {
@@ -2465,12 +2521,22 @@ document.getElementById('guest-name-input').addEventListener('input', () => {
 if (!guestCodeEdited) document.getElementById('guest-code-input').value = suggestGuestCode(document.getElementById('guest-name-input').value);
 });
 document.getElementById('guest-code-input').addEventListener('input', () => { guestCodeEdited = true; });
-document.getElementById('guest-flashcards-btn').addEventListener('click', () => switchTab('revise'));
-document.getElementById('guest-flashcards-btn').addEventListener('click', () => switchTab('revise'));
+document.getElementById('guest-flashcards-btn').addEventListener('click', () => {
+switchTab('revise');
+if (guestTourActive && guestTourStep === 1) {
+guestTourStep = 2;
+hideGuestCoachmark();
+}
+});
 document.getElementById('guest-principles-btn').addEventListener('click', () => {
 document.getElementById('principles-wrap').style.display = 'block';
 document.getElementById('guest-flashcards-btn').style.display = 'none';
 switchTab('story');
+if (guestTourActive && guestTourStep === 2.5) {
+guestTourStep = 3;
+guestTourActive = false;
+hideGuestCoachmark();
+}
 });
 document.getElementById('code-input').addEventListener('keydown',e=>{if(e.key==='Enter')handleLogin();});
 
