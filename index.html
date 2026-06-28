@@ -918,6 +918,9 @@ allCardActivity[code][today] = (allCardActivity[code][today] || 0) + 1;
 }
 // Per-exercise question mastery: exProgress[mode][questionIndex] = 1(Hard)/2(Medium)/3(Easy)
 let exProgress = {};
+// Whether the Reading (Story) and Grammar (Principles) milestone has been marked done for a lesson: readingDone[lessonNum] / grammarDone[lessonNum] = true
+let readingDone = {};
+let grammarDone = {};
 
 // ── UTILS ──
 function dateKey(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
@@ -975,6 +978,16 @@ const challengeModes = Object.keys(EX_LESSON_MAP).filter(m => EX_LESSON_MAP[m] =
 if (!challengeModes.length) return 1;
 const submittedCount = challengeModes.filter(m => window.hasSubmittedChallenge(m)).length;
 return submittedCount / challengeModes.length;
+}
+
+// Fraction (0 or 1) of the "reading" milestone lit: 1 once the Story for this lesson has been marked done, else 0.
+function getReadingFraction(lessonNum) {
+return readingDone[lessonNum] ? 1 : 0;
+}
+
+// Fraction (0 or 1) of the "grammar" milestone lit: 1 once the Grammar Principles for this lesson have been marked done, else 0.
+function getGrammarFraction(lessonNum) {
+return grammarDone[lessonNum] ? 1 : 0;
 }
 
 // All three torch fractions (each 0–1) for a lesson, used to light the path
@@ -1509,6 +1522,8 @@ allCardActivity[code] = data.cardActivity || {};
 fcDeletedCards = data.deleted || {};
 studentLesson[code] = data.lesson || 1;
 exProgress = data.exProgress || {};
+readingDone = data.readingDone || {};
+grammarDone = data.grammarDone || {};
 if (data.customCards) {
 Object.entries(data.customCards).forEach(([lessonNum, cards]) => {
 const num = parseInt(lessonNum);
@@ -1518,7 +1533,7 @@ LESSONS[num].cards = [...DEFAULT_LESSONS[num]?.cards || [], ...cards];
 });
 }
 } else {
-fcProgress = {}; allFcActivity[code] = {}; allCardActivity[code] = {}; fcDeletedCards = {}; studentLesson[code] = 1; exProgress = {};
+fcProgress = {}; allFcActivity[code] = {}; allCardActivity[code] = {}; fcDeletedCards = {}; studentLesson[code] = 1; exProgress = {}; readingDone = {}; grammarDone = {};
 }
 } catch(e) { console.error('FC load error',e); }
 }
@@ -1548,6 +1563,8 @@ cardActivity: allCardActivity[code] || {},
 deleted: fcDeletedCards,
 lesson: studentLesson[code] || 1,
 exProgress,
+readingDone,
+grammarDone,
 customCards
 });
 } catch(e) { console.error('FC save error',e); }
