@@ -102,7 +102,11 @@
 .revision-ring-fire { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 22px; filter: grayscale(100%); opacity: 0.55; transition: filter 0.3s, opacity 0.3s; }
 .revision-ring-fire.complete { filter: none; opacity: 1; }
 .revision-info { flex: 1; min-width: 0; }
-.revision-streak { color: white; font-size: 16px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.revision-streak-row { display: flex; align-items: center; gap: 6px; position: relative; }
+.streak-info-btn { width: 18px; height: 18px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.5); background: rgba(255,255,255,0.12); color: white; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 0; line-height: 1; }
+.streak-info-btn:hover { background: rgba(255,255,255,0.22); }
+.streak-info-popup { display: none; position: absolute; top: 26px; left: 0; z-index: 50; background: var(--ink); color: white; font-size: 12.5px; line-height: 1.5; padding: 12px 14px; border-radius: 10px; width: 240px; box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+.streak-info-popup::before { content: ''; position: absolute; top: -6px; left: 14px; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 6px solid var(--ink); }
 .revision-lesson { color: rgba(255,255,255,0.55); font-size: 12px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .revision-rank { text-align: right; flex-shrink: 0; }
 .revision-rank-num { color: white; font-size: 18px; font-weight: 700; }
@@ -422,7 +426,11 @@ console.log("THE FILE IS LOADING!");
 <div class="revision-ring-fire" id="revision-ring-fire">🔥</div>
 </div>
 <div class="revision-info">
+<div class="revision-streak-row">
 <div class="revision-streak" id="revision-streak-text">0 day streak</div>
+<button class="streak-info-btn" id="streak-info-btn" type="button" aria-label="How streaks work">ⓘ</button>
+<div class="streak-info-popup" id="streak-info-popup">Complete at least 20 flashcards or exercise questions today to count toward your streak — the ring above fills up as you go. Miss a day completely and your streak resets to 0.</div>
+</div>
 <div class="revision-lesson" id="revision-lesson-wrap">Lesson 1</div>
 </div>
 <div class="revision-rank">
@@ -2409,6 +2417,17 @@ document.getElementById('next-month-btn').addEventListener('click',()=>{calMonth
 document.getElementById('review-btn').addEventListener('click',toggleReview);
 document.getElementById('modal').addEventListener('click',closeModal);
 document.getElementById('modal-close-btn').addEventListener('click',e=>{e.stopPropagation();closeModal();});
+document.getElementById('streak-info-btn').addEventListener('click', (e) => {
+e.stopPropagation();
+const popup = document.getElementById('streak-info-popup');
+popup.style.display = popup.style.display === 'block' ? 'none' : 'block';
+});
+document.addEventListener('click', (e) => {
+const popup = document.getElementById('streak-info-popup');
+if (popup && popup.style.display === 'block' && e.target.id !== 'streak-info-btn') {
+popup.style.display = 'none';
+}
+});
 </script>
 <style>
 .ex-card { background: var(--grey-light); border-radius: 16px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 16px; cursor: pointer; border: 2px solid transparent; transition: border 0.2s; }
