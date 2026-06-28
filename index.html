@@ -552,17 +552,9 @@ console.log("THE FILE IS LOADING!");
 <div id="guests-root" style="margin-top:8px"></div>
 </div>
 
-<!-- REVISE LESSON -->
-<div id="tab-content-revise" class="content" style="display:none">
-<div class="back-row" id="revise-back-row" onclick="switchTab('milestones')"><span class="back-btn">‹</span><span class="screen-title">Revise Lesson</span></div>
-<div class="revise-tab-row">
-<button class="revise-tab-btn" id="revise-tab-flashcards" onclick="switchReviseSubTab('flashcards')">Flashcards</button>
-<button class="revise-tab-btn" id="revise-tab-exercises" onclick="switchReviseSubTab('exercises')">Exercises</button>
-<button class="revise-tab-btn" id="revise-tab-challenges" onclick="switchReviseSubTab('challenges')">Challenges</button>
-</div>
-
-<!-- FLASHCARDS SUB-TAB -->
-<div id="tab-content-flashcards" style="display:none">
+<!-- FLASHCARDS PAGE -->
+<div id="tab-content-flashcards" class="content" style="display:none">
+<div class="back-row" id="flashcards-back-row" onclick="switchTab('milestones')"><span class="back-btn">‹</span><span class="screen-title">Flashcards</span></div>
 <div class="section-label">Lessons</div>
 <button id="fc-prev-lessons-btn" style="margin-bottom:14px;padding:10px 16px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer">Previous Lessons</button>
 <div class="fc-lesson-picker" id="fc-lesson-picker" style="display:none"></div>
@@ -572,14 +564,15 @@ console.log("THE FILE IS LOADING!");
 <button id="guest-principles-btn" style="display:none;width:100%;margin-top:20px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Continue to Grammar Principles →</button>
 
 </div>
-<!-- EXERCISES SUB-TAB -->
-<div id="tab-content-exercises" style="display:none">
+<!-- EXERCISES PAGE -->
+<div id="tab-content-exercises" class="content" style="display:none">
+<div class="back-row" id="exercises-back-row" onclick="switchTab('milestones')"><span class="back-btn">‹</span><span class="screen-title">Exercises</span></div>
 <div id="ex-root"></div>
 </div>
-<!-- CHALLENGES SUB-TAB -->
-<div id="tab-content-challenges" style="display:none">
+<!-- CHALLENGES PAGE -->
+<div id="tab-content-challenges" class="content" style="display:none">
+<div class="back-row" id="challenges-back-row" onclick="switchTab('milestones')"><span class="back-btn">‹</span><span class="screen-title">Challenges</span></div>
 <div id="challenges-root"></div>
-</div>
 </div>
 <!-- STORY TAB -->
 <!-- STORY TAB -->
@@ -1891,14 +1884,20 @@ currentTab = tab;
 document.getElementById('app-header').style.display = (tab==='home' || !isInstructor) ? 'none' : 'flex';
 document.getElementById('tab-content-home').style.display = tab==='home' ? 'block' : 'none';
 document.getElementById('tab-content-homework').style.display = tab==='homework' ? 'block' : 'none';
-document.getElementById('tab-content-revise').style.display = tab==='revise' ? 'block' : 'none';
+document.getElementById('tab-content-flashcards').style.display = tab==='flashcards' ? 'block' : 'none';
+document.getElementById('tab-content-exercises').style.display = tab==='exercises' ? 'block' : 'none';
+document.getElementById('tab-content-challenges').style.display = tab==='challenges' ? 'block' : 'none';
 document.getElementById('tab-content-story').style.display = tab==='story' ? 'block' : 'none';
 document.getElementById('tab-content-milestones').style.display = tab==='milestones' ? 'block' : 'none';
 document.getElementById('tab-content-guests').style.display = tab==='guests' ? 'block' : 'none';
 document.getElementById('tab-home').classList.toggle('active', tab==='home');
 document.getElementById('tab-homework').classList.toggle('active', tab==='homework');
 document.getElementById('tab-story').classList.toggle('active', tab==='story');
-if (tab==='revise') switchReviseSubTab('flashcards');
+const reviseCode = currentUser || viewingStudent;
+const reviseLessonNum = studentLesson[reviseCode] || 1;
+if (tab==='flashcards') { fcCurrentLesson = studentLesson[activeStudentCode()] || 1; fcShowLessonPicker = false; renderFlashcards(); }
+if (tab==='exercises' && typeof exShowPicker === 'function' && !checkGuestLock('exercises', reviseLessonNum)) { exPickerLesson = null; exShowPicker(); }
+if (tab==='challenges' && typeof exShowChallengesPicker === 'function' && !checkGuestLock('challenges', reviseLessonNum)) { exPickerLesson = null; exShowChallengesPicker(); }
 if (tab==='story') {
 setStoryLesson(studentLesson[activeStudentCode()] || 1);
 const readBtn = document.getElementById('student-reading-done-btn');
@@ -1919,40 +1918,17 @@ pendingMilestoneIntro = false;
 if (tab==='guests') renderGuestsTab();
 }
 
-window.switchReviseSubTab = function(sub) {
-const reviseCode = currentUser || viewingStudent;
-const lessonNum = studentLesson[reviseCode] || 1;
-if (isGuestMode && sub === 'exercises' && !getGrammarFraction(lessonNum)) {
-document.getElementById('tab-content-flashcards').style.display = 'none';
-document.getElementById('tab-content-exercises').style.display = 'block';
-document.getElementById('tab-content-challenges').style.display = 'none';
-document.getElementById('revise-tab-flashcards').classList.remove('active');
-document.getElementById('revise-tab-exercises').classList.add('active');
-document.getElementById('revise-tab-challenges').classList.remove('active');
+function checkGuestLock(tab, lessonNum) {
+if (isGuestMode && tab === 'exercises' && !getGrammarFraction(lessonNum)) {
 document.getElementById('ex-root').innerHTML = '<div class="locked-msg">🔒 Finish the Grammar Principles to unlock exercises.</div>';
-return;
+return true;
 }
-if (isGuestMode && sub === 'challenges' && getExercisesFraction(lessonNum) < 1) {
-document.getElementById('tab-content-flashcards').style.display = 'none';
-document.getElementById('tab-content-exercises').style.display = 'none';
-document.getElementById('tab-content-challenges').style.display = 'block';
-document.getElementById('revise-tab-flashcards').classList.remove('active');
-document.getElementById('revise-tab-exercises').classList.remove('active');
-document.getElementById('revise-tab-challenges').classList.add('active');
+if (isGuestMode && tab === 'challenges' && getExercisesFraction(lessonNum) < 1) {
 document.getElementById('challenges-root').innerHTML = '<div class="locked-msg">🔒 Finish the Exercises to unlock challenges.</div>';
-return;
+return true;
 }
-document.getElementById('tab-content-flashcards').style.display = sub==='flashcards' ? 'block' : 'none';
-document.getElementById('tab-content-exercises').style.display = sub==='exercises' ? 'block' : 'none';
-document.getElementById('tab-content-challenges').style.display = sub==='challenges' ? 'block' : 'none';
-document.getElementById('revise-tab-flashcards').classList.toggle('active', sub==='flashcards');
-document.getElementById('revise-tab-exercises').classList.toggle('active', sub==='exercises');
-document.getElementById('revise-tab-challenges').classList.toggle('active', sub==='challenges');
-if (sub==='flashcards') { fcCurrentLesson = studentLesson[activeStudentCode()] || 1; fcShowLessonPicker = false; renderFlashcards(); }
-if (sub==='exercises' && typeof exShowPicker === 'function') { exPickerLesson = null; exShowPicker(); }
-if (sub==='challenges' && typeof exShowChallengesPicker === 'function') { exPickerLesson = null; exShowChallengesPicker(); }
+return false;
 }
-
 
 // ── SIDEBAR ──
 function buildSidebar() {
