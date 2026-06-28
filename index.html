@@ -1276,11 +1276,9 @@ setStoryLesson(lessonNum);
 
 window.openFlashcardsForLesson = function(lessonNum) {
 if (isGuestMode && !getReadingFraction(lessonNum)) return;
-switchTab('revise');
-switchReviseSubTab('flashcards');
 fcCurrentLesson = lessonNum;
 fcShowLessonPicker = false;
-renderFlashcards();
+switchTab('flashcards');
 };
 
 window.openGrammarForLesson = function(lessonNum) {
@@ -1292,19 +1290,13 @@ document.getElementById('principles-wrap').style.display = 'block';
 
 window.openExercisesForLesson = function(lessonNum) {
 hideGuestCoachmark();
-switchTab('revise');
-switchReviseSubTab('exercises');
-if (isGuestMode && !getGrammarFraction(lessonNum)) return;
 exPickerLesson = lessonNum;
-if (typeof exShowPicker === 'function') exShowPicker();
+switchTab('exercises');
 };
 
 window.openChallengesForLesson = function(lessonNum) {
-switchTab('revise');
-switchReviseSubTab('challenges');
-if (isGuestMode && getExercisesFraction(lessonNum) < 1) return;
 exPickerLesson = lessonNum;
-if (typeof exShowChallengesPicker === 'function') exShowChallengesPicker();
+switchTab('challenges');
 };
 // Shows a small callout box pointing at any element on screen — used for the
 // new-guest step-by-step tour. position:fixed + raw getBoundingClientRect()
@@ -2322,7 +2314,7 @@ btn.innerHTML = `<div class="fc-lesson-top">${miniRing(pct, '🃏')}<div class="
 btn.onclick=()=>{
 fcCurrentLesson=num;
 if (pct === 100) {
-window.showMasteredMilestone('flashcards', num, () => { window.switchTab('revise'); window.switchReviseSubTab('flashcards'); });
+window.showMasteredMilestone('flashcards', num, () => { window.switchTab('flashcards'); });
 } else {
 buildFcQueue(); renderFlashcards();
 }
