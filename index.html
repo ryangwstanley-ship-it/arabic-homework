@@ -301,6 +301,14 @@
 .milestone-mastered-title { font-size: 16px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
 .milestone-mastered-sub { font-size: 13px; color: var(--grey); margin-bottom: 12px; }
 .milestone-review-btn { padding: 10px 22px; background: var(--blue); color: white; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; }
+.sidebar-nav-btn { width: 100%; text-align: left; background: rgba(255,255,255,0.08); color: white; border: none; border-radius: 10px; padding: 10px 14px; font-size: 13px; font-weight: 600; cursor: pointer; margin-bottom: 14px; }
+.sidebar-nav-btn:hover { background: rgba(255,255,255,0.16); }
+.guest-card { background: var(--grey-light); border-radius: var(--card-radius); padding: 16px 18px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+.guest-card-top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 6px; }
+.guest-card-name { font-size: 15px; font-weight: 700; color: var(--ink); }
+.guest-card-code { font-size: 12px; font-weight: 700; letter-spacing: 1px; color: var(--blue); background: var(--blue-light); padding: 3px 8px; border-radius: 6px; flex-shrink: 0; }
+.guest-card-meta { font-size: 12.5px; color: var(--grey); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+.guest-card-rings { display: flex; gap: 18px; }
 
 /* ADD CARD */
 .fc-add-section { background: var(--grey-light); border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; border: 1.5px dashed var(--border); }
@@ -335,8 +343,25 @@ console.log("THE FILE IS LOADING!");
 <div class="login-logo">Yusr Arabic</div>
 <div class="login-title">Arabic Daily</div>
 <div class="login-subtitle">Daily homework tracker</div>
-<button class="guest-btn" id="guest-start-btn">Start Your Journey</button>
-<div class="login-divider">For premium users, enter code</div>
+
+<div class="login-card login-card-small">
+<label>Pick a name</label>
+<input type="text" id="guest-name-input" placeholder="Your name" autocomplete="off" maxlength="30" style="text-transform:none;letter-spacing:normal;font-weight:600">
+<label style="margin-top:12px">Your code (feel free to change it)</label>
+<input type="text" id="guest-code-input" placeholder="Suggested code appears here" autocomplete="off" maxlength="12">
+<div class="login-error" id="guest-new-error">Please enter a name first.</div>
+<button class="guest-btn" id="guest-create-btn" style="margin-top:14px;margin-bottom:0">Start Your Journey</button>
+</div>
+
+<div class="login-divider" style="margin-top:18px">Already have a guest code?</div>
+<div class="login-card login-card-small">
+<label>Your guest code</label>
+<input type="text" id="guest-return-code-input" placeholder="Enter your code" autocomplete="off" maxlength="12">
+<div class="login-error" id="guest-return-error">Code not found. Check and try again.</div>
+<button class="login-btn" id="guest-return-btn">Continue</button>
+</div>
+
+<div class="login-divider" style="margin-top:18px">For premium users, enter code</div>
 <div class="login-card login-card-small">
 <label>Your code</label>
 <input type="text" id="code-input" maxlength="6" placeholder="ABC123" autocomplete="off">
@@ -351,6 +376,7 @@ console.log("THE FILE IS LOADING!");
 <div class="sidebar-logo-icon">YA</div>
 <div class="sidebar-logo-text">Arabic Daily</div>
 </div>
+<button class="sidebar-nav-btn" id="sidebar-guests-btn" onclick="switchTab('guests')">👤 Guests</button>
 <div class="sidebar-label">Students</div>
 <div class="sidebar-students" id="sidebar-students"></div>
 
@@ -480,6 +506,12 @@ console.log("THE FILE IS LOADING!");
 <div class="back-row" onclick="switchTab('home')"><span class="back-btn">‹</span><span class="screen-title">Your Journey</span></div>
 <div class="section-label">Curriculum</div>
 <div id="milestone-root" style="margin-top:8px"></div>
+</div>
+
+<!-- GUESTS TAB (instructor only) -->
+<div id="tab-content-guests" class="content" style="display:none">
+<div class="section-label">Guest students</div>
+<div id="guests-root" style="margin-top:8px"></div>
 </div>
 
 <!-- REVISE LESSON -->
@@ -1135,6 +1167,75 @@ root.parentNode.insertBefore(banner, root);
 document.getElementById('milestone-review-btn').onclick = () => { banner.remove(); reviewCallback(); };
 };
 
+// Reads one guest's saved doc straight from Firestore and computes their
+// streak/status (via the normal allCardActivity[code] cache) plus mastery %
+// for flashcards/exercises/challenges — without touching the global
+// fcProgress/exProgress used by whichever account is currently "active".
+async function getGuestSnapshot(code) {
+const snap = await getDoc(doc(db,'flashcards',code));
+const data = snap.exists() ? snap.data() : {};
+allFcActivity[code] = data.activity || {};
+allCardActivity[code] = data.cardActivity || {};
+studentLesson[code] = data.lesson || 1;
+const lesson = studentLesson[code];
+const fc = data.progress || {};
+const deleted = (data.deleted || {})[lesson] || [];
+const ep = data.exProgress || {};
+const cards = (LESSONS[lesson] && LESSONS[lesson].cards) || [];
+const activeIdxs = cards.map((_,i)=>i).filter(i => !deleted.includes(i));
+const easyCount = activeIdxs.filter(i => (fc[`${lesson}_${i}`]||{}).lastRating === 3).length;
+const flashcardsPct = activeIdxs.length ? Math.round((easyCount/activeIdxs.length)*100) : 0;
+const exModes = Object.keys(EX_LESSON_MAP).filter(m => EX_LESSON_MAP[m] === lesson && m !== 'challenge1' && m !== 'challenge2');
+const masteredModes = exModes.filter(m => {
+const poolLength = exGetQuestionCount(m);
+if (!poolLength) return false;
+const prog = ep[m] || {};
+let easy = 0;
+for (let i = 0; i < poolLength; i++) { if (prog[i] === 3) easy++; }
+return easy === poolLength;
+});
+const exercisesPct = exModes.length ? Math.round((masteredModes.length/exModes.length)*100) : 100;
+const challengeModes = Object.keys(EX_LESSON_MAP).filter(m => EX_LESSON_MAP[m] === lesson && (m === 'challenge1' || m === 'challenge2'));
+const submittedCount = challengeModes.filter(m => !!ep[m]).length;
+const challengesPct = challengeModes.length ? Math.round((submittedCount/challengeModes.length)*100) : 100;
+return { lesson, flashcardsPct, exercisesPct, challengesPct };
+}
+
+// Instructor-only: lists every self-registered guest with their streak,
+// status, and mastery breakdown.
+async function renderGuestsTab() {
+const root = document.getElementById('guests-root');
+root.innerHTML = '<div style="text-align:center;color:var(--grey);padding:20px">Loading guests…</div>';
+let guestDocs = [];
+try {
+const snap = await getDocs(collection(db,'guests'));
+snap.forEach(d => guestDocs.push({ code: d.id, ...d.data() }));
+} catch(e) { console.error('Guests load error', e); }
+if (!guestDocs.length) {
+root.innerHTML = '<div class="no-submission-msg">No guests yet.</div>';
+return;
+}
+guestDocs.sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+const snapshots = await Promise.all(guestDocs.map(g => getGuestSnapshot(g.code)));
+root.innerHTML = guestDocs.map((g, i) => {
+const s = snapshots[i];
+const streak = getStreak(g.code);
+const status = getStudentStatus(g.code);
+return `<div class="guest-card">
+<div class="guest-card-top">
+<div class="guest-card-name">${g.name || 'Guest'}</div>
+<div class="guest-card-code">${g.code}</div>
+</div>
+<div class="guest-card-meta">Lesson ${s.lesson} · 🔥 ${streak} day streak · <span class="status-dot ${status}"></span></div>
+<div class="guest-card-rings">
+${miniRing(s.flashcardsPct, '🃏')}
+${miniRing(s.exercisesPct, '✏️')}
+${miniRing(s.challengesPct, '🏆')}
+</div>
+</div>`;
+}).join('');
+}
+
 function isMidnightPast(dateStr) {
 const [y,m,d] = dateStr.split('-').map(Number);
 return new Date() > new Date(y, m-1, d+1, 0, 0, 0);
@@ -1285,7 +1386,6 @@ studentLesson[code] = data.lesson || 1;
 if (!studentLesson[code]) studentLesson[code] = 1;
 }
 async function saveFlashcardData(code) {
-if (isGuestMode) return;
 try {
 const customCards = {};
 Object.entries(LESSONS).forEach(([num, lesson]) => {
@@ -1401,7 +1501,7 @@ render();
 if (typeof exShowPicker === 'function') exShowPicker();
 };
 
-async function saveDay(code, dateStr, data) { if (isGuestMode) return; await setDoc(doc(db,'submissions',code,'days',dateStr), data); }
+async function saveDay(code, dateStr, data) { await setDoc(doc(db,'submissions',code,'days',dateStr), data); }
 
 // ── LOGIN ──
 async function handleLogin() {
@@ -1425,18 +1525,78 @@ startApp();
 err.style.display='block'; btn.textContent='Enter'; btn.disabled=false;
 }
 }
-
 // ── GUEST ──
-window.startGuestJourney = function() {
+let guestName = '';
+let guestCodeEdited = false;
+
+function suggestGuestCode(name) {
+const clean = (name || '').toUpperCase().replace(/[^A-Z]/g, '');
+const base = clean.slice(0, 4) || 'GUEST';
+const suffix = Math.floor(100 + Math.random() * 900);
+return base + suffix;
+}
+
+async function isGuestCodeTaken(code) {
+if (STUDENTS[code] || code === INSTRUCTOR_CODE) return true;
+try {
+const snap = await getDoc(doc(db,'guests',code));
+return snap.exists();
+} catch(e) { return false; }
+}
+
+function enterAsGuest(code) {
 isGuestMode = true;
 guestActiveWordCount = 5;
-currentUser = 'GUEST';
+currentUser = code;
 isInstructor = false;
 document.getElementById('home-btn-upload').style.display = 'none';
 document.getElementById('story-back-row').style.display = 'none';
 document.getElementById('revise-back-row').style.display = 'none';
 document.getElementById('principles-wrap').style.display = 'none';
 document.getElementById('guest-flashcards-btn').style.display = 'block';
+}
+
+window.startGuestJourney = async function() {
+const nameInput = document.getElementById('guest-name-input');
+const codeInput = document.getElementById('guest-code-input');
+const errEl = document.getElementById('guest-new-error');
+const name = nameInput.value.trim();
+if (!name) { errEl.textContent = 'Please enter a name first.'; errEl.style.display = 'block'; return; }
+const btn = document.getElementById('guest-create-btn');
+btn.textContent = 'Starting…'; btn.disabled = true;
+let code = (codeInput.value.trim() || suggestGuestCode(name)).toUpperCase().replace(/[^A-Z0-9]/g, '') || suggestGuestCode(name);
+let attempts = 0;
+while (await isGuestCodeTaken(code) && attempts < 5) { code = suggestGuestCode(name); attempts++; }
+codeInput.value = code;
+errEl.style.display = 'none';
+try { await setDoc(doc(db,'guests',code), { name, code, createdAt: Date.now() }); } catch(e) { console.error('Guest create error', e); }
+guestName = name;
+enterAsGuest(code);
+await loadFlashcardProgress(code);
+startApp();
+};
+
+window.continueAsGuest = async function() {
+const codeInput = document.getElementById('guest-return-code-input');
+const errEl = document.getElementById('guest-return-error');
+const code = codeInput.value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+const btn = document.getElementById('guest-return-btn');
+if (!code) return;
+btn.textContent = 'Checking…'; btn.disabled = true;
+let data = null;
+try {
+const snap = await getDoc(doc(db,'guests',code));
+if (snap.exists()) data = snap.data();
+} catch(e) { console.error('Guest lookup error', e); }
+if (!data) {
+errEl.style.display = 'block';
+btn.textContent = 'Continue'; btn.disabled = false;
+return;
+}
+errEl.style.display = 'none';
+guestName = data.name || '';
+enterAsGuest(code);
+await loadFlashcardProgress(code);
 startApp();
 };
 
@@ -1456,7 +1616,7 @@ buildSidebar(); updateHeaderForInstructor();
 } else {
 app.style.display='block'; app.style.maxWidth='480px'; app.style.margin='0 auto';
 document.getElementById('header-title').textContent='My Homework';
-document.getElementById('header-sub').textContent=STUDENTS[currentUser]?.display||'';
+document.getElementById('header-sub').textContent = isGuestMode ? guestName : (STUDENTS[currentUser]?.display||'');
 switchTab(isGuestMode ? 'story' : 'home');
 }
 render();
@@ -1472,12 +1632,14 @@ document.getElementById('tab-content-homework').style.display = tab==='homework'
 document.getElementById('tab-content-revise').style.display = tab==='revise' ? 'block' : 'none';
 document.getElementById('tab-content-story').style.display = tab==='story' ? 'block' : 'none';
 document.getElementById('tab-content-milestones').style.display = tab==='milestones' ? 'block' : 'none';
+document.getElementById('tab-content-guests').style.display = tab==='guests' ? 'block' : 'none';
 document.getElementById('tab-home').classList.toggle('active', tab==='home');
 document.getElementById('tab-homework').classList.toggle('active', tab==='homework');
 document.getElementById('tab-story').classList.toggle('active', tab==='story');
 if (tab==='revise') switchReviseSubTab('flashcards');
 if (tab==='story') setStoryLesson(studentLesson[activeStudentCode()] || 1);
 if (tab==='milestones') renderMilestones();
+if (tab==='guests') renderGuestsTab();
 }
 
 window.switchReviseSubTab = function(sub) {
@@ -2148,8 +2310,12 @@ document.getElementById('home-btn-revise').addEventListener('click', () => switc
 document.getElementById('home-btn-upload').addEventListener('click', () => switchTab('homework'));
 document.getElementById('home-btn-milestones').addEventListener('click', () => switchTab('milestones'));
 document.getElementById('login-btn').addEventListener('click',handleLogin);
-document.getElementById('guest-start-btn').addEventListener('click', startGuestJourney);
-document.getElementById('guest-start-btn').addEventListener('click', startGuestJourney);
+document.getElementById('guest-create-btn').addEventListener('click', () => window.startGuestJourney());
+document.getElementById('guest-return-btn').addEventListener('click', () => window.continueAsGuest());
+document.getElementById('guest-name-input').addEventListener('input', () => {
+if (!guestCodeEdited) document.getElementById('guest-code-input').value = suggestGuestCode(document.getElementById('guest-name-input').value);
+});
+document.getElementById('guest-code-input').addEventListener('input', () => { guestCodeEdited = true; });
 document.getElementById('guest-flashcards-btn').addEventListener('click', () => switchTab('revise'));
 document.getElementById('guest-flashcards-btn').addEventListener('click', () => switchTab('revise'));
 document.getElementById('guest-principles-btn').addEventListener('click', () => {
