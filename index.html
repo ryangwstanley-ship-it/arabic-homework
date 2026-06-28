@@ -227,7 +227,17 @@
 /* ── FLASHCARDS ── */
 .fc-lesson-picker { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
 .fc-lesson-btn { padding: 12px 14px; border-radius: 16px; border: 2px solid var(--border); background: var(--grey-light); cursor: pointer; color: var(--grey); transition: all 0.2s; text-align: center; min-width: 90px; }
+.fc-lesson-btn.state-complete { background: #edf5ec; border-color: #aecbab; }
+.fc-lesson-btn.state-untouched { background: #f2f0ec; border-color: var(--border); }
+.fc-lesson-btn.state-progress { background: #f9f0e3; border-color: #dcb37e; }
 .fc-lesson-btn.active { background: var(--blue-light); border-color: var(--blue); color: var(--ink); }
+.fc-lesson-top { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.fc-lesson-info { display: flex; flex-direction: column; gap: 3px; text-align: left; }
+.fc-lesson-badge { font-size: 10.5px; font-weight: 700; letter-spacing: 0.3px; padding: 2px 8px; border-radius: 6px; display: inline-block; white-space: nowrap; }
+.fc-lesson-count { font-size: 11px; color: var(--grey); }
+.state-complete .fc-lesson-badge { background: #d7e8d4; color: #4f7a4d; }
+.state-untouched .fc-lesson-badge { background: #e3e0d8; color: #8a8276; }
+.state-progress .fc-lesson-badge { background: #f0dcb8; color: #9c6a28; }
 .fc-lesson-note { font-size: 11px; color: var(--grey); margin-top: 2px; }
 
 .fc-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
@@ -2076,9 +2086,12 @@ if (lessonNum === 0) return; // Skip the unused "Advanced students" placeholder 
 if (lessonNum > maxLesson) return; // Skip lessons beyond student's level
 const pct = getLessonMasteryPercent(num);
 const counts = getLessonMasteryCounts(num);
+const completed = counts.total - counts.remaining;
+const state = pct === 100 ? 'state-complete' : pct === 0 ? 'state-untouched' : 'state-progress';
+const badge = pct === 100 ? 'COMPLETED 100%' : `PROGRESS: ${pct}%`;
 const btn = document.createElement('button');
-btn.className='fc-lesson-btn'+(num==fcCurrentLesson?' active':'');
-btn.innerHTML = miniRing(pct, '🃏', true) + `<div class="fc-lesson-name">${lesson.name}</div><div class="fc-lesson-note">${counts.remaining} of ${counts.total} remaining</div>`;
+btn.className='fc-lesson-btn '+state+(num==fcCurrentLesson?' active':'');
+btn.innerHTML = `<div class="fc-lesson-top">${miniRing(pct, '🃏')}<div class="fc-lesson-info"><div class="fc-lesson-badge">${badge}</div><div class="fc-lesson-count">Completed ${completed} of ${counts.total}</div></div></div><div class="fc-lesson-name">${lesson.name}</div>`;
 btn.onclick=()=>{
 fcCurrentLesson=num;
 if (pct === 100) {
@@ -2392,11 +2405,21 @@ document.getElementById('modal-close-btn').addEventListener('click',e=>{e.stopPr
 </script>
 <style>
 .ex-card { background: var(--grey-light); border-radius: 16px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 16px; cursor: pointer; border: 2px solid transparent; transition: border 0.2s; }
+.ex-card.state-complete { background: #edf5ec; border-color: #aecbab; }
+.ex-card.state-untouched { background: #f2f0ec; border-color: var(--border); }
+.ex-card.state-progress { background: #f9f0e3; border-color: #dcb37e; }
 .ex-card:hover { border-color: #2563eb; }
 .ex-card-icon { font-size: 28px; margin-bottom: 8px; }
 .ex-card-title { font-size: 16px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
 .ex-card-desc { font-size: 13px; color: var(--grey); }
 .ex-card-note { margin-top: 10px; font-size: 12px; color: var(--grey); font-weight: 600; }
+.ex-card-top { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.ex-card-info { display: flex; flex-direction: column; gap: 3px; text-align: left; }
+.ex-card-badge { font-size: 11px; font-weight: 700; letter-spacing: 0.3px; padding: 2px 8px; border-radius: 6px; display: inline-block; white-space: nowrap; }
+.ex-card-count { font-size: 12px; color: var(--grey); }
+.state-complete .ex-card-badge { background: #d7e8d4; color: #4f7a4d; }
+.state-untouched .ex-card-badge { background: #e3e0d8; color: #8a8276; }
+.state-progress .ex-card-badge { background: #f0dcb8; color: #9c6a28; }
 .ex-word-tile { padding: 10px 16px; background: #eff6ff; border: 2px solid #bfdbfe; border-radius: 10px; font-size: 1.1em; cursor: pointer; direction: rtl; font-family: inherit; transition: background 0.15s; }
 .ex-word-tile:hover { background: #dbeafe; }
 .ex-word-tile.selected { background: #2563eb; color: white; border-color: #2563eb; }
@@ -2565,11 +2588,19 @@ return `<div class="ex-card" id="btn-${c.mode}">
 const pct = window.getExerciseMasteryPercent(c.mode, exGetQuestionCount(c.mode));
 const total = exGetQuestionCount(c.mode);
 const remaining = window.getExerciseRemainingCount(c.mode, total);
-return `<div class="ex-card" id="btn-${c.mode}">
+const completed = total - remaining;
+const state = pct === 100 ? 'state-complete' : pct === 0 ? 'state-untouched' : 'state-progress';
+const badge = pct === 100 ? 'COMPLETED 100%' : `PROGRESS: ${pct}%`;
+return `<div class="ex-card ${state}" id="btn-${c.mode}">
+<div class="ex-card-top">
 ${window.miniRing(pct, c.icon)}
+<div class="ex-card-info">
+<div class="ex-card-badge">${badge}</div>
+<div class="ex-card-count">Completed ${completed} of ${total}</div>
+</div>
+</div>
 <div class="ex-card-title">${c.title}</div>
 <div class="ex-card-desc">${c.desc}</div>
-<div class="ex-card-note">${remaining} of ${total} remaining</div>
 </div>`;
 }).join('');
 
