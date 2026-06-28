@@ -228,6 +228,7 @@
 .fc-lesson-picker { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
 .fc-lesson-btn { padding: 12px 14px; border-radius: 16px; border: 2px solid var(--border); background: var(--grey-light); cursor: pointer; color: var(--grey); transition: all 0.2s; text-align: center; min-width: 90px; }
 .fc-lesson-btn.active { background: var(--blue-light); border-color: var(--blue); color: var(--ink); }
+.fc-lesson-note { font-size: 11px; color: var(--grey); margin-top: 2px; }
 
 .fc-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
 .fc-stat { background: var(--grey-light); border-radius: 12px; padding: 14px; text-align: center; }
@@ -924,6 +925,14 @@ const easyCount = activeIdxs.filter(i => getCardProgress(lessonNum,i).lastRating
 return Math.round((easyCount/activeIdxs.length)*100);
 }
 
+function getLessonMasteryCounts(lessonNum) {
+const lesson = LESSONS[lessonNum];
+if (!lesson) return { total: 0, remaining: 0 };
+const activeIdxs = lesson.cards.map((_,i)=>i).filter(i=>!isCardDeleted(lessonNum,i));
+const easyCount = activeIdxs.filter(i => getCardProgress(lessonNum,i).lastRating === 3).length;
+return { total: activeIdxs.length, remaining: activeIdxs.length - easyCount };
+}
+  
 // ── MILESTONE PATH (desert journey) ──
 // Fraction (0–1) of the "exercises" torch lit for a lesson: share of that
 // lesson's exercise modes (everything except the two challenges) that have
@@ -1434,12 +1443,11 @@ incrementCardActivity(code);
 await saveFlashcardData(code);
 };
 
-window.getExerciseMasteryPercent = function(mode, poolLength) {
+window.getExerciseRemainingCount = function(mode, poolLength) {
 const prog = exProgress[mode] || {};
-if (!poolLength) return 0;
 let easyCount = 0;
 for (let i = 0; i < poolLength; i++) { if (prog[i] === 3) easyCount++; }
-return Math.round((easyCount / poolLength) * 100);
+return poolLength - easyCount;
 };
 
 window.hasSubmittedChallenge = function(mode) {
@@ -2053,9 +2061,10 @@ const lessonNum = parseInt(num);
 if (lessonNum === 0) return; // Skip the unused "Advanced students" placeholder lesson
 if (lessonNum > maxLesson) return; // Skip lessons beyond student's level
 const pct = getLessonMasteryPercent(num);
+const counts = getLessonMasteryCounts(num);
 const btn = document.createElement('button');
 btn.className='fc-lesson-btn'+(num==fcCurrentLesson?' active':'');
-btn.innerHTML = miniRing(pct, '🃏', true) + `<div class="fc-lesson-name">${lesson.name}</div>`;
+btn.innerHTML = miniRing(pct, '🃏', true) + `<div class="fc-lesson-name">${lesson.name}</div><div class="fc-lesson-note">${counts.remaining} of ${counts.total} remaining</div>`;
 btn.onclick=()=>{
 fcCurrentLesson=num;
 if (pct === 100) {
@@ -2373,7 +2382,7 @@ document.getElementById('modal-close-btn').addEventListener('click',e=>{e.stopPr
 .ex-card-icon { font-size: 28px; margin-bottom: 8px; }
 .ex-card-title { font-size: 16px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
 .ex-card-desc { font-size: 13px; color: var(--grey); }
-.ex-card-note { margin-top: 10px; font-size: 12px; color: #2563eb; font-weight: 600; }
+.ex-card-note { margin-top: 10px; font-size: 12px; color: var(--grey); font-weight: 600; }
 .ex-word-tile { padding: 10px 16px; background: #eff6ff; border: 2px solid #bfdbfe; border-radius: 10px; font-size: 1.1em; cursor: pointer; direction: rtl; font-family: inherit; transition: background 0.15s; }
 .ex-word-tile:hover { background: #dbeafe; }
 .ex-word-tile.selected { background: #2563eb; color: white; border-color: #2563eb; }
@@ -2540,11 +2549,13 @@ return `<div class="ex-card" id="btn-${c.mode}">
 </div>`;
 }
 const pct = window.getExerciseMasteryPercent(c.mode, exGetQuestionCount(c.mode));
+const total = exGetQuestionCount(c.mode);
+const remaining = window.getExerciseRemainingCount(c.mode, total);
 return `<div class="ex-card" id="btn-${c.mode}">
 ${window.miniRing(pct, c.icon)}
 <div class="ex-card-title">${c.title}</div>
 <div class="ex-card-desc">${c.desc}</div>
-<div class="ex-card-note">${pct}% mastered</div>
+<div class="ex-card-note">${remaining} of ${total} remaining</div>
 </div>`;
 }).join('');
 
