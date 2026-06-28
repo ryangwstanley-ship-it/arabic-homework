@@ -894,7 +894,32 @@ challenges: isLessonChallengesReady(lessonNum)
 };
 }
 
-// Draws the small robed silhouette at a given position and size
+const MS_ROW_H = 510;
+function msTentX(n) { return n % 2 === 1 ? 540 : 150; }
+function msTentY(n) { return (n - 1) * MS_ROW_H + 120; }
+function msMirror(x, flip) { return flip ? 690 - x : x; }
+function msLerp(a, b, t) { return { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t }; }
+function msSplitQuad(p0, c, p2, t) {
+const q1 = msLerp(p0, c, t), r1 = msLerp(c, p2, t);
+return { firstC: q1, secondC: r1, point: msLerp(q1, r1, t) };
+}
+function msSegments(n) {
+const flip = n % 2 === 0;
+const Y = (n - 1) * MS_ROW_H;
+const mx = x => msMirror(x, flip);
+const pts = [
+{ x: mx(540), y: Y + 120 }, { x: mx(460), y: Y + 210 },
+{ x: mx(340), y: Y + 330 }, { x: mx(220), y: Y + 480 },
+{ x: mx(150), y: Y + 630 }
+];
+const ctrls = [
+{ x: mx(500), y: Y + 165 }, { x: mx(400), y: Y + 270 },
+{ x: mx(270), y: Y + 380 }, { x: mx(190), y: Y + 560 }
+];
+return [0,1,2,3].map(i => ({ p0: pts[i], c: ctrls[i], p2: pts[i+1] }));
+}
+function msQ(p0, c, p2) { return `M${p0.x},${p0.y} Q${c.x},${c.y} ${p2.x},${p2.y}`; }
+
 function desertFigureSvg(x, y, scale) {
 return `<g transform="translate(${x},${y}) scale(${scale})">
 <path d="M40,28 Q14,55 9,124 L40,130 L71,132 Q66,55 40,28 Z" fill="#170A0C"/>
@@ -905,124 +930,132 @@ return `<g transform="translate(${x},${y}) scale(${scale})">
 </g>`;
 }
 
-// How far along the path the figure stands, based on how many torches are lit
-function getFigureXForProgress(numLit) {
-return numLit <= 0 ? 150 : numLit === 1 ? 275 : numLit === 2 ? 400 : 530;
+function desertTentSvg(x, y, open) {
+if (open) {
+return `<ellipse cx="${x}" cy="${y+6}" rx="42" ry="10" fill="#2A1018" fill-opacity="0.6"/>
+<circle cx="${x}" cy="${y-25}" r="55" fill="#F2934A" fill-opacity="0.22"/>
+<g transform="translate(${x},${y}) scale(0.6)">
+<path d="M-30,0 Q-30,-70 0,-88 Q30,-70 30,0 Z" fill="#1A0B10" stroke="#0D0507" stroke-width="1.5"/>
+<path d="M0,-88 Q30,-70 30,0" fill="none" stroke="#E8794A" stroke-width="2" stroke-opacity="0.7"/>
+<polygon points="-12,0 12,0 0,-50" fill="#F4C14E" fill-opacity="0.85"/>
+<line x1="0" y1="-88" x2="0" y2="-104" stroke="#1A0B10" stroke-width="2"/>
+<polygon points="0,-104 18,-98 0,-92" fill="#8B2035"/>
+</g>`;
+}
+return `<ellipse cx="${x}" cy="${y+6}" rx="42" ry="10" fill="#2A1018" fill-opacity="0.6"/>
+<g transform="translate(${x},${y}) scale(0.6)">
+<path d="M-30,0 Q-30,-70 0,-88 Q30,-70 30,0 Z" fill="#1A0B10" stroke="#0D0507" stroke-width="1.5"/>
+<line x1="0" y1="-88" x2="0" y2="0" stroke="#0D0507" stroke-width="1.5"/>
+<circle cx="0" cy="-24" r="6" fill="#0D0507" stroke="#000000" stroke-width="1"/>
+<line x1="-7" y1="-30" x2="7" y2="-18" stroke="#000000" stroke-width="1.5"/>
+<line x1="7" y1="-30" x2="-7" y2="-18" stroke="#000000" stroke-width="1.5"/>
+<line x1="0" y1="-88" x2="0" y2="-102" stroke="#1A0B10" stroke-width="2"/>
+<polygon points="0,-102 0,-92 10,-97" fill="#3A1A20"/>
+</g>`;
 }
 
-// One full scene: two tents and the three torches between them
-function renderDesertSegment(lessonA, lessonB, tentAOpen, tentBOpen, torches, figureX) {
-const torchDefs = [
-{ x: 210, lit: torches.flashcards, label: 'Flashcards' },
-{ x: 340, lit: torches.exercises, label: 'Exercises' },
-{ x: 470, lit: torches.challenges, label: 'Challenges' }
-];
-const torchSvg = torchDefs.map(t => t.lit ? `
-<line x1="${t.x}" y1="200" x2="${t.x}" y2="165" stroke="#1A0B10" stroke-width="3" stroke-linecap="round"/>
-<circle cx="${t.x}" cy="158" r="22" fill="#F2934A" fill-opacity="0.22"/>
-<path d="M${t.x-7},162 Q${t.x},138 ${t.x+7},162 Q${t.x},172 ${t.x-7},162 Z" fill="#F4C14E" stroke="#E07A2E" stroke-width="1"/>
-<path d="M${t.x-3},160 Q${t.x},146 ${t.x+3},160 Q${t.x},166 ${t.x-3},160 Z" fill="#FCE2A0"/>
-<text x="${t.x}" y="214" font-size="11" fill="#E8DFC8" text-anchor="middle">${t.label}</text>` : `
-<line x1="${t.x}" y1="200" x2="${t.x}" y2="165" stroke="#1A0B10" stroke-width="3" stroke-linecap="round"/>
-<path d="M${t.x-7},162 Q${t.x},138 ${t.x+7},162 Q${t.x},172 ${t.x-7},162 Z" fill="#1A0B10" stroke="#0D0507" stroke-width="1"/>
-<text x="${t.x}" y="214" font-size="11" fill="#E8DFC8" text-anchor="middle">${t.label}</text>`
-).join('');
+function desertTorchSvg(x, y, lit) {
+if (lit) {
+return `<circle cx="${x}" cy="${y}" r="45" fill="#F2934A" fill-opacity="0.13"/>
+<circle cx="${x}" cy="${y}" r="18" fill="#F2934A" fill-opacity="0.22"/>
+<path d="M${x-7},${y+4} Q${x},${y-20} ${x+7},${y+4} Q${x},${y+14} ${x-7},${y+4} Z" fill="#F4C14E" stroke="#E07A2E" stroke-width="1"/>
+<path d="M${x-3},${y+2} Q${x},${y-12} ${x+3},${y+2} Q${x},${y+8} ${x-3},${y+2} Z" fill="#FCE2A0"/>`;
+}
+return `<path d="M${x-7},${y+4} Q${x},${y-20} ${x+7},${y+4} Q${x},${y+14} ${x-7},${y+4} Z" fill="#1A0B10" stroke="#0D0507" stroke-width="1"/>`;
+}
 
-const tentASvg = tentAOpen ? `
-<path d="M50,200 Q50,130 80,112 Q110,130 110,200 Z" fill="#1A0B10" stroke="#0D0507" stroke-width="1.5"/>
-<path d="M80,112 Q110,130 110,200" fill="none" stroke="#E8794A" stroke-width="2" stroke-opacity="0.7"/>
-<polygon points="68,200 92,200 80,150" fill="#F4C14E" fill-opacity="0.85"/>
-<line x1="80" y1="112" x2="80" y2="96" stroke="#1A0B10" stroke-width="2"/>
-<polygon points="80,96 98,102 80,108" fill="#8B2035"/>` : `
-<path d="M50,200 Q50,130 80,112 Q110,130 110,200 Z" fill="#1A0B10" stroke="#0D0507" stroke-width="1.5"/>
-<line x1="80" y1="112" x2="80" y2="200" stroke="#0D0507" stroke-width="1.5"/>
-<circle cx="80" cy="176" r="6" fill="#0D0507" stroke="#000000" stroke-width="1"/>
-<line x1="73" y1="170" x2="87" y2="182" stroke="#000000" stroke-width="1.5"/>
-<line x1="87" y1="170" x2="73" y2="182" stroke="#000000" stroke-width="1.5"/>
-<line x1="80" y1="112" x2="80" y2="98" stroke="#1A0B10" stroke-width="2"/>
-<polygon points="80,98 80,108 90,103" fill="#3A1A20"/>`;
+function msRippleBands(totalHeight) {
+let s = '', i = 0;
+for (let y = 150; y < totalHeight; y += 150) {
+const amp = (i % 2 === 0) ? 20 : -20;
+s += `<path d="M0,${y} Q${200+amp},${y-20} 400,${y+5} T680,${y-5}" fill="none" stroke="#1A0B10" stroke-width="1.5" stroke-opacity="0.35"/>`;
+i++;
+}
+return s;
+}
 
-const tentBSvg = tentBOpen ? `
-<path d="M570,200 Q570,130 600,112 Q630,130 630,200 Z" fill="#1A0B10" stroke="#0D0507" stroke-width="1.5"/>
-<path d="M600,112 Q630,130 630,200" fill="none" stroke="#E8794A" stroke-width="2" stroke-opacity="0.7"/>
-<polygon points="588,200 612,200 600,150" fill="#F4C14E" fill-opacity="0.85"/>
-<line x1="600" y1="112" x2="600" y2="96" stroke="#1A0B10" stroke-width="2"/>
-<polygon points="600,96 618,102 600,108" fill="#8B2035"/>` : `
-<path d="M570,200 Q570,130 600,112 Q630,130 630,200 Z" fill="#1A0B10" stroke="#0D0507" stroke-width="1.5"/>
-<line x1="600" y1="112" x2="600" y2="200" stroke="#0D0507" stroke-width="1.5"/>
-<circle cx="600" cy="176" r="6" fill="#0D0507" stroke="#000000" stroke-width="1"/>
-<line x1="593" y1="170" x2="607" y2="182" stroke="#000000" stroke-width="1.5"/>
-<line x1="607" y1="170" x2="593" y2="182" stroke="#000000" stroke-width="1.5"/>
-<line x1="600" y1="112" x2="600" y2="98" stroke="#1A0B10" stroke-width="2"/>
-<polygon points="600,98 600,108 610,103" fill="#3A1A20"/>`;
+function renderMilestoneSegmentFragment(n, currentLevel) {
+const isPast = n < currentLevel;
+const isActive = n === currentLevel;
+const torches = isPast ? {flashcards:true, exercises:true, challenges:true} : getTorchStates(n);
+const numLit = [torches.flashcards, torches.exercises, torches.challenges].filter(Boolean).length;
+const segs = msSegments(n);
 
-const figureSvg = figureX ? desertFigureSvg(figureX - 24, 127, 0.55) : '';
+let litSegCount = 0, partialIdx = null;
+if (isPast) litSegCount = 4;
+else if (isActive) {
+if (numLit >= 3) litSegCount = 3;
+else { litSegCount = numLit; partialIdx = numLit; }
+}
 
-return `<svg width="100%" viewBox="0 0 680 240" role="img" style="display:block">
-<defs>
-<linearGradient id="sunsetSky-${lessonA}" x1="0" y1="0" x2="0" y2="1">
-<stop offset="0" stop-color="#3B0F1D"/>
-<stop offset="1" stop-color="#C9522E"/>
-</linearGradient>
-</defs>
-<rect x="0" y="0" width="680" height="240" fill="url(#sunsetSky-${lessonA})"/>
-<circle cx="600" cy="175" r="70" fill="#F2934A" fill-opacity="0.22"/>
-<circle cx="600" cy="175" r="46" fill="#F4B860"/>
-<path d="M0,182 Q170,155 340,178 T680,168 L680,240 L0,240 Z" fill="#2A1018"/>
-<path d="M0,202 Q200,182 400,200 T680,192 L680,240 L0,240 Z" fill="#160A0E"/>
-<path d="M112,158 Q250,135 384,158 T568,158" fill="none" stroke="#C9744A" stroke-width="2" stroke-dasharray="3 7" stroke-linecap="round"/>
-${tentASvg}
-<text x="80" y="222" font-size="12" fill="#E8DFC8" text-anchor="middle" style="font-weight:500">Lesson ${lessonA}</text>
-${tentBSvg}
-<text x="600" y="222" font-size="12" fill="#C9A8A0" text-anchor="middle" style="font-weight:500">Lesson ${lessonB}</text>
+let figurePoint = null;
+if (isActive) {
+figurePoint = numLit >= 3 ? segs[2].p2 : msSplitQuad(segs[numLit].p0, segs[numLit].c, segs[numLit].p2, 0.5).point;
+}
+
+let pathSvg = '';
+segs.forEach((seg, i) => {
+if (i < litSegCount) {
+pathSvg += `<path d="${msQ(seg.p0, seg.c, seg.p2)}" fill="none" stroke="#F2934A" stroke-width="14" stroke-opacity="0.25" stroke-linecap="round"/><path d="${msQ(seg.p0, seg.c, seg.p2)}" fill="none" stroke="#F4C14E" stroke-width="4" stroke-opacity="0.9" stroke-linecap="round"/>`;
+} else if (i === partialIdx) {
+const split = msSplitQuad(seg.p0, seg.c, seg.p2, 0.5);
+pathSvg += `<path d="${msQ(seg.p0, split.firstC, split.point)}" fill="none" stroke="#F2934A" stroke-width="14" stroke-opacity="0.25" stroke-linecap="round"/><path d="${msQ(seg.p0, split.firstC, split.point)}" fill="none" stroke="#F4C14E" stroke-width="4" stroke-opacity="0.9" stroke-linecap="round"/>`;
+pathSvg += `<path d="${msQ(split.point, split.secondC, seg.p2)}" fill="none" stroke="#6B4A3E" stroke-width="3" stroke-dasharray="3 8" stroke-opacity="0.5"/>`;
+} else {
+pathSvg += `<path d="${msQ(seg.p0, seg.c, seg.p2)}" fill="none" stroke="#6B4A3E" stroke-width="3" stroke-dasharray="3 8" stroke-opacity="0.5"/>`;
+}
+});
+
+const labels = ['Flashcards','Exercises','Challenges'];
+const torchPts = [segs[0].p2, segs[1].p2, segs[2].p2];
+const litStates = [torches.flashcards, torches.exercises, torches.challenges];
+const onRight = msTentX(n) === 540;
+let torchSvg = '';
+torchPts.forEach((p, i) => {
+torchSvg += desertTorchSvg(p.x, p.y, litStates[i]);
+const labelX = p.x + (onRight ? 32 : -32);
+torchSvg += `<text x="${labelX}" y="${p.y+4}" font-size="11" fill="#E8DFC8" text-anchor="${onRight ? 'start' : 'end'}">${labels[i]}</text>`;
+});
+
+const figureSvg = figurePoint ? `<circle cx="${figurePoint.x}" cy="${figurePoint.y-20}" r="35" fill="#F2934A" fill-opacity="0.12"/>${desertFigureSvg(figurePoint.x-20, figurePoint.y-59, 0.45)}` : '';
+
+const endOpen = (n+1) <= currentLevel;
+return `${pathSvg}
 ${torchSvg}
 ${figureSvg}
-</svg>`;
+${desertTentSvg(segs[3].p2.x, segs[3].p2.y, endOpen)}
+<text x="${segs[3].p2.x}" y="${segs[3].p2.y+28}" font-size="12" fill="${endOpen ? '#E8DFC8' : '#C9A8A0'}" text-anchor="middle" style="font-weight:500">Lesson ${n+1}</text>`;
 }
 
-// Works out tent/torch/figure state for a lesson pair from real progress data
-function renderMilestoneSegment(lessonA, lessonB, currentLevel) {
-const tentAOpen = lessonA <= currentLevel;
-const tentBOpen = lessonB <= currentLevel;
-const torches = getTorchStates(lessonA);
-const isActiveSegment = lessonA === currentLevel;
-let figureX = null;
-if (isActiveSegment) {
-const numLit = [torches.flashcards, torches.exercises, torches.challenges].filter(Boolean).length;
-figureX = getFigureXForProgress(numLit);
-}
-return renderDesertSegment(lessonA, lessonB, tentAOpen, tentBOpen, torches, figureX);
+function renderJourneyContinuesFragment(lastLesson, open) {
+const tx = msTentX(lastLesson), ty = msTentY(lastLesson);
+const sign = tx === 540 ? -1 : 1;
+let dots = '';
+const offsets = [70,130,195,265,340];
+offsets.forEach((d,i) => {
+const dx = tx + sign*d, dy = ty + 110 + i*30;
+const r = Math.max(4 - i*0.6, 0.5), op = Math.max(0.8 - i*0.15, 0.05);
+dots += `<circle cx="${dx}" cy="${dy}" r="${r}" fill="#C9744A" fill-opacity="${op}"/>`;
+});
+const labelX = tx + sign*340, labelY = ty + 110 + 4*30 + 20;
+return `${dots}<text x="${labelX}" y="${labelY}" font-size="12" fill="#C9A8A0" text-anchor="middle">More of the journey awaits</text>`;
 }
 
-// The closing scene once a student reaches the last lesson that's been built
-function renderJourneyContinues(lastBuiltLesson, open) {
-const tentSvg = open ? `
-<path d="M50,166 Q50,110 80,94 Q110,110 110,166 Z" fill="#1A0B10" stroke="#0D0507" stroke-width="1.5"/>
-<path d="M80,94 Q110,110 110,166" fill="none" stroke="#E8794A" stroke-width="2" stroke-opacity="0.7"/>
-<polygon points="68,166 92,166 80,124" fill="#F4C14E" fill-opacity="0.85"/>` : `
-<path d="M50,166 Q50,110 80,94 Q110,110 110,166 Z" fill="#1A0B10" stroke="#0D0507" stroke-width="1.5"/>
-<line x1="80" y1="94" x2="80" y2="166" stroke="#0D0507" stroke-width="1.5"/>
-<circle cx="80" cy="149" r="5" fill="#0D0507" stroke="#000000" stroke-width="1"/>
-<line x1="74" y1="144" x2="86" y2="154" stroke="#000000" stroke-width="1.5"/>
-<line x1="86" y1="144" x2="74" y2="154" stroke="#000000" stroke-width="1.5"/>`;
-return `<svg width="100%" viewBox="0 0 680 200" role="img" style="display:block">
-<defs>
-<linearGradient id="sunsetSky-continues" x1="0" y1="0" x2="0" y2="1">
-<stop offset="0" stop-color="#3B0F1D"/>
-<stop offset="1" stop-color="#C9522E"/>
-</linearGradient>
-</defs>
-<rect x="0" y="0" width="680" height="200" fill="url(#sunsetSky-continues)"/>
-<path d="M0,150 Q170,128 340,148 T680,140 L680,200 L0,200 Z" fill="#2A1018"/>
-<path d="M0,168 Q200,150 400,165 T680,160 L680,200 L0,200 Z" fill="#160A0E"/>
-${tentSvg}
-<text x="80" y="186" font-size="12" fill="#E8DFC8" text-anchor="middle" style="font-weight:500">Lesson ${lastBuiltLesson}</text>
-<circle cx="220" cy="140" r="4" fill="#C9744A" fill-opacity="0.8"/>
-<circle cx="270" cy="138" r="3.5" fill="#C9744A" fill-opacity="0.6"/>
-<circle cx="325" cy="137" r="3" fill="#C9744A" fill-opacity="0.45"/>
-<circle cx="385" cy="137" r="2.5" fill="#C9744A" fill-opacity="0.3"/>
-<circle cx="450" cy="138" r="2" fill="#C9744A" fill-opacity="0.15"/>
-<text x="450" y="186" font-size="12" fill="#C9A8A0" text-anchor="middle">More of the journey awaits</text>
+function renderMilestones() {
+const code = activeStudentCode();
+const currentLevel = studentLesson[code] || 1;
+const totalHeight = msTentY(MILESTONE_BUILT_LESSONS) + 280;
+let inner = msRippleBands(totalHeight);
+inner += desertTentSvg(msTentX(1), msTentY(1), 1 <= currentLevel);
+inner += `<text x="${msTentX(1)}" y="${msTentY(1)+28}" font-size="12" fill="#E8DFC8" text-anchor="middle" style="font-weight:500">Lesson 1</text>`;
+for (let n = 1; n < MILESTONE_BUILT_LESSONS; n++) {
+inner += renderMilestoneSegmentFragment(n, currentLevel);
+}
+inner += renderJourneyContinuesFragment(MILESTONE_BUILT_LESSONS, MILESTONE_BUILT_LESSONS <= currentLevel);
+document.getElementById('milestone-root').innerHTML = `<svg width="100%" viewBox="0 0 680 ${totalHeight}" role="img" style="display:block">
+<defs><linearGradient id="msSunset" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C9522E"/><stop offset="1" stop-color="#2A0A14"/></linearGradient></defs>
+<rect x="0" y="0" width="680" height="${totalHeight}" fill="url(#msSunset)"/>
+${inner}
 </svg>`;
 }
 
