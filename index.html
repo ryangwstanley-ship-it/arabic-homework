@@ -315,6 +315,8 @@
 @keyframes msFadeIn { from { opacity: 0; } to { opacity: 1; } }
 .ms-trail-fade { opacity: 0.9; animation: msTrailFade 1.8s ease-out forwards; }
 @keyframes msTrailFade { from { opacity: 0.9; } to { opacity: 0; } }
+.ms-next-pulse { animation: msNextPulse 1.6s ease-in-out infinite; transform-origin: center; }
+@keyframes msNextPulse { 0%, 100% { opacity: 0.6; transform: scale(1); } 50% { opacity: 1; transform: scale(1.12); } }
 @keyframes msFadeOut { from { opacity: 1; } to { opacity: 0; } }
 .milestone-mastered-banner { background: var(--grey-light); border-radius: var(--card-radius); padding: 18px 20px; text-align: center; margin-bottom: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
 .milestone-mastered-title { font-size: 16px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
@@ -1024,6 +1026,17 @@ const t = getTorchStates(lessonNum);
 return t.reading + t.flashcards + t.grammar + t.exercises + t.challenges;
 };
 
+// Figures out which single torch is the very next thing the student needs to
+// tap: the first not-yet-finished step (in order) within their current lesson.
+function getNextMilestone(currentLevel) {
+const t = getTorchStates(currentLevel);
+const order = [['reading',0], ['flashcards',1], ['grammar',2], ['exercises',3], ['challenges',4]];
+for (const [key, idx] of order) {
+if (t[key] !== 1) return { lesson: currentLevel, index: idx };
+}
+return null;
+}
+
 const MS_ROW_H = 750;
 function msTentX(n) { return n % 2 === 1 ? 540 : 150; }
 function msTentY(n) { return (n - 1) * MS_ROW_H + 120; }
@@ -1111,7 +1124,7 @@ i++;
 return s;
 }
 
-function renderMilestoneSegmentFragment(n, currentLevel, trailFromFrac) {
+function renderMilestoneSegmentFragment(n, currentLevel, trailFromFrac, nextMilestone) {
 const isPast = n < currentLevel;
 const isActive = n === currentLevel;
 const torches = isPast ? {reading:true, flashcards:true, grammar:true, exercises:true, challenges:true} : getTorchStates(n);
@@ -1156,15 +1169,19 @@ const tappable = n <= currentLevel;
 let torchSvg = '';
 torchPts.forEach((p, i) => {
 const labelX = p.x + (onRight ? 32 : -32);
-const piece = desertTorchSvg(p.x, p.y, litStates[i]) + `<text x="${labelX}" y="${p.y+4}" font-size="11" fill="#E8DFC8" text-anchor="${onRight ? 'start' : 'end'}">${labels[i]}</text>`;
-torchSvg += tappable ? `<g id="ms-torch-${n}-${i}" style="cursor:pointer" onclick="${torchActions[i]}"><circle cx="${p.x}" cy="${p.y}" r="30" fill="none" stroke="#F4C14E" stroke-width="2" stroke-opacity="0.5"/>${piece}</g>` : piece;
+const piece = desertTorchSvg(p.x, p.y, litStates[i]) + `<text x="${labelX}" y="${p.y+4}" font-size="13" fill="#E8DFC8" text-anchor="${onRight ? 'start' : 'end'}">${labels[i]}</text>`;
+const isNext = nextMilestone && nextMilestone.lesson === n && nextMilestone.index === i;
+const ring = isNext
+? `<circle cx="${p.x}" cy="${p.y}" r="40" fill="#FFD23F" fill-opacity="0.32" stroke="#FFD23F" stroke-width="3" stroke-opacity="0.95" class="ms-next-pulse"/>`
+: `<circle cx="${p.x}" cy="${p.y}" r="34" fill="#F4C14E" fill-opacity="0.16" stroke="#F4C14E" stroke-width="2" stroke-opacity="0.7"/>`;
+torchSvg += tappable ? `<g id="ms-torch-${n}-${i}" style="cursor:pointer" onclick="${torchActions[i]}">${ring}${piece}</g>` : piece;
 });
 
 const figureSvg = figurePoint ? `<circle cx="${figurePoint.x}" cy="${figurePoint.y-20}" r="35" fill="#F2934A" fill-opacity="0.12"/>${desertFigureSvg(figurePoint.x-20, figurePoint.y-59, 0.45)}` : '';
 
 const endOpen = (n+1) <= currentLevel;
-const endTentPiece = desertTentSvg(segs[5].p2.x, segs[5].p2.y, endOpen) + `<text x="${segs[5].p2.x}" y="${segs[5].p2.y+28}" font-size="12" fill="${endOpen ? '#E8DFC8' : '#C9A8A0'}" text-anchor="middle" style="font-weight:500">Lesson ${n+1}</text>`;
-const endTentSvg = (n+1) === currentLevel ? `<g id="ms-tent-${n+1}" style="cursor:pointer" onclick="window.openLessonTentMenu(${n+1})"><circle cx="${segs[5].p2.x}" cy="${segs[5].p2.y-25}" r="64" fill="none" stroke="#F4C14E" stroke-width="2" stroke-opacity="0.5"/>${endTentPiece}</g>` : endTentPiece;
+const endTentPiece = desertTentSvg(segs[5].p2.x, segs[5].p2.y, endOpen) + `<text x="${segs[5].p2.x}" y="${segs[5].p2.y+28}" font-size="14" fill="${endOpen ? '#E8DFC8' : '#C9A8A0'}" text-anchor="middle" style="font-weight:500">Lesson ${n+1}</text>`;
+const endTentSvg = (n+1) === currentLevel ? `<g id="ms-tent-${n+1}" style="cursor:pointer" onclick="window.openLessonTentMenu(${n+1})"><circle cx="${segs[5].p2.x}" cy="${segs[5].p2.y-25}" r="72" fill="#F4C14E" fill-opacity="0.16" stroke="#F4C14E" stroke-width="2" stroke-opacity="0.7"/>${endTentPiece}</g>` : endTentPiece;
 return `${pathSvg}
 ${trailSvg}
 ${torchSvg}
@@ -1189,12 +1206,13 @@ return `${dots}<text x="${labelX}" y="${labelY}" font-size="12" fill="#C9A8A0" t
 function renderMilestones(trailFromFrac) {
 const code = activeStudentCode();
 const currentLevel = studentLesson[code] || 1;
+const nextMilestone = getNextMilestone(currentLevel);
 const totalHeight = msTentY(MILESTONE_BUILT_LESSONS) + 280;
 let inner = msRippleBands(totalHeight);
-const firstTentPiece = desertTentSvg(msTentX(1), msTentY(1), 1 <= currentLevel) + `<text x="${msTentX(1)}" y="${msTentY(1)+28}" font-size="12" fill="#E8DFC8" text-anchor="middle" style="font-weight:500">Lesson 1</text>`;
-inner += currentLevel === 1 ? `<g id="ms-tent-1" style="cursor:pointer" onclick="window.openLessonTentMenu(1)"><circle cx="${msTentX(1)}" cy="${msTentY(1)-25}" r="64" fill="none" stroke="#F4C14E" stroke-width="2" stroke-opacity="0.5"/>${firstTentPiece}</g>` : firstTentPiece;
+const firstTentPiece = desertTentSvg(msTentX(1), msTentY(1), 1 <= currentLevel) + `<text x="${msTentX(1)}" y="${msTentY(1)+28}" font-size="14" fill="#E8DFC8" text-anchor="middle" style="font-weight:500">Lesson 1</text>`;
+inner += currentLevel === 1 ? `<g id="ms-tent-1" style="cursor:pointer" onclick="window.openLessonTentMenu(1)"><circle cx="${msTentX(1)}" cy="${msTentY(1)-25}" r="72" fill="#F4C14E" fill-opacity="0.16" stroke="#F4C14E" stroke-width="2" stroke-opacity="0.7"/>${firstTentPiece}</g>` : firstTentPiece;
 for (let n = 1; n < MILESTONE_BUILT_LESSONS; n++) {
-inner += renderMilestoneSegmentFragment(n, currentLevel, trailFromFrac);
+inner += renderMilestoneSegmentFragment(n, currentLevel, trailFromFrac, nextMilestone);
 }
 inner += renderJourneyContinuesFragment(MILESTONE_BUILT_LESSONS, MILESTONE_BUILT_LESSONS <= currentLevel);
 document.getElementById('milestone-root').innerHTML = `<svg width="100%" viewBox="0 0 680 ${totalHeight}" role="img" style="display:block">
