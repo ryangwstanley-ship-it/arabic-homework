@@ -981,13 +981,25 @@ return submittedCount / challengeModes.length;
 }
 
 // Fraction (0 or 1) of the "reading" milestone lit: 1 once the Story for this lesson has been marked done, else 0.
+// Also auto-counts as done for anyone who already has flashcard activity on this lesson, or has already
+// moved past it -- both are proof they read it, from before this checkpoint existed.
 function getReadingFraction(lessonNum) {
-return readingDone[lessonNum] ? 1 : 0;
+if (readingDone[lessonNum]) return 1;
+const code = activeStudentCode();
+if ((studentLesson[code] || 1) > lessonNum) return 1;
+if (Object.keys(fcProgress).some(k => k.startsWith(lessonNum + '_'))) return 1;
+return 0;
 }
 
-// Fraction (0 or 1) of the "grammar" milestone lit: 1 once the Grammar Principles for this lesson have been marked done, else 0.
+// Fraction (0 or 1) of the "grammar" milestone lit: 1 once the Grammar Principles for this lesson have been
+// marked done, else 0. Same auto-backfill idea: any exercise activity on this lesson already proves grammar
+// was finished, since exercises used to be locked behind it.
 function getGrammarFraction(lessonNum) {
-return grammarDone[lessonNum] ? 1 : 0;
+if (grammarDone[lessonNum]) return 1;
+const code = activeStudentCode();
+if ((studentLesson[code] || 1) > lessonNum) return 1;
+if (Object.keys(exProgress).some(m => EX_LESSON_MAP[m] === lessonNum && Object.keys(exProgress[m] || {}).length > 0)) return 1;
+return 0;
 }
 
 // All three torch fractions (each 0–1) for a lesson, used to light the path
@@ -995,7 +1007,9 @@ return grammarDone[lessonNum] ? 1 : 0;
 // are what let the character's walk move smoothly as individual decks finish.
 function getTorchStates(lessonNum) {
 return {
+reading: getReadingFraction(lessonNum),
 flashcards: getLessonMasteryPercent(lessonNum) / 100,
+grammar: getGrammarFraction(lessonNum),
 exercises: getExercisesFraction(lessonNum),
 challenges: getChallengesFraction(lessonNum)
 };
@@ -1006,10 +1020,10 @@ challenges: getChallengesFraction(lessonNum)
 // scripts don't leak top-level functions to other <script> tags otherwise.
 window.getLessonProgressSum = function(lessonNum) {
 const t = getTorchStates(lessonNum);
-return t.flashcards + t.exercises + t.challenges;
+return t.reading + t.flashcards + t.grammar + t.exercises + t.challenges;
 };
 
-const MS_ROW_H = 510;
+const MS_ROW_H = 750;
 function msTentX(n) { return n % 2 === 1 ? 540 : 150; }
 function msTentY(n) { return (n - 1) * MS_ROW_H + 120; }
 function msMirror(x, flip) { return flip ? 690 - x : x; }
@@ -1018,21 +1032,22 @@ function msSplitQuad(p0, c, p2, t) {
 const q1 = msLerp(p0, c, t), r1 = msLerp(c, p2, t);
 return { firstC: q1, secondC: r1, point: msLerp(q1, r1, t) };
 }
+// 7 points / 6 segments per lesson now (was 5 points / 4 segments), to fit all 5 milestone
+// stops: Reading, Memorise Vocab, Grammar, Exercises, Challenges.
 function msSegments(n) {
 const flip = n % 2 === 0;
 const Y = (n - 1) * MS_ROW_H;
 const mx = x => msMirror(x, flip);
-const pts = [
-{ x: mx(540), y: Y + 120 }, { x: mx(460), y: Y + 210 },
-{ x: mx(340), y: Y + 330 }, { x: mx(220), y: Y + 480 },
-{ x: mx(150), y: Y + 630 }
-];
-const ctrls = [
-{ x: mx(500), y: Y + 165 }, { x: mx(400), y: Y + 270 },
-{ x: mx(270), y: Y + 380 }, { x: mx(190), y: Y + 560 }
-];
-return [0,1,2,3].map(i => ({ p0: pts[i], c: ctrls[i], p2: pts[i+1] }));
+const xs = [540, 475, 410, 345, 280, 215, 150];
+const ys = [120, 245, 370, 495, 620, 745, 870];
+const pts = xs.map((x, i) => ({ x: mx(x), y: Y + ys[i] }));
+const ctrls = [];
+for (let i = 0; i < pts.length - 1; i++) {
+ctrls.push({ x: mx((xs[i] + xs[i+1]) / 2), y: Y + (ys[i] + ys[i+1]) / 2 - 15 });
 }
+return pts.slice(0, -1).map((p0, i) => ({ p0, c: ctrls[i], p2: pts[i+1] }));
+}
+
 function msQ(p0, c, p2) { return `M${p0.x},${p0.y} Q${c.x},${c.y} ${p2.x},${p2.y}`; }
 
 function desertFigureSvg(x, y, scale) {
@@ -1092,21 +1107,21 @@ return s;
 function renderMilestoneSegmentFragment(n, currentLevel, overrideNumLit) {
 const isPast = n < currentLevel;
 const isActive = n === currentLevel;
-const torches = isPast ? {flashcards:true, exercises:true, challenges:true} : getTorchStates(n);
-const numLit = (isActive && overrideNumLit !== undefined) ? overrideNumLit : (torches.flashcards + torches.exercises + torches.challenges);
+const torches = isPast ? {reading:true, flashcards:true, grammar:true, exercises:true, challenges:true} : getTorchStates(n);
+const numLit = (isActive && overrideNumLit !== undefined) ? overrideNumLit : (torches.reading + torches.flashcards + torches.grammar + torches.exercises + torches.challenges);
 const segs = msSegments(n);
 
 let litSegCount = 0, partialIdx = null, partialT = 0;
-if (isPast) litSegCount = 4;
+if (isPast) litSegCount = 6;
 else if (isActive) {
-if (numLit >= 3) litSegCount = 3;
+if (numLit >= 5) litSegCount = 5;
 else { litSegCount = Math.floor(numLit); partialIdx = litSegCount; partialT = numLit - litSegCount; }
 }
 
 let figurePoint = null;
 if (isActive) {
 const idx = Math.floor(numLit);
-figurePoint = numLit >= 3 ? segs[2].p2 : msSplitQuad(segs[idx].p0, segs[idx].c, segs[idx].p2, partialT).point;
+figurePoint = numLit >= 5 ? segs[4].p2 : msSplitQuad(segs[idx].p0, segs[idx].c, segs[idx].p2, partialT).point;
 }
 
 let pathSvg = '';
@@ -1122,10 +1137,10 @@ pathSvg += `<path d="${msQ(seg.p0, seg.c, seg.p2)}" fill="none" stroke="#6B4A3E"
 }
 });
 
-const labels = ['Flashcards','Exercises','Challenges'];
-const torchPts = [segs[0].p2, segs[1].p2, segs[2].p2];
-const litStates = [torches.flashcards, torches.exercises, torches.challenges];
-const torchActions = [`window.openFlashcardsForLesson(${n})`, `window.openExercisesForLesson(${n})`, `window.openExercisesForLesson(${n})`];
+const labels = ['Reading','Memorise Vocab','Grammar','Exercises','Challenges'];
+const torchPts = [segs[0].p2, segs[1].p2, segs[2].p2, segs[3].p2, segs[4].p2];
+const litStates = [torches.reading, torches.flashcards, torches.grammar, torches.exercises, torches.challenges];
+const torchActions = [`window.openReadingForLesson(${n})`, `window.openFlashcardsForLesson(${n})`, `window.openGrammarForLesson(${n})`, `window.openExercisesForLesson(${n})`, `window.openExercisesForLesson(${n})`];
 const onRight = msTentX(n) === 540;
 const tappable = n <= currentLevel;
 let torchSvg = '';
@@ -1138,7 +1153,7 @@ torchSvg += tappable ? `<g style="cursor:pointer" onclick="${torchActions[i]}">$
 const figureSvg = figurePoint ? `<circle cx="${figurePoint.x}" cy="${figurePoint.y-20}" r="35" fill="#F2934A" fill-opacity="0.12"/>${desertFigureSvg(figurePoint.x-20, figurePoint.y-59, 0.45)}` : '';
 
 const endOpen = (n+1) <= currentLevel;
-const endTentPiece = desertTentSvg(segs[3].p2.x, segs[3].p2.y, endOpen) + `<text x="${segs[3].p2.x}" y="${segs[3].p2.y+28}" font-size="12" fill="${endOpen ? '#E8DFC8' : '#C9A8A0'}" text-anchor="middle" style="font-weight:500">Lesson ${n+1}</text>`;
+const endTentPiece = desertTentSvg(segs[5].p2.x, segs[5].p2.y, endOpen) + `<text x="${segs[5].p2.x}" y="${segs[5].p2.y+28}" font-size="12" fill="${endOpen ? '#E8DFC8' : '#C9A8A0'}" text-anchor="middle" style="font-weight:500">Lesson ${n+1}</text>`;
 const endTentSvg = (n+1) === currentLevel ? `<g id="ms-tent-${n+1}" style="cursor:pointer" onclick="window.openLessonTentMenu(${n+1})">${endTentPiece}</g>` : endTentPiece;
 return `${pathSvg}
 ${torchSvg}
@@ -1218,12 +1233,23 @@ if (isGuestMode) switchTab('story');
 else switchTab('home');
 };
 
+window.openReadingForLesson = function(lessonNum) {
+switchTab('story');
+setStoryLesson(lessonNum);
+};
+
 window.openFlashcardsForLesson = function(lessonNum) {
 switchTab('revise');
 switchReviseSubTab('flashcards');
 fcCurrentLesson = lessonNum;
 fcShowLessonPicker = false;
 renderFlashcards();
+};
+
+window.openGrammarForLesson = function(lessonNum) {
+switchTab('story');
+setStoryLesson(lessonNum);
+document.getElementById('principles-wrap').style.display = 'block';
 };
 
 window.openExercisesForLesson = function(lessonNum) {
