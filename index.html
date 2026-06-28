@@ -429,7 +429,7 @@ console.log("THE FILE IS LOADING!");
 <div class="revision-streak-row">
 <div class="revision-streak" id="revision-streak-text">0 day streak</div>
 <button class="streak-info-btn" id="streak-info-btn" type="button" aria-label="How streaks work">ⓘ</button>
-<div class="streak-info-popup" id="streak-info-popup">Complete at least 20 flashcards or exercise questions today to count toward your streak — the ring above fills up as you go. Miss a day completely and your streak resets to 0.</div>
+<div class="streak-info-popup" id="streak-info-popup">Complete at least 20 flashcards or exercise questions, or upload your homework, today to count toward your streak — the ring above fills up as you go. Miss a day completely and your streak resets to 0.</div>
 </div>
 <div class="revision-lesson" id="revision-lesson-wrap">Lesson 1</div>
 </div>
@@ -1287,6 +1287,24 @@ const [y,m,d] = dateStr.split('-').map(Number);
 return new Date() > new Date(y, m-1, d+1, 0, 0, 0);
 }
 
+// A day counts toward the streak if the student did 20+ flashcards/exercise
+// questions OR uploaded homework that day — either one is enough.
+function dayQualifiesForStreak(code, key) {
+const cardCount = (allCardActivity[code] || {})[key] || 0;
+if (cardCount >= 20) return true;
+const sub = submissions[code]?.[key];
+return !!(sub && (sub.images?.length > 0 || sub.text));
+}
+
+// Whether the student has ever had a single qualifying day, via either route —
+// used to tell "never started" (grey) apart from "had a streak, lost it" (red).
+function hasEverQualified(code) {
+const activity = allCardActivity[code] || {};
+if (Object.keys(activity).some(k => activity[k] >= 20)) return true;
+const subs = submissions[code] || {};
+return Object.values(subs).some(s => s && (s.images?.length > 0 || s.text));
+}
+  
 function getMissedDays(code) {
 const subs = submissions[code] || {};
 const missed = [], now = new Date();
@@ -1303,16 +1321,15 @@ return missed.sort();
 }
 
 function getStreak(code) {
-const activity = allCardActivity[code] || {};
 let streak = 0;
 const now = new Date();
 for (let i = 1; i <= 365; i++) {
 const d = new Date(now); d.setDate(now.getDate() - i);
 const key = dateKey(d);
-if ((activity[key]||0) >= 20) streak++;
+if (dayQualifiesForStreak(code, key)) streak++;
 else if (isMidnightPast(key)) break;
 }
-if ((activity[todayKey()]||0) >= 20) streak++;
+if (dayQualifiesForStreak(code, todayKey())) streak++;
 return streak;
 }
 
@@ -1326,41 +1343,39 @@ return keys.length / daysSince;
 }
 
 function getConsecutiveMissed(code) {
-const activity = allCardActivity[code] || {};
 let count = 0;
 const now = new Date();
 for (let i = 1; i <= 60; i++) {
 const d = new Date(now); d.setDate(now.getDate() - i);
 const key = dateKey(d);
 if (!isMidnightPast(key)) continue;
-if ((activity[key]||0) >= 20) break;
+if (dayQualifiesForStreak(code, key)) break;
 else count++;
 }
 return count;
 }
 
 function getStudentStatus(code) {
-const activity = allCardActivity[code] || {};
 const today = todayKey();
 const d = new Date(); d.setDate(d.getDate()-1); const yesterday = dateKey(d);
-const hasToday = (activity[today]||0) >= 20;
-const hasYest = (activity[yesterday]||0) >= 20;
-if (hasToday || hasYest) return 'green';
-const keys = Object.keys(activity).filter(k=>activity[k]>=20);
-return keys.length === 0 ? 'grey' : 'red';
+if (dayQualifiesForStreak(code, today) || dayQualifiesForStreak(code, yesterday)) return 'green';
+return hasEverQualified(code) ? 'red' : 'grey';
 }
 
 function getMissedRevisionDays(code) {
-const activity = allCardActivity[code] || {};
 const missed = [], now = new Date();
-const allKeys = Object.keys(activity).sort();
+const activity = allCardActivity[code] || {};
+const subs = submissions[code] || {};
+const activityKeys = Object.keys(activity);
+const qualifyingSubKeys = Object.keys(subs).filter(k => { const s = subs[k]; return s && (s.images?.length > 0 || s.text); });
+const allKeys = [...activityKeys, ...qualifyingSubKeys].sort();
 if (!allKeys.length) return [];
 const firstDay = allKeys[0];
 for (let i = 1; i <= 60; i++) {
 const d = new Date(now); d.setDate(now.getDate() - i);
 const key = dateKey(d);
 if (key < firstDay) break;
-if (isMidnightPast(key) && (activity[key]||0) < 20) missed.push(key);
+if (isMidnightPast(key) && !dayQualifiesForStreak(code, key)) missed.push(key);
 }
 return missed.sort();
 }
@@ -1765,9 +1780,9 @@ const consecutive = getConsecutiveMissed(code);
 if (!missed.length) { banner.style.display='none'; return; }
 banner.style.display='block';
 if (consecutive >= 2) {
-banner.innerHTML=`<div class="banner red"><div class="banner-icon">🚨</div><div><div class="banner-title">You've missed ${consecutive} days of revision in a row — your streak has reset!</div><div class="banner-sub">Do at least 20 flashcards or exercise questions today to start a new streak.</div></div></div>`;
+banner.innerHTML=`<div class="banner red"><div class="banner-icon">🚨</div><div><div class="banner-title">You've missed ${consecutive} days of revision in a row — your streak has reset!</div><div class="banner-sub">Do at least 20 flashcards or exercise questions, or upload your homework, today to start a new streak.</div></div></div>`;
 } else {
-banner.innerHTML=`<div class="banner yellow"><div class="banner-icon">⚠️</div><div><div class="banner-title">You missed ${missed.length} day${missed.length>1?'s':''} of revision!</div><div class="banner-sub">Do at least 20 flashcards or exercise questions today to keep your streak alive.</div></div></div>`;
+banner.innerHTML=`<div class="banner yellow"><div class="banner-icon">⚠️</div><div><div class="banner-title">You missed ${missed.length} day${missed.length>1?'s':''} of revision!</div><div class="banner-sub">Do at least 20 flashcards or exercise questions, or upload your homework, today to keep your streak alive.</div></div></div>`;
 }
 }
 
@@ -1778,7 +1793,7 @@ if (!code) { banner.style.display='none'; return; }
 banner.style.display='flex';
 
 const todayCount = (allCardActivity[code] || {})[todayKey()] || 0;
-const percent = Math.min(100, Math.round((todayCount/20)*100));
+const percent = dayQualifiesForStreak(code, todayKey()) ? 100 : Math.min(100, Math.round((todayCount/20)*100));
 const circumference = 2 * Math.PI * 34;
 const ringFg = document.getElementById('revision-ring-fg');
 ringFg.style.strokeDasharray = circumference;
