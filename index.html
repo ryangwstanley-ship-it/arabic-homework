@@ -2473,21 +2473,21 @@ exCurrent = 0;
 exDotEarned = false;
 
 exQuestions = exShuffle(
-exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS]
-: exMode === 'wordorder' ? [...WORD_ORDER_QUESTIONS]
-: exMode === 'changeword' ? [...CHANGE_WORD_QUESTIONS]
-: exMode === 'demonstrative' ? [...DEMONSTRATIVE_QUESTIONS]
-: exMode === 'suffixpronoun' ? [...SUFFIX_PRONOUN_QUESTIONS]
-: exMode === 'adjectiveagreement' ? [...ADJECTIVE_AGREEMENT_QUESTIONS]
-: exMode === 'plural' ? [...PLURAL_QUESTIONS]
-: exMode === 'feminine' ? [...FEMININE_QUESTIONS]
-: exMode === 'typeharakat' ? exBuildLesson1Pool()
-: exMode === 'typeenglish' ? exBuildLesson1Pool()
-: exMode === 'suffixtrans' ? exShuffle([...SUFFIX_TRANSLATION_QUESTIONS]).slice(0, 11)
-: exMode === 'demotrans' ? exShuffle([...DEMO_TRANSLATION_QUESTIONS]).slice(0, 11)
-: exMode === 'pluraltype' ? exBuildPluralTypeDeck()
-: exMode === 'aetrans' ? [...TRANSLATION_1_QUESTIONS]
-: [...TRUE_FALSE_QUESTIONS]
+exMode === 'fillgap' ? FILL_GAP_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
+: exMode === 'wordorder' ? WORD_ORDER_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
+: exMode === 'changeword' ? CHANGE_WORD_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
+: exMode === 'demonstrative' ? DEMONSTRATIVE_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
+: exMode === 'suffixpronoun' ? SUFFIX_PRONOUN_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
+: exMode === 'adjectiveagreement' ? ADJECTIVE_AGREEMENT_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
+: exMode === 'plural' ? PLURAL_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
+: exMode === 'feminine' ? FEMININE_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
+: exMode === 'typeharakat' ? exBuildLesson1Pool().map((q,i) => ({ ...q, __idx: i }))
+: exMode === 'typeenglish' ? exBuildLesson1Pool().map((q,i) => ({ ...q, __idx: i }))
+: exMode === 'suffixtrans' ? exShuffle(SUFFIX_TRANSLATION_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))).slice(0, 11)
+: exMode === 'demotrans' ? exShuffle(DEMO_TRANSLATION_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))).slice(0, 11)
+: exMode === 'pluraltype' ? exBuildPluralTypeDeck().map((q,i) => ({ ...q, __idx: i }))
+: exMode === 'aetrans' ? TRANSLATION_1_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
+: TRUE_FALSE_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
 );
 if (exMode === 'pluraltype') exQuestions = exFixAdjacency(exQuestions);
 exRenderActive();
