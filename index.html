@@ -643,6 +643,8 @@ console.log("THE FILE IS LOADING!");
 <p class="story-en-line">Why do they worship the idols? Worship is for Allah alone.</p>
 </div>
 
+<button id="student-reading-done-btn" style="display:none;width:100%;margin-top:20px;padding:14px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Mark Reading as Done ✓</button>
+
 
 <div class="principles-wrap" id="principles-wrap">
 <div class="principles-header">
@@ -660,6 +662,8 @@ console.log("THE FILE IS LOADING!");
 <button class="principles-nav-btn principles-nav-btn-primary" id="principle-next-btn">Next ›</button>
 </div>
 </div>
+
+<button id="student-grammar-done-btn" style="display:none;width:100%;margin-top:20px;padding:14px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Mark Grammar as Done ✓</button>
 
 <button id="guest-flashcards-btn" style="display:none;width:100%;margin-top:24px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Continue to Flashcards →</button>
 
@@ -1198,7 +1202,7 @@ ${inner}
 // animates the desert figure walking from its old position to its new one.
 window.triggerMilestoneWalk = function(lessonNum, oldFrac, newFrac, category) {
 if (!(newFrac > oldFrac)) return; // no real progress (e.g. re-submitting an already-mastered item) — skip
-const labels = { flashcards: 'Flashcards', exercises: 'Exercise', challenges: 'Challenge' };
+const labels = { reading: 'Reading', flashcards: 'Flashcards', grammar: 'Grammar', exercises: 'Exercise', challenges: 'Challenge' };
 const overlay = document.createElement('div');
 overlay.className = 'milestone-celebrate-overlay';
 overlay.innerHTML = `<div class="milestone-celebrate-card">
@@ -1224,6 +1228,32 @@ requestAnimationFrame(step);
 }, 1100);
 };
 
+// Marks "Reading" done for a lesson, saves it, and either plays the walk-forward
+// celebration (first time it's truly new progress) or just hops to the Milestones
+// map directly (if it was already done, e.g. tapping the button again).
+window.markReadingDone = async function(lessonNum) {
+const oldFrac = window.getLessonProgressSum(lessonNum);
+const already = !!readingDone[lessonNum];
+readingDone[lessonNum] = true;
+const code = currentUser || viewingStudent;
+await saveFlashcardData(code);
+const newFrac = window.getLessonProgressSum(lessonNum);
+if (!already && newFrac > oldFrac) window.triggerMilestoneWalk(lessonNum, oldFrac, newFrac, 'reading');
+else window.switchTab('milestones');
+};
+
+// Same idea as markReadingDone, for the "Grammar" milestone.
+window.markGrammarDone = async function(lessonNum) {
+const oldFrac = window.getLessonProgressSum(lessonNum);
+const already = !!grammarDone[lessonNum];
+grammarDone[lessonNum] = true;
+const code = currentUser || viewingStudent;
+await saveFlashcardData(code);
+const newFrac = window.getLessonProgressSum(lessonNum);
+if (!already && newFrac > oldFrac) window.triggerMilestoneWalk(lessonNum, oldFrac, newFrac, 'grammar');
+else window.switchTab('milestones');
+};
+
 // Called instead of opening practice when a student taps a deck / exercise /
 // challenge that's already fully mastered: shows the milestone screen at its
 // current (static) position with a "Review again" button rather than
@@ -1239,6 +1269,7 @@ setStoryLesson(lessonNum);
 };
 
 window.openFlashcardsForLesson = function(lessonNum) {
+if (isGuestMode && !getReadingFraction(lessonNum)) return;
 switchTab('revise');
 switchReviseSubTab('flashcards');
 fcCurrentLesson = lessonNum;
@@ -1247,6 +1278,7 @@ renderFlashcards();
 };
 
 window.openGrammarForLesson = function(lessonNum) {
+if (isGuestMode && getLessonMasteryPercent(lessonNum) < 75) return;
 switchTab('story');
 setStoryLesson(lessonNum);
 document.getElementById('principles-wrap').style.display = 'block';
@@ -1255,7 +1287,7 @@ document.getElementById('principles-wrap').style.display = 'block';
 window.openExercisesForLesson = function(lessonNum) {
 switchTab('revise');
 switchReviseSubTab('exercises');
-if (isGuestMode && !guestLessonDone) return;
+if (isGuestMode && !getGrammarFraction(lessonNum)) return;
 exPickerLesson = lessonNum;
 if (typeof exShowPicker === 'function') exShowPicker();
 };
@@ -1846,7 +1878,13 @@ document.getElementById('tab-home').classList.toggle('active', tab==='home');
 document.getElementById('tab-homework').classList.toggle('active', tab==='homework');
 document.getElementById('tab-story').classList.toggle('active', tab==='story');
 if (tab==='revise') switchReviseSubTab('flashcards');
-if (tab==='story') setStoryLesson(studentLesson[activeStudentCode()] || 1);
+if (tab==='story') {
+setStoryLesson(studentLesson[activeStudentCode()] || 1);
+const readBtn = document.getElementById('student-reading-done-btn');
+const gramBtn = document.getElementById('student-grammar-done-btn');
+if (readBtn) readBtn.style.display = isGuestMode ? 'none' : 'block';
+if (gramBtn) gramBtn.style.display = isGuestMode ? 'none' : 'block';
+}
 if (tab==='milestones') {
 renderMilestones();
 if (pendingMilestoneIntro) {
@@ -1859,7 +1897,8 @@ if (tab==='guests') renderGuestsTab();
 }
 
 window.switchReviseSubTab = function(sub) {
-if (isGuestMode && sub === 'exercises' && !guestLessonDone) {
+const reviseCode = currentUser || viewingStudent;
+if (isGuestMode && sub === 'exercises' && !getGrammarFraction(studentLesson[reviseCode] || 1)) {
 document.getElementById('tab-content-flashcards').style.display = 'none';
 document.getElementById('tab-content-exercises').style.display = 'block';
 document.getElementById('revise-tab-flashcards').classList.remove('active');
@@ -2512,7 +2551,7 @@ document.getElementById('principle-back-btn').addEventListener('click', () => {
 });
 document.getElementById('principle-next-btn').addEventListener('click', () => {
   if (principleIdx < activePrinciples.length - 1) { principleIdx++; principleRevealed = false; renderPrinciple(); }
-  else if (isGuestMode) { guestLessonDone = true; switchTab('revise'); switchReviseSubTab('exercises'); }
+  else if (isGuestMode) { const code = currentUser || viewingStudent; window.markGrammarDone(studentLesson[code] || 1); }
 });
 renderPrinciple();
 
@@ -2564,7 +2603,8 @@ if (!guestCodeEdited) document.getElementById('guest-code-input').value = sugges
 });
 document.getElementById('guest-code-input').addEventListener('input', () => { guestCodeEdited = true; });
 document.getElementById('guest-flashcards-btn').addEventListener('click', () => {
-switchTab('revise');
+const code = currentUser || viewingStudent;
+window.markReadingDone(studentLesson[code] || 1);
 if (guestTourActive && guestTourStep === 1) {
 guestTourStep = 2;
 hideGuestCoachmark();
@@ -2573,13 +2613,22 @@ hideGuestCoachmark();
 document.getElementById('guest-principles-btn').addEventListener('click', () => {
 document.getElementById('principles-wrap').style.display = 'block';
 document.getElementById('guest-flashcards-btn').style.display = 'none';
-switchTab('story');
+switchTab('milestones');
 if (guestTourActive && guestTourStep === 2.5) {
 guestTourStep = 3;
 guestTourActive = false;
 hideGuestCoachmark();
 }
 });
+document.getElementById('student-reading-done-btn').addEventListener('click', () => {
+const code = currentUser || viewingStudent;
+window.markReadingDone(studentLesson[code] || 1);
+});
+document.getElementById('student-grammar-done-btn').addEventListener('click', () => {
+const code = currentUser || viewingStudent;
+window.markGrammarDone(studentLesson[code] || 1);
+});
+
 document.getElementById('code-input').addEventListener('keydown',e=>{if(e.key==='Enter')handleLogin();});
 
 document.getElementById('sidebar-toggle').addEventListener('click',toggleSidebar);
