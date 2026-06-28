@@ -2041,16 +2041,6 @@ if(currentTab==='flashcards')renderFlashcards();
 
 const MILESTONE_BUILT_LESSONS = 3;
 
-function renderMilestones() {
-const code = activeStudentCode();
-const currentLevel = studentLesson[code] || 1;
-let html = '';
-for (let n = 1; n < MILESTONE_BUILT_LESSONS; n++) {
-html += renderMilestoneSegment(n, n+1, currentLevel);
-}
-html += renderJourneyContinues(MILESTONE_BUILT_LESSONS, MILESTONE_BUILT_LESSONS <= currentLevel);
-document.getElementById('milestone-root').innerHTML = html;
-}
 
 
 
