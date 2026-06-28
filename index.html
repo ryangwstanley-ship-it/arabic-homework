@@ -313,6 +313,8 @@
 .milestone-celebrate-title { font-size: 19px; font-weight: 800; color: var(--ink); margin-bottom: 6px; }
 .milestone-celebrate-sub { font-size: 13px; color: var(--grey); }
 @keyframes msFadeIn { from { opacity: 0; } to { opacity: 1; } }
+.ms-trail-fade { opacity: 0.9; animation: msTrailFade 1.8s ease-out forwards; }
+@keyframes msTrailFade { from { opacity: 0.9; } to { opacity: 0; } }
 @keyframes msFadeOut { from { opacity: 1; } to { opacity: 0; } }
 .milestone-mastered-banner { background: var(--grey-light); border-radius: var(--card-radius); padding: 18px 20px; text-align: center; margin-bottom: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
 .milestone-mastered-title { font-size: 16px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
@@ -1036,6 +1038,12 @@ function msSplitQuad(p0, c, p2, t) {
 const q1 = msLerp(p0, c, t), r1 = msLerp(c, p2, t);
 return { firstC: q1, secondC: r1, point: msLerp(q1, r1, t) };
 }
+function msPointAtFrac(segs, frac) {
+if (frac <= 0) return segs[0].p0;
+if (frac >= 5) return segs[4].p2;
+const idx = Math.floor(frac);
+return msSplitQuad(segs[idx].p0, segs[idx].c, segs[idx].p2, frac - idx).point;
+}
 // 7 points / 6 segments per lesson now (was 5 points / 4 segments), to fit all 5 milestone
 // stops: Reading, Memorise Vocab, Grammar, Exercises, Challenges.
 function msSegments(n) {
@@ -1108,24 +1116,27 @@ i++;
 return s;
 }
 
-function renderMilestoneSegmentFragment(n, currentLevel, overrideNumLit) {
+function renderMilestoneSegmentFragment(n, currentLevel, trailFromFrac) {
 const isPast = n < currentLevel;
 const isActive = n === currentLevel;
 const torches = isPast ? {reading:true, flashcards:true, grammar:true, exercises:true, challenges:true} : getTorchStates(n);
-const numLit = (isActive && overrideNumLit !== undefined) ? overrideNumLit : (torches.reading + torches.flashcards + torches.grammar + torches.exercises + torches.challenges);
+const numLit = torches.reading + torches.flashcards + torches.grammar + torches.exercises + torches.challenges;
 const segs = msSegments(n);
 
-let litSegCount = 0, partialIdx = null, partialT = 0;
+let litSegCount = 0, partialIdx = null, preturn `${pathSvg}artialT = 0;
 if (isPast) litSegCount = 6;
 else if (isActive) {
 if (numLit >= 5) litSegCount = 5;
 else { litSegCount = Math.floor(numLit); partialIdx = litSegCount; partialT = numLit - litSegCount; }
 }
 
-let figurePoint = null;
+let figurePoint = null, trailSvg = '';
 if (isActive) {
-const idx = Math.floor(numLit);
-figurePoint = numLit >= 5 ? segs[4].p2 : msSplitQuad(segs[idx].p0, segs[idx].c, segs[idx].p2, partialT).point;
+figurePoint = msPointAtFrac(segs, numLit);
+if (trailFromFrac !== undefined && trailFromFrac < numLit) {
+const oldPoint = msPointAtFrac(segs, trailFromFrac);
+trailSvg = `<line x1="${oldPoint.x}" y1="${oldPoint.y}" x2="${figurePoint.x}" y2="${figurePoint.y}" stroke="#FCE2A0" stroke-width="3" stroke-linecap="round" stroke-dasharray="2 9" class="ms-trail-fade"/>`;
+}
 }
 
 let pathSvg = '';
@@ -1160,6 +1171,7 @@ const endOpen = (n+1) <= currentLevel;
 const endTentPiece = desertTentSvg(segs[5].p2.x, segs[5].p2.y, endOpen) + `<text x="${segs[5].p2.x}" y="${segs[5].p2.y+28}" font-size="12" fill="${endOpen ? '#E8DFC8' : '#C9A8A0'}" text-anchor="middle" style="font-weight:500">Lesson ${n+1}</text>`;
 const endTentSvg = (n+1) === currentLevel ? `<g id="ms-tent-${n+1}" style="cursor:pointer" onclick="window.openLessonTentMenu(${n+1})"><circle cx="${segs[5].p2.x}" cy="${segs[5].p2.y-25}" r="64" fill="none" stroke="#F4C14E" stroke-width="2" stroke-opacity="0.5"/>${endTentPiece}</g>` : endTentPiece;
 return `${pathSvg}
+${trailSvg}
 ${torchSvg}
 ${figureSvg}
 ${endTentSvg}`;
@@ -1179,7 +1191,7 @@ const labelX = tx + sign*340, labelY = ty + 110 + 4*30 + 20;
 return `${dots}<text x="${labelX}" y="${labelY}" font-size="12" fill="#C9A8A0" text-anchor="middle">More of the journey awaits</text>`;
 }
 
-function renderMilestones(overrideNumLit) {
+function renderMilestones(trailFromFrac) {
 const code = activeStudentCode();
 const currentLevel = studentLesson[code] || 1;
 const totalHeight = msTentY(MILESTONE_BUILT_LESSONS) + 280;
@@ -1187,7 +1199,7 @@ let inner = msRippleBands(totalHeight);
 const firstTentPiece = desertTentSvg(msTentX(1), msTentY(1), 1 <= currentLevel) + `<text x="${msTentX(1)}" y="${msTentY(1)+28}" font-size="12" fill="#E8DFC8" text-anchor="middle" style="font-weight:500">Lesson 1</text>`;
 inner += currentLevel === 1 ? `<g id="ms-tent-1" style="cursor:pointer" onclick="window.openLessonTentMenu(1)"><circle cx="${msTentX(1)}" cy="${msTentY(1)-25}" r="64" fill="none" stroke="#F4C14E" stroke-width="2" stroke-opacity="0.5"/>${firstTentPiece}</g>` : firstTentPiece;
 for (let n = 1; n < MILESTONE_BUILT_LESSONS; n++) {
-inner += renderMilestoneSegmentFragment(n, currentLevel, overrideNumLit);
+inner += renderMilestoneSegmentFragment(n, currentLevel, trailFromFrac);
 }
 inner += renderJourneyContinuesFragment(MILESTONE_BUILT_LESSONS, MILESTONE_BUILT_LESSONS <= currentLevel);
 document.getElementById('milestone-root').innerHTML = `<svg width="100%" viewBox="0 0 680 ${totalHeight}" role="img" style="display:block">
@@ -1211,20 +1223,11 @@ overlay.innerHTML = `<div class="milestone-celebrate-card">
 <div class="milestone-celebrate-sub">Watch your journey move forward…</div>
 </div>`;
 document.body.appendChild(overlay);
+window.switchTab('milestones');
+renderMilestones(oldFrac);
 setTimeout(() => {
 overlay.classList.add('fade-out');
 setTimeout(() => overlay.remove(), 300);
-window.switchTab('milestones');
-renderMilestones(oldFrac);
-const duration = 900, start = performance.now();
-function step(now) {
-const t = Math.min(1, (now - start) / duration);
-const eased = 1 - Math.pow(1 - t, 2);
-renderMilestones(oldFrac + (newFrac - oldFrac) * eased);
-if (t < 1) requestAnimationFrame(step);
-else renderMilestones();
-}
-requestAnimationFrame(step);
 }, 1100);
 };
 
