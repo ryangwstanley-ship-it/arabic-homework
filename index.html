@@ -2988,6 +2988,7 @@ html += `
 document.getElementById('challenges-root').innerHTML = html;
 document.getElementById('ch1-submit-btn').onclick = () => window.exSubmitChallenge1();
 document.getElementById('ch1-back-btn').onclick = exShowChallengesPicker;
+}
 
 function exShowChallenge2() {
 const sentences = window.CHALLENGE_2_SENTENCES || [];
@@ -3006,10 +3007,10 @@ html += `
 <button id="ch2-submit-btn" style="width:100%;margin-top:8px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">Submit Challenge</button>
 <button id="ch2-back-btn" style="width:100%;margin-top:8px;padding:10px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">← Back</button>
 </div>`;
-document.getElementById('challenges-root').innerHTML = html;
 document.getElementById('ch2-submit-btn').onclick = () => window.exSubmitChallenge2();
 document.getElementById('ch2-back-btn').onclick = exShowChallengesPicker;
-  
+}
+
 function exShowSetup(mode) {
 exMode = mode;
 const title = mode === 'fillgap' ? '📝 Fill the Gap'
