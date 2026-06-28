@@ -495,7 +495,7 @@ console.log("THE FILE IS LOADING!");
 
 <!-- HOMEWORK TAB -->
 <div id="tab-content-homework" class="content" style="display:none">
-<div class="back-row" onclick="switchTab('home')"><span class="back-btn">‹</span><span class="screen-title">Upload Homework</span></div>
+<div class="back-row" onclick="switchTab('milestones')"><span class="back-btn">‹</span><span class="screen-title">Upload Homework</span></div>
 
 <div id="missed-banner" style="display:none"></div>
 <div class="section-label">Sessions</div>
@@ -529,7 +529,6 @@ console.log("THE FILE IS LOADING!");
 
 <!-- MILESTONES TAB -->
 <div id="tab-content-milestones" class="content" style="display:none">
-<div class="back-row" onclick="window.goHomeOrStory()"><span class="back-btn">‹</span><span class="screen-title">Your Journey</span></div>
 <div class="section-label">Curriculum</div>
 <div id="milestone-intro" class="fc-done" style="display:none">
 <div class="fc-done-icon">🗺️</div>
@@ -548,7 +547,7 @@ console.log("THE FILE IS LOADING!");
 
 <!-- REVISE LESSON -->
 <div id="tab-content-revise" class="content" style="display:none">
-<div class="back-row" id="revise-back-row" onclick="switchTab('home')"><span class="back-btn">‹</span><span class="screen-title">Revise Lesson</span></div>
+<div class="back-row" id="revise-back-row" onclick="switchTab('milestones')"><span class="back-btn">‹</span><span class="screen-title">Revise Lesson</span></div>
 <div class="revise-tab-row">
 <button class="revise-tab-btn" id="revise-tab-flashcards" onclick="switchReviseSubTab('flashcards')">Flashcards</button>
 <button class="revise-tab-btn" id="revise-tab-exercises" onclick="switchReviseSubTab('exercises')">Exercises</button>
@@ -573,7 +572,7 @@ console.log("THE FILE IS LOADING!");
 <!-- STORY TAB -->
 <!-- STORY TAB -->
 <div id="tab-content-story" class="content" style="display:none">
-<div class="back-row" id="story-back-row" onclick="switchTab('home')"><span class="back-btn">‹</span><span class="screen-title">Start Lesson</span></div>
+<div class="back-row" id="story-back-row" onclick="switchTab('milestones')"><span class="back-btn">‹</span><span class="screen-title">Start Lesson</span></div>
 <style>
 .story-word { cursor:pointer; }
 .story-word.new { font-weight:700; color:#8b2035; }
@@ -1108,22 +1107,25 @@ pathSvg += `<path d="${msQ(seg.p0, seg.c, seg.p2)}" fill="none" stroke="#6B4A3E"
 const labels = ['Flashcards','Exercises','Challenges'];
 const torchPts = [segs[0].p2, segs[1].p2, segs[2].p2];
 const litStates = [torches.flashcards, torches.exercises, torches.challenges];
+const torchActions = [`window.openFlashcardsForLesson(${n})`, `window.openExercisesForLesson(${n})`, `window.openExercisesForLesson(${n})`];
 const onRight = msTentX(n) === 540;
+const tappable = n <= currentLevel;
 let torchSvg = '';
 torchPts.forEach((p, i) => {
-torchSvg += desertTorchSvg(p.x, p.y, litStates[i]);
 const labelX = p.x + (onRight ? 32 : -32);
-torchSvg += `<text x="${labelX}" y="${p.y+4}" font-size="11" fill="#E8DFC8" text-anchor="${onRight ? 'start' : 'end'}">${labels[i]}</text>`;
+const piece = desertTorchSvg(p.x, p.y, litStates[i]) + `<text x="${labelX}" y="${p.y+4}" font-size="11" fill="#E8DFC8" text-anchor="${onRight ? 'start' : 'end'}">${labels[i]}</text>`;
+torchSvg += tappable ? `<g style="cursor:pointer" onclick="${torchActions[i]}">${piece}</g>` : piece;
 });
 
 const figureSvg = figurePoint ? `<circle cx="${figurePoint.x}" cy="${figurePoint.y-20}" r="35" fill="#F2934A" fill-opacity="0.12"/>${desertFigureSvg(figurePoint.x-20, figurePoint.y-59, 0.45)}` : '';
 
 const endOpen = (n+1) <= currentLevel;
+const endTentPiece = desertTentSvg(segs[3].p2.x, segs[3].p2.y, endOpen) + `<text x="${segs[3].p2.x}" y="${segs[3].p2.y+28}" font-size="12" fill="${endOpen ? '#E8DFC8' : '#C9A8A0'}" text-anchor="middle" style="font-weight:500">Lesson ${n+1}</text>`;
+const endTentSvg = (n+1) === currentLevel ? `<g style="cursor:pointer" onclick="window.openLessonTentMenu(${n+1})">${endTentPiece}</g>` : endTentPiece;
 return `${pathSvg}
 ${torchSvg}
 ${figureSvg}
-${desertTentSvg(segs[3].p2.x, segs[3].p2.y, endOpen)}
-<text x="${segs[3].p2.x}" y="${segs[3].p2.y+28}" font-size="12" fill="${endOpen ? '#E8DFC8' : '#C9A8A0'}" text-anchor="middle" style="font-weight:500">Lesson ${n+1}</text>`;
+${endTentSvg}`;
 }
 
 function renderJourneyContinuesFragment(lastLesson, open) {
@@ -1145,8 +1147,8 @@ const code = activeStudentCode();
 const currentLevel = studentLesson[code] || 1;
 const totalHeight = msTentY(MILESTONE_BUILT_LESSONS) + 280;
 let inner = msRippleBands(totalHeight);
-inner += desertTentSvg(msTentX(1), msTentY(1), 1 <= currentLevel);
-inner += `<text x="${msTentX(1)}" y="${msTentY(1)+28}" font-size="12" fill="#E8DFC8" text-anchor="middle" style="font-weight:500">Lesson 1</text>`;
+const firstTentPiece = desertTentSvg(msTentX(1), msTentY(1), 1 <= currentLevel) + `<text x="${msTentX(1)}" y="${msTentY(1)+28}" font-size="12" fill="#E8DFC8" text-anchor="middle" style="font-weight:500">Lesson 1</text>`;
+inner += currentLevel === 1 ? `<g style="cursor:pointer" onclick="window.openLessonTentMenu(1)">${firstTentPiece}</g>` : firstTentPiece;
 for (let n = 1; n < MILESTONE_BUILT_LESSONS; n++) {
 inner += renderMilestoneSegmentFragment(n, currentLevel, overrideNumLit);
 }
@@ -1196,6 +1198,48 @@ requestAnimationFrame(step);
 window.goHomeOrStory = function() {
 if (isGuestMode) switchTab('story');
 else switchTab('home');
+};
+
+window.openFlashcardsForLesson = function(lessonNum) {
+switchTab('revise');
+switchReviseSubTab('flashcards');
+fcCurrentLesson = lessonNum;
+fcShowLessonPicker = false;
+renderFlashcards();
+};
+
+window.openExercisesForLesson = function(lessonNum) {
+switchTab('revise');
+switchReviseSubTab('exercises');
+if (isGuestMode && !guestLessonDone) return;
+exPickerLesson = lessonNum;
+if (typeof exShowPicker === 'function') exShowPicker();
+};
+
+window.openLessonTentMenu = function(lessonNum) {
+const overlay = document.createElement('div');
+overlay.className = 'milestone-celebrate-overlay';
+overlay.innerHTML = `<div class="milestone-celebrate-card" style="text-align:left;max-width:300px">
+<div style="font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--grey);margin-bottom:14px;text-align:center">Lesson ${lessonNum}</div>
+<div class="home-card" id="tent-menu-story" style="margin-bottom:10px">
+<div class="home-card-icon" style="font-size:22px">📖</div>
+<div class="home-card-divider"></div>
+<div class="home-card-text"><div class="home-card-title">Start Lesson</div><div class="home-card-desc">Read today's story</div></div>
+<div class="home-card-arrow">›</div>
+</div>
+<div class="home-card" id="tent-menu-homework">
+<div class="home-card-icon" style="font-size:22px">📸</div>
+<div class="home-card-divider"></div>
+<div class="home-card-text"><div class="home-card-title">Upload Homework</div><div class="home-card-desc">Submit today's work</div></div>
+<div class="home-card-arrow">›</div>
+</div>
+<button class="milestone-review-btn" id="tent-menu-close" style="width:100%;margin-top:16px;background:var(--grey-light);color:var(--grey);border:1.5px solid var(--border)">Close</button>
+</div>`;
+document.body.appendChild(overlay);
+document.getElementById('tent-menu-story').onclick = () => { overlay.remove(); switchTab('story'); };
+document.getElementById('tent-menu-homework').onclick = () => { overlay.remove(); switchTab('homework'); };
+document.getElementById('tent-menu-close').onclick = () => overlay.remove();
+overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
 };
 
 
@@ -1692,7 +1736,7 @@ buildSidebar(); updateHeaderForInstructor();
 app.style.display='block'; app.style.maxWidth='480px'; app.style.margin='0 auto';
 document.getElementById('header-title').textContent='My Homework';
 document.getElementById('header-sub').textContent = isGuestMode ? guestName : (STUDENTS[currentUser]?.display||'');
-switchTab(isGuestMode ? 'milestones' : 'home');
+switchTab('milestones');
 }
 render();
 }
