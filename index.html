@@ -558,6 +558,7 @@ console.log("THE FILE IS LOADING!");
 <div class="revise-tab-row">
 <button class="revise-tab-btn" id="revise-tab-flashcards" onclick="switchReviseSubTab('flashcards')">Flashcards</button>
 <button class="revise-tab-btn" id="revise-tab-exercises" onclick="switchReviseSubTab('exercises')">Exercises</button>
+<button class="revise-tab-btn" id="revise-tab-challenges" onclick="switchReviseSubTab('challenges')">Challenges</button>
 </div>
 
 <!-- FLASHCARDS SUB-TAB -->
@@ -574,6 +575,10 @@ console.log("THE FILE IS LOADING!");
 <!-- EXERCISES SUB-TAB -->
 <div id="tab-content-exercises" style="display:none">
 <div id="ex-root"></div>
+</div>
+<!-- CHALLENGES SUB-TAB -->
+<div id="tab-content-challenges" style="display:none">
+<div id="challenges-root"></div>
 </div>
 </div>
 <!-- STORY TAB -->
@@ -1155,14 +1160,14 @@ pathSvg += `<path d="${msQ(seg.p0, seg.c, seg.p2)}" fill="none" stroke="#6B4A3E"
 const labels = ['Reading','Memorise Vocab','Grammar','Exercises','Challenges'];
 const torchPts = [segs[0].p2, segs[1].p2, segs[2].p2, segs[3].p2, segs[4].p2];
 const litStates = [torches.reading, torches.flashcards, torches.grammar, torches.exercises, torches.challenges];
-const torchActions = [`window.openReadingForLesson(${n})`, `window.openFlashcardsForLesson(${n})`, `window.openGrammarForLesson(${n})`, `window.openExercisesForLesson(${n})`, `window.openExercisesForLesson(${n})`];
+const torchActions = [`window.openReadingForLesson(${n})`, `window.openFlashcardsForLesson(${n})`, `window.openGrammarForLesson(${n})`, `window.openExercisesForLesson(${n})`, `window.openChallengesForLesson(${n})`];
 const onRight = msTentX(n) === 540;
 const tappable = n <= currentLevel;
 let torchSvg = '';
 torchPts.forEach((p, i) => {
 const labelX = p.x + (onRight ? 32 : -32);
 const piece = desertTorchSvg(p.x, p.y, litStates[i]) + `<text x="${labelX}" y="${p.y+4}" font-size="11" fill="#E8DFC8" text-anchor="${onRight ? 'start' : 'end'}">${labels[i]}</text>`;
-torchSvg += tappable ? `<g style="cursor:pointer" onclick="${torchActions[i]}"><circle cx="${p.x}" cy="${p.y}" r="30" fill="none" stroke="#F4C14E" stroke-width="2" stroke-opacity="0.5"/>${piece}</g>` : piece;
+torchSvg += tappable ? `<g id="ms-torch-${n}-${i}" style="cursor:pointer" onclick="${torchActions[i]}"><circle cx="${p.x}" cy="${p.y}" r="30" fill="none" stroke="#F4C14E" stroke-width="2" stroke-opacity="0.5"/>${piece}</g>` : piece;
 });
 
 const figureSvg = figurePoint ? `<circle cx="${figurePoint.x}" cy="${figurePoint.y-20}" r="35" fill="#F2934A" fill-opacity="0.12"/>${desertFigureSvg(figurePoint.x-20, figurePoint.y-59, 0.45)}` : '';
@@ -1255,6 +1260,11 @@ await saveFlashcardData(code);
 const newFrac = window.getLessonProgressSum(lessonNum);
 if (!already && newFrac > oldFrac) window.triggerMilestoneWalk(lessonNum, oldFrac, newFrac, 'grammar');
 else window.switchTab('milestones');
+if (guestTourActive && guestTourStep === 3) {
+guestTourStep = 4;
+guestTourActive = false;
+setTimeout(() => showGuestCoachmark(document.getElementById('ms-torch-' + lessonNum + '-3'), '👉 Last step — tap here to start your Exercises!'), 1500);
+}
 };
 
 // Called instead of opening practice when a student taps a deck / exercise /
@@ -1288,6 +1298,7 @@ document.getElementById('principles-wrap').style.display = 'block';
 };
 
 window.openExercisesForLesson = function(lessonNum) {
+hideGuestCoachmark();
 switchTab('revise');
 switchReviseSubTab('exercises');
 if (isGuestMode && !getGrammarFraction(lessonNum)) return;
@@ -1295,6 +1306,13 @@ exPickerLesson = lessonNum;
 if (typeof exShowPicker === 'function') exShowPicker();
 };
 
+window.openChallengesForLesson = function(lessonNum) {
+switchTab('revise');
+switchReviseSubTab('challenges');
+if (isGuestMode && getExercisesFraction(lessonNum) < 1) return;
+exPickerLesson = lessonNum;
+if (typeof exShowChallengesPicker === 'function') exShowChallengesPicker();
+};
 // Shows a small callout box pointing at any element on screen — used for the
 // new-guest step-by-step tour. position:fixed + raw getBoundingClientRect()
 // values are used deliberately, since the app's scrolling happens inside
@@ -1701,7 +1719,7 @@ await saveFlashcardData(code);
 
 showToast('Submitted! Your teacher will go over this with you in your next lesson.');
 render();
-if (typeof exShowPicker === 'function') exShowPicker();
+if (typeof exShowChallengesPicker === 'function') exShowChallengesPicker();
 };
 
 window.exSubmitChallenge2 = async function() {
@@ -1903,20 +1921,36 @@ if (tab==='guests') renderGuestsTab();
 
 window.switchReviseSubTab = function(sub) {
 const reviseCode = currentUser || viewingStudent;
-if (isGuestMode && sub === 'exercises' && !getGrammarFraction(studentLesson[reviseCode] || 1)) {
+const lessonNum = studentLesson[reviseCode] || 1;
+if (isGuestMode && sub === 'exercises' && !getGrammarFraction(lessonNum)) {
 document.getElementById('tab-content-flashcards').style.display = 'none';
 document.getElementById('tab-content-exercises').style.display = 'block';
+document.getElementById('tab-content-challenges').style.display = 'none';
 document.getElementById('revise-tab-flashcards').classList.remove('active');
 document.getElementById('revise-tab-exercises').classList.add('active');
+document.getElementById('revise-tab-challenges').classList.remove('active');
 document.getElementById('ex-root').innerHTML = '<div class="locked-msg">🔒 Finish the Grammar Principles to unlock exercises.</div>';
+return;
+}
+if (isGuestMode && sub === 'challenges' && getExercisesFraction(lessonNum) < 1) {
+document.getElementById('tab-content-flashcards').style.display = 'none';
+document.getElementById('tab-content-exercises').style.display = 'none';
+document.getElementById('tab-content-challenges').style.display = 'block';
+document.getElementById('revise-tab-flashcards').classList.remove('active');
+document.getElementById('revise-tab-exercises').classList.remove('active');
+document.getElementById('revise-tab-challenges').classList.add('active');
+document.getElementById('challenges-root').innerHTML = '<div class="locked-msg">🔒 Finish the Exercises to unlock challenges.</div>';
 return;
 }
 document.getElementById('tab-content-flashcards').style.display = sub==='flashcards' ? 'block' : 'none';
 document.getElementById('tab-content-exercises').style.display = sub==='exercises' ? 'block' : 'none';
+document.getElementById('tab-content-challenges').style.display = sub==='challenges' ? 'block' : 'none';
 document.getElementById('revise-tab-flashcards').classList.toggle('active', sub==='flashcards');
 document.getElementById('revise-tab-exercises').classList.toggle('active', sub==='exercises');
+document.getElementById('revise-tab-challenges').classList.toggle('active', sub==='challenges');
 if (sub==='flashcards') { fcCurrentLesson = studentLesson[activeStudentCode()] || 1; fcShowLessonPicker = false; renderFlashcards(); }
 if (sub==='exercises' && typeof exShowPicker === 'function') { exPickerLesson = null; exShowPicker(); }
+if (sub==='challenges' && typeof exShowChallengesPicker === 'function') { exPickerLesson = null; exShowChallengesPicker(); }
 }
 
 
@@ -2621,7 +2655,6 @@ document.getElementById('guest-flashcards-btn').style.display = 'none';
 switchTab('milestones');
 if (guestTourActive && guestTourStep === 2.5) {
 guestTourStep = 3;
-guestTourActive = false;
 hideGuestCoachmark();
 }
 });
@@ -2826,7 +2859,7 @@ const defaultLesson = Math.min(window.getCurrentLesson(), EX_MAX_LESSON);
 const viewingLesson = exPickerLesson || defaultLesson;
 const isPastLesson = viewingLesson < defaultLesson;
 
-const cardsHtml = EX_CARDS.filter(c => EX_LESSON_MAP[c.mode] === viewingLesson).map(c => {
+const cardsHtml = EX_CARDS.filter(c => EX_LESSON_MAP[c.mode] === viewingLesson && c.mode !== 'challenge1' && c.mode !== 'challenge2').map(c => {
 if (c.mode === 'challenge1' || c.mode === 'challenge2') {
 const submitted = window.hasSubmittedChallenge && window.hasSubmittedChallenge(c.mode);
 return `<div class="ex-card" id="btn-${c.mode}">
@@ -2864,7 +2897,7 @@ ${cardsHtml}
   ${(defaultLesson > 1 && !isPastLesson) ? `<button id="ex-prev-lessons-btn" style="width:100%;margin-top:18px;padding:12px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">Previous Lessons</button>` : ''}
 `);
 
-EX_CARDS.filter(c => EX_LESSON_MAP[c.mode] === viewingLesson).forEach(c => {
+EX_CARDS.filter(c => EX_LESSON_MAP[c.mode] === viewingLesson && c.mode !== 'challenge1' && c.mode !== 'challenge2').forEach(c => {
 document.getElementById('btn-' + c.mode).onclick = () => {
 const lessonNum = EX_LESSON_MAP[c.mode];
 if (c.mode === 'challenge1' || c.mode === 'challenge2') {
@@ -2886,6 +2919,40 @@ const backBtn = document.getElementById('ex-back-to-current-btn');
 if (backBtn) backBtn.onclick = () => { exPickerLesson = null; exShowPicker(); };
 }
 
+function exShowChallengesPicker() {
+const defaultLesson = Math.min(window.getCurrentLesson(), EX_MAX_LESSON);
+const viewingLesson = exPickerLesson || defaultLesson;
+const isPastLesson = viewingLesson < defaultLesson;
+const challengeCards = EX_CARDS.filter(c => EX_LESSON_MAP[c.mode] === viewingLesson && (c.mode === 'challenge1' || c.mode === 'challenge2'));
+const cardsHtml = challengeCards.map(c => {
+const submitted = window.hasSubmittedChallenge && window.hasSubmittedChallenge(c.mode);
+return `<div class="ex-card" id="chbtn-${c.mode}">
+<div style="font-size:28px;margin-bottom:8px">${c.icon}</div>
+<div class="ex-card-title">${c.title}</div>
+<div class="ex-card-desc">${c.desc}</div>
+<div class="ex-card-note">${submitted ? '✓ Submitted' : 'Not submitted yet'}</div>
+</div>`;
+}).join('');
+document.getElementById('challenges-root').innerHTML = `
+  <div class="section-label">Lesson ${viewingLesson} challenges</div>
+  ${isPastLesson ? `<button id="ch-back-to-current-btn" style="margin-bottom:14px;padding:10px 16px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer">← Back to Lesson ${defaultLesson}</button>` : ''}
+  <div style="display:flex;flex-direction:column;gap:14px;margin-top:8px">
+  ${cardsHtml || '<div class="no-submission-msg">No challenges yet for this lesson.</div>'}
+  </div>
+`;
+challengeCards.forEach(c => {
+document.getElementById('chbtn-' + c.mode).onclick = () => {
+const lessonNum = EX_LESSON_MAP[c.mode];
+const open = () => c.mode === 'challenge1' ? exShowChallenge1() : exShowChallenge2();
+if (window.hasSubmittedChallenge(c.mode)) { window.showMasteredMilestone('challenges', lessonNum, open); return; }
+open();
+};
+});
+const backBtn2 = document.getElementById('ch-back-to-current-btn');
+if (backBtn2) backBtn2.onclick = () => { exPickerLesson = null; exShowChallengesPicker(); };
+}
+window.exShowChallengesPicker = exShowChallengesPicker;
+  
 function exShowLessonPicker() {
 const defaultLesson = Math.min(window.getCurrentLesson(), EX_MAX_LESSON);
 let html = '<div class="section-label">Choose a previous lesson</div><div style="display:flex;flex-direction:column;gap:10px;margin-top:8px">';
@@ -2918,10 +2985,9 @@ html += `
 <button id="ch1-submit-btn" style="width:100%;margin-top:8px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">Submit Challenge</button>
 <button id="ch1-back-btn" style="width:100%;margin-top:8px;padding:10px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">← Back</button>
 </div>`;
-exRender(html);
+document.getElementById('challenges-root').innerHTML = html;
 document.getElementById('ch1-submit-btn').onclick = () => window.exSubmitChallenge1();
-document.getElementById('ch1-back-btn').onclick = exShowPicker;
-}
+document.getElementById('ch1-back-btn').onclick = exShowChallengesPicker;
 
 function exShowChallenge2() {
 const sentences = window.CHALLENGE_2_SENTENCES || [];
@@ -2940,10 +3006,9 @@ html += `
 <button id="ch2-submit-btn" style="width:100%;margin-top:8px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">Submit Challenge</button>
 <button id="ch2-back-btn" style="width:100%;margin-top:8px;padding:10px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">← Back</button>
 </div>`;
-exRender(html);
+document.getElementById('challenges-root').innerHTML = html;
 document.getElementById('ch2-submit-btn').onclick = () => window.exSubmitChallenge2();
-document.getElementById('ch2-back-btn').onclick = exShowPicker;
-}
+document.getElementById('ch2-back-btn').onclick = exShowChallengesPicker;
   
 function exShowSetup(mode) {
 exMode = mode;
