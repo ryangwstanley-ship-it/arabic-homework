@@ -1497,6 +1497,10 @@ for (let i = 0; i < poolLength; i++) { if (prog[i] === 3) easyCount++; }
 return poolLength - easyCount;
 };
 
+window.getExerciseQuestionRating = function(mode, index) {
+return (exProgress[mode] || {})[index];
+};
+  
 window.hasSubmittedChallenge = function(mode) {
 return !!exProgress[mode];
 };
@@ -2765,28 +2769,57 @@ document.getElementById('ex-start-btn').onclick = exLaunch;
 document.getElementById('ex-back-btn').onclick = exShowPicker;
 }
 
+// Full tagged pool for a mode, before any shuffling/filtering.
+function exBuildTaggedPool(mode) {
+return mode === 'fillgap' ? FILL_GAP_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
+: mode === 'wordorder' ? WORD_ORDER_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
+: mode === 'changeword' ? CHANGE_WORD_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
+: mode === 'demonstrative' ? DEMONSTRATIVE_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
+: mode === 'suffixpronoun' ? SUFFIX_PRONOUN_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
+: mode === 'adjectiveagreement' ? ADJECTIVE_AGREEMENT_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
+: mode === 'plural' ? PLURAL_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
+: mode === 'feminine' ? FEMININE_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
+: mode === 'typeharakat' ? exBuildLesson1Pool().map((q,i) => ({ ...q, __idx: i }))
+: mode === 'typeenglish' ? exBuildLesson1Pool().map((q,i) => ({ ...q, __idx: i }))
+: mode === 'suffixtrans' ? SUFFIX_TRANSLATION_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
+: mode === 'demotrans' ? DEMO_TRANSLATION_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
+: mode === 'pluraltype' ? exBuildPluralTypeDeck().map((q,i) => ({ ...q, __idx: i }))
+: mode === 'aetrans' ? TRANSLATION_1_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
+: TRUE_FALSE_QUESTIONS.map((q,i) => ({ ...q, __idx: i }));
+}
+
+// Not-yet-Easy questions shuffled and cycling, with one already-Easy question
+// slotted in after every 5 — same pattern as the guest flashcard queue.
+function buildExerciseQueue(mode, pool) {
+const notEasy = [];
+const easy = [];
+pool.forEach(q => {
+const rating = window.getExerciseQuestionRating(mode, q.__idx);
+(rating === 3 ? easy : notEasy).push(q);
+});
+const shuffledNotEasy = exShuffle(notEasy);
+const shuffledEasy = exShuffle(easy);
+const queue = [];
+let easyPtr = 0;
+shuffledNotEasy.forEach((q, i) => {
+queue.push(q);
+if ((i + 1) % 5 === 0 && shuffledEasy.length) {
+queue.push(shuffledEasy[easyPtr % shuffledEasy.length]);
+easyPtr++;
+}
+});
+if (!shuffledNotEasy.length) {
+shuffledEasy.forEach(q => queue.push(q));
+}
+return queue;
+}
+
 function exLaunch() {
 exAnswered = 0;
 exCurrent = 0;
 exDotEarned = false;
 
-exQuestions = exShuffle(
-exMode === 'fillgap' ? FILL_GAP_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
-: exMode === 'wordorder' ? WORD_ORDER_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
-: exMode === 'changeword' ? CHANGE_WORD_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
-: exMode === 'demonstrative' ? DEMONSTRATIVE_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
-: exMode === 'suffixpronoun' ? SUFFIX_PRONOUN_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
-: exMode === 'adjectiveagreement' ? ADJECTIVE_AGREEMENT_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
-: exMode === 'plural' ? PLURAL_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
-: exMode === 'feminine' ? FEMININE_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
-: exMode === 'typeharakat' ? exBuildLesson1Pool().map((q,i) => ({ ...q, __idx: i }))
-: exMode === 'typeenglish' ? exBuildLesson1Pool().map((q,i) => ({ ...q, __idx: i }))
-: exMode === 'suffixtrans' ? exShuffle(SUFFIX_TRANSLATION_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))).slice(0, 11)
-: exMode === 'demotrans' ? exShuffle(DEMO_TRANSLATION_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))).slice(0, 11)
-: exMode === 'pluraltype' ? exBuildPluralTypeDeck().map((q,i) => ({ ...q, __idx: i }))
-: exMode === 'aetrans' ? TRANSLATION_1_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
-: TRUE_FALSE_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
-);
+exQuestions = buildExerciseQueue(exMode, exBuildTaggedPool(exMode));
 if (exMode === 'pluraltype') exQuestions = exFixAdjacency(exQuestions);
 exRenderActive();
 exShowQuestion();
@@ -2797,7 +2830,8 @@ exRender(`
   <div style="display:flex;justify-content:center;align-items:center;background:var(--grey-light);padding:12px 20px;border-radius:12px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,0.06)">
     <div id="ex-progress" style="color:#6b7280;font-size:14px;font-weight:600">Question 1 / 20</div>
   </div>
-  <div style="background:var(--grey-light);border-radius:16px;padding:28px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
+   <div id="ex-card" style="position:relative;background:var(--grey-light);border-radius:16px;padding:28px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
+    <div id="ex-diff-banner"></div>
     <div id="ex-instruction" style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6b7280;margin-bottom:16px"></div>
     <div id="ex-sentence" style="font-size:1.6em;line-height:2;text-align:center;direction:rtl;margin-bottom:20px"></div>
     <div id="ex-fill-input" style="display:none;flex-direction:column;align-items:center;gap:10px">
@@ -2826,24 +2860,7 @@ exRender(`
 
 function exShowQuestion() {
 if (exCurrent >= exQuestions.length) {
-exQuestions = exShuffle(
-exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS]
-: exMode === 'wordorder' ? [...WORD_ORDER_QUESTIONS]
-: exMode === 'changeword' ? [...CHANGE_WORD_QUESTIONS]
-: exMode === 'demonstrative' ? [...DEMONSTRATIVE_QUESTIONS]
-: exMode === 'suffixpronoun' ? [...SUFFIX_PRONOUN_QUESTIONS]
-: exMode === 'adjectiveagreement' ? [...ADJECTIVE_AGREEMENT_QUESTIONS]
-: exMode === 'plural' ? [...PLURAL_QUESTIONS]
-: exMode === 'feminine' ? [...FEMININE_QUESTIONS]
-: exMode === 'typeharakat' ? exBuildLesson1Pool()
-: exMode === 'typeenglish' ? exBuildLesson1Pool()
-: exMode === 'suffixtrans' ? exShuffle([...SUFFIX_TRANSLATION_QUESTIONS]).slice(0, 11)
-: exMode === 'demotrans' ? exShuffle([...DEMO_TRANSLATION_QUESTIONS]).slice(0, 11)
-: exMode === 'pluraltype' ? exBuildPluralTypeDeck()
-: exMode === 'aetrans' ? [...TRANSLATION_1_QUESTIONS]
-: [...TRUE_FALSE_QUESTIONS]
-
-);
+exQuestions = buildExerciseQueue(exMode, exBuildTaggedPool(exMode));
 if (exMode === 'pluraltype') exQuestions = exFixAdjacency(exQuestions);
 exCurrent = 0;
 }
@@ -2852,7 +2869,15 @@ const ratingEl = document.getElementById('ex-rating-area');
 if (revealEl) revealEl.style.display = 'none';
 if (ratingEl) ratingEl.style.display = 'none';
 document.getElementById('ex-progress').textContent = 'Question '+(exAnswered+1)+' / 20';
-
+const __q = exQuestions[exCurrent];
+const __prevRating = window.getExerciseQuestionRating(exMode, __q.__idx);
+const __diffBanner = document.getElementById('ex-diff-banner');
+if (__diffBanner) {
+__diffBanner.innerHTML = __prevRating === 1 ? '<div class="fc-diff-banner fc-diff-hard">Hard</div>'
+: __prevRating === 2 ? '<div class="fc-diff-banner fc-diff-medium">Medium</div>'
+: __prevRating === 3 ? '<div class="fc-diff-banner fc-diff-easy">Easy</div>'
+: '';
+}
 if (exMode === 'fillgap') {
 const q = exQuestions[exCurrent];
 document.getElementById('ex-instruction').textContent = 'Fill in the missing word';
