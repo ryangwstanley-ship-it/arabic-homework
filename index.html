@@ -1449,6 +1449,14 @@ incrementCardActivity(code);
 await saveFlashcardData(code);
 };
 
+window.getExerciseMasteryPercent = function(mode, poolLength) {
+const prog = exProgress[mode] || {};
+if (!poolLength) return 0;
+let easyCount = 0;
+for (let i = 0; i < poolLength; i++) { if (prog[i] === 3) easyCount++; }
+return Math.round((easyCount / poolLength) * 100);
+};
+
 window.getExerciseRemainingCount = function(mode, poolLength) {
 const prog = exProgress[mode] || {};
 let easyCount = 0;
