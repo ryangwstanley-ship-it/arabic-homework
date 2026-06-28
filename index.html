@@ -1149,7 +1149,7 @@ pathSvg += `<path d="${msQ(seg.p0, seg.c, seg.p2)}" fill="none" stroke="#6B4A3E"
 
 const labels = ['Reading','Memorise Vocab','Grammar','Exercises','Challenges'];
 const torchPts = [segs[0].p2, segs[1].p2, segs[2].p2, segs[3].p2, segs[4].p2];
-const litStates = [torches.reading, torches.flashcards, torches.grammar, torches.exercises, torches.challenges];
+const litStates = [torches.reading === 1, torches.flashcards === 1, torches.grammar === 1, torches.exercises === 1, torches.challenges === 1];
 const torchActions = [`window.openReadingForLesson(${n})`, `window.openFlashcardsForLesson(${n})`, `window.openGrammarForLesson(${n})`, `window.openExercisesForLesson(${n})`, `window.openChallengesForLesson(${n})`];
 const onRight = msTentX(n) === 540;
 const tappable = n <= currentLevel;
