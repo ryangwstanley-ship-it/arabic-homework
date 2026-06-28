@@ -415,6 +415,15 @@ console.log("THE FILE IS LOADING!");
 </div>
 <div class="home-card-arrow">›</div>
 </div>
+<div class="home-card" id="home-btn-milestones">
+<div class="home-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="19" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="5" r="2"/><path d="M6.5 17.5L10.5 13.5"/><path d="M13.5 10.5L17.5 6.5"/></svg></div>
+<div class="home-card-divider"></div>
+<div class="home-card-text">
+<div class="home-card-title">View Your Journey</div>
+<div class="home-card-desc">See your progress through the curriculum</div>
+</div>
+<div class="home-card-arrow">›</div>
+</div>
 </div>
 
 
@@ -454,6 +463,13 @@ console.log("THE FILE IS LOADING!");
 <div id="upload-area-wrap" style="display:none"></div>
 </div>
 
+<!-- MILESTONES TAB -->
+<div id="tab-content-milestones" class="content" style="display:none">
+<div class="back-row" onclick="switchTab('home')"><span class="back-btn">‹</span><span class="screen-title">Your Journey</span></div>
+<div class="section-label">Curriculum</div>
+<div id="milestone-root" style="margin-top:8px"></div>
+</div>
+
 <!-- REVISE LESSON -->
 <div id="tab-content-revise" class="content" style="display:none">
 <div class="back-row" id="revise-back-row" onclick="switchTab('home')"><span class="back-btn">‹</span><span class="screen-title">Revise Lesson</span></div>
@@ -465,7 +481,8 @@ console.log("THE FILE IS LOADING!");
 <!-- FLASHCARDS SUB-TAB -->
 <div id="tab-content-flashcards" style="display:none">
 <div class="section-label">Lessons</div>
-<div class="fc-lesson-picker" id="fc-lesson-picker"></div>
+<button id="fc-prev-lessons-btn" style="margin-bottom:14px;padding:10px 16px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer">Previous Lessons</button>
+<div class="fc-lesson-picker" id="fc-lesson-picker" style="display:none"></div>
 
 <div id="fc-area"></div>
 
@@ -695,7 +712,7 @@ const db = getFirestore(firebaseApp);
 
 
 // ── FLASHCARD DATA (now loaded from GitHub) ──
-let DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS, PLURAL_QUESTIONS, FEMININE_QUESTIONS, SUFFIX_TRANSLATION_QUESTIONS, DEMO_TRANSLATION_QUESTIONS;
+let DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS, PLURAL_QUESTIONS, FEMININE_QUESTIONS, SUFFIX_TRANSLATION_QUESTIONS, DEMO_TRANSLATION_QUESTIONS, PLURAL_TYPE_QUESTIONS, CHALLENGE_1_WORDS, TRANSLATION_1_QUESTIONS, CHALLENGE_2_SENTENCES;
 async function loadVocabData() {
 
 const url = 'https://raw.githubusercontent.com/ryangwstanley-ship-it/database/main/website%20data%20base?t=' + Date.now();
@@ -703,7 +720,7 @@ const res = await fetch(url);
 const code = await res.text();
 const runner = new Function(
 code.replaceAll('export const', 'const') +
-'; return { DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS, PLURAL_QUESTIONS, FEMININE_QUESTIONS, SUFFIX_TRANSLATION_QUESTIONS, DEMO_TRANSLATION_QUESTIONS };'
+'; return { DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS, PLURAL_QUESTIONS, FEMININE_QUESTIONS, SUFFIX_TRANSLATION_QUESTIONS, DEMO_TRANSLATION_QUESTIONS, PLURAL_TYPE_QUESTIONS, CHALLENGE_1_WORDS, TRANSLATION_1_QUESTIONS, CHALLENGE_2_SENTENCES };'
 );
 const data = runner();
 DEFAULT_LESSONS = data.DEFAULT_LESSONS;
@@ -718,7 +735,10 @@ PLURAL_QUESTIONS = data.PLURAL_QUESTIONS;
 FEMININE_QUESTIONS = data.FEMININE_QUESTIONS;
 SUFFIX_TRANSLATION_QUESTIONS = data.SUFFIX_TRANSLATION_QUESTIONS;
 DEMO_TRANSLATION_QUESTIONS = data.DEMO_TRANSLATION_QUESTIONS;
-
+PLURAL_TYPE_QUESTIONS = data.PLURAL_TYPE_QUESTIONS;
+CHALLENGE_1_WORDS = data.CHALLENGE_1_WORDS;
+TRANSLATION_1_QUESTIONS = data.TRANSLATION_1_QUESTIONS;
+CHALLENGE_2_SENTENCES = data.CHALLENGE_2_SENTENCES;
 
 window.FILL_GAP_QUESTIONS = FILL_GAP_QUESTIONS;
 window.WORD_ORDER_QUESTIONS = WORD_ORDER_QUESTIONS;
@@ -731,6 +751,10 @@ window.PLURAL_QUESTIONS = PLURAL_QUESTIONS;
 window.FEMININE_QUESTIONS = FEMININE_QUESTIONS;
 window.SUFFIX_TRANSLATION_QUESTIONS = SUFFIX_TRANSLATION_QUESTIONS;
 window.DEMO_TRANSLATION_QUESTIONS = DEMO_TRANSLATION_QUESTIONS;
+window.PLURAL_TYPE_QUESTIONS = PLURAL_TYPE_QUESTIONS;
+window.CHALLENGE_1_WORDS = CHALLENGE_1_WORDS;
+window.TRANSLATION_1_QUESTIONS = TRANSLATION_1_QUESTIONS;
+window.CHALLENGE_2_SENTENCES = CHALLENGE_2_SENTENCES;
 }
 
 await loadVocabData();
@@ -793,10 +817,12 @@ let guestLessonDone = false;
 // Flashcard state
 let fcProgress = {};
 let fcCurrentLesson = 1;
+let fcShowLessonPicker = false;
 let fcQueue = [];
 let fcCurrentIdx = 0;
 let fcRevealed = false;
 let fcDeletedCards = {}; // fcDeletedCards[lessonNum] = Set of card indices deleted
+let guestActiveWordCount = 5; // Guests start with 5 words; +5 each time the active batch is all "Easy"
 
 // Revision activity, per student: allFcActivity[code][dateKey] = minutes
 let allFcActivity = {};
@@ -818,6 +844,7 @@ function dateKey(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padSta
 function todayKey() { return dateKey(new Date()); }
 function formatDateLong(key) { const [y,m,d]=key.split('-').map(Number); return new Date(y,m-1,d).toLocaleDateString('en-GB',{weekday:'long',year:'numeric',month:'long',day:'numeric'}); }
 function activeStudentCode() { return isInstructor && !isStudentView ? viewingStudent : currentUser; }
+window.getCurrentLesson = function() { return studentLesson[activeStudentCode()] || 1; };
 function miniRing(percent, emoji, centered) {
 const r = 18, c = 2 * Math.PI * r;
 const offset = c - (percent/100)*c;
@@ -838,6 +865,198 @@ const activeIdxs = lesson.cards.map((_,i)=>i).filter(i=>!isCardDeleted(lessonNum
 if (!activeIdxs.length) return 0;
 const easyCount = activeIdxs.filter(i => getCardProgress(lessonNum,i).lastRating === 3).length;
 return Math.round((easyCount/activeIdxs.length)*100);
+}
+
+// ── MILESTONE PATH (desert journey) ──
+// Whether the "exercises" torch should be lit for a lesson: average mastery
+// across that lesson's exercise modes (everything except the two challenges)
+function isLessonExercisesReady(lessonNum) {
+const modes = Object.keys(EX_LESSON_MAP).filter(m => EX_LESSON_MAP[m] === lessonNum && m !== 'challenge1' && m !== 'challenge2');
+if (!modes.length) return true;
+const avg = modes.reduce((sum, m) => sum + window.getExerciseMasteryPercent(m, exGetQuestionCount(m)), 0) / modes.length;
+return avg >= 75;
+}
+
+// Whether the "challenges" torch should be lit: both challenges submitted
+// (lessons with no challenges built yet count as automatically lit)
+function isLessonChallengesReady(lessonNum) {
+const challengeModes = Object.keys(EX_LESSON_MAP).filter(m => EX_LESSON_MAP[m] === lessonNum && (m === 'challenge1' || m === 'challenge2'));
+if (!challengeModes.length) return true;
+return challengeModes.every(m => window.hasSubmittedChallenge(m));
+}
+
+// All three torch states for a lesson, used to light the path between tents
+function getTorchStates(lessonNum) {
+return {
+flashcards: getLessonMasteryPercent(lessonNum) >= 75,
+exercises: isLessonExercisesReady(lessonNum),
+challenges: isLessonChallengesReady(lessonNum)
+};
+}
+
+const MS_ROW_H = 510;
+function msTentX(n) { return n % 2 === 1 ? 540 : 150; }
+function msTentY(n) { return (n - 1) * MS_ROW_H + 120; }
+function msMirror(x, flip) { return flip ? 690 - x : x; }
+function msLerp(a, b, t) { return { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t }; }
+function msSplitQuad(p0, c, p2, t) {
+const q1 = msLerp(p0, c, t), r1 = msLerp(c, p2, t);
+return { firstC: q1, secondC: r1, point: msLerp(q1, r1, t) };
+}
+function msSegments(n) {
+const flip = n % 2 === 0;
+const Y = (n - 1) * MS_ROW_H;
+const mx = x => msMirror(x, flip);
+const pts = [
+{ x: mx(540), y: Y + 120 }, { x: mx(460), y: Y + 210 },
+{ x: mx(340), y: Y + 330 }, { x: mx(220), y: Y + 480 },
+{ x: mx(150), y: Y + 630 }
+];
+const ctrls = [
+{ x: mx(500), y: Y + 165 }, { x: mx(400), y: Y + 270 },
+{ x: mx(270), y: Y + 380 }, { x: mx(190), y: Y + 560 }
+];
+return [0,1,2,3].map(i => ({ p0: pts[i], c: ctrls[i], p2: pts[i+1] }));
+}
+function msQ(p0, c, p2) { return `M${p0.x},${p0.y} Q${c.x},${c.y} ${p2.x},${p2.y}`; }
+
+function desertFigureSvg(x, y, scale) {
+return `<g transform="translate(${x},${y}) scale(${scale})">
+<path d="M40,28 Q14,55 9,124 L40,130 L71,132 Q66,55 40,28 Z" fill="#170A0C"/>
+<path d="M40,28 Q60,55 65,124 L52,127 Q50,70 40,40 Z" fill="#0E0608"/>
+<path d="M42,30 Q62,56 67,123" fill="none" stroke="#E8794A" stroke-width="2" stroke-opacity="0.6"/>
+<ellipse cx="40" cy="16" rx="13" ry="14" fill="#170A0C"/>
+<line x1="66" y1="55" x2="80" y2="128" stroke="#170A0C" stroke-width="4" stroke-linecap="round"/>
+</g>`;
+}
+
+function desertTentSvg(x, y, open) {
+if (open) {
+return `<ellipse cx="${x}" cy="${y+6}" rx="42" ry="10" fill="#2A1018" fill-opacity="0.6"/>
+<circle cx="${x}" cy="${y-25}" r="55" fill="#F2934A" fill-opacity="0.22"/>
+<g transform="translate(${x},${y}) scale(0.6)">
+<path d="M-30,0 Q-30,-70 0,-88 Q30,-70 30,0 Z" fill="#1A0B10" stroke="#0D0507" stroke-width="1.5"/>
+<path d="M0,-88 Q30,-70 30,0" fill="none" stroke="#E8794A" stroke-width="2" stroke-opacity="0.7"/>
+<polygon points="-12,0 12,0 0,-50" fill="#F4C14E" fill-opacity="0.85"/>
+<line x1="0" y1="-88" x2="0" y2="-104" stroke="#1A0B10" stroke-width="2"/>
+<polygon points="0,-104 18,-98 0,-92" fill="#8B2035"/>
+</g>`;
+}
+return `<ellipse cx="${x}" cy="${y+6}" rx="42" ry="10" fill="#2A1018" fill-opacity="0.6"/>
+<g transform="translate(${x},${y}) scale(0.6)">
+<path d="M-30,0 Q-30,-70 0,-88 Q30,-70 30,0 Z" fill="#1A0B10" stroke="#0D0507" stroke-width="1.5"/>
+<line x1="0" y1="-88" x2="0" y2="0" stroke="#0D0507" stroke-width="1.5"/>
+<circle cx="0" cy="-24" r="6" fill="#0D0507" stroke="#000000" stroke-width="1"/>
+<line x1="-7" y1="-30" x2="7" y2="-18" stroke="#000000" stroke-width="1.5"/>
+<line x1="7" y1="-30" x2="-7" y2="-18" stroke="#000000" stroke-width="1.5"/>
+<line x1="0" y1="-88" x2="0" y2="-102" stroke="#1A0B10" stroke-width="2"/>
+<polygon points="0,-102 0,-92 10,-97" fill="#3A1A20"/>
+</g>`;
+}
+
+function desertTorchSvg(x, y, lit) {
+if (lit) {
+return `<circle cx="${x}" cy="${y}" r="45" fill="#F2934A" fill-opacity="0.13"/>
+<circle cx="${x}" cy="${y}" r="18" fill="#F2934A" fill-opacity="0.22"/>
+<path d="M${x-7},${y+4} Q${x},${y-20} ${x+7},${y+4} Q${x},${y+14} ${x-7},${y+4} Z" fill="#F4C14E" stroke="#E07A2E" stroke-width="1"/>
+<path d="M${x-3},${y+2} Q${x},${y-12} ${x+3},${y+2} Q${x},${y+8} ${x-3},${y+2} Z" fill="#FCE2A0"/>`;
+}
+return `<path d="M${x-7},${y+4} Q${x},${y-20} ${x+7},${y+4} Q${x},${y+14} ${x-7},${y+4} Z" fill="#1A0B10" stroke="#0D0507" stroke-width="1"/>`;
+}
+
+function msRippleBands(totalHeight) {
+let s = '', i = 0;
+for (let y = 150; y < totalHeight; y += 150) {
+const amp = (i % 2 === 0) ? 20 : -20;
+s += `<path d="M0,${y} Q${200+amp},${y-20} 400,${y+5} T680,${y-5}" fill="none" stroke="#1A0B10" stroke-width="1.5" stroke-opacity="0.35"/>`;
+i++;
+}
+return s;
+}
+
+function renderMilestoneSegmentFragment(n, currentLevel) {
+const isPast = n < currentLevel;
+const isActive = n === currentLevel;
+const torches = isPast ? {flashcards:true, exercises:true, challenges:true} : getTorchStates(n);
+const numLit = [torches.flashcards, torches.exercises, torches.challenges].filter(Boolean).length;
+const segs = msSegments(n);
+
+let litSegCount = 0, partialIdx = null;
+if (isPast) litSegCount = 4;
+else if (isActive) {
+if (numLit >= 3) litSegCount = 3;
+else { litSegCount = numLit; partialIdx = numLit; }
+}
+
+let figurePoint = null;
+if (isActive) {
+figurePoint = numLit >= 3 ? segs[2].p2 : msSplitQuad(segs[numLit].p0, segs[numLit].c, segs[numLit].p2, 0.5).point;
+}
+
+let pathSvg = '';
+segs.forEach((seg, i) => {
+if (i < litSegCount) {
+pathSvg += `<path d="${msQ(seg.p0, seg.c, seg.p2)}" fill="none" stroke="#F2934A" stroke-width="14" stroke-opacity="0.25" stroke-linecap="round"/><path d="${msQ(seg.p0, seg.c, seg.p2)}" fill="none" stroke="#F4C14E" stroke-width="4" stroke-opacity="0.9" stroke-linecap="round"/>`;
+} else if (i === partialIdx) {
+const split = msSplitQuad(seg.p0, seg.c, seg.p2, 0.5);
+pathSvg += `<path d="${msQ(seg.p0, split.firstC, split.point)}" fill="none" stroke="#F2934A" stroke-width="14" stroke-opacity="0.25" stroke-linecap="round"/><path d="${msQ(seg.p0, split.firstC, split.point)}" fill="none" stroke="#F4C14E" stroke-width="4" stroke-opacity="0.9" stroke-linecap="round"/>`;
+pathSvg += `<path d="${msQ(split.point, split.secondC, seg.p2)}" fill="none" stroke="#6B4A3E" stroke-width="3" stroke-dasharray="3 8" stroke-opacity="0.5"/>`;
+} else {
+pathSvg += `<path d="${msQ(seg.p0, seg.c, seg.p2)}" fill="none" stroke="#6B4A3E" stroke-width="3" stroke-dasharray="3 8" stroke-opacity="0.5"/>`;
+}
+});
+
+const labels = ['Flashcards','Exercises','Challenges'];
+const torchPts = [segs[0].p2, segs[1].p2, segs[2].p2];
+const litStates = [torches.flashcards, torches.exercises, torches.challenges];
+const onRight = msTentX(n) === 540;
+let torchSvg = '';
+torchPts.forEach((p, i) => {
+torchSvg += desertTorchSvg(p.x, p.y, litStates[i]);
+const labelX = p.x + (onRight ? 32 : -32);
+torchSvg += `<text x="${labelX}" y="${p.y+4}" font-size="11" fill="#E8DFC8" text-anchor="${onRight ? 'start' : 'end'}">${labels[i]}</text>`;
+});
+
+const figureSvg = figurePoint ? `<circle cx="${figurePoint.x}" cy="${figurePoint.y-20}" r="35" fill="#F2934A" fill-opacity="0.12"/>${desertFigureSvg(figurePoint.x-20, figurePoint.y-59, 0.45)}` : '';
+
+const endOpen = (n+1) <= currentLevel;
+return `${pathSvg}
+${torchSvg}
+${figureSvg}
+${desertTentSvg(segs[3].p2.x, segs[3].p2.y, endOpen)}
+<text x="${segs[3].p2.x}" y="${segs[3].p2.y+28}" font-size="12" fill="${endOpen ? '#E8DFC8' : '#C9A8A0'}" text-anchor="middle" style="font-weight:500">Lesson ${n+1}</text>`;
+}
+
+function renderJourneyContinuesFragment(lastLesson, open) {
+const tx = msTentX(lastLesson), ty = msTentY(lastLesson);
+const sign = tx === 540 ? -1 : 1;
+let dots = '';
+const offsets = [70,130,195,265,340];
+offsets.forEach((d,i) => {
+const dx = tx + sign*d, dy = ty + 110 + i*30;
+const r = Math.max(4 - i*0.6, 0.5), op = Math.max(0.8 - i*0.15, 0.05);
+dots += `<circle cx="${dx}" cy="${dy}" r="${r}" fill="#C9744A" fill-opacity="${op}"/>`;
+});
+const labelX = tx + sign*340, labelY = ty + 110 + 4*30 + 20;
+return `${dots}<text x="${labelX}" y="${labelY}" font-size="12" fill="#C9A8A0" text-anchor="middle">More of the journey awaits</text>`;
+}
+
+function renderMilestones() {
+const code = activeStudentCode();
+const currentLevel = studentLesson[code] || 1;
+const totalHeight = msTentY(MILESTONE_BUILT_LESSONS) + 280;
+let inner = msRippleBands(totalHeight);
+inner += desertTentSvg(msTentX(1), msTentY(1), 1 <= currentLevel);
+inner += `<text x="${msTentX(1)}" y="${msTentY(1)+28}" font-size="12" fill="#E8DFC8" text-anchor="middle" style="font-weight:500">Lesson 1</text>`;
+for (let n = 1; n < MILESTONE_BUILT_LESSONS; n++) {
+inner += renderMilestoneSegmentFragment(n, currentLevel);
+}
+inner += renderJourneyContinuesFragment(MILESTONE_BUILT_LESSONS, MILESTONE_BUILT_LESSONS <= currentLevel);
+document.getElementById('milestone-root').innerHTML = `<svg width="100%" viewBox="0 0 680 ${totalHeight}" role="img" style="display:block">
+<defs><linearGradient id="msSunset" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C9522E"/><stop offset="1" stop-color="#2A0A14"/></linearGradient></defs>
+<rect x="0" y="0" width="680" height="${totalHeight}" fill="url(#msSunset)"/>
+${inner}
+</svg>`;
 }
 
 function isMidnightPast(dateStr) {
@@ -1034,6 +1253,74 @@ for (let i = 0; i < poolLength; i++) { if (prog[i] === 3) easyCount++; }
 return Math.round((easyCount / poolLength) * 100);
 };
 
+window.hasSubmittedChallenge = function(mode) {
+return !!exProgress[mode];
+};
+
+window.exSubmitChallenge1 = async function() {
+const code = activeStudentCode();
+const today = todayKey();
+const words = window.CHALLENGE_1_WORDS || [];
+const answers = words.map((w, i) => {
+const el = document.getElementById('ch1-input-' + i);
+return { ar: w.ar, en: w.en, answer: el ? el.value.trim() : '' };
+});
+const filled = answers.filter(a => a.answer);
+if (!filled.length) { showToast('Write at least one sentence first'); return; }
+
+let block = '📋 Challenge 1 — Lesson 1 (a sentence with each word)';
+answers.forEach((a, i) => {
+block += `\n${i+1}. ${a.ar} (${a.en}): ${a.answer || '—'}`;
+});
+
+const existing = submissions[code]?.[today] || {};
+const newText = (existing.text ? existing.text + '\n\n' : '') + block;
+const dayData = { images: existing.images || [], text: newText, reviewed: false };
+if (!submissions[code]) submissions[code] = {};
+submissions[code][today] = dayData;
+await saveDay(code, today, dayData);
+
+exProgress['challenge1'] = true;
+for (let i = 0; i < filled.length; i++) incrementCardActivity(code);
+await saveFlashcardData(code);
+
+showToast('Submitted! Your teacher will go over this with you in your next lesson.');
+render();
+if (typeof exShowPicker === 'function') exShowPicker();
+};
+
+window.exSubmitChallenge2 = async function() {
+const code = activeStudentCode();
+const today = todayKey();
+const sentences = window.CHALLENGE_2_SENTENCES || [];
+const answers = sentences.map((s, i) => {
+const el = document.getElementById('ch2-input-' + i);
+return { en: s.en, answer: el ? el.value.trim() : '' };
+});
+const filled = answers.filter(a => a.answer);
+if (!filled.length) { showToast('Translate at least one sentence first'); return; }
+
+let block = '📋 Challenge 2 — Lesson 1 (English → Arabic translation)';
+answers.forEach((a, i) => {
+block += `\n${i+1}. ${a.en}\n   ${a.answer || '—'}`;
+});
+
+const existing = submissions[code]?.[today] || {};
+const newText = (existing.text ? existing.text + '\n\n' : '') + block;
+const dayData = { images: existing.images || [], text: newText, reviewed: false };
+if (!submissions[code]) submissions[code] = {};
+submissions[code][today] = dayData;
+await saveDay(code, today, dayData);
+
+exProgress['challenge2'] = true;
+for (let i = 0; i < filled.length; i++) incrementCardActivity(code);
+await saveFlashcardData(code);
+
+showToast('Submitted! Your teacher will go over this with you in your next lesson.');
+render();
+if (typeof exShowPicker === 'function') exShowPicker();
+};
+
 async function saveDay(code, dateStr, data) { if (isGuestMode) return; await setDoc(doc(db,'submissions',code,'days',dateStr), data); }
 
 // ── LOGIN ──
@@ -1062,6 +1349,7 @@ err.style.display='block'; btn.textContent='Enter'; btn.disabled=false;
 // ── GUEST ──
 window.startGuestJourney = function() {
 isGuestMode = true;
+guestActiveWordCount = 5;
 currentUser = 'GUEST';
 isInstructor = false;
 document.getElementById('home-btn-upload').style.display = 'none';
@@ -1098,16 +1386,18 @@ render();
 window.switchTab = function(tab) {
 if (isGuestMode && tab === 'home') return;
 currentTab = tab;
-document.getElementById('app-header').style.display = tab==='home' ? 'none' : 'flex';
+document.getElementById('app-header').style.display = (tab==='home' || !isInstructor) ? 'none' : 'flex';
 document.getElementById('tab-content-home').style.display = tab==='home' ? 'block' : 'none';
 document.getElementById('tab-content-homework').style.display = tab==='homework' ? 'block' : 'none';
 document.getElementById('tab-content-revise').style.display = tab==='revise' ? 'block' : 'none';
 document.getElementById('tab-content-story').style.display = tab==='story' ? 'block' : 'none';
+document.getElementById('tab-content-milestones').style.display = tab==='milestones' ? 'block' : 'none';
 document.getElementById('tab-home').classList.toggle('active', tab==='home');
 document.getElementById('tab-homework').classList.toggle('active', tab==='homework');
 document.getElementById('tab-story').classList.toggle('active', tab==='story');
 if (tab==='revise') switchReviseSubTab('flashcards');
 if (tab==='story') setStoryLesson(studentLesson[activeStudentCode()] || 1);
+if (tab==='milestones') renderMilestones();
 }
 
 window.switchReviseSubTab = function(sub) {
@@ -1123,8 +1413,8 @@ document.getElementById('tab-content-flashcards').style.display = sub==='flashca
 document.getElementById('tab-content-exercises').style.display = sub==='exercises' ? 'block' : 'none';
 document.getElementById('revise-tab-flashcards').classList.toggle('active', sub==='flashcards');
 document.getElementById('revise-tab-exercises').classList.toggle('active', sub==='exercises');
-if (sub==='flashcards') renderFlashcards();
-if (sub==='exercises' && typeof exShowPicker === 'function') exShowPicker();
+if (sub==='flashcards') { fcCurrentLesson = studentLesson[activeStudentCode()] || 1; fcShowLessonPicker = false; renderFlashcards(); }
+if (sub==='exercises' && typeof exShowPicker === 'function') { exPickerLesson = null; exShowPicker(); }
 }
 
 
@@ -1417,6 +1707,47 @@ fcCurrentIdx = 0;
 fcRevealed = false;
 }
 
+// Plain shuffle helper (same shuffle pattern as buildFcQueue, just reusable for any list)
+function fcShuffleArr(arr) {
+const a = [...arr];
+for (let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+return a;
+}
+
+// Which cards a guest currently has "unlocked" — the first N non-deleted cards, N = guestActiveWordCount
+function getGuestActiveCardIdxs(lessonNum) {
+const lesson = LESSONS[lessonNum];
+if (!lesson) return [];
+const nonDeleted = lesson.cards.map((_,i)=>i).filter(i => !isCardDeleted(lessonNum, i));
+return nonDeleted.slice(0, guestActiveWordCount);
+}
+
+// Builds a guest's card list: not-yet-"Easy" cards shuffled and cycling, with one already-"Easy" card slotted in after every 5
+function buildGuestFcQueue() {
+const lesson = LESSONS[fcCurrentLesson];
+const activeIdxs = getGuestActiveCardIdxs(fcCurrentLesson);
+const normalIdxs = fcShuffleArr(activeIdxs.filter(i => getCardProgress(fcCurrentLesson, i).lastRating !== 3));
+const easyIdxs = fcShuffleArr(activeIdxs.filter(i => getCardProgress(fcCurrentLesson, i).lastRating === 3));
+
+const queue = [];
+let easyPtr = 0;
+normalIdxs.forEach((idx, i) => {
+queue.push({ ...lesson.cards[idx], idx });
+if ((i + 1) % 5 === 0 && easyIdxs.length) {
+const eIdx = easyIdxs[easyPtr % easyIdxs.length];
+queue.push({ ...lesson.cards[eIdx], idx: eIdx });
+easyPtr++;
+}
+});
+if (!normalIdxs.length) {
+easyIdxs.forEach(idx => queue.push({ ...lesson.cards[idx], idx }));
+}
+
+fcQueue = queue;
+fcCurrentIdx = 0;
+fcRevealed = false;
+}
+
 // SM-2 algorithm
 // rating: 1=Hard, 2=Medium, 3=Easy
 function applyRating(lessonNum, cardIdx, rating) {
@@ -1441,6 +1772,13 @@ const picker = document.getElementById('fc-lesson-picker');
 picker.innerHTML='';
 const code = currentUser || viewingStudent;
 const maxLesson = (studentLesson[code] !== undefined) ? studentLesson[code] : 1;
+picker.style.display = fcShowLessonPicker ? 'flex' : 'none';
+const fcPrevBtn = document.getElementById('fc-prev-lessons-btn');
+if (fcPrevBtn) {
+fcPrevBtn.style.display = maxLesson > 1 ? 'inline-block' : 'none';
+fcPrevBtn.textContent = fcShowLessonPicker ? 'Hide Previous Lessons' : 'Previous Lessons';
+fcPrevBtn.onclick = () => { fcShowLessonPicker = !fcShowLessonPicker; renderFlashcards(); };
+}
 if (isGuestMode) {
 const principlesBtn = document.getElementById('guest-principles-btn');
 if (principlesBtn) principlesBtn.style.display = getLessonMasteryPercent(fcCurrentLesson) >= 75 ? 'block' : 'none';
@@ -1460,12 +1798,26 @@ picker.appendChild(btn);
 
 
 
-if (!fcQueue.length) buildFcQueue();
+if (!fcQueue.length) { if (isGuestMode) buildGuestFcQueue(); else buildFcQueue(); }
 
 const area = document.getElementById('fc-area');
 area.innerHTML='';
 
 if (!fcQueue.length || fcCurrentIdx >= fcQueue.length) {
+if (isGuestMode) {
+const activeIdxs = getGuestActiveCardIdxs(fcCurrentLesson);
+const totalNonDeleted = LESSONS[fcCurrentLesson].cards.filter((_,i)=>!isCardDeleted(fcCurrentLesson,i)).length;
+if (activeIdxs.length > 0) {
+const allEasy = activeIdxs.every(i => getCardProgress(fcCurrentLesson, i).lastRating === 3);
+const moreToUnlock = guestActiveWordCount < totalNonDeleted;
+if (!allEasy || moreToUnlock) {
+if (allEasy && moreToUnlock) guestActiveWordCount = Math.min(guestActiveWordCount + 5, totalNonDeleted);
+buildGuestFcQueue();
+renderFlashcards();
+return;
+}
+}
+}
 area.innerHTML=`<div class="fc-done">
     <div class="fc-done-icon">🎉</div>
     <div class="fc-done-title">All done for now!</div>
@@ -1481,7 +1833,8 @@ setCardProgress(fcCurrentLesson,i,{...p,nextReview:0});
 }
 }
 });
-buildFcQueue(); renderFlashcards();
+if (isGuestMode) buildGuestFcQueue(); else buildFcQueue();
+renderFlashcards();
 });
 return;
 }
@@ -1531,7 +1884,7 @@ btn.addEventListener('click',async()=>{
 const rating = parseInt(btn.dataset.r);
 const oldPct = getLessonMasteryPercent(fcCurrentLesson);
 applyRating(fcCurrentLesson, card.idx, rating);
-if (rating === 1) fcQueue.push(card);
+if (rating === 1 && !isGuestMode) fcQueue.push(card);
 fcCurrentIdx++;
 const code = currentUser || viewingStudent;
 incrementCardActivity(code);
@@ -1686,6 +2039,7 @@ if(isInstructor&&!isStudentView)buildSidebar();
 if(currentTab==='flashcards')renderFlashcards();
 }
 
+const MILESTONE_BUILT_LESSONS = 3;
 
 
 
@@ -1701,6 +2055,7 @@ if(currentTab==='flashcards')renderFlashcards();
 document.getElementById('home-btn-start').addEventListener('click', () => switchTab('story'));
 document.getElementById('home-btn-revise').addEventListener('click', () => switchTab('revise'));
 document.getElementById('home-btn-upload').addEventListener('click', () => switchTab('homework'));
+document.getElementById('home-btn-milestones').addEventListener('click', () => switchTab('milestones'));
 document.getElementById('login-btn').addEventListener('click',handleLogin);
 document.getElementById('guest-start-btn').addEventListener('click', startGuestJourney);
 document.getElementById('guest-start-btn').addEventListener('click', startGuestJourney);
@@ -1782,6 +2137,29 @@ const EX_L1_PLURAL_EN = {
 };
 
 // Build the Lesson 1 typing pool: {ar (with harakat shown), target (bare), en}
+function exBuildPluralTypeDeck() {
+const cards = [];
+PLURAL_TYPE_QUESTIONS.forEach((w, i) => {
+cards.push({ ar: w.ar, en: w.en, cardType: 'regularity', answer: w.regular, wordIdx: i });
+cards.push({ ar: w.ar, en: w.en, cardType: 'animacy', answer: w.human, wordIdx: i });
+});
+return cards;
+}
+
+function exFixAdjacency(cards) {
+const arr = [...cards];
+for (let i = 1; i < arr.length; i++) {
+if (arr[i].wordIdx !== undefined && arr[i].wordIdx === arr[i-1].wordIdx) {
+for (let j = i+1; j < arr.length; j++) {
+if (arr[j].wordIdx !== arr[i-1].wordIdx) {
+[arr[i], arr[j]] = [arr[j], arr[i]];
+break;
+}
+}
+}
+}
+return arr;
+}
 function exBuildLesson1Pool() {
 const cards = (window.LESSONS && window.LESSONS[1] && window.LESSONS[1].cards) ? window.LESSONS[1].cards : [];
 const pool = [];
@@ -1806,120 +2184,159 @@ const shuffled = exShuffle(full);
 return shuffled.slice(0, 11);
 }
 
-function exShowPicker() {
-const fillgapPct = window.getExerciseMasteryPercent('fillgap', FILL_GAP_QUESTIONS.length);
-const wordorderPct = window.getExerciseMasteryPercent('wordorder', WORD_ORDER_QUESTIONS.length);
-const truefalsePct = window.getExerciseMasteryPercent('truefalse', TRUE_FALSE_QUESTIONS.length);
-const changewordPct = window.getExerciseMasteryPercent('changeword', CHANGE_WORD_QUESTIONS.length);
-const demonstrativePct = window.getExerciseMasteryPercent('demonstrative', DEMONSTRATIVE_QUESTIONS.length);
-const suffixpronounPct = window.getExerciseMasteryPercent('suffixpronoun', SUFFIX_PRONOUN_QUESTIONS.length);
-const suffixtransPct = window.getExerciseMasteryPercent('suffixtrans', SUFFIX_TRANSLATION_QUESTIONS.length);
-const demotransPct = window.getExerciseMasteryPercent('demotrans', DEMO_TRANSLATION_QUESTIONS.length);
-const adjectiveagreementPct = window.getExerciseMasteryPercent('adjectiveagreement', ADJECTIVE_AGREEMENT_QUESTIONS.length);
-const pluralPct = window.getExerciseMasteryPercent('plural', PLURAL_QUESTIONS.length);
-const femininePct = window.getExerciseMasteryPercent('feminine', FEMININE_QUESTIONS.length);
-const typeharakatPct = window.getExerciseMasteryPercent('typeharakat', exBuildLesson1Pool().length);
-const typeenglishPct = window.getExerciseMasteryPercent('typeenglish', exBuildLesson1Pool().length);
+const EX_LESSON_MAP = {
+changeword: 1, truefalse: 1,
+plural: 1, pluraltype: 1,
+typeharakat: 1, typeenglish: 1,
+suffixpronoun: 1, suffixtrans: 1, aetrans: 1, challenge1: 1, challenge2: 1,
+adjectiveagreement: 2,
+demonstrative: 2, demotrans: 2, feminine: 2
+};
+const EX_MAX_LESSON = 2;
+let exPickerLesson = null;
 
-exRender(`
-  <div class="section-label">Choose an exercise</div>
-  <div style="display:flex;flex-direction:column;gap:14px;margin-top:8px">
-   <div class="ex-card" id="btn-fillgap">
-      ${window.miniRing(fillgapPct, '📝')}
-      <div class="ex-card-title">Fill the Gap</div>
-      <div class="ex-card-desc">A word is missing from a sentence. Type what you think it is.</div>
-      <div class="ex-card-note">${fillgapPct}% mastered</div>
-    </div>
-    <div class="ex-card" id="btn-wordorder">
-      ${window.miniRing(wordorderPct, '🔀')}
-      <div class="ex-card-title">Word Order</div>
-      <div class="ex-card-desc">Rearrange the words to form a correct sentence.</div>
-      <div class="ex-card-note">${wordorderPct}% mastered</div>
-    </div>
-   <div class="ex-card" id="btn-truefalse">
-      ${window.miniRing(truefalsePct, '✅')}
-      <div class="ex-card-title">True or False</div>
-      <div class="ex-card-desc">Is the sentence correct or does it contain an error?</div>
-      <div class="ex-card-note">${truefalsePct}% mastered</div>
-    </div>
-   <div class="ex-card" id="btn-changeword">
-      ${window.miniRing(changewordPct, '✏️')}
-      <div class="ex-card-title">Change One Word</div>
-      <div class="ex-card-desc">A sentence has one wrong word. Type the correct replacement.</div>
-      <div class="ex-card-note">${changewordPct}% mastered</div>
-    </div>
- <div class="ex-card" id="btn-demonstrative">
- ${window.miniRing(demonstrativePct, '👉')}
- <div class="ex-card-title">Demonstrative Pronouns</div>
- <div class="ex-card-desc">Practise هذا / هذه / هؤلاء agreement with true/false and correction questions.</div>
- <div class="ex-card-note">${demonstrativePct}% mastered</div>
-</div>
-<div class="ex-card" id="btn-demotrans">
- ${window.miniRing(demotransPct, '👉')}
- <div class="ex-card-title">Demonstrative Pronouns — Translate</div>
- <div class="ex-card-desc">Read the English, write the Arabic demonstrative phrase, then reveal and grade yourself.</div>
- <div class="ex-card-note">${demotransPct}% mastered</div>
-</div>
-<div class="ex-card" id="btn-suffixpronoun">
- ${window.miniRing(suffixpronounPct, '🔤')}
- <div class="ex-card-title">Suffix Pronouns</div>
- <div class="ex-card-desc">Does the attached pronoun (ـهُ / ـهَا / ـهُمْ) match the first word? True or false.</div>
- <div class="ex-card-note">${suffixpronounPct}% mastered</div>
-</div>
-<div class="ex-card" id="btn-suffixtrans">
- ${window.miniRing(suffixtransPct, '✍️')}
- <div class="ex-card-title">Suffix Pronouns — Translate</div>
- <div class="ex-card-desc">Read the English, write the Arabic, then reveal and grade yourself.</div>
- <div class="ex-card-note">${suffixtransPct}% mastered</div>
-</div>
-<div class="ex-card" id="btn-adjectiveagreement">
- ${window.miniRing(adjectiveagreementPct, '✨')}
- <div class="ex-card-title">Adjective Agreement</div>
- <div class="ex-card-desc">Noun-adjective agreement: is the adjective correctly matched to the noun?</div>
- <div class="ex-card-note">${adjectiveagreementPct}% mastered</div>
-</div>
-<div class="ex-card" id="btn-plural">
- ${window.miniRing(pluralPct, '👥')}
- <div class="ex-card-title">Spot the Plural</div>
- <div class="ex-card-desc">Two words appear — tap the one that is plural.</div>
- <div class="ex-card-note">${pluralPct}% mastered</div>
-</div>
-<div class="ex-card" id="btn-feminine">
- ${window.miniRing(femininePct, '♀️')}
- <div class="ex-card-title">Spot the Feminine</div>
- <div class="ex-card-desc">Four words appear — tap the two that are feminine, then Check.</div>
- <div class="ex-card-note">${femininePct}% mastered</div>
-</div>
-<div class="ex-card" id="btn-typeharakat">
- ${window.miniRing(typeharakatPct, '⌨️')}
- <div class="ex-card-title">Type Without Harakat (Lesson 1)</div>
- <div class="ex-card-desc">See the word with harakat — type it using bare letters only.</div>
- <div class="ex-card-note">${typeharakatPct}% mastered</div>
-</div>
-<div class="ex-card" id="btn-typeenglish">
- ${window.miniRing(typeenglishPct, '🔤')}
- <div class="ex-card-title">English → Arabic (Lesson 1)</div>
- <div class="ex-card-desc">See the English — type the Arabic word from memory.</div>
- <div class="ex-card-note">${typeenglishPct}% mastered</div>
-</div>
-    
-  </div>
-`);
-document.getElementById('btn-fillgap').onclick = () => exShowSetup('fillgap');
-document.getElementById('btn-wordorder').onclick = () => exShowSetup('wordorder');
-document.getElementById('btn-truefalse').onclick = () => exShowSetup('truefalse');
-document.getElementById('btn-changeword').onclick = () => exShowSetup('changeword');
-document.getElementById('btn-demonstrative').onclick = () => exShowSetup('demonstrative');
-document.getElementById('btn-suffixpronoun').onclick = () => exShowSetup('suffixpronoun');
-document.getElementById('btn-demotrans').onclick = () => exShowSetup('demotrans');
-document.getElementById('btn-suffixtrans').onclick = () => exShowSetup('suffixtrans');
-document.getElementById('btn-adjectiveagreement').onclick = () => exShowSetup('adjectiveagreement');
-document.getElementById('btn-plural').onclick = () => exShowSetup('plural');
-document.getElementById('btn-feminine').onclick = () => exShowSetup('feminine');
-document.getElementById('btn-typeharakat').onclick = () => exShowSetup('typeharakat');
-document.getElementById('btn-typeenglish').onclick = () => exShowSetup('typeenglish');
+const EX_CARDS = [
+
+{ mode:'typeharakat', icon:'⌨️', title:'Type Without Harakat', desc:'See the word with harakat — type it using bare letters only.' },
+{ mode:'typeenglish', icon:'🔤', title:'English → Arabic', desc:'See the English — type the Arabic word from memory.' },
+{ mode:'plural', icon:'👥', title:'Spot the Plural', desc:'Two words appear — tap the one that is plural.' },
+{ mode:'pluraltype', icon:'🧩', title:'Spot the Pattern', desc:'A plural shows up — is it regular or irregular? Human or non-human?' },
+{ mode:'feminine', icon:'♀️', title:'Spot the Feminine', desc:'Four words appear — tap the two that are feminine, then Check.' },
+{ mode:'suffixpronoun', icon:'🔤', title:'Suffix Pronouns', desc:'Does the attached pronoun (ـهُ / ـهَا / ـهُمْ) match the first word? True or false.' },
+{ mode:'suffixtrans', icon:'✍️', title:'Suffix Pronouns — Translate', desc:'Read the English, write the Arabic, then reveal and grade yourself.' },
+{ mode:'changeword', icon:'✏️', title:'Change One Word', desc:'A sentence has one wrong word. Type the correct replacement.' },
+{ mode:'truefalse', icon:'✅', title:'True or False', desc:'Is the sentence correct or does it contain an error?' },
+{ mode:'aetrans', icon:'🔁', title:'Arabic → English', desc:'Read the Arabic sentence, translate it in your head, then reveal and grade yourself.' },
+{ mode:'challenge1', icon:'🏆', title:'Challenge 1', desc:"Write your own sentence using each of 15 key words. We'll go over these together in lesson." },
+{ mode:'challenge2', icon:'🏆', title:'Challenge 2', desc:"Translate each English sentence into Arabic. We'll go over these together in lesson." },
+{ mode:'demonstrative', icon:'👉', title:'Demonstrative Pronouns', desc:'Practise هذا / هذه / هؤلاء agreement with true/false and correction questions.' },
+{ mode:'demotrans', icon:'👉', title:'Demonstrative Pronouns — Translate', desc:'Read the English, write the Arabic demonstrative phrase, then reveal and grade yourself.' },
+{ mode:'adjectiveagreement', icon:'✨', title:'Adjective Agreement', desc:'Noun-adjective agreement: is the adjective correctly matched to the noun?' }
+];
+function exGetQuestionCount(mode) {
+return mode==='fillgap' ? FILL_GAP_QUESTIONS.length
+: mode==='wordorder' ? WORD_ORDER_QUESTIONS.length
+: mode==='truefalse' ? TRUE_FALSE_QUESTIONS.length
+: mode==='changeword' ? CHANGE_WORD_QUESTIONS.length
+: mode==='demonstrative' ? DEMONSTRATIVE_QUESTIONS.length
+: mode==='demotrans' ? DEMO_TRANSLATION_QUESTIONS.length
+: mode==='suffixpronoun' ? SUFFIX_PRONOUN_QUESTIONS.length
+: mode==='suffixtrans' ? SUFFIX_TRANSLATION_QUESTIONS.length
+: mode==='adjectiveagreement' ? ADJECTIVE_AGREEMENT_QUESTIONS.length
+: mode==='plural' ? PLURAL_QUESTIONS.length
+: mode==='feminine' ? FEMININE_QUESTIONS.length
+: mode==='pluraltype' ? PLURAL_TYPE_QUESTIONS.length * 2
+: mode==='typeharakat' ? exBuildLesson1Pool().length
+: mode==='typeenglish' ? exBuildLesson1Pool().length
+: mode==='aetrans' ? TRANSLATION_1_QUESTIONS.length
+: 0;
 }
 
+function exShowPicker() {
+const defaultLesson = Math.min(window.getCurrentLesson(), EX_MAX_LESSON);
+const viewingLesson = exPickerLesson || defaultLesson;
+const isPastLesson = viewingLesson < defaultLesson;
+
+const cardsHtml = EX_CARDS.filter(c => EX_LESSON_MAP[c.mode] === viewingLesson).map(c => {
+if (c.mode === 'challenge1' || c.mode === 'challenge2') {
+const submitted = window.hasSubmittedChallenge && window.hasSubmittedChallenge(c.mode);
+return `<div class="ex-card" id="btn-${c.mode}">
+<div style="font-size:28px;margin-bottom:8px">${c.icon}</div>
+<div class="ex-card-title">${c.title}</div>
+<div class="ex-card-desc">${c.desc}</div>
+<div class="ex-card-note">${submitted ? '✓ Submitted' : 'Not submitted yet'}</div>
+</div>`;
+}
+const pct = window.getExerciseMasteryPercent(c.mode, exGetQuestionCount(c.mode));
+return `<div class="ex-card" id="btn-${c.mode}">
+${window.miniRing(pct, c.icon)}
+<div class="ex-card-title">${c.title}</div>
+<div class="ex-card-desc">${c.desc}</div>
+<div class="ex-card-note">${pct}% mastered</div>
+</div>`;
+}).join('');
+
+exRender(`
+  <div class="section-label">Lesson ${viewingLesson} exercises</div>
+  ${isPastLesson ? `<button id="ex-back-to-current-btn" style="margin-bottom:14px;padding:10px 16px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer">← Back to Lesson ${defaultLesson}</button>` : ''}
+  <div style="display:flex;flex-direction:column;gap:14px;margin-top:8px">
+${cardsHtml}
+  </div>
+  ${(defaultLesson > 1 && !isPastLesson) ? `<button id="ex-prev-lessons-btn" style="width:100%;margin-top:18px;padding:12px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">Previous Lessons</button>` : ''}
+`);
+
+EX_CARDS.filter(c => EX_LESSON_MAP[c.mode] === viewingLesson).forEach(c => {
+document.getElementById('btn-' + c.mode).onclick = () => {
+if (c.mode === 'challenge1') exShowChallenge1();
+else if (c.mode === 'challenge2') exShowChallenge2();
+else exShowSetup(c.mode);
+};
+});
+const prevBtn = document.getElementById('ex-prev-lessons-btn');
+if (prevBtn) prevBtn.onclick = exShowLessonPicker;
+const backBtn = document.getElementById('ex-back-to-current-btn');
+if (backBtn) backBtn.onclick = () => { exPickerLesson = null; exShowPicker(); };
+}
+
+function exShowLessonPicker() {
+const defaultLesson = Math.min(window.getCurrentLesson(), EX_MAX_LESSON);
+let html = '<div class="section-label">Choose a previous lesson</div><div style="display:flex;flex-direction:column;gap:10px;margin-top:8px">';
+for (let n = 1; n < defaultLesson; n++) {
+html += `<button class="ex-lesson-pick-btn" data-lesson="${n}" style="padding:14px;background:var(--grey-light);border:2px solid var(--border);border-radius:10px;font-size:15px;font-weight:600;color:#1a1a2e;cursor:pointer;text-align:left">Lesson ${n}</button>`;
+}
+html += '</div><button id="ex-lesson-pick-back" style="width:100%;margin-top:14px;padding:10px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">← Back</button>';
+exRender(html);
+document.querySelectorAll('.ex-lesson-pick-btn').forEach(btn => {
+btn.onclick = () => { exPickerLesson = parseInt(btn.dataset.lesson); exShowPicker(); };
+});
+document.getElementById('ex-lesson-pick-back').onclick = exShowPicker;
+}
+
+function exShowChallenge1() {
+const words = window.CHALLENGE_1_WORDS || [];
+let html = `
+<div class="section-label">🏆 Challenge 1 — Make a sentence</div>
+<div style="background:var(--grey-light);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
+<div style="font-size:14px;color:#6b7280;margin-bottom:20px;line-height:1.6">Write your own Arabic sentence using each word below. Don't worry about getting it perfect — we'll go over these together in your next lesson.</div>`;
+words.forEach((w, i) => {
+html += `
+<div style="margin-bottom:18px">
+<div style="font-family:'Scheherazade New', serif;font-size:1.4em;direction:rtl;text-align:right;color:#8b2035;font-weight:700">${w.ar}</div>
+<div style="font-size:12px;color:#6b7280;margin-bottom:6px">${w.en}</div>
+<textarea id="ch1-input-${i}" placeholder="Write your sentence..." style="width:100%;padding:10px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:1.1em;direction:rtl;text-align:right;font-family:inherit;min-height:50px;outline:none;box-sizing:border-box"></textarea>
+</div>`;
+});
+html += `
+<button id="ch1-submit-btn" style="width:100%;margin-top:8px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">Submit Challenge</button>
+<button id="ch1-back-btn" style="width:100%;margin-top:8px;padding:10px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">← Back</button>
+</div>`;
+exRender(html);
+document.getElementById('ch1-submit-btn').onclick = () => window.exSubmitChallenge1();
+document.getElementById('ch1-back-btn').onclick = exShowPicker;
+}
+
+function exShowChallenge2() {
+const sentences = window.CHALLENGE_2_SENTENCES || [];
+let html = `
+<div class="section-label">🏆 Challenge 2 — Translate to Arabic</div>
+<div style="background:var(--grey-light);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
+<div style="font-size:14px;color:#6b7280;margin-bottom:20px;line-height:1.6">Translate each English sentence into Arabic. Don't worry about getting it perfect — we'll go over these together in your next lesson.</div>`;
+sentences.forEach((s, i) => {
+html += `
+<div style="margin-bottom:18px">
+<div style="font-size:1em;direction:ltr;text-align:left;color:#1a1a2e;margin-bottom:6px">${i+1}. ${s.en}</div>
+<textarea id="ch2-input-${i}" placeholder="Write the Arabic translation..." style="width:100%;padding:10px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:1.2em;direction:rtl;text-align:right;font-family:'Scheherazade New', serif;min-height:50px;outline:none;box-sizing:border-box"></textarea>
+</div>`;
+});
+html += `
+<button id="ch2-submit-btn" style="width:100%;margin-top:8px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">Submit Challenge</button>
+<button id="ch2-back-btn" style="width:100%;margin-top:8px;padding:10px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">← Back</button>
+</div>`;
+exRender(html);
+document.getElementById('ch2-submit-btn').onclick = () => window.exSubmitChallenge2();
+document.getElementById('ch2-back-btn').onclick = exShowPicker;
+}
+  
 function exShowSetup(mode) {
 exMode = mode;
 const title = mode === 'fillgap' ? '📝 Fill the Gap'
@@ -1933,6 +2350,8 @@ const title = mode === 'fillgap' ? '📝 Fill the Gap'
 : mode === 'typeenglish' ? '🔤 English → Arabic'
 : mode === 'suffixtrans' ? '✍️ Suffix Pronouns — Translate'
 : mode === 'demotrans' ? '👉 Demonstrative Pronouns — Translate'
+: mode === 'pluraltype' ? '🧩 Spot the Pattern'
+: mode === 'aetrans' ? '🔁 Arabic → English'
 : '✅ True or False';
 const isGrammarDrill = mode === 'demonstrative';
 exRender(`
@@ -1966,8 +2385,11 @@ exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS]
 : exMode === 'typeenglish' ? exBuildLesson1Pool()
 : exMode === 'suffixtrans' ? exShuffle([...SUFFIX_TRANSLATION_QUESTIONS]).slice(0, 11)
 : exMode === 'demotrans' ? exShuffle([...DEMO_TRANSLATION_QUESTIONS]).slice(0, 11)
+: exMode === 'pluraltype' ? exBuildPluralTypeDeck()
+: exMode === 'aetrans' ? [...TRANSLATION_1_QUESTIONS]
 : [...TRUE_FALSE_QUESTIONS]
 );
+if (exMode === 'pluraltype') exQuestions = exFixAdjacency(exQuestions);
 exRenderActive();
 exShowQuestion();
 }
@@ -1993,7 +2415,7 @@ exRender(`
         <button id="ex-wo-clear-btn" style="padding:12px 20px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">Clear</button>
       </div>
     </div>
-    <div id="ex-reveal" style="display:none;background:#f0fdf4;border:2px solid #86efac;border-radius:10px;padding:16px;margin-top:16px;font-size:1.2em;text-align:center;direction:rtl"></div>
+    <div id="ex-reveal" style="display:none;background:#f3f4f6;border:2px solid #d1d5db;border-radius:10px;padding:16px;margin-top:16px;font-size:1.2em;text-align:center;direction:rtl"></div>
   </div>
   <div id="ex-rating-area" style="display:none;gap:10px;margin-bottom:16px">
     <button id="ex-rate-hard" style="flex:1;padding:12px;background:#fee2e2;color:#b91c1c;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">No idea</button>
@@ -2019,9 +2441,12 @@ exMode === 'fillgap' ? [...FILL_GAP_QUESTIONS]
 : exMode === 'typeenglish' ? exBuildLesson1Pool()
 : exMode === 'suffixtrans' ? exShuffle([...SUFFIX_TRANSLATION_QUESTIONS]).slice(0, 11)
 : exMode === 'demotrans' ? exShuffle([...DEMO_TRANSLATION_QUESTIONS]).slice(0, 11)
+: exMode === 'pluraltype' ? exBuildPluralTypeDeck()
+: exMode === 'aetrans' ? [...TRANSLATION_1_QUESTIONS]
 : [...TRUE_FALSE_QUESTIONS]
 
 );
+if (exMode === 'pluraltype') exQuestions = exFixAdjacency(exQuestions);
 exCurrent = 0;
 }
 const revealEl = document.getElementById('ex-reveal');
@@ -2202,6 +2627,47 @@ checkBtn.replaceWith(checkBtn.cloneNode(true));
 const freshBtn = document.getElementById('ex-check-btn');
 freshBtn.onclick = exSubmitTyping;
 inp.onkeydown = e => { if (e.key === 'Enter') exSubmitTyping(); };
+} else if (exMode === 'aetrans') {
+const q = exQuestions[exCurrent];
+const existingType = document.getElementById('ex-tf-btns');
+if (existingType) existingType.remove();
+document.getElementById('ex-instruction').textContent = 'Read the Arabic, write the English translation, then reveal';
+document.getElementById('ex-sentence').innerHTML = q.ar;
+const fillDiv = document.getElementById('ex-fill-input');
+fillDiv.style.display = 'flex';
+document.getElementById('ex-word-order').style.display = 'none';
+const inp = document.getElementById('ex-answer-input');
+inp.value = '';
+inp.placeholder = 'Write the English translation...';
+inp.style.direction = 'ltr';
+setTimeout(() => inp.focus(), 50);
+const checkBtn = document.getElementById('ex-check-btn');
+checkBtn.replaceWith(checkBtn.cloneNode(true));
+const freshBtn = document.getElementById('ex-check-btn');
+freshBtn.textContent = 'Reveal ←';
+freshBtn.onclick = exSubmitAeTrans;
+inp.onkeydown = e => { if (e.key === 'Enter') exSubmitAeTrans(); };
+} else if (exMode === 'pluraltype') {
+const q = exQuestions[exCurrent];
+const isRegularity = q.cardType === 'regularity';
+document.getElementById('ex-instruction').textContent = isRegularity ? 'Is this plural regular or irregular?' : 'Is this plural human or non-human?';
+document.getElementById('ex-sentence').innerHTML = isRegularity ? q.ar : (q.ar + '<br><span style="font-size:0.5em;color:#6b7280;direction:ltr;display:block;margin-top:8px">' + q.en + '</span>');
+document.getElementById('ex-sentence').style.fontSize = '1.4em';
+document.getElementById('ex-fill-input').style.display = 'none';
+document.getElementById('ex-word-order').style.display = 'none';
+const existingPt = document.getElementById('ex-tf-btns');
+if (existingPt) existingPt.remove();
+const ptWrap = document.createElement('div');
+ptWrap.id = 'ex-tf-btns';
+ptWrap.style.cssText = 'display:flex;gap:12px;justify-content:center;margin-top:8px';
+ptWrap.innerHTML = isRegularity ? `
+    <button id="ex-pt-a" style="flex:1;padding:14px;background:#eff6ff;color:#1d4ed8;border:2px solid #93c5fd;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">Regular</button>
+    <button id="ex-pt-b" style="flex:1;padding:14px;background:#f1f5f9;color:#334155;border:2px solid #94a3b8;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">Irregular</button>` : `
+    <button id="ex-pt-a" style="flex:1;padding:14px;background:#eff6ff;color:#1d4ed8;border:2px solid #93c5fd;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">Human</button>
+    <button id="ex-pt-b" style="flex:1;padding:14px;background:#f1f5f9;color:#334155;border:2px solid #94a3b8;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">Non-human</button>`;
+document.getElementById('ex-sentence').after(ptWrap);
+document.getElementById('ex-pt-a').onclick = () => exSubmitPluralType(true);
+document.getElementById('ex-pt-b').onclick = () => exSubmitPluralType(false);
 } else {
 const q = exQuestions[exCurrent];
 document.getElementById('ex-instruction').textContent = 'Put the words in the correct order';
@@ -2255,11 +2721,29 @@ function exSubmitTrueFalse(chosen) {
 const q = exQuestions[exCurrent];
 const reveal = document.getElementById('ex-reveal');
 reveal.innerHTML = 'The sentence is <strong>' + (q.answer ? 'True' : 'False') + '</strong>.';
-reveal.style.background = '#f0fdf4';
-reveal.style.borderColor = '#86efac';
+reveal.style.background = '#f3f4f6';
+reveal.style.borderColor = '#d1d5db';
 reveal.style.display = 'block';
 const tfWrap = document.getElementById('ex-tf-btns');
 if (tfWrap) tfWrap.style.display = 'none';
+const ratingEl = document.getElementById('ex-rating-area');
+ratingEl.style.display = 'flex';
+wireRatingButtons();
+}
+function exSubmitPluralType(chosen) {
+const q = exQuestions[exCurrent];
+const correct = chosen === q.answer;
+const reveal = document.getElementById('ex-reveal');
+if (q.cardType === 'regularity') {
+reveal.innerHTML = (correct ? '✓ Correct! ' : '✕ Not quite. ') + 'This plural is <strong>' + (q.answer ? 'Regular' : 'Irregular') + '</strong>.';
+} else {
+reveal.innerHTML = (correct ? '✓ Correct! ' : '✕ Not quite. ') + 'This plural is <strong>' + (q.answer ? 'Human' : 'Non-human') + '</strong>.';
+}
+reveal.style.background = '#f3f4f6';
+reveal.style.borderColor = '#d1d5db';
+reveal.style.display = 'block';
+const ptWrap = document.getElementById('ex-tf-btns');
+if (ptWrap) ptWrap.style.display = 'none';
 const ratingEl = document.getElementById('ex-rating-area');
 ratingEl.style.display = 'flex';
 wireRatingButtons();
@@ -2284,8 +2768,8 @@ reveal.innerHTML = '✓ Correct! <strong>' + q.plural + '</strong> is the plural
 } else {
 reveal.innerHTML = '✕ Not quite. The plural is <strong>' + q.plural + '</strong> (singular: <strong>' + q.singular + '</strong>).';
 }
-reveal.style.background = '#f0fdf4';
-reveal.style.borderColor = '#86efac';
+reveal.style.background = '#f3f4f6';
+reveal.style.borderColor = '#d1d5db';
 reveal.style.display = 'block';
 const tfWrap = document.getElementById('ex-tf-btns');
 if (tfWrap) tfWrap.style.display = 'none';
@@ -2309,8 +2793,8 @@ else if (!isFem && picked) { tile.style.background = '#fee2e2', tile.style.color
 tile.onclick = null;
 });
 reveal.innerHTML = (allCorrect ? '✓ Correct! ' : '✕ Not quite. ') + 'The feminine words are <strong>' + femWords.join('</strong> and <strong>') + '</strong>.';
-reveal.style.background = '#f0fdf4';
-reveal.style.borderColor = '#86efac';
+reveal.style.background = '#f3f4f6';
+reveal.style.borderColor = '#d1d5db';
 reveal.style.display = 'block';
 const checkWrap = document.getElementById('ex-fem-check-wrap');
 if (checkWrap) checkWrap.style.display = 'none';
@@ -2329,8 +2813,8 @@ reveal.innerHTML = '✓ Correct! <strong>' + q.target + '</strong>';
 } else {
 reveal.innerHTML = '✕ Not quite.<br>You typed: <strong>' + (typed || '(nothing)') + '</strong><br>Correct answer: <strong>' + q.target + '</strong>';
 }
-reveal.style.background = '#f0fdf4';
-reveal.style.borderColor = '#86efac';
+reveal.style.background = '#f3f4f6';
+reveal.style.borderColor = '#d1d5db';
 reveal.style.display = 'block';
 document.getElementById('ex-fill-input').style.display = 'none';
 const ratingEl = document.getElementById('ex-rating-area');
@@ -2349,6 +2833,20 @@ const ratingEl = document.getElementById('ex-rating-area');
 ratingEl.style.display = 'flex';
 wireRatingButtons();
 }
+function exSubmitAeTrans() {
+const q = exQuestions[exCurrent];
+const typed = document.getElementById('ex-answer-input').value;
+const reveal = document.getElementById('ex-reveal');
+reveal.innerHTML = 'Model translation: <strong>' + q.en + '</strong>' + (typed ? '<br><span style="font-size:0.85em;color:#6b7280">You wrote: ' + typed + '</span>' : '') + '<br><span style="font-size:0.8em;color:#6b7280">Close enough? Grade yourself below.</span>';
+reveal.style.background = '#f3f4f6';
+reveal.style.borderColor = '#d1d5db';
+reveal.style.display = 'block';
+document.getElementById('ex-fill-input').style.display = 'none';
+const ratingEl = document.getElementById('ex-rating-area');
+ratingEl.style.display = 'flex';
+wireRatingButtons();
+}
+
 
 function exSubmitDemoTrans() {
 const q = exQuestions[exCurrent];
