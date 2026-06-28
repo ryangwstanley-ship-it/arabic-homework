@@ -991,7 +991,6 @@ function getReadingFraction(lessonNum) {
 if (readingDone[lessonNum]) return 1;
 const code = activeStudentCode();
 if ((studentLesson[code] || 1) > lessonNum) return 1;
-if (Object.keys(fcProgress).some(k => k.startsWith(lessonNum + '_'))) return 1;
 return 0;
 }
 
@@ -1002,7 +1001,6 @@ function getGrammarFraction(lessonNum) {
 if (grammarDone[lessonNum]) return 1;
 const code = activeStudentCode();
 if ((studentLesson[code] || 1) > lessonNum) return 1;
-if (Object.keys(exProgress).some(m => EX_LESSON_MAP[m] === lessonNum && Object.keys(exProgress[m] || {}).length > 0)) return 1;
 return 0;
 }
 
