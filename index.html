@@ -1068,7 +1068,7 @@ function desertTentSvg(x, y, open) {
 if (open) {
 return `<ellipse cx="${x}" cy="${y+6}" rx="42" ry="10" fill="#2A1018" fill-opacity="0.6"/>
 <circle cx="${x}" cy="${y-25}" r="55" fill="#F2934A" fill-opacity="0.22"/>
-<g transform="translate(${x},${y}) scale(0.6)">
+<g transform="translate(${x},${y}) scale(0.72)">
 <path d="M-30,0 Q-30,-70 0,-88 Q30,-70 30,0 Z" fill="#1A0B10" stroke="#0D0507" stroke-width="1.5"/>
 <path d="M0,-88 Q30,-70 30,0" fill="none" stroke="#E8794A" stroke-width="2" stroke-opacity="0.7"/>
 <polygon points="-12,0 12,0 0,-50" fill="#F4C14E" fill-opacity="0.85"/>
@@ -1077,7 +1077,7 @@ return `<ellipse cx="${x}" cy="${y+6}" rx="42" ry="10" fill="#2A1018" fill-opaci
 </g>`;
 }
 return `<ellipse cx="${x}" cy="${y+6}" rx="42" ry="10" fill="#2A1018" fill-opacity="0.6"/>
-<g transform="translate(${x},${y}) scale(0.6)">
+<g transform="translate(${x},${y}) scale(0.72)">
 <path d="M-30,0 Q-30,-70 0,-88 Q30,-70 30,0 Z" fill="#1A0B10" stroke="#0D0507" stroke-width="1.5"/>
 <line x1="0" y1="-88" x2="0" y2="0" stroke="#0D0507" stroke-width="1.5"/>
 <circle cx="0" cy="-24" r="6" fill="#0D0507" stroke="#000000" stroke-width="1"/>
@@ -1091,11 +1091,11 @@ return `<ellipse cx="${x}" cy="${y+6}" rx="42" ry="10" fill="#2A1018" fill-opaci
 function desertTorchSvg(x, y, lit) {
 if (lit) {
 return `<circle cx="${x}" cy="${y}" r="45" fill="#F2934A" fill-opacity="0.13"/>
-<circle cx="${x}" cy="${y}" r="18" fill="#F2934A" fill-opacity="0.22"/>
-<path d="M${x-7},${y+4} Q${x},${y-20} ${x+7},${y+4} Q${x},${y+14} ${x-7},${y+4} Z" fill="#F4C14E" stroke="#E07A2E" stroke-width="1"/>
-<path d="M${x-3},${y+2} Q${x},${y-12} ${x+3},${y+2} Q${x},${y+8} ${x-3},${y+2} Z" fill="#FCE2A0"/>`;
+<circle cx="${x}" cy="${y}" r="22" fill="#F2934A" fill-opacity="0.22"/>
+<path d="M${x-9},${y+5} Q${x},${y-26} ${x+9},${y+5} Q${x},${y+18} ${x-9},${y+5} Z" fill="#F4C14E" stroke="#E07A2E" stroke-width="1"/>
+<path d="M${x-4},${y+3} Q${x},${y-16} ${x+4},${y+3} Q${x},${y+10} ${x-4},${y+3} Z" fill="#FCE2A0"/>`;
 }
-return `<path d="M${x-7},${y+4} Q${x},${y-20} ${x+7},${y+4} Q${x},${y+14} ${x-7},${y+4} Z" fill="#1A0B10" stroke="#0D0507" stroke-width="1"/>`;
+return `<path d="M${x-9},${y+5} Q${x},${y-26} ${x+9},${y+5} Q${x},${y+18} ${x-9},${y+5} Z" fill="#1A0B10" stroke="#0D0507" stroke-width="1"/>`;
 }
 
 function msRippleBands(totalHeight) {
@@ -1151,14 +1151,14 @@ let torchSvg = '';
 torchPts.forEach((p, i) => {
 const labelX = p.x + (onRight ? 32 : -32);
 const piece = desertTorchSvg(p.x, p.y, litStates[i]) + `<text x="${labelX}" y="${p.y+4}" font-size="11" fill="#E8DFC8" text-anchor="${onRight ? 'start' : 'end'}">${labels[i]}</text>`;
-torchSvg += tappable ? `<g style="cursor:pointer" onclick="${torchActions[i]}">${piece}</g>` : piece;
+torchSvg += tappable ? `<g style="cursor:pointer" onclick="${torchActions[i]}"><circle cx="${p.x}" cy="${p.y}" r="30" fill="none" stroke="#F4C14E" stroke-width="2" stroke-opacity="0.5"/>${piece}</g>` : piece;
 });
 
 const figureSvg = figurePoint ? `<circle cx="${figurePoint.x}" cy="${figurePoint.y-20}" r="35" fill="#F2934A" fill-opacity="0.12"/>${desertFigureSvg(figurePoint.x-20, figurePoint.y-59, 0.45)}` : '';
 
 const endOpen = (n+1) <= currentLevel;
 const endTentPiece = desertTentSvg(segs[5].p2.x, segs[5].p2.y, endOpen) + `<text x="${segs[5].p2.x}" y="${segs[5].p2.y+28}" font-size="12" fill="${endOpen ? '#E8DFC8' : '#C9A8A0'}" text-anchor="middle" style="font-weight:500">Lesson ${n+1}</text>`;
-const endTentSvg = (n+1) === currentLevel ? `<g id="ms-tent-${n+1}" style="cursor:pointer" onclick="window.openLessonTentMenu(${n+1})">${endTentPiece}</g>` : endTentPiece;
+const endTentSvg = (n+1) === currentLevel ? `<g id="ms-tent-${n+1}" style="cursor:pointer" onclick="window.openLessonTentMenu(${n+1})"><circle cx="${segs[5].p2.x}" cy="${segs[5].p2.y-25}" r="64" fill="none" stroke="#F4C14E" stroke-width="2" stroke-opacity="0.5"/>${endTentPiece}</g>` : endTentPiece;
 return `${pathSvg}
 ${torchSvg}
 ${figureSvg}
@@ -1185,7 +1185,7 @@ const currentLevel = studentLesson[code] || 1;
 const totalHeight = msTentY(MILESTONE_BUILT_LESSONS) + 280;
 let inner = msRippleBands(totalHeight);
 const firstTentPiece = desertTentSvg(msTentX(1), msTentY(1), 1 <= currentLevel) + `<text x="${msTentX(1)}" y="${msTentY(1)+28}" font-size="12" fill="#E8DFC8" text-anchor="middle" style="font-weight:500">Lesson 1</text>`;
-inner += currentLevel === 1 ? `<g id="ms-tent-1" style="cursor:pointer" onclick="window.openLessonTentMenu(1)">${firstTentPiece}</g>` : firstTentPiece;
+inner += currentLevel === 1 ? `<g id="ms-tent-1" style="cursor:pointer" onclick="window.openLessonTentMenu(1)"><circle cx="${msTentX(1)}" cy="${msTentY(1)-25}" r="64" fill="none" stroke="#F4C14E" stroke-width="2" stroke-opacity="0.5"/>${firstTentPiece}</g>` : firstTentPiece;
 for (let n = 1; n < MILESTONE_BUILT_LESSONS; n++) {
 inner += renderMilestoneSegmentFragment(n, currentLevel, overrideNumLit);
 }
@@ -1886,6 +1886,7 @@ if (readBtn) readBtn.style.display = isGuestMode ? 'none' : 'block';
 if (gramBtn) gramBtn.style.display = isGuestMode ? 'none' : 'block';
 }
 if (tab==='milestones') {
+document.getElementById('main').scrollTop = 0;
 renderMilestones();
 if (pendingMilestoneIntro) {
 document.getElementById('milestone-root').style.display = 'none';
