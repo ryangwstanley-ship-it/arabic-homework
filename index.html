@@ -1979,12 +1979,19 @@ if (fcCurrentIdx >= fcQueue.length) fcCurrentIdx = Math.max(0, fcQueue.length - 
 }
 
 function getCardProgress(lessonNum, cardIdx) {
-const key = `${lessonNum}_${cardIdx}`;
-return fcProgress[key] || { interval: 0, easeFactor: 2.5, nextReview: 0, reps: 0, lastRating: 0 };
+const lesson = LESSONS[lessonNum];
+const card = lesson && lesson.cards[cardIdx];
+const stableKey = card ? `${lessonNum}_${card.ar}` : null;
+const legacyKey = `${lessonNum}_${cardIdx}`;
+if (stableKey && fcProgress[stableKey]) return fcProgress[stableKey];
+if (fcProgress[legacyKey]) return fcProgress[legacyKey];
+return { interval: 0, easeFactor: 2.5, nextReview: 0, reps: 0, lastRating: 0 };
 }
 
 function setCardProgress(lessonNum, cardIdx, data) {
-const key = `${lessonNum}_${cardIdx}`;
+const lesson = LESSONS[lessonNum];
+const card = lesson && lesson.cards[cardIdx];
+const key = card ? `${lessonNum}_${card.ar}` : `${lessonNum}_${cardIdx}`;
 fcProgress[key] = data;
 }
 
