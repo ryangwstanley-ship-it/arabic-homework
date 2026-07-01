@@ -1072,7 +1072,7 @@ if (stop.lesson > currentLevel) return 0;
 return getTorchStates(stop.lesson)[stop.key];
 }
 
-function desertFigureSvg(x, y, scale) {
+function desertFigureSvg(x, y, scale, facing) {
 return `<g transform="translate(${x},${y}) scale(${scale})">
 <path d="M40,28 Q14,55 9,124 L40,130 L71,132 Q66,55 40,28 Z" fill="#170A0C"/>
 <path d="M40,28 Q60,55 65,124 L52,127 Q50,70 40,40 Z" fill="#0E0608"/>
@@ -1151,9 +1151,26 @@ const totalHeight = msStopY(stops.length - 1) + 6 * 30 + 60;
 
 let inner = '';
 
+// The character's position along the path — computed early so the path
+// coloring below can use it directly.
+const lessonStartIdx = (currentLevel - 1) * 6;
+const torches = getTorchStates(currentLevel);
+const numLit = torches.reading + torches.flashcards + torches.grammar + torches.exercises + torches.challenges;
+const charFrac = Math.min(numLit, 5);
+const charIdx = Math.min(Math.floor(charFrac) + 1, 6);
+const charSegFrac = charFrac - Math.floor(charFrac);
+
 // The zigzag path connecting every stop to the next one
 for (let i = 0; i < stops.length - 1; i++) {
-const frac = msStopFraction(stops[i+1], currentLevel);
+const localSeg = i - lessonStartIdx;
+let frac;
+if (localSeg >= 0 && localSeg <= 5) {
+if (localSeg <= charIdx - 1) frac = 1;
+else if (localSeg === charIdx) frac = charSegFrac;
+else frac = 0;
+} else {
+frac = msStopFraction(stops[i+1], currentLevel);
+}
 const p0 = { x: msStopX(i), y: msStopY(i) };
 const p1 = { x: msStopX(i+1), y: msStopY(i+1) };
 if (frac >= 1) {
@@ -1196,10 +1213,7 @@ inner += tappable
 
 // The walking figure (+ fading trail of recent movement), within the
 // active lesson's 6 rows only
-const lessonStartIdx = (currentLevel - 1) * 6;
 if (lessonStartIdx >= 0 && lessonStartIdx < stops.length) {
-const torches = getTorchStates(currentLevel);
-const numLit = torches.reading + torches.flashcards + torches.grammar + torches.exercises + torches.challenges;
 const figPos = msLessonFigurePos(lessonStartIdx, numLit);
 inner += `<circle cx="${figPos.x}" cy="${figPos.y-20}" r="35" fill="#F2934A" fill-opacity="0.12"/>${desertFigureSvg(figPos.x-20, figPos.y-59, 0.45, figPos.facing)}`;
 if (trailFromFrac !== undefined && trailFromFrac < numLit) {
@@ -1207,6 +1221,7 @@ const oldPos = msLessonFigurePos(lessonStartIdx, trailFromFrac);
 inner += `<line x1="${oldPos.x}" y1="${oldPos.y-20}" x2="${figPos.x}" y2="${figPos.y-20}" stroke="#FCE2A0" stroke-width="3" stroke-linecap="round" stroke-dasharray="2 9" class="ms-trail-fade"/>`;
 }
 }
+
 
 // Fading dots trailing off after the final built tent, hinting at more to come
 const lastIdx = stops.length - 1;
