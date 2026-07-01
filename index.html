@@ -992,6 +992,7 @@ function getReadingFraction(lessonNum) {
 if (readingDone[lessonNum]) return 1;
 const code = activeStudentCode();
 if ((studentLesson[code] || 1) > lessonNum) return 1;
+if ((studentLesson[code] || 1) === lessonNum && getLessonMasteryPercent(lessonNum) > 0) return 1;
 return 0;
 }
 
@@ -1002,6 +1003,7 @@ function getGrammarFraction(lessonNum) {
 if (grammarDone[lessonNum]) return 1;
 const code = activeStudentCode();
 if ((studentLesson[code] || 1) > lessonNum) return 1;
+if ((studentLesson[code] || 1) === lessonNum && getLessonMasteryPercent(lessonNum) === 100) return 1;
 return 0;
 }
 
@@ -1182,7 +1184,12 @@ const x = msStopX(i), y = msStopY(i);
 if (stop.type === 'tent') {
 const open = stop.lesson <= currentLevel;
 const isActiveTent = stop.lesson === currentLevel;
-const piece = `${desertTentSvg(x, y, open)}<text x="${x}" y="${y+44}" font-size="14" fill="${open ? '#E8DFC8' : '#C9A8A0'}" text-anchor="middle" style="font-weight:500">Lesson ${stop.lesson}</text>`;
+const tentLabelText = isActiveTent ? 'Contact your tutor' : `Lesson ${stop.lesson}`;
+const tentLabelWidth = tentLabelText.length * 7 + 24;
+const tentLabel = isActiveTent
+? `<rect x="${x-tentLabelWidth/2}" y="${y+31}" width="${tentLabelWidth}" height="26" rx="13" fill="#FCE2A0"/><text x="${x}" y="${y+48}" font-size="13" font-weight="500" fill="#4A1B0C" text-anchor="middle">${tentLabelText}</text>`
+: `<text x="${x}" y="${y+44}" font-size="14" fill="${open ? '#E8DFC8' : '#C9A8A0'}" text-anchor="middle" style="font-weight:500">${tentLabelText}</text>`;
+const piece = `${desertTentSvg(x, y, open)}${tentLabel}`;
 inner += isActiveTent
 ? `<g id="ms-tent-${stop.lesson}" style="cursor:pointer" onclick="window.openLessonTentMenu(${stop.lesson})"><circle cx="${x}" cy="${y-25}" r="72" fill="#F4C14E" fill-opacity="0.16" stroke="#F4C14E" stroke-width="2" stroke-opacity="0.7"/>${piece}</g>`
 : piece;
