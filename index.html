@@ -1306,7 +1306,7 @@ switchTab('flashcards');
 };
 
 window.openGrammarForLesson = function(lessonNum) {
-if (isGuestMode && getLessonMasteryPercent(lessonNum) < 75) return;
+if (isGuestMode && getLessonMasteryPercent(lessonNum) < 100) return;
 switchTab('story');
 setStoryLesson(lessonNum);
 document.getElementById('principles-wrap').style.display = 'block';
@@ -2315,12 +2315,9 @@ fcPrevBtn.onclick = () => { fcShowLessonPicker = !fcShowLessonPicker; renderFlas
 }
 if (isGuestMode) {
 const principlesBtn = document.getElementById('guest-principles-btn');
-const unlocked = getLessonMasteryPercent(fcCurrentLesson) >= 75;
+const unlocked = getLessonMasteryPercent(fcCurrentLesson) >= 100;
 if (principlesBtn) principlesBtn.style.display = unlocked ? 'block' : 'none';
-if (unlocked && guestTourActive && guestTourStep === 2) {
-guestTourStep = 2.5;
-setTimeout(() => showGuestCoachmark(document.getElementById('guest-principles-btn'), '👉 Next, go to the Grammar Principles!'), 150);
-}
+
 }
 Object.entries(LESSONS).forEach(([num, lesson]) => {
 const lessonNum = parseInt(num);
