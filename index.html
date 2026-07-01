@@ -1134,11 +1134,12 @@ const p0 = { x: msStopX(lessonStartIdx + idx), y: msStopY(lessonStartIdx + idx) 
 const p1 = { x: msStopX(lessonStartIdx + idx + 1), y: msStopY(lessonStartIdx + idx + 1) };
 const x = p0.x + (p1.x - p0.x) * segFrac;
 const y = p0.y + (p1.y - p0.y) * segFrac;
-const pPrev = { x: msStopX(lessonStartIdx + idx - 1), y: msStopY(lessonStartIdx + idx - 1) };
-const dx = x - pPrev.x, dy = y - pPrev.y;
+const from = segFrac > 0 ? p0 : { x: msStopX(lessonStartIdx + idx - 1), y: msStopY(lessonStartIdx + idx - 1) };
+const to = segFrac > 0 ? p1 : p0;
+const dx = to.x - from.x, dy = to.y - from.y;
 const dist = Math.sqrt(dx*dx + dy*dy) || 1;
 const OFFSET = 40;
-return { x: x - (dx / dist) * OFFSET, y: y - (dy / dist) * OFFSET };
+return { x: x - (dx / dist) * OFFSET, y: y - (dy / dist) * OFFSET, facing: to.x - from.x };
 }
 
 function renderMilestones(trailFromFrac) {
@@ -1200,7 +1201,7 @@ if (lessonStartIdx >= 0 && lessonStartIdx < stops.length) {
 const torches = getTorchStates(currentLevel);
 const numLit = torches.reading + torches.flashcards + torches.grammar + torches.exercises + torches.challenges;
 const figPos = msLessonFigurePos(lessonStartIdx, numLit);
-inner += `<circle cx="${figPos.x}" cy="${figPos.y-20}" r="35" fill="#F2934A" fill-opacity="0.12"/>${desertFigureSvg(figPos.x-20, figPos.y-59, 0.45)}`;
+inner += `<circle cx="${figPos.x}" cy="${figPos.y-20}" r="35" fill="#F2934A" fill-opacity="0.12"/>${desertFigureSvg(figPos.x-20, figPos.y-59, 0.45, figPos.facing)}`;
 if (trailFromFrac !== undefined && trailFromFrac < numLit) {
 const oldPos = msLessonFigurePos(lessonStartIdx, trailFromFrac);
 inner += `<line x1="${oldPos.x}" y1="${oldPos.y-20}" x2="${figPos.x}" y2="${figPos.y-20}" stroke="#FCE2A0" stroke-width="3" stroke-linecap="round" stroke-dasharray="2 9" class="ms-trail-fade"/>`;
