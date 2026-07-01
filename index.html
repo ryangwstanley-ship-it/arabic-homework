@@ -992,7 +992,7 @@ function getReadingFraction(lessonNum) {
 if (readingDone[lessonNum]) return 1;
 const code = activeStudentCode();
 if ((studentLesson[code] || 1) > lessonNum) return 1;
-if ((studentLesson[code] || 1) === lessonNum && getLessonMasteryPercent(lessonNum) > 0) return 1;
+if (!isGuestMode && (studentLesson[code] || 1) === lessonNum && getLessonMasteryPercent(lessonNum) > 0) return 1;
 return 0;
 }
 
@@ -1003,7 +1003,7 @@ function getGrammarFraction(lessonNum) {
 if (grammarDone[lessonNum]) return 1;
 const code = activeStudentCode();
 if ((studentLesson[code] || 1) > lessonNum) return 1;
-if ((studentLesson[code] || 1) === lessonNum && getLessonMasteryPercent(lessonNum) === 100) return 1;
+if (!isGuestMode && (studentLesson[code] || 1) === lessonNum && getLessonMasteryPercent(lessonNum) === 100) return 1;
 return 0;
 }
 
