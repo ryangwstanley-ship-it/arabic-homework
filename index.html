@@ -1194,7 +1194,7 @@ inner += isActiveTent
 ? `<g id="ms-tent-${stop.lesson}" style="cursor:pointer" onclick="window.openLessonTentMenu(${stop.lesson})"><circle cx="${x}" cy="${y-25}" r="72" fill="#F4C14E" fill-opacity="0.16" stroke="#F4C14E" stroke-width="2" stroke-opacity="0.7"/>${piece}</g>`
 : piece;
 } else {
-const lit = msStopFraction(stop, currentLevel) === 1;
+const lit = msStopFraction(stop, currentLevel) > 0;
 const tappable = stop.lesson <= currentLevel;
 const stopIdxInLesson = MS_TORCH_INDEX[stop.key];
 const isNext = nextMilestone && nextMilestone.lesson === stop.lesson && nextMilestone.index === stopIdxInLesson;
