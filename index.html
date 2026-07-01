@@ -563,7 +563,7 @@ console.log("THE FILE IS LOADING!");
 
 <div id="fc-area"></div>
 
-<button id="guest-principles-btn" style="display:none;width:100%;margin-top:20px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Continue to Grammar Principles →</button>
+<button id="guest-principles-btn" style="display:none;width:100%;margin-top:20px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Done</button>
 
 </div>
 <!-- EXERCISES PAGE -->
@@ -667,7 +667,7 @@ console.log("THE FILE IS LOADING!");
 
 <button id="student-grammar-done-btn" style="display:none;width:100%;margin-top:20px;padding:14px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Mark Grammar as Done ✓</button>
 
-<button id="guest-flashcards-btn" style="display:none;width:100%;margin-top:24px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Continue to Flashcards →</button>
+<button id="guest-flashcards-btn" style="display:none;width:100%;margin-top:24px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Done</button>
 
 </div>
 
@@ -1291,6 +1291,11 @@ else switchTab('home');
 window.openReadingForLesson = function(lessonNum) {
 switchTab('story');
 setStoryLesson(lessonNum);
+if (guestTourActive && lessonNum === 1 && guestTourStep === 0) {
+guestTourStep = 1;
+hideGuestCoachmark();
+setTimeout(() => showGuestCoachmark(document.getElementById('guest-flashcards-btn'), '👉 Next, go to Flashcards!'), 150);
+}
 };
 
 window.openFlashcardsForLesson = function(lessonNum) {
@@ -2610,7 +2615,7 @@ document.getElementById('milestone-intro-next-btn').addEventListener('click', ()
 document.getElementById('milestone-intro').style.display = 'none';
 document.getElementById('milestone-root').style.display = 'block';
 if (guestTourActive) {
-setTimeout(() => showGuestCoachmark(document.getElementById('ms-tent-1'), '👉 Tap here to start your first lesson!'), 150);
+setTimeout(() => showGuestCoachmark(document.getElementById('ms-torch-1-0'), '👉 Tap Reading to start your lesson!'), 150);
 }
 });
 document.getElementById('login-btn').addEventListener('click',handleLogin);
