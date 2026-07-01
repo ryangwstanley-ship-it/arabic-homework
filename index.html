@@ -1405,42 +1405,37 @@ overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.rem
 window.openLibrary = function() {
 const libraryOverlay = document.createElement('div');
 libraryOverlay.className = 'milestone-celebrate-overlay';
-libraryOverlay.innerHTML = `<div class="milestone-celebrate-card" style="text-align:left;max-width:400px">
-<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+libraryOverlay.innerHTML = `<div class="milestone-celebrate-card" style="text-align:left;max-width:500px;max-height:600px;overflow-y:auto">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;position:sticky;top:0;background:var(--grey-light);padding-bottom:10px">
 <div style="font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--grey)">Library</div>
 <button id="library-close-btn" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--grey)">✕</button>
 </div>
-<div class="tabs" id="library-tabs" style="border-bottom:1px solid var(--border);padding:0;margin-bottom:20px">
-<button class="tab library-tab active" data-tab="principles" style="flex:1;text-align:center">All Principles</button>
-<button class="tab library-tab" data-tab="vocab" style="flex:1;text-align:center">All Vocab</button>
-<button class="tab library-tab" data-tab="lessons" style="flex:1;text-align:center">All Lessons</button>
+<div class="tabs" id="library-tabs" style="border-bottom:1px solid var(--border);padding:0;margin-bottom:0">
+<button class="tab library-tab active" data-tab="principles" style="flex:1;text-align:center;padding:12px">All Principles</button>
+<button class="tab library-tab" data-tab="vocab" style="flex:1;text-align:center;padding:12px">All Vocab</button>
+<button class="tab library-tab" data-tab="lessons" style="flex:1;text-align:center;padding:12px">All Lessons</button>
 </div>
-<div id="library-content" style="min-height:200px;color:var(--grey);text-align:center;padding:20px">
-<div class="library-pane" data-pane="principles" style="display:block"></div>
-<div class="library-pane" data-pane="vocab" style="display:none"></div>
-<div class="library-pane" data-pane="lessons" style="display:none"></div>
+<div id="library-content" style="min-height:200px">
+<div class="library-pane" data-pane="principles" style="display:block" id="principles-pane"></div>
+<div class="library-pane" data-pane="vocab" style="display:none;padding:20px;text-align:center;color:var(--grey)">Empty for now</div>
+<div class="library-pane" data-pane="lessons" style="display:none;padding:20px;text-align:center;color:var(--grey)">Empty for now</div>
 </div>
-<button class="milestone-review-btn" style="width:100%;background:var(--grey-light);color:var(--grey);border:1.5px solid var(--border)">Close</button>
 </div>`;
 document.body.appendChild(libraryOverlay);
 
-document.getElementById('library-close-btn').onclick = () => libraryOverlay.remove();
-libraryOverlay.querySelector('.milestone-review-btn').onclick = () => libraryOverlay.remove();
-
-const libraryTabs = document.querySelectorAll('.library-tab');
-const libraryPanes = document.querySelectorAll('.library-pane');
-
-libraryTabs.forEach(tab => {
-  tab.onclick = () => {
-    libraryTabs.forEach(t => t.classList.remove('active'));
-    libraryPanes.forEach(p => p.style.display = 'none');
-    tab.classList.add('active');
-    document.querySelector(`.library-pane[data-pane="${tab.dataset.tab}"]`).style.display = 'block';
-  };
-});
-
-libraryOverlay.addEventListener('click', (e) => { if (e.target === libraryOverlay) libraryOverlay.remove(); });
-};
+const principlesData = [
+  { lesson: 1, title: 'Plurals: Broken vs Intact', examples: 'رَجُلٌ — رِجَالٌ — صَنَمٌ — أَصْنَامٌ — قَرْيَةٌ — قُرًى — يَوْمٌ — أَيَّامٌ — اسْمٌ — أَسْمَاءٌ', explanation: 'Arabic plurals come in two types. For inanimate objects, the word changes shape entirely and must be memorised — this is called a broken plural. For people, you simply add "oon", "een", or "aat" to the end — this is called an intact plural. Adjectives, verbs and pronouns must match whichever plural type is used.' },
+  { lesson: 1, title: 'Femininity: Ta Marbuta', examples: 'قَرْيَةٌ — عِبَادَةٌ — مَدْرَسَةٌ — أَصْنَامٌ — قُرًى — أَيَّامٌ — رِجَالٌ — أَسْمَاءٌ — سَيَّارَةٌ — كَثِيرَةٌ\nرَجُلٌ كَبِيرٌ — قَرْيَةٌ كَبِيرَةٌ — أَصْنَامٌ كَبِيرَةٌ — مُشْرِكُونَ كَبِيرُونَ — مُشْرِكَاتٌ كَبِيرَاتٌ', explanation: 'A word is feminine if it ends in the letter "ta marbuta". All broken plurals are also feminine, even if they do not end in "ta marbuta". This means adjectives describing them must take the feminine form. As mentioned, broken plurals are used for inanimate objects, so when we use an adjective, we have to put "taa marbuta". As for adjective for people, we just put "uun, een, aat".' },
+  { lesson: 1, title: 'Definiteness: The Al Prefix', examples: 'رَجُلٌ — الرَّجُلُ — صَنَمٌ — الصَّنَمُ — قَرْيَةٌ — الْقَرْيَةُ — مُشْرِكٌ كَبِيرٌ — الْمُشْرِكُ الْكَبِيرُ — أَصْنَامٌ كَثِيرَةٌ — الْأَصْنَامُ الْكَثِيرَةُ', explanation: 'A word is definite when it begins with "al". This usually translates to "the" in English. Adjectives must match their noun — if the noun has "al", the adjective must also have "al". If the noun has no "al", the adjective must also have no "al".' },
+  { lesson: 2, title: 'Present vs Past Tense Recognition', examples: 'يَعْبُدُ — عَبَدَ — يَسْكُنُ — سَكَنَ — يَعْرِفُ — عَرَفَ — يَقُولُ — قَالَ — يَتْرُكُ — تَرَكَ', explanation: 'Present tense verbs begin with a prefix. Past tense verbs have no prefix and usually have many fathas ("a" sounds) running through them. This makes it possible to tell them apart even without knowing the meaning.' },
+  { lesson: 2, title: 'Present Tense Prefixes', examples: 'أَعْبُدُ — تَعْبُدُ — يَعْبُدُ — نَعْبُدُ — تَعْبُدُونَ — يَعْبُدُونَ — أَسْكُنُ — تَسْكُنُ — يَسْكُنُ — نَسْكُنُ', explanation: 'The present tense has 4 main prefixes: "a" means I, "ya" means he, "ta" means she or you, and "na" means we. When the suffix "oon" is added, the verb becomes plural.' },
+  { lesson: 2, title: 'Past Tense Subject Endings', examples: 'خَرَجَ — خَرَجُوا — خَرَجَتْ — سَمِعَ — سَمِعُوا — سَمِعَتْ — كَسَرَ — كَسَرُوا — كَسَرَتْ — فَرِحَتْ\nخَرَجَ — خَرَجُوا — خَرَجَتْ — خَرَجْتُ — خَرَجْتَ — خَرَجْنَا – خرجتم\nسَمِعَ — سَمِعُوا — سَمِعَتْ — سَمِعْتُ — سَمِعْتَ — سَمِعْنَا – سمعتم', explanation: 'The past tense verb changes depending on who did the action. When a group of males did it, add "oo" to the end. When a female or feminine noun did it, add "at" to the end. The base form with no addition refers to a single male. For "I", add "tu". For "you", add "ta". For "we", add "na".' },
+  { lesson: 3, title: 'Commands & Prohibitions', examples: 'اعْبُدْ — لَا تَعْبُدْ — اتْرُكْ — لَا تَتْرُكْ — ادْخُلْ — لَا تَدْخُلْ — قُلْ — لَا تَقُلْ — اخْرُجْ — لَا تَخْرُجْ\nاعْبُدْ — اعْبُدُوا — قُلْ — قُولُوا — اتْرُكْ — اتْرُكُوا — ادْخُلْ — ادْخُلُوا — لَا تَعْبُدْ — لَا تَعْبُدُوا — لَا تَقُلْ — لَا تَقُولُوا — لَا تَتْرُكْ — لَا تَتْرُكُوا', explanation: 'A command is recognised in four ways: the present tense prefix is replaced with an alif at the start, the verb ends with a sukun, a weak letter at the end is deleted, or the nun at the end of a plural verb is deleted. A prohibition keeps the present tense prefix and simply adds "la" before the verb. Both are directed at "you" singular or plural.' },
+  { lesson: 4, title: 'Subject & Object Cases', examples: 'اجْتَمَعَ النَّاسُ — نَصَرَ اللَّهُ إِبْرَاهِيمَ — وَجَدَ النَّاسُ إِبْرَاهِيمَ — أَلْقَوْا إِبْرَاهِيمَ — كَسَرَ إِبْرَاهِيمُ الْأَصْنَامَ — أَرَادَ اللَّهُ شَيْئًا — قَتَلَ النَّاسُ إِبْرَاهِيمَ — سَمِعَ النَّاسُ إِبْرَاهِيمَ — عَبَدَ آزَرُ الْأَصْنَامَ — تَرَكَ إِبْرَاهِيمُ الشِّرْكَ', explanation: 'The subject of a sentence — the one doing the action — takes a damma on its last letter. The object — the one receiving the action — takes a fatha on its last letter. This means you can identify who is doing what even in a long sentence, without relying on word order. This is the nominative case for the subject, and the accusative case for the object.' },
+  { lesson: 5, title: 'Passive Voice', examples: 'خُلِقَ — يُخْلَقُ — ضُرِبَ — يُضْرَبُ — كُسِرَ — يُكْسَرُ — أُلْقِيَ — يُلْقَى — غُلِبَ — يُغْلَبُ', explanation: 'A passive verb is one where the subject receives the action instead of doing it. Instead of "Ibrahim broke the idol", you say "the idol was broken". In Arabic, the past tense passive is formed by changing the vowels of the verb to a damma then a kasra. The present tense passive changes to a damma at the start and a fatha before the last letter. You do not need to mention who did the action — the verb alone tells you something was done to the subject.' },
+  { lesson: 6, title: 'Doer & Done-To Patterns', examples: 'خَالِقٌ — مَخْلُوقٌ — نَاصِرٌ — مَنْصُورٌ — عَالِمٌ — مَعْلُومٌ — مُؤْمِنٌ — مُؤْمَنٌ — كَاسِرٌ — مَكْسُورٌ', explanation: 'The pattern "faa-il" describes the one doing the action — the doer. The pattern "maf-ool" describes the one receiving the action — the done-to. Both are formed from the same root. Recognising these two patterns allows you to identify whether a word is the doer or the receiver without needing to know its meaning.' },
+  { lesson: 7, title: 'Superlatives', examples: 'أَكْبَرُ — أَصْغَرُ — أَكْثَرُ — أَقَلُّ — أَحْسَنُ — أَعْظَمُ — أَقْوَى — أَضْعَفُ — كُبْرَى — صُغْرَى', explanation: 'The superlative is formed by putting the root letters into the pattern "af-al" for masculine and "fu-la" for feminine. It means "the most" or "the -est" — bigger, smaller, greater, and so on. The masculine form is used for comparisons between two things as well as superlatives. The feminine form appears with feminine nouns and in certain fixed expressions.' },
+  { lesson: 8, title: 'Idafa: Possession & Description',
   
 window.showMasteredMilestone = function(category, lessonNum, reviewCallback) {
 window.switchTab('milestones');
