@@ -972,8 +972,8 @@ return { total: activeIdxs.length, remaining: activeIdxs.length - easyCount };
 function getExercisesFraction(lessonNum) {
 const modes = Object.keys(EX_LESSON_MAP).filter(m => EX_LESSON_MAP[m] === lessonNum && m !== 'challenge1' && m !== 'challenge2');
 if (!modes.length) return 0;
-const masteredCount = modes.filter(m => window.getExerciseMasteryPercent(m, exGetQuestionCount(m)) === 100).length;
-return masteredCount / modes.length;
+const totalPct = modes.reduce((sum, m) => sum + window.getExerciseMasteryPercent(m, exGetQuestionCount(m)), 0);
+return totalPct / (modes.length * 100);
 }
 
 // Fraction (0–1) of the "challenges" torch lit: share of that lesson's
