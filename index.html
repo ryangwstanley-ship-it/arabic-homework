@@ -2618,16 +2618,7 @@ document.getElementById('guest-setup-screen').style.display = 'none';
 document.getElementById('login-screen').style.display = 'flex';
 });
 document.getElementById('guest-create-btn').addEventListener('click', () => window.startGuestJourney());
-function startGuestJourney() {
-  const name = document.getElementById('guest-name-input').value.trim();
-  const code = document.getElementById('guest-code-input').value.trim();
-  if (!name || !code) { alert('Please enter both name and code'); return; }
-  currentUser = code;
-  document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('guest-setup-screen').style.display = 'none';
-  document.getElementById('app').style.display = 'flex';
-  loadApp();
-}
+
 document.getElementById('guest-return-btn').addEventListener('click', () => window.continueAsGuest());
 document.getElementById('guest-name-input').addEventListener('input', () => {
 if (!guestCodeEdited) document.getElementById('guest-code-input').value = suggestGuestCode(document.getElementById('guest-name-input').value);
