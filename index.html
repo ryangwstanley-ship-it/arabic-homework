@@ -362,7 +362,6 @@
 .principle-item-content-title { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 8px; }
 .principle-item-content-examples { font-size: 12px; color: var(--ink); direction: rtl; margin-bottom: 10px; line-height: 1.6; font-family: 'Scheherazade New', serif; }
 .principle-item-content-explanation { font-size: 12px; color: var(--grey); line-height: 1.6; }
-  
 /* TOAST */
 .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: #8b2035; color: white; padding: 12px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; z-index: 200; transition: transform 0.3s; white-space: nowrap; }
 .toast.show { transform: translateX(-50%) translateY(0); }
@@ -1406,154 +1405,27 @@ overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.rem
 window.openLibrary = function() {
 const libraryOverlay = document.createElement('div');
 libraryOverlay.className = 'milestone-celebrate-overlay';
-libraryOverlay.innerHTML = `<div class="milestone-celebrate-card" style="text-align:left;max-width:500px;max-height:600px;overflow-y:auto">
-<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;position:sticky;top:0;background:var(--grey-light);padding-bottom:10px">
+libraryOverlay.innerHTML = `<div class="milestone-celebrate-card" style="text-align:left;max-width:400px">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
 <div style="font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--grey)">Library</div>
 <button id="library-close-btn" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--grey)">✕</button>
 </div>
-<div class="tabs" id="library-tabs" style="border-bottom:1px solid var(--border);padding:0;margin-bottom:0">
-<button class="tab library-tab active" data-tab="principles" style="flex:1;text-align:center;padding:12px">All Principles</button>
-<button class="tab library-tab" data-tab="vocab" style="flex:1;text-align:center;padding:12px">All Vocab</button>
-<button class="tab library-tab" data-tab="lessons" style="flex:1;text-align:center;padding:12px">All Lessons</button>
+<div class="tabs" id="library-tabs" style="border-bottom:1px solid var(--border);padding:0;margin-bottom:20px">
+<button class="tab library-tab active" data-tab="principles" style="flex:1;text-align:center">All Principles</button>
+<button class="tab library-tab" data-tab="vocab" style="flex:1;text-align:center">All Vocab</button>
+<button class="tab library-tab" data-tab="lessons" style="flex:1;text-align:center">All Lessons</button>
 </div>
-<div id="library-content" style="min-height:200px">
-<div class="library-pane" data-pane="principles" style="display:block" id="principles-pane"></div>
-<div class="library-pane" data-pane="vocab" style="display:none;padding:20px;text-align:center;color:var(--grey)">Empty for now</div>
-<div class="library-pane" data-pane="lessons" style="display:none;padding:20px;text-align:center;color:var(--grey)">Empty for now</div>
+<div id="library-content" style="min-height:200px;color:var(--grey);text-align:center;padding:20px">
+<div class="library-pane" data-pane="principles" style="display:block"></div>
+<div class="library-pane" data-pane="vocab" style="display:none"></div>
+<div class="library-pane" data-pane="lessons" style="display:none"></div>
 </div>
+<button class="milestone-review-btn" style="width:100%;background:var(--grey-light);color:var(--grey);border:1.5px solid var(--border)">Close</button>
 </div>`;
 document.body.appendChild(libraryOverlay);
 
-const principlesData = [
-  {
-    lesson: 1,
-    title: 'Plurals: Broken vs Intact',
-    examples: 'رَجُلٌ — رِجَالٌ — صَنَمٌ — أَصْنَامٌ — قَرْيَةٌ — قُرًى — يَوْمٌ — أَيَّامٌ — اسْمٌ — أَسْمَاءٌ',
-    explanation: 'Arabic plurals come in two types. For inanimate objects, the word changes shape entirely and must be memorised — this is called a broken plural. For people, you simply add "oon", "een", or "aat" to the end — this is called an intact plural. Adjectives, verbs and pronouns must match whichever plural type is used.'
-  },
-  {
-    lesson: 1,
-    title: 'Femininity: Ta Marbuta',
-    examples: 'قَرْيَةٌ — عِبَادَةٌ — مَدْرَسَةٌ — أَصْنَامٌ — قُرًى — أَيَّامٌ — رِجَالٌ — أَسْمَاءٌ — سَيَّارَةٌ — كَثِيرَةٌ\nرَجُلٌ كَبِيرٌ — قَرْيَةٌ كَبِيرَةٌ — أَصْنَامٌ كَبِيرَةٌ — مُشْرِكُونَ كَبِيرُونَ — مُشْرِكَاتٌ كَبِيرَاتٌ',
-    explanation: 'A word is feminine if it ends in the letter "ta marbuta". All broken plurals are also feminine, even if they do not end in "ta marbuta". This means adjectives describing them must take the feminine form. As mentioned, broken plurals are used for inanimate objects, so when we use an adjective, we have to put "taa marbuta". As for adjective for people, we just put "uun, een, aat".'
-  },
-  {
-    lesson: 1,
-    title: 'Definiteness: The Al Prefix',
-    examples: 'رَجُلٌ — الرَّجُلُ — صَنَمٌ — الصَّنَمُ — قَرْيَةٌ — الْقَرْيَةُ — مُشْرِكٌ كَبِيرٌ — الْمُشْرِكُ الْكَبِيرُ — أَصْنَامٌ كَثِيرَةٌ — الْأَصْنَامُ الْكَثِيرَةُ',
-    explanation: 'A word is definite when it begins with "al". This usually translates to "the" in English. Adjectives must match their noun — if the noun has "al", the adjective must also have "al". If the noun has no "al", the adjective must also have no "al".'
-  },
-  {
-    lesson: 2,
-    title: 'Present vs Past Tense Recognition',
-    examples: 'يَعْبُدُ — عَبَدَ — يَسْكُنُ — سَكَنَ — يَعْرِفُ — عَرَفَ — يَقُولُ — قَالَ — يَتْرُكُ — تَرَكَ',
-    explanation: 'Present tense verbs begin with a prefix. Past tense verbs have no prefix and usually have many fathas ("a" sounds) running through them. This makes it possible to tell them apart even without knowing the meaning.'
-  },
-  {
-    lesson: 2,
-    title: 'Present Tense Prefixes',
-    examples: 'أَعْبُدُ — تَعْبُدُ — يَعْبُدُ — نَعْبُدُ — تَعْبُدُونَ — يَعْبُدُونَ — أَسْكُنُ — تَسْكُنُ — يَسْكُنُ — نَسْكُنُ',
-    explanation: 'The present tense has 4 main prefixes: "a" means I, "ya" means he, "ta" means she or you, and "na" means we. When the suffix "oon" is added, the verb becomes plural.'
-  },
-  {
-    lesson: 2,
-    title: 'Past Tense Subject Endings',
-    examples: 'خَرَجَ — خَرَجُوا — خَرَجَتْ — سَمِعَ — سَمِعُوا — سَمِعَتْ — كَسَرَ — كَسَرُوا — كَسَرَتْ — فَرِحَتْ\nخَرَجَ — خَرَجُوا — خَرَجَتْ — خَرَجْتُ — خَرَجْتَ — خَرَجْنَا – خرجتم\nسَمِعَ — سَمِعُوا — سَمِعَتْ — سَمِعْتُ — سَمِعْتَ — سَمِعْنَا – سمعتم',
-    explanation: 'The past tense verb changes depending on who did the action. When a group of males did it, add "oo" to the end. When a female or feminine noun did it, add "at" to the end. The base form with no addition refers to a single male. For "I", add "tu". For "you", add "ta". For "we", add "na".'
-  },
-  {
-    lesson: 3,
-    title: 'Commands & Prohibitions',
-    examples: 'اعْبُدْ — لَا تَعْبُدْ — اتْرُكْ — لَا تَتْرُكْ — ادْخُلْ — لَا تَدْخُلْ — قُلْ — لَا تَقُلْ — اخْرُجْ — لَا تَخْرُجْ\nاعْبُدْ — اعْبُدُوا — قُلْ — قُولُوا — اتْرُكْ — اتْرُكُوا — ادْخُلْ — ادْخُلُوا — لَا تَعْبُدْ — لَا تَعْبُدُوا — لَا تَقُلْ — لَا تَقُولُوا — لَا تَتْرُكْ — لَا تَتْرُكُوا',
-    explanation: 'A command is recognised in four ways: the present tense prefix is replaced with an alif at the start, the verb ends with a sukun, a weak letter at the end is deleted, or the nun at the end of a plural verb is deleted. A prohibition keeps the present tense prefix and simply adds "la" before the verb. Both are directed at "you" singular or plural.'
-  },
-  {
-    lesson: 4,
-    title: 'Subject & Object Cases',
-    examples: 'اجْتَمَعَ النَّاسُ — نَصَرَ اللَّهُ إِبْرَاهِيمَ — وَجَدَ النَّاسُ إِبْرَاهِيمَ — أَلْقَوْا إِبْرَاهِيمَ — كَسَرَ إِبْرَاهِيمُ الْأَصْنَامَ — أَرَادَ اللَّهُ شَيْئًا — قَتَلَ النَّاسُ إِبْرَاهِيمَ — سَمِعَ النَّاسُ إِبْرَاهِيمَ — عَبَدَ آزَرُ الْأَصْنَامَ — تَرَكَ إِبْرَاهِيمُ الشِّرْكَ',
-    explanation: 'The subject of a sentence — the one doing the action — takes a damma on its last letter. The object — the one receiving the action — takes a fatha on its last letter. This means you can identify who is doing what even in a long sentence, without relying on word order. This is the nominative case for the subject, and the accusative case for the object.'
-  },
-  {
-    lesson: 5,
-    title: 'Passive Voice',
-    examples: 'خُلِقَ — يُخْلَقُ — ضُرِبَ — يُضْرَبُ — كُسِرَ — يُكْسَرُ — أُلْقِيَ — يُلْقَى — غُلِبَ — يُغْلَبُ',
-    explanation: 'A passive verb is one where the subject receives the action instead of doing it. Instead of "Ibrahim broke the idol", you say "the idol was broken". In Arabic, the past tense passive is formed by changing the vowels of the verb to a damma then a kasra. The present tense passive changes to a damma at the start and a fatha before the last letter. You do not need to mention who did the action — the verb alone tells you something was done to the subject.'
-  },
-  {
-    lesson: 6,
-    title: 'Doer & Done-To Patterns',
-    examples: 'خَالِقٌ — مَخْلُوقٌ — نَاصِرٌ — مَنْصُورٌ — عَالِمٌ — مَعْلُومٌ — مُؤْمِنٌ — مُؤْمَنٌ — كَاسِرٌ — مَكْسُورٌ',
-    explanation: 'The pattern "faa-il" describes the one doing the action — the doer. The pattern "maf-ool" describes the one receiving the action — the done-to. Both are formed from the same root. Recognising these two patterns allows you to identify whether a word is the doer or the receiver without needing to know its meaning.'
-  },
-  {
-    lesson: 7,
-    title: 'Superlatives',
-    examples: 'أَكْبَرُ — أَصْغَرُ — أَكْثَرُ — أَقَلُّ — أَحْسَنُ — أَعْظَمُ — أَقْوَى — أَضْعَفُ — كُبْرَى — صُغْرَى',
-    explanation: 'The superlative is formed by putting the root letters into the pattern "af-al" for masculine and "fu-la" for feminine. It means "the most" or "the -est" — bigger, smaller, greater, and so on. The masculine form is used for comparisons between two things as well as superlatives. The feminine form appears with feminine nouns and in certain fixed expressions.'
-  },
-  {
-    lesson: 8,
-    title: 'Idafa: Possession & Description',
-    examples: 'بَيْتُ اللهِ — دَعْوَةُ التَّوْحِيدِ — طَالِبُ عِلْمٍ — عَمَلُ الشَّيْطَانِ — رَبُّ الْعَالَمِينَ — أَهْلُ الْجَنَّةِ — يَوْمُ الْعِيدِ — كُتُبُ الْأَنْبِيَاءِ — عَذَابُ جَهَنَّمَ — سَبِيلُ اللهِ',
-    explanation: 'When two nouns are placed next to each other, the second takes a kasra. This is called idafa, and the phrase translates to english as "something of something" or "something\'s something". The first noun is the thing being possessed or described, and the second is the owner or descriptor. The first noun never takes ال when it is in an idafa construction. If the second noun is indefinite, the whole phrase is indefinite — like "a student of knowledge". If the second noun has ال, the whole phrase becomes definite — like "the house of Allah". One main way to recognise idafa is that the second word has kasra and the first word has neither "al" nor tanween.'
-  },
-  {
-    lesson: 9,
-    title: 'Verbal Nouns',
-    examples: 'خَلَقَ — خَلْقٌ — عَبَدَ — عِبَادَةٌ — دَعَا — دَعْوَةٌ — نَصَرَ — نَصْرٌ — ذَكَرَ — ذِكْرٌ',
-    explanation: 'A verbal noun is a noun made from a verb. In English, you can say "he runs" or "running is good" — "running" is the verbal noun. In Arabic this is even more important because verbal nouns appear constantly in the Quran and in everyday speech. Instead of saying "he worshipped", you can say "his worship was pure". The verbal noun freezes the action into a thing you can talk about, possess, or describe. In English, the difference is between "he is reading" and "he likes reading". The first is an action that is happening, and the second is a concept you can talk about. Recognising verbal nouns allows you to understand a huge portion of the Quran, since many key Quranic terms are verbal nouns.'
-  },
-  {
-    lesson: 10,
-    title: 'Adverbial Accusative',
-    examples: 'جَاءَ إِبْرَاهِيمُ فَرِحًا — خَرَجَ خَائِفًا — وَجَدَهُ سَالِمًا — دَعَا النَّاسَ حَكِيمًا — رَجَعَ خَاسِرًا — غَضِبَ غَضَبًا شَدِيدًا — زِدْنِي عِلْمًا — كَانَ أَكْثَرَ عِلْمًا — طَابَ قَلْبًا — مَلَأَ الْأَرْضَ نُورًا',
-    explanation: 'Sometimes a word with a fatha appears after a verb or noun to give extra detail about it. It tells you how something happened, in what state, or in what respect. For example: "he arrived happily" — the word "happy" has a fatha and tells you the state he was in when he came. Or "increase me in knowledge" — "knowledge" has a fatha and tells you in what respect the increase is wanted. This word always comes after the thing it is describing and is always indefinite.'
-  },
-  {
-    lesson: 11,
-    title: 'Derived Verb Forms (Part 1)',
-    examples: 'أَفْعَلَ — فَعَّلَ —تَفَعَّلَ— فَاعَلَ —تَفَاعَلَ —اِنْفَعَلَ — اِسْتَفْعَلَ\nأَخْرَجَ — أَنْزَلَ — أَحْيَا\nعَلَّمَ — كَسَّرَ — نَزَّلَ\nتَعَلَّمَ — تَكَسَّرَ — تَنَزَّلَ\nقَاتَلَ — جَادَلَ — عَامَلَ\nتَقَاتَلَ — تَجَادَلَ — تَعَامَلَ\nاِنْكَسَرَ — اِنْفَتَحَ — اِنْغَلَقَ\nاِسْتَغْفَرَ — اِسْتَعَانَ — اِسْتَخَارَ',
-    explanation: 'The form beginning with a hamza causes the action to happen — like "he sent out" from "he went out". The doubled middle letter form makes the action intensive or causes it to happen to someone else — like "he taught" from "he knew". The mutual reflexive form means two parties doing something to each other over time. The form with alif after the first letter means two parties are doing something to each other. The form beginning with "ta" and a doubled middle letter is the reflexive of the doubled form — like "he learned" from "he taught". The form beginning with "in" is intransitive — something happened to the subject. The form beginning with "ista" means to seek or consider something — like "he sought forgiveness".'
-  },
-  {
-    lesson: 12,
-    title: 'Derived Verb Forms (Part 2)',
-    examples: 'Each verbal form has a distinct structure.',
-    explanation: 'As for the original form, then it does not. So if a person memorises these different forms, they no longer have to memorise past/present/command/verbal noun/passive for every verb they learn. This memorisation may take some time in the beginning, but it pays off when you find yourself strong in understanding and strong in grammar, and it just takes a couple of hours of repetition. Just to list the main rules: 1-Past tense verbs should not have a kasra/dumma on any letters, except a kasra below the alif. 2-the present tense pronoun only begins with dumma in the causation/interaction verbs. 3- In present/command verbs, the 2nd to last letter has a kasra, except if it begins with the reflexive "Taa". 4- For passive present, the pronoun has dumma and everything else has fatha. 5-For passive past, the first letter has dumma, the last has fatha, and the 2nd to last has kasra. 6-For passive past, the additional "taa" has dumma also.'
-  },
-  {
-    lesson: 13,
-    title: 'Word Order & Emphasis',
-    examples: 'إِيَّاكَ نَعْبُدُ — لِلَّهِ الْحَمْدُ — إِيَّاكَ نَسْتَعِينُ — لَكَ الْمُلْكُ — لَهُ الْأَمْرُ — عَلَيْهِ تَوَكَّلْتُ — بِيَدِهِ الْخَيْرُ — لَهُ الْحَمْدُ',
-    explanation: 'In Arabic the word order can be changed without changing the basic meaning — unlike English where word order is fixed. However when a word is moved to the front of the sentence, it gains a special emphasis or restriction. For example, "you we worship" in Surah Al-Fatiha is not the same as "we worship you" — it means "you alone we worship, and no one else". To understand these sentences correctly, first put the words back into their natural order, then ask what was moved to the front and why.'
-  }
-];
-
-const principlesPane = document.getElementById('principles-pane');
-principlesPane.innerHTML = principlesData.map((p, idx) => `
-<div class="principle-item" data-idx="${idx}">
-<div class="principle-item-header">
-<span class="principle-item-toggle">›</span>
-<span>Lesson ${p.lesson}: ${p.title}</span>
-</div>
-<div class="principle-item-content" data-idx="${idx}">
-<div class="principle-item-content-examples">${p.examples}</div>
-<div class="principle-item-content-explanation">${p.explanation}</div>
-</div>
-</div>
-`).join('');
-
-document.querySelectorAll('.principle-item').forEach(item => {
-  item.onclick = () => {
-    const idx = item.dataset.idx;
-    const content = item.querySelector('.principle-item-content');
-    const toggle = item.querySelector('.principle-item-toggle');
-    content.classList.toggle('open');
-    toggle.classList.toggle('open');
-  };
-});
-
 document.getElementById('library-close-btn').onclick = () => libraryOverlay.remove();
+libraryOverlay.querySelector('.milestone-review-btn').onclick = () => libraryOverlay.remove();
 
 const libraryTabs = document.querySelectorAll('.library-tab');
 const libraryPanes = document.querySelectorAll('.library-pane');
