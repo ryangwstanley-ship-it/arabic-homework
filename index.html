@@ -2328,7 +2328,7 @@ const state = pct === 100 ? 'state-complete' : pct === 0 ? 'state-untouched' : '
 const badge = pct === 100 ? 'COMPLETED 100%' : `PROGRESS: ${pct}%`;
 const btn = document.createElement('button');
 btn.className='fc-lesson-btn '+state+(num==fcCurrentLesson?' active':'');
-btn.innerHTML = `<div class="fc-lesson-top">${miniRing(pct, '🃏')}<div class="fc-lesson-info"><div class="fc-lesson-badge">${badge}</div><div class="fc-lesson-count">Completed ${completed} of ${counts.total}</div></div></div><div class="fc-lesson-name">${lesson.name}</div>`;
+btn.innerHTML = `<div class="fc-lesson-top">${miniRing(pct, '🃏')}<div class="fc-lesson-info"><div class="fc-lesson-badge">${badge}</div></div></div><div class="fc-lesson-name">${lesson.name}</div>`;
 btn.onclick=()=>{
 fcCurrentLesson=num;
 if (pct === 100) {
@@ -2868,7 +2868,6 @@ return `<div class="ex-card ${state}" id="btn-${c.mode}">
 ${window.miniRing(pct, c.icon)}
 <div class="ex-card-info">
 <div class="ex-card-badge">${badge}</div>
-<div class="ex-card-count">Completed ${completed} of ${total}</div>
 </div>
 </div>
 <div class="ex-card-title">${c.title}</div>
