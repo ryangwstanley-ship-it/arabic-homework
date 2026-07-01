@@ -1128,11 +1128,17 @@ return `${shadow}${pole}
 // lesson is officially advanced.
 function msLessonFigurePos(lessonStartIdx, numLit) {
 const frac = Math.min(numLit, 5);
-const idx = Math.min(Math.floor(frac), 4);
-const segFrac = frac - idx;
+const idx = Math.min(Math.floor(frac) + 1, 6);
+const segFrac = frac - Math.floor(frac);
 const p0 = { x: msStopX(lessonStartIdx + idx), y: msStopY(lessonStartIdx + idx) };
 const p1 = { x: msStopX(lessonStartIdx + idx + 1), y: msStopY(lessonStartIdx + idx + 1) };
-return { x: p0.x + (p1.x - p0.x) * segFrac, y: p0.y + (p1.y - p0.y) * segFrac };
+const x = p0.x + (p1.x - p0.x) * segFrac;
+const y = p0.y + (p1.y - p0.y) * segFrac;
+const pPrev = { x: msStopX(lessonStartIdx + idx - 1), y: msStopY(lessonStartIdx + idx - 1) };
+const dx = x - pPrev.x, dy = y - pPrev.y;
+const dist = Math.sqrt(dx*dx + dy*dy) || 1;
+const OFFSET = 40;
+return { x: x - (dx / dist) * OFFSET, y: y - (dy / dist) * OFFSET };
 }
 
 function renderMilestones(trailFromFrac) {
