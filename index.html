@@ -1204,7 +1204,8 @@ const ring = isNext
 ? `<circle cx="${x}" cy="${y-30}" r="46" fill="#FFD23F" fill-opacity="0.28" stroke="#FFD23F" stroke-width="3" stroke-opacity="0.95" class="ms-next-pulse"/>`
 : (tappable ? `<circle cx="${x}" cy="${y-30}" r="40" fill="#F4C14E" fill-opacity="0.14" stroke="#F4C14E" stroke-width="2" stroke-opacity="0.65"/>` : '');
 const torchShape = desertTorchSvg(x, y, lit);
-const label = `<text x="${x}" y="${y+30}" font-size="13" fill="#E8DFC8" text-anchor="middle">${stop.label}</text>`;
+const labelWidth = stop.label.length * 7 + 24;
+const label = `<rect x="${x-labelWidth/2}" y="${y+17}" width="${labelWidth}" height="26" rx="13" fill="#FCE2A0"/><text x="${x}" y="${y+34}" font-size="13" font-weight="500" fill="#4A1B0C" text-anchor="middle">${stop.label}</text>`;
 const piece = glow + ring + torchShape + label;
 inner += tappable
 ? `<g id="ms-torch-${stop.lesson}-${stopIdxInLesson}" style="cursor:pointer" onclick="window.${MS_TORCH_ACTIONS[stop.key]}(${stop.lesson})">${piece}</g>`
