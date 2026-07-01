@@ -2413,7 +2413,8 @@ area.appendChild(ratingWrap);
 
 const progress = document.createElement('div');
 progress.style.cssText='text-align:center;font-size:12px;color:var(--grey);margin-top:8px';
-progress.textContent=`${fcCurrentIdx+1} / ${fcQueue.length}`;
+const masteryCounts = getLessonMasteryCounts(fcCurrentLesson);
+progress.textContent=`${fcCurrentIdx+1} / ${fcQueue.length} · ${masteryCounts.remaining} card${masteryCounts.remaining!==1?'s':''} left until mastery`;
 area.appendChild(progress);
 
 document.getElementById('fc-card').addEventListener('click', (e) => {
