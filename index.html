@@ -1184,7 +1184,7 @@ const x = msStopX(i), y = msStopY(i);
 if (stop.type === 'tent') {
 const open = stop.lesson <= currentLevel;
 const isActiveTent = stop.lesson === currentLevel;
-const tentLabelText = isActiveTent ? 'Contact your tutor' : `Lesson ${stop.lesson}`;
+const tentLabelText = isActiveTent ? 'Home' : `Lesson ${stop.lesson}`;
 const tentLabelWidth = tentLabelText.length * 7 + 24;
 const tentLabel = isActiveTent
 ? `<rect x="${x-tentLabelWidth/2}" y="${y+31}" width="${tentLabelWidth}" height="26" rx="13" fill="#FCE2A0"/><text x="${x}" y="${y+48}" font-size="13" font-weight="500" fill="#4A1B0C" text-anchor="middle">${tentLabelText}</text>`
@@ -1369,6 +1369,12 @@ overlay.innerHTML = `<div class="milestone-celebrate-card" style="text-align:lef
 <div class="home-card-text"><div class="home-card-title">Upload Homework</div><div class="home-card-desc">Submit today's work</div></div>
 <div class="home-card-arrow">›</div>
 </div>
+<div class="home-card" id="tent-menu-library" style="margin-bottom:10px">
+<div class="home-card-icon" style="font-size:22px">📚</div>
+<div class="home-card-divider"></div>
+<div class="home-card-text"><div class="home-card-title">View Library</div><div class="home-card-desc">Browse resources</div></div>
+<div class="home-card-arrow">›</div>
+</div>
 <button class="milestone-review-btn" id="tent-menu-close" style="width:100%;margin-top:16px;background:var(--grey-light);color:var(--grey);border:1.5px solid var(--border)">Close</button>
 </div>`;
 document.body.appendChild(overlay);
@@ -1382,11 +1388,51 @@ setTimeout(() => showGuestCoachmark(document.getElementById('guest-flashcards-bt
 }
 };
 document.getElementById('tent-menu-homework').onclick = () => { overlay.remove(); switchTab('homework'); };
+document.getElementById('tent-menu-library').onclick = () => { overlay.remove(); openLibrary(); };
 document.getElementById('tent-menu-close').onclick = () => overlay.remove();
 overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
 };
 
+window.openLibrary = function() {
+const libraryOverlay = document.createElement('div');
+libraryOverlay.className = 'milestone-celebrate-overlay';
+libraryOverlay.innerHTML = `<div class="milestone-celebrate-card" style="text-align:left;max-width:400px">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+<div style="font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--grey)">Library</div>
+<button id="library-close-btn" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--grey)">✕</button>
+</div>
+<div class="tabs" id="library-tabs" style="border-bottom:1px solid var(--border);padding:0;margin-bottom:20px">
+<button class="tab library-tab active" data-tab="principles" style="flex:1;text-align:center">All Principles</button>
+<button class="tab library-tab" data-tab="vocab" style="flex:1;text-align:center">All Vocab</button>
+<button class="tab library-tab" data-tab="lessons" style="flex:1;text-align:center">All Lessons</button>
+</div>
+<div id="library-content" style="min-height:200px;color:var(--grey);text-align:center;padding:20px">
+<div class="library-pane" data-pane="principles" style="display:block"></div>
+<div class="library-pane" data-pane="vocab" style="display:none"></div>
+<div class="library-pane" data-pane="lessons" style="display:none"></div>
+</div>
+<button class="milestone-review-btn" style="width:100%;background:var(--grey-light);color:var(--grey);border:1.5px solid var(--border)">Close</button>
+</div>`;
+document.body.appendChild(libraryOverlay);
 
+document.getElementById('library-close-btn').onclick = () => libraryOverlay.remove();
+libraryOverlay.querySelector('.milestone-review-btn').onclick = () => libraryOverlay.remove();
+
+const libraryTabs = document.querySelectorAll('.library-tab');
+const libraryPanes = document.querySelectorAll('.library-pane');
+
+libraryTabs.forEach(tab => {
+  tab.onclick = () => {
+    libraryTabs.forEach(t => t.classList.remove('active'));
+    libraryPanes.forEach(p => p.style.display = 'none');
+    tab.classList.add('active');
+    document.querySelector(`.library-pane[data-pane="${tab.dataset.tab}"]`).style.display = 'block';
+  };
+});
+
+libraryOverlay.addEventListener('click', (e) => { if (e.target === libraryOverlay) libraryOverlay.remove(); });
+};
+  
 window.showMasteredMilestone = function(category, lessonNum, reviewCallback) {
 window.switchTab('milestones');
 renderMilestones();
