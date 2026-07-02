@@ -2769,19 +2769,19 @@ function storyRenderSentence(lesson) {
   const sentenceIdx = storyCurrentSentence[code][lesson];
   
   if (sentenceIdx >= 13) {
-  const code = currentUser || viewingStudent;
-  const isGuest = isGuestMode;
-  if (isGuest) {
-    document.getElementById('guest-flashcards-btn').style.display = 'block';
-  } else {
-    document.getElementById('student-reading-done-btn').style.display = 'block';
+    if (isGuestMode) {
+      document.getElementById('guest-flashcards-btn').style.display = 'block';
+      document.getElementById('guest-flashcards-btn').textContent = 'Done';
+      showToast('🎉 Congratulations! You finished the reading. Press Done to continue to Flashcards.');
+    } else {
+      document.getElementById('student-reading-done-btn').style.display = 'block';
+    }
+    document.getElementById('story-translation-input').style.display = 'none';
+    document.querySelector('[onclick*="storySubmitTranslation"]').style.display = 'none';
+    document.getElementById('story-reveal').style.display = 'none';
+    document.getElementById('story-ratings').style.display = 'none';
+    return;
   }
-  document.getElementById('story-translation-input').style.display = 'none';
-  document.querySelector('[onclick*="storySubmitTranslation"]').style.display = 'none';
-  document.getElementById('story-reveal').style.display = 'none';
-  document.getElementById('story-ratings').style.display = 'none';
-  return;
-}
   
   const sentences = STORY_SENTENCES[lesson] || [];
   const sentence = sentences[sentenceIdx];
@@ -2990,16 +2990,13 @@ if (sentenceIdx < totalSentences) {
       guestTourStep = 2;
       hideGuestCoachmark();
     }
-  }, 1500);
+  }, 5000);
 } else {
-  showToast('🎉 Lesson complete! Moving to Flashcards...');
-  setTimeout(() => {
-    window.markReadingDone(lesson);
-    if (guestTourActive && guestTourStep === 1) {
-      guestTourStep = 2;
-      hideGuestCoachmark();
-    }
-  }, 1500);
+  window.markReadingDone(lesson);
+  if (guestTourActive && guestTourStep === 1) {
+    guestTourStep = 2;
+    hideGuestCoachmark();
+  }
 }
 });
 document.getElementById('guest-principles-btn').addEventListener('click', () => {
