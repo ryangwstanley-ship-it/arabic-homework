@@ -2673,6 +2673,8 @@ function closeModal(){document.getElementById('modal').classList.remove('open');
 
 // ── TOAST ──
 let toastTimer;
+let storyProgress = {};
+let storyCurrentSentence = {};
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2500);}
 function showMasteryGain(diff){const el=document.createElement('div');el.className='mastery-gain-popup';el.textContent=`+${diff}%`;document.body.appendChild(el);setTimeout(()=>el.remove(),1400);}
 function showWordMeaning(el) { showToast(el.textContent + ' = ' + el.dataset.en); }
@@ -2689,6 +2691,36 @@ if (btn3) btn3.textContent = isHidden ? 'Hide English' : 'Show English';
 }
 window.showWordMeaning = showWordMeaning;
 window.toggleStoryEnglish = toggleStoryEnglish;
+function initializeStory(lesson) {
+  const code = currentUser || viewingStudent;
+  if (!storyCurrentSentence[code]) storyCurrentSentence[code] = {};
+  if (storyCurrentSentence[code][lesson] === undefined) {
+    storyCurrentSentence[code][lesson] = 0;
+  }
+  if (!storyProgress[code]) storyProgress[code] = {};
+}
+window.initializeStory = initializeStory;
+
+                                         
+const STORY_SENTENCES = {
+  1: [
+    { ar: 'قَبْلَ أَيَّامٍ كَثِيرَةٍ جِدًّا، كَانَ هُنَاكَ رَجُلٌ', en: 'Many days ago, there was a man.' },
+    { ar: 'وَكَانَ هَذَا الرَّجُلُ يَسْكُنُ فِي قَرْيَةٍ', en: 'And this man lived in a village.' },
+    { ar: 'وَكَانَ اسْمُ هَذَا الرَّجُلِ آزَرَ', en: 'And this man\'s name was Azar.' },
+    { ar: 'وَكَانَ آزَرُ مُشْرِكًا', en: 'And Azar was a polytheist.' },
+    { ar: 'وَكَانَ مَعَ آزَرَ نَاسٌ كَثِيرُونَ', en: 'And with Azar were many people.' },
+    { ar: 'وَكَانَ هَؤُلَاءِ النَّاسُ مُشْرِكِينَ أَيْضًا', en: 'And these people were polytheists too.' },
+    { ar: 'وَكَانَ آزَرُ يَسْكُنُ مَعَ الْمُشْرِكِينَ فِي هَذِهِ الْقَرْيَةِ', en: 'And Azar lived with the polytheists in this village.' },
+    { ar: 'وَكَانَ فِي هَذِهِ الْقَرْيَةِ أَصْنَامٌ كَثِيرَةٌ جِدًّا', en: 'And in this village there were very many idols.' },
+    { ar: 'وَكَانَ النَّاسُ يَعْبُدُونَ هَذِهِ الْأَصْنَامَ', en: 'And the people worshipped these idols.' },
+    { ar: 'وَكَانَ النَّاسُ يَسْجُدُونَ لَهَا', en: 'And the people prostrated to them.' },
+    { ar: 'وَكَانَ آزَرُ يَعْبُدُ الْأَصْنَامَ أَيْضًا وَكَانَ آزَرُ يَسْجُدُ لَهَا أَيْضًا', en: 'And Azar worshipped the idols too, and Azar prostrated to them too.' },
+    { ar: 'صَنَمٌ هُنَا، وَصَنَمٌ هُنَاكَ. أَصْنَامٌ كَثِيرَةٌ جِدًّا', en: 'An idol here, and an idol there. Very many idols.' },
+    { ar: 'لِمَاذَا يَعْبُدُونَ الْأَصْنَامَ؟ الْعِبَادَةُ لِلَّهِ فَقَطْ', en: 'Why do they worship the idols? Worship is for Allah alone.' }
+  ],
+  2: [],
+  3: []
+};
 
 const PRINCIPLES = [
   {
