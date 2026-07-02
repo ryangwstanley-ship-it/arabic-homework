@@ -2966,10 +2966,28 @@ if (!guestCodeEdited) document.getElementById('guest-code-input').value = sugges
 document.getElementById('guest-code-input').addEventListener('input', () => { guestCodeEdited = true; });
 document.getElementById('guest-flashcards-btn').addEventListener('click', () => {
 const code = currentUser || viewingStudent;
-window.markReadingDone(studentLesson[code] || 1);
-if (guestTourActive && guestTourStep === 1) {
-guestTourStep = 2;
-hideGuestCoachmark();
+const lesson = studentLesson[code] || 1;
+const sentenceIdx = storyCurrentSentence[code]?.[lesson] || 0;
+const totalSentences = STORY_SENTENCES[lesson]?.length || 0;
+
+if (sentenceIdx < totalSentences) {
+  showToast('✓ Progress saved! You can pick up where you left off later.');
+  setTimeout(() => {
+    window.markReadingDone(lesson);
+    if (guestTourActive && guestTourStep === 1) {
+      guestTourStep = 2;
+      hideGuestCoachmark();
+    }
+  }, 1500);
+} else {
+  showToast('🎉 Lesson complete! Moving to Flashcards...');
+  setTimeout(() => {
+    window.markReadingDone(lesson);
+    if (guestTourActive && guestTourStep === 1) {
+      guestTourStep = 2;
+      hideGuestCoachmark();
+    }
+  }, 1500);
 }
 });
 document.getElementById('guest-principles-btn').addEventListener('click', () => {
