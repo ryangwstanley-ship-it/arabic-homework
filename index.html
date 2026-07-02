@@ -1660,6 +1660,7 @@ const data = snap.exists() ? snap.data() : {};
 allFcActivity[code] = data.activity || {};
 allCardActivity[code] = data.cardActivity || {};
 studentLesson[code] = data.lesson || 1;
+storyProgress[code] = data.storyProgress || {};
 const lesson = studentLesson[code];
 const fc = data.progress || {};
 const deleted = (data.deleted || {})[lesson] || [];
@@ -1709,7 +1710,7 @@ return `<div class="guest-card">
 <div class="guest-card-name">${g.name || 'Guest'}</div>
 <div class="guest-card-code">${g.code}</div>
 </div>
-<div class="guest-card-meta">Lesson ${s.lesson} · 🔥 ${streak} day streak · <span class="status-dot ${status}"></span></div>
+<div class="guest-card-meta">Lesson ${s.lesson} · ${(storyProgress[g.code] && storyProgress[g.code][s.lesson]) ? '📖 ✓' : ''} · 🔥 ${streak} day streak · <span class="status-dot ${status}"></span></div>
 <div class="guest-card-rings">
 ${miniRing(s.flashcardsPct, '🃏')}
 ${miniRing(s.exercisesPct, '✏️')}
