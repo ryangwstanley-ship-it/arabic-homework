@@ -697,8 +697,6 @@ console.log("THE FILE IS LOADING!");
 </div>
 
 <button id="student-grammar-done-btn" style="display:none;width:100%;margin-top:20px;padding:14px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;visibility:hidden">Mark Grammar as Done ✓</button>
-
-<button id="guest-flashcards-btn" style="display:none;width:100%;margin-top:24px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Save Progress</button>
 <button id="reading-save-btn" onclick="readingSaveProgress()" style="width:100%;margin-top:12px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Save Progress</button>
 </div>
 
@@ -2144,6 +2142,10 @@ render();
 // ── TABS ──
 window.switchTab = function(tab) {
 if (isGuestMode && tab === 'home') return;
+// Show "progress saved" toast when returning to milestones from other tabs
+if (tab === 'milestones' && (currentTab === 'flashcards' || currentTab === 'exercises' || currentTab === 'challenges' || currentTab === 'story')) {
+  showToast('✓ Progress saved!');
+}
 currentTab = tab;
 document.getElementById('app-header').style.display = (tab==='home' || !isInstructor) ? 'none' : 'flex';
 document.getElementById('tab-content-home').style.display = tab==='home' ? 'block' : 'none';
