@@ -363,7 +363,8 @@
 .principle-item-content-examples { font-size: 12px; color: var(--ink); direction: rtl; margin-bottom: 10px; line-height: 1.6; font-family: 'Scheherazade New', serif; }
 .principle-item-content-explanation { font-size: 12px; color: var(--grey); line-height: 1.6; }
 /* TOAST */
-.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: #8b2035; color: white; padding: 12px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; z-index: 200; transition: transform 0.3s; white-space: nowrap; }
+/* TOAST */
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: #10b981; color: white; padding: 12px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; z-index: 200; transition: transform 0.3s; white-space: nowrap; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4); }
 .toast.show { transform: translateX(-50%) translateY(0); }
 .no-submission-msg { background: var(--grey-light); border-radius: var(--card-radius); padding: 20px; text-align: center; color: var(--grey); font-size: 14px; margin-bottom: 20px; }
 .locked-msg { background: #fef2f2; border-radius: var(--card-radius); padding: 16px; text-align: center; color: #b91c1c; font-size: 14px; margin-bottom: 20px; border: 1.5px solid #fca5a5; }
@@ -1277,10 +1278,19 @@ setTimeout(() => overlay.remove(), 300);
 // celebration (first time it's truly new progress) or just hops to the Milestones
 // map directly (if it was already done, e.g. tapping the button again).
 window.markReadingDone = async function(lessonNum) {
+const code = currentUser || viewingStudent;
+const sentenceIdx = storyCurrentSentence[code]?.[lessonNum] || 0;
+const totalSentences = STORY_SENTENCES[lessonNum]?.length || 0;
+
+// Only mark reading as done if they actually finished all sentences
+if (sentenceIdx < totalSentences && isGuestMode) {
+  window.switchTab('milestones');
+  return;
+}
+
 const oldFrac = window.getLessonProgressSum(lessonNum);
 const already = !!readingDone[lessonNum];
 readingDone[lessonNum] = true;
-const code = currentUser || viewingStudent;
 if (!storyProgress[code]) storyProgress[code] = {};
 storyProgress[code][lessonNum] = true;
 await saveFlashcardData(code);
@@ -2705,7 +2715,7 @@ function closeModal(){document.getElementById('modal').classList.remove('open');
 let toastTimer;
 let storyProgress = {};
 let storyCurrentSentence = {};
-function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2500);}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),5000);}
 function showMasteryGain(diff){const el=document.createElement('div');el.className='mastery-gain-popup';el.textContent=`+${diff}%`;document.body.appendChild(el);setTimeout(()=>el.remove(),1400);}
 function showWordMeaning(el) { showToast(el.textContent + ' = ' + el.dataset.en); }
 function toggleStoryEnglish() {
