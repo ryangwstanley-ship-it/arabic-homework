@@ -699,7 +699,7 @@ console.log("THE FILE IS LOADING!");
 <button id="student-grammar-done-btn" style="display:none;width:100%;margin-top:20px;padding:14px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;visibility:hidden">Mark Grammar as Done ✓</button>
 
 <button id="guest-flashcards-btn" style="display:none;width:100%;margin-top:24px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Save Progress</button>
-
+<button id="reading-save-btn" onclick="readingSaveProgress()" style="width:100%;margin-top:12px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Save Progress</button>
 </div>
 
 <div id="story-lesson-2" style="display:none;background:var(--grey-light);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08)">
@@ -3002,6 +3002,23 @@ if (sentenceIdx < totalSentences) {
   }
 }
 });
+
+function readingSaveProgress() {
+  const code = currentUser || viewingStudent;
+  const lesson = studentLesson[code] || 1;
+  const sentenceIdx = storyCurrentSentence[code]?.[lesson] || 0;
+  const totalSentences = STORY_SENTENCES[lesson]?.length || 0;
+  
+  if (sentenceIdx < totalSentences) {
+    showToast('✓ Progress saved!');
+    setTimeout(() => {
+      saveFlashcardData(code);
+      switchTab('milestones');
+    }, 5000);
+  }
+}
+window.readingSaveProgress = readingSaveProgress;
+
 document.getElementById('guest-principles-btn').addEventListener('click', () => {
 document.getElementById('principles-wrap').style.display = 'block';
 document.getElementById('guest-flashcards-btn').style.display = 'none';
