@@ -2016,7 +2016,7 @@ async function saveDay(code, dateStr, data) { await setDoc(doc(db,'submissions',
 
 // ── LOGIN ──
 async function handleLogin() {
-const code = document.getElementById('code-input').value.trim().toUpperCase();
+const code = document.getElementById('code-input').value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
 const err = document.getElementById('login-error');
 const btn = document.getElementById('login-btn');
 btn.textContent='Signing in…'; btn.disabled=true;
@@ -2033,7 +2033,19 @@ await loadStudentMeta(code);
 await loadFlashcardProgress(code);
 startApp();
 } else {
+try {
+const snap = await getDoc(doc(db,'guests',code));
+if (snap.exists()) {
+guestName = snap.data().name || '';
+enterAsGuest(code);
+await loadFlashcardProgress(code);
+startApp();
+} else {
 err.style.display='block'; btn.textContent='Enter'; btn.disabled=false;
+}
+} catch(e) {
+err.style.display='block'; btn.textContent='Enter'; btn.disabled=false;
+}
 }
 }
 // ── GUEST ──
