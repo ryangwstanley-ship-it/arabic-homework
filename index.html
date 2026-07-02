@@ -627,15 +627,7 @@ console.log("THE FILE IS LOADING!");
 <div style="font-family:'Scheherazade New', serif;font-size:20px;font-weight:700;color:#1a1a2e;direction:rtl;text-align:right;border-top:1px solid #e5e7eb;padding-top:16px;margin-bottom:14px">STORY 1 — آزَرُ وَالْأَصْنَامُ</div>
 
 
-<div id="story-reveal" style="display:none;background:#f3f4f6;border:1px solid #d1d5db;border-radius:10px;padding:14px;margin-bottom:16px">
-<div style="font-size:13px;color:#6b7280;margin-bottom:8px">Model translation:</div>
-<div id="story-correct-en" style="font-size:15px;line-height:1.6;color:#1a1a2e"></div>
-</div>
-<div id="story-ratings" style="display:none;gap:10px">
-<button onclick="storyRateSelf(1, 1)" style="flex:1;padding:12px;background:#f3f4f6;color:#374151;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">😕 No idea</button>
-<button onclick="storyRateSelf(1, 2)" style="flex:1;padding:12px;background:#f3f4f6;color:#374151;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">🤔 Nearly got it</button>
-<button onclick="storyRateSelf(1, 3)" style="flex:1;padding:12px;background:#f3f4f6;color:#374151;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">✓ Got it right</button>
-</div>
+
 
 <button id="story-english-btn" onclick="toggleStoryEnglish()" style="padding:10px 20px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:16px;display:none">Show English</button>
   
@@ -673,9 +665,17 @@ console.log("THE FILE IS LOADING!");
 <button onclick="storySubmitTranslation(1)" style="padding:12px 16px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap">✓</button>
 </div>
 
-<button id="student-reading-done-btn" style="display:none;width:100%;margin-top:20px;padding:14px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer" onclick="markReadingDone(studentLesson[currentUser || viewingStudent] || 1);this.style.display='none'" style="visibility:hidden">Mark Reading as Done ✓</button>
+<div id="story-reveal" style="display:none;background:#f3f4f6;border:1px solid #d1d5db;border-radius:10px;padding:14px;margin-bottom:16px;margin-top:16px">
+<div style="font-size:13px;color:#6b7280;margin-bottom:8px">Model translation:</div>
+<div id="story-correct-en" style="font-size:15px;line-height:1.6;color:#1a1a2e"></div>
+</div>
 
-
+<div id="story-ratings" style="display:none;gap:10px;margin-bottom:16px;margin-top:16px">
+<button onclick="storyRateSelf(1, 1)" style="flex:1;padding:14px;background:#dc2626;color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">No idea</button>
+<button onclick="storyRateSelf(1, 2)" style="flex:1;padding:14px;background:#f97316;color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">Nearly got it</button>
+<button onclick="storyRateSelf(1, 3)" style="flex:1;padding:14px;background:#16a34a;color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">Got it right</button>
+</div>
+  
 <div class="principles-wrap" id="principles-wrap" style="display:none">
 <div class="principles-header">
 <span class="section-label" style="margin-bottom:0">Key principles</span>
