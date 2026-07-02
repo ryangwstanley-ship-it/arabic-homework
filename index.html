@@ -566,7 +566,7 @@ console.log("THE FILE IS LOADING!");
 
 <!-- FLASHCARDS PAGE -->
 <div id="tab-content-flashcards" class="content" style="display:none">
-<div class="back-row" id="flashcards-back-row" onclick="switchTab('milestones')"><span class="back-btn">‹</span><span class="screen-title">Return Home</span></div>
+<div class="back-row" id="flashcards-back-row" onclick="switchTab('milestones')"><span class="back-btn">‹</span><span class="screen-title">Flashcards</span></div>
 <div class="section-label">Lessons</div>
 <button id="fc-prev-lessons-btn" style="margin-bottom:14px;padding:10px 16px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer">Previous Lessons</button>
 <div class="fc-lesson-picker" id="fc-lesson-picker" style="display:none"></div>
@@ -574,20 +574,17 @@ console.log("THE FILE IS LOADING!");
 <div id="fc-area"></div>
 
 <button id="guest-principles-btn" style="display:none;width:100%;margin-top:20px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Done</button>
-<button id="flashcards-save-btn" onclick="switchTab('milestones')" style="display:none;width:100%;margin-top:20px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Save Progress</button>
 
 </div>
 <!-- EXERCISES PAGE -->
 <div id="tab-content-exercises" class="content" style="display:none">
-<div class="back-row" id="exercises-back-row" onclick="switchTab('milestones')"><span class="back-btn">‹</span><span class="screen-title">Return Home</span></div>
+<div class="back-row" id="exercises-back-row" onclick="switchTab('milestones')"><span class="back-btn">‹</span><span class="screen-title">Exercises</span></div>
 <div id="ex-root"></div>
-<button id="exercises-save-btn" onclick="switchTab('milestones')" style="display:none;width:100%;margin-top:20px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Save Progress</button>
 </div>
 <!-- CHALLENGES PAGE -->
 <div id="tab-content-challenges" class="content" style="display:none">
-<div class="back-row" id="challenges-back-row" onclick="switchTab('milestones')"><span class="back-btn">‹</span><span class="screen-title">Return Home</span></div>
+<div class="back-row" id="challenges-back-row" onclick="switchTab('milestones')"><span class="back-btn">‹</span><span class="screen-title">Challenges</span></div>
 <div id="challenges-root"></div>
-<button id="challenges-save-btn" onclick="switchTab('milestones')" style="display:none;width:100%;margin-top:20px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Save Progress</button>
 </div>
 <!-- STORY TAB -->
 <!-- STORY TAB -->
@@ -624,13 +621,24 @@ console.log("THE FILE IS LOADING!");
 <div style="text-align:center;margin-bottom:20px">
 <div style="font-family:'Scheherazade New', serif;font-size:26px;font-weight:700;color:#1a1a2e">الدَّرْسُ الأَوَّلُ</div>
 <div style="font-size:13px;font-weight:700;letter-spacing:1px;color:#6b7280;text-transform:uppercase;margin-top:2px">Lesson 1</div>
-<div style="font-size:14px;color:#6b7280;margin-top:10px;line-height:1.5;display:none">Today you will learn how to identify plural words.<br>You will also learn how to identify feminine words.</div>
+<div style="font-size:14px;color:#6b7280;margin-top:10px;line-height:1.5">Today you will learn how to identify plural words.<br>You will also learn how to identify feminine words.</div>
 </div>
 
 <div style="font-family:'Scheherazade New', serif;font-size:20px;font-weight:700;color:#1a1a2e;direction:rtl;text-align:right;border-top:1px solid #e5e7eb;padding-top:16px;margin-bottom:14px">STORY 1 — آزَرُ وَالْأَصْنَامُ</div>
 
-
-
+<input type="text" id="story-translation-input" placeholder="Type your English translation here..." style="width:100%;padding:12px;border:2px solid #e5e7eb;border-radius:10px;font-size:15px;margin-bottom:12px;outline:none">
+<div style="display:flex;gap:10px;margin-bottom:16px">
+<button onclick="storySubmitTranslation(1)" style="flex:1;padding:12px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">Check ✓</button>
+</div>
+<div id="story-reveal" style="display:none;background:#f3f4f6;border:1px solid #d1d5db;border-radius:10px;padding:14px;margin-bottom:16px">
+<div style="font-size:13px;color:#6b7280;margin-bottom:8px">Model translation:</div>
+<div id="story-correct-en" style="font-size:15px;line-height:1.6;color:#1a1a2e"></div>
+</div>
+<div id="story-ratings" style="display:none;gap:10px">
+<button onclick="storyRateSelf(1, 1)" style="flex:1;padding:12px;background:#f3f4f6;color:#374151;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">😕 No idea</button>
+<button onclick="storyRateSelf(1, 2)" style="flex:1;padding:12px;background:#f3f4f6;color:#374151;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">🤔 Nearly got it</button>
+<button onclick="storyRateSelf(1, 3)" style="flex:1;padding:12px;background:#f3f4f6;color:#374151;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">✓ Got it right</button>
+</div>
 
 <button id="story-english-btn" onclick="toggleStoryEnglish()" style="padding:10px 20px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:16px;display:none">Show English</button>
   
@@ -663,22 +671,9 @@ console.log("THE FILE IS LOADING!");
 <p class="story-en-line">Why do they worship the idols? Worship is for Allah alone.</p>
 </div>
 
-<div style="display:flex;gap:8px;margin-bottom:16px;align-items:center;margin-top:16px">
-<input type="text" id="story-translation-input" placeholder="Type your English translation here..." style="flex:1;padding:12px;border:2px solid #e5e7eb;border-radius:10px;font-size:15px;outline:none">
-<button onclick="storySubmitTranslation(1)" style="padding:12px 16px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap">✓</button>
-</div>
+<button id="student-reading-done-btn" style="display:none;width:100%;margin-top:20px;padding:14px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer" onclick="markReadingDone(studentLesson[currentUser || viewingStudent] || 1);this.style.display='none'" style="visibility:hidden">Mark Reading as Done ✓</button>
 
-<div id="story-reveal" style="display:none;background:#f3f4f6;border:1px solid #d1d5db;border-radius:10px;padding:14px;margin-bottom:16px;margin-top:16px">
-<div style="font-size:13px;color:#6b7280;margin-bottom:8px">Model translation:</div>
-<div id="story-correct-en" style="font-size:15px;line-height:1.6;color:#1a1a2e"></div>
-</div>
 
-<div id="story-ratings" style="display:none;gap:10px;margin-bottom:16px;margin-top:16px">
-<button onclick="storyRateSelf(1, 1)" style="flex:1;padding:14px;background:#dc2626;color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">No idea</button>
-<button onclick="storyRateSelf(1, 2)" style="flex:1;padding:14px;background:#f97316;color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">Nearly got it</button>
-<button onclick="storyRateSelf(1, 3)" style="flex:1;padding:14px;background:#16a34a;color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">Got it right</button>
-</div>
-  
 <div class="principles-wrap" id="principles-wrap" style="display:none">
 <div class="principles-header">
 <span class="section-label" style="margin-bottom:0">Key principles</span>
@@ -698,8 +693,8 @@ console.log("THE FILE IS LOADING!");
 
 <button id="student-grammar-done-btn" style="display:none;width:100%;margin-top:20px;padding:14px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;visibility:hidden">Mark Grammar as Done ✓</button>
 
-<button id="guest-flashcards-btn" style="display:none;width:100%;margin-top:24px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Save Progress</button>
-<button id="reading-save-btn" onclick="readingSaveProgress()" style="width:100%;margin-top:12px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Save Progress</button>
+<button id="guest-flashcards-btn" style="display:none;width:100%;margin-top:24px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Done</button>
+
 </div>
 
 <div id="story-lesson-2" style="display:none;background:var(--grey-light);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08)">
@@ -1336,7 +1331,7 @@ setStoryLesson(lessonNum);
 if (guestTourActive && lessonNum === 1 && guestTourStep === 0) {
 guestTourStep = 1;
 hideGuestCoachmark();
-// Coachmark will show after they finish reading, not immediately
+setTimeout(() => showGuestCoachmark(document.getElementById('guest-flashcards-btn'), '👉 Next, go to Flashcards!'), 150);
 }
 };
 
@@ -2772,19 +2767,19 @@ function storyRenderSentence(lesson) {
   const sentenceIdx = storyCurrentSentence[code][lesson];
   
   if (sentenceIdx >= 13) {
-    if (isGuestMode) {
-      document.getElementById('guest-flashcards-btn').style.display = 'block';
-      document.getElementById('guest-flashcards-btn').textContent = 'Done';
-      showToast('🎉 Congratulations! You finished the reading. Press Done to continue to Flashcards.');
-    } else {
-      document.getElementById('student-reading-done-btn').style.display = 'block';
-    }
-    document.getElementById('story-translation-input').style.display = 'none';
-    document.querySelector('[onclick*="storySubmitTranslation"]').style.display = 'none';
-    document.getElementById('story-reveal').style.display = 'none';
-    document.getElementById('story-ratings').style.display = 'none';
-    return;
+  const code = currentUser || viewingStudent;
+  const isGuest = isGuestMode;
+  if (isGuest) {
+    document.getElementById('guest-flashcards-btn').style.display = 'block';
+  } else {
+    document.getElementById('student-reading-done-btn').style.display = 'block';
   }
+  document.getElementById('story-translation-input').style.display = 'none';
+  document.querySelector('[onclick*="storySubmitTranslation"]').style.display = 'none';
+  document.getElementById('story-reveal').style.display = 'none';
+  document.getElementById('story-ratings').style.display = 'none';
+  return;
+}
   
   const sentences = STORY_SENTENCES[lesson] || [];
   const sentence = sentences[sentenceIdx];
@@ -2993,32 +2988,18 @@ if (sentenceIdx < totalSentences) {
       guestTourStep = 2;
       hideGuestCoachmark();
     }
-  }, 5000);
+  }, 1500);
 } else {
-  window.markReadingDone(lesson);
-  if (guestTourActive && guestTourStep === 1) {
-    guestTourStep = 2;
-    hideGuestCoachmark();
-  }
+  showToast('🎉 Lesson complete! Moving to Flashcards...');
+  setTimeout(() => {
+    window.markReadingDone(lesson);
+    if (guestTourActive && guestTourStep === 1) {
+      guestTourStep = 2;
+      hideGuestCoachmark();
+    }
+  }, 1500);
 }
 });
-
-function readingSaveProgress() {
-  const code = currentUser || viewingStudent;
-  const lesson = studentLesson[code] || 1;
-  const sentenceIdx = storyCurrentSentence[code]?.[lesson] || 0;
-  const totalSentences = STORY_SENTENCES[lesson]?.length || 0;
-  
-  if (sentenceIdx < totalSentences) {
-    showToast('✓ Progress saved!');
-    setTimeout(() => {
-      saveFlashcardData(code);
-      switchTab('milestones');
-    }, 5000);
-  }
-}
-window.readingSaveProgress = readingSaveProgress;
-
 document.getElementById('guest-principles-btn').addEventListener('click', () => {
 document.getElementById('principles-wrap').style.display = 'block';
 document.getElementById('guest-flashcards-btn').style.display = 'none';
