@@ -2033,19 +2033,9 @@ await loadStudentMeta(code);
 await loadFlashcardProgress(code);
 startApp();
 } else {
-try {
-const snap = await getDoc(doc(db,'guests',code));
-if (snap.exists()) {
-guestName = snap.data().name || '';
 enterAsGuest(code);
 await loadFlashcardProgress(code);
 startApp();
-} else {
-err.style.display='block'; btn.textContent='Enter'; btn.disabled=false;
-}
-} catch(e) {
-err.style.display='block'; btn.textContent='Enter'; btn.disabled=false;
-}
 }
 }
 // ── GUEST ──
