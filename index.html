@@ -2149,6 +2149,11 @@ document.getElementById('tab-content-homework').style.display = tab==='homework'
 document.getElementById('tab-content-flashcards').style.display = tab==='flashcards' ? 'block' : 'none';
 document.getElementById('tab-content-exercises').style.display = tab==='exercises' ? 'block' : 'none';
 document.getElementById('tab-content-challenges').style.display = tab==='challenges' ? 'block' : 'none';
+if (tab === 'story') {
+  const lesson = studentLesson[currentUser || viewingStudent] || 1;
+  initializeStory(lesson);
+  storyRenderSentence(lesson);
+}
 document.getElementById('tab-content-story').style.display = tab==='story' ? 'block' : 'none';
 document.getElementById('tab-content-milestones').style.display = tab==='milestones' ? 'block' : 'none';
 document.getElementById('tab-content-guests').style.display = tab==='guests' ? 'block' : 'none';
@@ -2775,6 +2780,29 @@ function storyRenderSentence(lesson) {
   document.getElementById('story-ratings').classList.remove('show');
 }
 window.storyRenderSentence = storyRenderSentence;
+
+function storySubmitTranslation(lesson) {
+  const input = document.getElementById('story-translation-input');
+  if (!input.value.trim()) {
+    showToast('Please type a translation first');
+    return;
+  }
+  document.getElementById('story-reveal').classList.add('show');
+  document.getElementById('story-ratings').classList.add('show');
+  document.getElementById('story-translation-input').disabled = true;
+  document.querySelector('.story-microstep-check').disabled = true;
+}
+window.storySubmitTranslation = storySubmitTranslation;
+
+function storyRateSelf(lesson, rating) {
+  const code = currentUser || viewingStudent;
+  storyCurrentSentence[code][lesson]++;
+  storyRenderSentence(lesson);
+  document.getElementById('story-translation-input').disabled = false;
+  document.querySelector('.story-microstep-check').disabled = false;
+  saveFlashcardData(code);
+}
+window.storyRateSelf = storyRateSelf;
 
 const PRINCIPLES = [
   {
