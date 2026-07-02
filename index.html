@@ -2154,6 +2154,11 @@ if (tab === 'story') {
   initializeStory(lesson);
   storyRenderSentence(lesson);
 }
+if (tab === 'story') {
+  const lesson = studentLesson[currentUser || viewingStudent] || 1;
+  initializeStory(lesson);
+  storyRenderSentence(lesson);
+}
 document.getElementById('tab-content-story').style.display = tab==='story' ? 'block' : 'none';
 document.getElementById('tab-content-milestones').style.display = tab==='milestones' ? 'block' : 'none';
 document.getElementById('tab-content-guests').style.display = tab==='guests' ? 'block' : 'none';
@@ -2779,6 +2784,8 @@ function storyRenderSentence(lesson) {
   document.getElementById('story-reveal').classList.remove('show');
   document.getElementById('story-ratings').classList.remove('show');
 }
+window.storyRenderSentence = storyRenderSentence;
+
 window.storyRenderSentence = storyRenderSentence;
 
 function storySubmitTranslation(lesson) {
