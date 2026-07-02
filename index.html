@@ -621,15 +621,12 @@ console.log("THE FILE IS LOADING!");
 <div style="text-align:center;margin-bottom:20px">
 <div style="font-family:'Scheherazade New', serif;font-size:26px;font-weight:700;color:#1a1a2e">الدَّرْسُ الأَوَّلُ</div>
 <div style="font-size:13px;font-weight:700;letter-spacing:1px;color:#6b7280;text-transform:uppercase;margin-top:2px">Lesson 1</div>
-<div style="font-size:14px;color:#6b7280;margin-top:10px;line-height:1.5">Today you will learn how to identify plural words.<br>You will also learn how to identify feminine words.</div>
+<div style="font-size:14px;color:#6b7280;margin-top:10px;line-height:1.5;display:none">Today you will learn how to identify plural words.<br>You will also learn how to identify feminine words.</div>
 </div>
 
 <div style="font-family:'Scheherazade New', serif;font-size:20px;font-weight:700;color:#1a1a2e;direction:rtl;text-align:right;border-top:1px solid #e5e7eb;padding-top:16px;margin-bottom:14px">STORY 1 — آزَرُ وَالْأَصْنَامُ</div>
 
-<input type="text" id="story-translation-input" placeholder="Type your English translation here..." style="width:100%;padding:12px;border:2px solid #e5e7eb;border-radius:10px;font-size:15px;margin-bottom:12px;outline:none">
-<div style="display:flex;gap:10px;margin-bottom:16px">
-<button onclick="storySubmitTranslation(1)" style="flex:1;padding:12px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">Check ✓</button>
-</div>
+
 <div id="story-reveal" style="display:none;background:#f3f4f6;border:1px solid #d1d5db;border-radius:10px;padding:14px;margin-bottom:16px">
 <div style="font-size:13px;color:#6b7280;margin-bottom:8px">Model translation:</div>
 <div id="story-correct-en" style="font-size:15px;line-height:1.6;color:#1a1a2e"></div>
@@ -669,6 +666,11 @@ console.log("THE FILE IS LOADING!");
 <p class="story-en-line">An idol here, and an idol there. Very many idols.</p>
 <p><span class="story-line-num">١٣</span> <span class="story-word new" data-en="why" onclick="showWordMeaning(this)">لِمَاذَا</span> <span class="story-word" data-en="they worship" onclick="showWordMeaning(this)">يَعْبُدُونَ</span> <span class="story-word" data-en="the idols" onclick="showWordMeaning(this)">الْأَصْنَامَ</span>؟ <span class="story-word new" data-en="the worship" onclick="showWordMeaning(this)">الْعِبَادَةُ</span> <span class="story-word new" data-en="to Allah" onclick="showWordMeaning(this)">لِلَّهِ</span> <span class="story-word new" data-en="only" onclick="showWordMeaning(this)">فَقَطْ</span></p>
 <p class="story-en-line">Why do they worship the idols? Worship is for Allah alone.</p>
+</div>
+
+<div style="display:flex;gap:8px;margin-bottom:16px;align-items:center;margin-top:16px">
+<input type="text" id="story-translation-input" placeholder="Type your English translation here..." style="flex:1;padding:12px;border:2px solid #e5e7eb;border-radius:10px;font-size:15px;outline:none">
+<button onclick="storySubmitTranslation(1)" style="padding:12px 16px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap">✓</button>
 </div>
 
 <button id="student-reading-done-btn" style="display:none;width:100%;margin-top:20px;padding:14px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer" onclick="markReadingDone(studentLesson[currentUser || viewingStudent] || 1);this.style.display='none'" style="visibility:hidden">Mark Reading as Done ✓</button>
@@ -1331,7 +1333,7 @@ setStoryLesson(lessonNum);
 if (guestTourActive && lessonNum === 1 && guestTourStep === 0) {
 guestTourStep = 1;
 hideGuestCoachmark();
-setTimeout(() => showGuestCoachmark(document.getElementById('guest-flashcards-btn'), '👉 Next, go to Flashcards!'), 150);
+// Coachmark will show after they finish reading, not immediately
 }
 };
 
