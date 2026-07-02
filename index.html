@@ -687,7 +687,7 @@ console.log("THE FILE IS LOADING!");
 <p class="story-en-line">Why do they worship the idols? Worship is for Allah alone.</p>
 </div>
 
-<button id="<button id="student-reading-done-btn" style="display:none;width:100%;margin-top:20px;padding:14px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer" onclick="markReadingDone(studentLesson[currentUser || viewingStudent] || 1)">Mark Reading as Done ✓</button>op:20px;padding:14px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Mark Reading as Done ✓</button>
+<button id="student-reading-done-btn" style="display:none;width:100%;margin-top:20px;padding:14px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer" onclick="markReadingDone(studentLesson[currentUser || viewingStudent] || 1)">Mark Reading as Done ✓</button>
 
 
 <div class="principles-wrap" id="principles-wrap">
@@ -1885,7 +1885,7 @@ studentLesson[code] = data.lesson || 1;
 } catch(e) { console.error('Meta load error',e); allFcActivity[code] = {}; allCardActivity[code] = {}; studentLesson[code] = 1; }
 if (!studentLesson[code]) studentLesson[code] = 1;
 }
-await setDoc(doc(db,'flashcards',code), {
+async function saveFlashcardData(code) {
 try {
 const customCards = {};
 Object.entries(LESSONS).forEach(([num, lesson]) => {
