@@ -2170,9 +2170,7 @@ if (tab==='exercises' && typeof exShowPicker === 'function' && !checkGuestLock('
 if (tab==='challenges' && typeof exShowChallengesPicker === 'function' && !checkGuestLock('challenges', reviseLessonNum)) { exPickerLesson = null; exShowChallengesPicker(); }
 if (tab==='story') {
 setStoryLesson(studentLesson[activeStudentCode()] || 1);
-const readBtn = document.getElementById('student-reading-done-btn');
 const gramBtn = document.getElementById('student-grammar-done-btn');
-if (readBtn) readBtn.style.display = isGuestMode ? 'none' : 'block';
 if (gramBtn) gramBtn.style.display = isGuestMode ? 'none' : 'block';
 }
 if (tab==='milestones') {
