@@ -1757,6 +1757,7 @@ return { lesson, flashcardsPct, exercisesPct, challengesPct };
 async function renderReportsTab() {
 const root = document.getElementById('reports-root');
 root.innerHTML = '<div style="text-align:center;color:var(--grey);padding:20px">Loading reports…</div>';
+console.log('renderReportsTab called, root element:', root);
 try {
 const snap = await getDocs(collection(db,'reports'));
 let reportDocs = [];
