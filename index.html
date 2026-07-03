@@ -2177,6 +2177,7 @@ if (gramBtn) gramBtn.style.display = isGuestMode ? 'none' : 'block';
 if (tab==='milestones') {
 document.getElementById('main').scrollTop = 0;
 window.scrollTo(0, 0);
+if (currentTab !== 'milestones') showToast('Progress saved ✓');
 renderMilestones();
 if (pendingMilestoneIntro) {
 document.getElementById('milestone-root').style.display = 'none';
