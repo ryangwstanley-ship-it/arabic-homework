@@ -2063,7 +2063,6 @@ isInstructor = false;
 document.getElementById('home-btn-upload').style.display = 'none';
 document.getElementById('story-back-row').style.display = 'none';
 document.getElementById('principles-wrap').style.display = 'none';
-document.getElementById('guest-flashcards-btn').style.display = 'block';
 }
 
 window.startGuestJourney = async function() {
@@ -2814,7 +2813,6 @@ function storyRateSelf(lesson, rating) {
   storyCurrentSentence[code][lesson]++;
   storyRenderSentence(lesson);
   document.getElementById('story-translation-input').disabled = false;
-  document.querySelector('.story-microstep-check').disabled = false;
   saveFlashcardData(code);
 }
 window.storyRateSelf = storyRateSelf;
