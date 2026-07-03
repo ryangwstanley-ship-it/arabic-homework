@@ -2902,9 +2902,9 @@ const STORY_SENTENCES = {
 function storyRenderSentence(lesson) {
   const code = currentUser || viewingStudent;
   const sentenceIdx = storyCurrentSentence[code][lesson];
+  const sentences = STORY_SENTENCES[lesson] || [];
   
-  if (sentenceIdx >= 13) {
-  const code = currentUser || viewingStudent;
+  if (!sentences.length || sentenceIdx >= sentences.length) {
   const isGuest = isGuestMode;
   if (isGuest) {
     document.getElementById('guest-flashcards-btn').style.display = 'block';
@@ -2918,7 +2918,6 @@ function storyRenderSentence(lesson) {
   return;
 }
   
-  const sentences = STORY_SENTENCES[lesson] || [];
   const sentence = sentences[sentenceIdx];
   
   const arabicLines = document.querySelectorAll('#story-lesson-' + lesson + ' p:not(.story-en-line)');
