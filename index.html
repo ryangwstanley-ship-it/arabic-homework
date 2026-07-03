@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title> dFD  </title>
+<title> GKJGKJHG  </title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Arabic Daily</title>
@@ -1382,6 +1382,9 @@ switchTab('flashcards');
 window.openGrammarForLesson = function(lessonNum) {
 switchTab('story');
 setStoryLesson(lessonNum);
+if (lessonNum === 2) {
+document.getElementById('principles-wrap-l2').style.display = 'block';
+} else {
 document.getElementById('principles-wrap').style.display = 'block';
 document.querySelectorAll('#story-lesson-' + Math.min(lessonNum,3) + ' p:not(.story-en-line)').forEach(p => p.style.display = '');
 document.getElementById('story-translation-input').style.display = 'none';
@@ -1389,6 +1392,7 @@ document.querySelector('[onclick*="storySubmitTranslation"]').style.display = 'n
 document.getElementById('story-reveal').style.display = 'none';
 document.getElementById('story-ratings').style.display = 'none';
 if (document.getElementById('story-english-btn')) document.getElementById('story-english-btn').style.display = 'inline-block';
+}
 };
 
 window.openExercisesForLesson = function(lessonNum) {
