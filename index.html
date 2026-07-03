@@ -612,11 +612,9 @@ console.log("THE FILE IS LOADING!");
 <div class="back-row" id="story-back-row" onclick="switchTab('milestones')"><span class="back-btn">‹</span><span class="screen-title">Save and Return Home</span></div>
 <style>
 .story-word { cursor:pointer; }
-.story-word.new { font-weight:700; color:#8b2035; }
+.story-word.new { font-weight:400; color:#1a1a2e; }
 .story-word:hover { background:#fef3f2; border-radius:4px; }
 .story-line-num { display:inline-block; direction:ltr; unicode-bidi:isolate; background:#8b2035; color:#fff; font-family:'Scheherazade New', serif; font-size:14px; font-weight:700; width:26px; height:26px; line-height:26px; text-align:center; border-radius:50%; margin-left:10px; vertical-align:middle; }
-
-.story-title { font-family:'Scheherazade New', serif; font-size:20px; font-weight:700; color:#8b2035; direction:rtl; text-align:right; border-top:1px solid #e5e7eb; padding-top:16px; margin-bottom:14px; }
 .story-en-line { display:none; font-family:-apple-system,sans-serif; font-size:15px; line-height:1.7; color:#374151; background:#f9fafb; border-radius:8px; padding:10px 14px; margin:6px 0 16px 0; direction:ltr; text-align:left; }
 .story-sentence-wrapper { display:none; }
 .story-sentence-wrapper.active { display:block; }
@@ -625,10 +623,10 @@ console.log("THE FILE IS LOADING!");
 .principles-progress { font-size:12px; font-weight:600; color:#6b7280; }
 .principle-card { background:#fdf6f3; border:2px solid #8b2035; border-radius:16px; padding:24px; box-shadow:0 4px 16px rgba(139,32,53,0.15); min-height:140px; cursor:pointer; text-align:center; }
 .principle-q { font-size:15px; color:#374151; line-height:1.7; }
-.principle-q .pq-ar { font-family:'Scheherazade New', serif; font-size:22px; direction:rtl; display:inline-block; color:#374151; font-weight:400; }
+.principle-q .pq-ar { font-family:'Scheherazade New', serif; font-size:22px; direction:rtl; display:inline-block; color:#8b2035; font-weight:700; }
 .principle-a { font-size:14px; color:#374151; line-height:1.6; text-align:left; }
-.principle-a .pa-ar { font-family:'Scheherazade New', serif; font-size:20px; direction:rtl; display:block; color:#374151; font-weight:400; margin:8px 0; text-align:right; }
-.principle-quote { margin-top:14px; padding:10px 14px; border-left:3px solid #d1d5db; background:#f9fafb; }
+.principle-a .pa-ar { font-family:'Scheherazade New', serif; font-size:20px; direction:rtl; display:block; color:#8b2035; font-weight:700; margin:8px 0; text-align:right; }
+.principle-quote { margin-top:14px; padding:10px 14px; border-left:3px solid #8b2035; background:#fdf6f3; }
 .principle-quote-ar { font-family:'Scheherazade New', serif; font-size:18px; direction:rtl; text-align:right; color:#2b2520; line-height:1.9; }
 .principle-hint { display:none; }
 .principles-nav { display:flex; justify-content:space-between; align-items:center; margin-top:14px; }
@@ -663,7 +661,7 @@ console.log("THE FILE IS LOADING!");
 </div>
 </div>
 
-<div class="story-title">STORY 1 — آزَرُ وَالْأَصْنَامُ</div>
+<div style="font-family:'Scheherazade New', serif;font-size:20px;font-weight:400;color:#1a1a2e;direction:rtl;text-align:right;border-top:1px solid #e5e7eb;padding-top:16px;margin-bottom:14px">STORY 1 — آزَرُ وَالْأَصْنَامُ</div>
 
 <input type="text" id="story-translation-input" placeholder="Type your English translation here..." style="width:100%;padding:12px;border:2px solid #e5e7eb;border-radius:10px;font-size:15px;margin-bottom:12px;outline:none">
 <div style="display:flex;gap:10px;margin-bottom:16px">
@@ -730,7 +728,7 @@ console.log("THE FILE IS LOADING!");
 <div style="font-size:14px;color:#6b7280;margin-top:8px;line-height:1.5">In this lesson, you will learn about definite nouns and how they affect adjectives</div>
 </div>
 
-<div class="story-title">STORY 2 — إِبْرَاهِيمُ يَرَى الشِّرْكَ</div>-top:16px;margin-bottom:14px">STORY 2 — إِبْرَاهِيمُ يَرَى الشِّرْكَ</div>
+<div style="font-family:'Scheherazade New', serif;font-size:20px;font-weight:700;color:#1a1a2e;direction:rtl;text-align:right;border-top:1px solid #e5e7eb;padding-top:16px;margin-bottom:14px">STORY 2 — إِبْرَاهِيمُ يَرَى الشِّرْكَ</div>
 
 <button id="story-english-btn-l2" onclick="toggleStoryEnglish()" style="padding:10px 20px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:16px">Show English</button>
 
@@ -780,7 +778,7 @@ console.log("THE FILE IS LOADING!");
 <div style="font-size:14px;color:#6b7280;margin-top:8px;line-height:1.5">In this lesson, you will learn about present tense verbs and their pronouns</div>
 </div>
 
-<div class="story-title">STORY 3 — التَّوْحِيدُ</div>
+<div style="font-family:'Scheherazade New', serif;font-size:20px;font-weight:700;color:#1a1a2e;direction:rtl;text-align:right;border-top:1px solid #e5e7eb;padding-top:16px;margin-bottom:14px">STORY 3 — التَّوْحِيدُ</div>
 
 <button id="story-english-btn-l3" onclick="toggleStoryEnglish()" style="padding:10px 20px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:16px">Show English</button>
 
@@ -1964,7 +1962,8 @@ allCardActivity[code] = data.cardActivity || {};
 fcDeletedCards = data.deleted || {};
 studentLesson[code] = data.lesson || 1;
 exProgress = data.exProgress || {};
-// Reading and Grammar are now loaded from separate documents
+readingDone = data.readingDone || {};
+grammarDone = data.grammarDone || {};
 if (data.customCards) {
 Object.entries(data.customCards).forEach(([lessonNum, cards]) => {
 const num = parseInt(lessonNum);
@@ -1975,8 +1974,6 @@ LESSONS[num].cards = [...DEFAULT_LESSONS[num]?.cards || [], ...cards];
 }
 } else {
 fcProgress = {}; allFcActivity[code] = {}; allCardActivity[code] = {}; fcDeletedCards = {}; studentLesson[code] = 1; exProgress = {}; readingDone = {}; grammarDone = {};
-loadReadingData(code);
-loadGrammarData(code);
 }
 } catch(e) { console.error('FC load error',e); }
 }
@@ -2007,21 +2004,11 @@ cardActivity: allCardActivity[code] || {},
 deleted: fcDeletedCards,
 lesson: studentLesson[code] || 1,
 exProgress,
+readingDone,
+grammarDone,
 customCards
 });
 } catch(e) { console.error('FC save error',e); }
-}
-
-async function saveReadingData(code) {
-try {
-await setDoc(doc(db,'reading',code), { readingDone });
-} catch(e) { console.error('Reading save error',e); }
-}
-
-async function saveGrammarData(code) {
-try {
-await setDoc(doc(db,'grammar',code), { grammarDone });
-} catch(e) { console.error('Grammar save error',e); }
 }
 
 async function setStudentLesson(code, lesson) {
@@ -2290,6 +2277,11 @@ document.getElementById('tab-content-homework').style.display = tab==='homework'
 document.getElementById('tab-content-flashcards').style.display = tab==='flashcards' ? 'block' : 'none';
 document.getElementById('tab-content-exercises').style.display = tab==='exercises' ? 'block' : 'none';
 document.getElementById('tab-content-challenges').style.display = tab==='challenges' ? 'block' : 'none';
+if (tab === 'story') {
+  const lesson = studentLesson[currentUser || viewingStudent] || 1;
+  initializeStory(lesson);
+  storyRenderSentence(lesson);
+}
 if (tab === 'story') {
   const lesson = studentLesson[currentUser || viewingStudent] || 1;
   initializeStory(lesson);
