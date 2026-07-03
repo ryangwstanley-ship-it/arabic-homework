@@ -1757,11 +1757,10 @@ return { lesson, flashcardsPct, exercisesPct, challengesPct };
 async function renderReportsTab() {
 const root = document.getElementById('reports-root');
 root.innerHTML = '<div style="text-align:center;color:var(--grey);padding:20px">Loading reports…</div>';
-let reportDocs = [];
 try {
 const snap = await getDocs(collection(db,'reports'));
+let reportDocs = [];
 snap.forEach(d => reportDocs.push({ id: d.id, ...d.data() }));
-} catch(e) { console.error('Reports load error', e); }
 if (!reportDocs.length) {
 root.innerHTML = '<div class="no-submission-msg">No reports yet.</div>';
 return;
@@ -1787,8 +1786,8 @@ ${r.note ? `<div style="background:#fdf6f3;padding:12px;border-radius:8px;border
 </div>` : ''}
 </div>`;
 }).join('');
+} catch(e) { root.innerHTML = '<div class="no-submission-msg">Error: ' + e.message + '</div>'; }
 }
-
 
 
 async function toggleReportResolved(reportId, currentlyResolved) {
