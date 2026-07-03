@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title> ddGJHGd  </title>
+<title> dFD  </title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Arabic Daily</title>
@@ -3120,6 +3120,19 @@ document.getElementById('principle-next-btn').addEventListener('click', () => {
   else if (isGuestMode) { const code = currentUser || viewingStudent; window.markGrammarDone(studentLesson[code] || 1); }
 });
 renderPrinciple();
+
+document.getElementById('principle-card-l2').addEventListener('click', () => {
+  principleRevealedL2 = !principleRevealedL2;
+  renderPrincipleL2();
+});
+document.getElementById('principle-back-btn-l2').addEventListener('click', () => {
+  if (principleIdxL2 > 0) { principleIdxL2--; principleRevealedL2 = false; renderPrincipleL2(); }
+});
+document.getElementById('principle-next-btn-l2').addEventListener('click', () => {
+  if (principleIdxL2 < PRINCIPLES_L2.length - 1) { principleIdxL2++; principleRevealedL2 = false; renderPrincipleL2(); }
+  else if (isGuestMode) { const code = currentUser || viewingStudent; window.markGrammarDone(studentLesson[code] || 1); }
+});
+renderPrincipleL2();
 
 
 // ── RENDER ──
