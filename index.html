@@ -608,7 +608,7 @@ console.log("THE FILE IS LOADING!");
 .principle-a .pa-ar { font-family:'Scheherazade New', serif; font-size:20px; direction:rtl; display:block; color:#8b2035; font-weight:700; margin:8px 0; text-align:right; }
 .principle-quote { margin-top:14px; padding:10px 14px; border-left:3px solid #8b2035; background:#fdf6f3; }
 .principle-quote-ar { font-family:'Scheherazade New', serif; font-size:18px; direction:rtl; text-align:right; color:#2b2520; line-height:1.9; }
-.principle-hint { margin-top:16px; font-size:12px; color:#8b2035; font-weight:600; }
+.principle-hint { display:none; }
 .principles-nav { display:flex; justify-content:space-between; align-items:center; margin-top:14px; }
 .principles-nav-btn { padding:9px 16px; border-radius:10px; border:none; background:#f3f4f6; color:#6b7280; font-size:13px; font-weight:600; cursor:pointer; }
 .principles-nav-btn-primary { background:#8b2035; color:#fff; }
@@ -2825,23 +2825,23 @@ window.storyRateSelf = storyRateSelf;
 const PRINCIPLES = [
   {
     q: `Why is "polytheist" written two ways in the story?<br><span class="pq-ar">مُشْرِكٌ</span><br><span class="pq-ar">مُشْرِكُونَ</span>`,
-    a: `ـونَ makes a word plural.`
+    a: `Human plurals are made with ـونَ / ـينَ / ـاتٌ.`
   },
   {
-    q: `One way to spot a plural: it usually has more letters than the singular.<br><span class="pq-ar">رَجُلٌ ← رِجَالٌ</span>`,
-    a: `When a word has more letters than its singular form, that's often a sign it's plural.`
+    q: `There is a way to identify plurals. Look at these three examples and try to work out the pattern:<br><span class="pq-ar">رَجُلٌ ← رِجَالٌ</span><br><span class="pq-ar">صَنَمٌ ← أَصْنَامٌ</span><br><span class="pq-ar">قَرْيَةٌ ← قُرًى</span>`,
+    a: `Plurals usually have more letters than their singular form, so if the word has quite a few letters, you can guess that it's plural`
   },
   {
     q: `Why do these principles matter?`,
     a: `They save you from memorising every single word — the pattern helps you work out new plurals on your own. But these principles have exceptions, so you'll still need to memorise some words by heart.`
   },
   {
-    q: `If ـونَ makes something plural, why isn't "idols" written صَنَمٌونَ? Instead it's:<br><span class="pq-ar">صَنَمٌ ← أَصْنَامٌ</span>`,
-    a: `Plurals are two types: human and non-human. Human plurals use ـونَ / ـينَ / ـاتٌ. Non-human plurals are irregular — no fixed pattern, so they must be memorised.`
+    q: `Why is idols written as أصنام instead of صنمون؟`,
+    a: `Plurals are two types: human and non-human. Human plurals have the consistent ending we mentioned, whereas non-human plurals are irregular and must be memorised.<br>Human plurals: مُشْرِكٌ ← مُشْرِكُونَ, رَجُلٌ ← رِجَالٌ<br>Non-human plurals: صَنَمٌ ← أَصْنَامٌ, قَرْيَةٌ ← قُرًى`
   },
   {
-    q: `Exceptions to watch for:`,
-    a: `A plural with fewer letters than the singular:<br><span class="pa-ar">قُرَى</span><br>A human plural that's irregular:<br><span class="pa-ar">رِجَالٌ</span><br>A non-human plural that's regular:<br><span class="pa-ar">سِنِينَ</span> (years)`
+    q: `Almost all principles have a few exceptions, for example:`,
+    a: `رِجَالٌ — this is a human plural, but it doesn't follow the regular ـونَ/ـينَ/ـاتٌ pattern, so it must be memorised.<br>قُرَى — this plural actually has fewer letters than its singular قَرْيَةٌ, breaking the usual "more letters" pattern.`
   }
 ];
 
