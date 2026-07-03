@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title> GKJGKJHG  </title>
+<title> hghlljh</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Arabic Daily</title>
@@ -639,29 +639,12 @@ console.log("THE FILE IS LOADING!");
 <div id="story-lesson-1" style="background:var(--grey-light);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08)">
 
 <div style="text-align:center;margin-bottom:20px">
-<div style="font-family:'Scheherazade New', serif;font-size:26px;font-weight:700;color:#1a1a2e">الدَّرْسُ الثَّانِي</div>
-<div style="font-size:13px;font-weight:700;letter-spacing:1px;color:#6b7280;text-transform:uppercase;margin-top:2px">Lesson 2</div>
-<div style="font-size:14px;color:#6b7280;margin-top:10px;line-height:1.5">In this lesson, you will learn about definite nouns and how they affect adjectives</div>
+<div style="font-family:'Scheherazade New', serif;font-size:26px;font-weight:700;color:#1a1a2e">الدَّرْسُ الأَوَّلُ</div>
+<div style="font-size:13px;font-weight:700;letter-spacing:1px;color:#6b7280;text-transform:uppercase;margin-top:2px">Lesson 1</div>
+<div style="font-size:14px;color:#6b7280;margin-top:10px;line-height:1.5">Today you will learn how to identify plural words.<br>You will also learn the two types of plurals: broken and regular.</div>
 </div>
 
-<div class="principles-wrap" id="principles-wrap-l2" style="display:none">
-<div class="principles-header">
-<span class="section-label" style="margin-bottom:0">Key principles</span>
-<span class="principles-progress" id="principles-progress-l2">1 / 3</span>
-</div>
-<div class="principle-card" id="principle-card-l2">
-<div class="principle-q" id="principle-q-l2"></div>
-<div class="principle-a" id="principle-a-l2" style="display:none"></div>
-<div class="principle-hint" id="principle-hint-l2">Tap when you've found it</div>
-</div>
-<div class="principles-nav">
-<button class="principles-nav-btn" id="principle-back-btn-l2">‹ Back</button>
-<div class="principles-dots" id="principles-dots-l2"></div>
-<button class="principles-nav-btn principles-nav-btn-primary" id="principle-next-btn-l2">Next ›</button>
-</div>
-</div>
-
-<div style="font-family:'Scheherazade New', serif;font-size:20px;font-weight:700;color:#1a1a2e;direction:rtl;text-align:right;border-top:1px solid #e5e7eb;padding-top:16px;margin-bottom:14px">STORY 2 — إِبْرَاهِيمُ يَرَى الشِّرْكَ</div>
+<div class="principles-wrap" id="principles-wrap" style="display:none">
 <div class="principles-header">
 <span class="section-label" style="margin-bottom:0">Key principles</span>
 <span class="principles-progress" id="principles-progress">1 / 5</span>
@@ -739,12 +722,13 @@ console.log("THE FILE IS LOADING!");
 <div id="story-lesson-2" style="display:none;background:var(--grey-light);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08)">
 
 <div style="text-align:center;margin-bottom:20px">
-<div style="font-family:'Scheherazade New', serif;font-size:26px;font-weight:700;color:#1a1a2e">الدَّرْسُ الأَوَّلُ</div>
-<div style="font-size:13px;font-weight:700;letter-spacing:1px;color:#6b7280;text-transform:uppercase;margin-top:2px">Lesson 1</div>
-<div style="font-size:14px;color:#6b7280;margin-top:10px;line-height:1.5">Today you will learn how to identify plural words.<br>You will also learn the two types of plurals: broken and regular.</div>
+<div style="font-family:'Scheherazade New', serif;font-size:26px;font-weight:700;color:#1a1a2e">الدَّرْسُ الثَّانِي</div>
+<div style="font-size:13px;font-weight:700;letter-spacing:1px;color:#6b7280;text-transform:uppercase;margin-top:2px">Lesson 2</div>
+<div style="font-size:13px;color:#8b2035;font-weight:700;margin-top:10px">[■■□□□□□□□□□] 9 steps to understanding 61% of Quran</div>
+<div style="font-size:14px;color:#6b7280;margin-top:8px;line-height:1.5">In this lesson, you will learn about definite nouns and how they affect adjectives</div>
 </div>
 
-<div class="principles-wrap" id="principles-wrap" style="display:none">
+<div style="font-family:'Scheherazade New', serif;font-size:20px;font-weight:700;color:#1a1a2e;direction:rtl;text-align:right;border-top:1px solid #e5e7eb;padding-top:16px;margin-bottom:14px">STORY 2 — إِبْرَاهِيمُ يَرَى الشِّرْكَ</div>
 
 <button id="story-english-btn-l2" onclick="toggleStoryEnglish()" style="padding:10px 20px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:16px">Show English</button>
 
@@ -1382,9 +1366,6 @@ switchTab('flashcards');
 window.openGrammarForLesson = function(lessonNum) {
 switchTab('story');
 setStoryLesson(lessonNum);
-if (lessonNum === 2) {
-document.getElementById('principles-wrap-l2').style.display = 'block';
-} else {
 document.getElementById('principles-wrap').style.display = 'block';
 document.querySelectorAll('#story-lesson-' + Math.min(lessonNum,3) + ' p:not(.story-en-line)').forEach(p => p.style.display = '');
 document.getElementById('story-translation-input').style.display = 'none';
@@ -1392,7 +1373,6 @@ document.querySelector('[onclick*="storySubmitTranslation"]').style.display = 'n
 document.getElementById('story-reveal').style.display = 'none';
 document.getElementById('story-ratings').style.display = 'none';
 if (document.getElementById('story-english-btn')) document.getElementById('story-english-btn').style.display = 'inline-block';
-}
 };
 
 window.openExercisesForLesson = function(lessonNum) {
@@ -3029,42 +3009,6 @@ let activePrinciples = PRINCIPLES;
 let principleIdx = 0;
 let principleRevealed = false;
 
-let principleIdxL2 = 0;
-let principleRevealedL2 = false;
-
-function renderPrincipleL2() {
-  const qEl = document.getElementById('principle-q-l2');
-  const aEl = document.getElementById('principle-a-l2');
-  const hintEl = document.getElementById('principle-hint-l2');
-  const progEl = document.getElementById('principles-progress-l2');
-  const dotsEl = document.getElementById('principles-dots-l2');
-  const backBtn = document.getElementById('principle-back-btn-l2');
-  const nextBtn = document.getElementById('principle-next-btn-l2');
-  const p = PRINCIPLES_L2[principleIdxL2];
-
-  qEl.innerHTML = p.q;
-  let answerHtml = p.a;
-  if (p.quote) {
-    answerHtml += `<div class="principle-quote"><div class="principle-quote-ar">${p.quote}</div></div>`;
-  }
-  aEl.innerHTML = answerHtml;
-  qEl.style.display = principleRevealedL2 ? 'none' : 'block';
-  aEl.style.display = principleRevealedL2 ? 'block' : 'none';
-  hintEl.textContent = principleRevealedL2 ? "Tap to see the question again" : "Tap when you've found it";
-
-  progEl.textContent = (principleIdxL2 + 1) + ' / ' + PRINCIPLES_L2.length;
-
-  dotsEl.innerHTML = '';
-  PRINCIPLES_L2.forEach((_, i) => {
-    const dot = document.createElement('div');
-    dot.className = 'principle-dot' + (i === principleIdxL2 ? ' active' : '');
-    dotsEl.appendChild(dot);
-  });
-
-  backBtn.style.visibility = principleIdxL2 === 0 ? 'hidden' : 'visible';
-  nextBtn.textContent = principleIdxL2 === PRINCIPLES_L2.length - 1 ? 'Done' : 'Next ›';
-}
-
 function renderPrinciple() {
   const qEl = document.getElementById('principle-q');
   const aEl = document.getElementById('principle-a');
@@ -3124,19 +3068,6 @@ document.getElementById('principle-next-btn').addEventListener('click', () => {
   else if (isGuestMode) { const code = currentUser || viewingStudent; window.markGrammarDone(studentLesson[code] || 1); }
 });
 renderPrinciple();
-
-document.getElementById('principle-card-l2').addEventListener('click', () => {
-  principleRevealedL2 = !principleRevealedL2;
-  renderPrincipleL2();
-});
-document.getElementById('principle-back-btn-l2').addEventListener('click', () => {
-  if (principleIdxL2 > 0) { principleIdxL2--; principleRevealedL2 = false; renderPrincipleL2(); }
-});
-document.getElementById('principle-next-btn-l2').addEventListener('click', () => {
-  if (principleIdxL2 < PRINCIPLES_L2.length - 1) { principleIdxL2++; principleRevealedL2 = false; renderPrincipleL2(); }
-  else if (isGuestMode) { const code = currentUser || viewingStudent; window.markGrammarDone(studentLesson[code] || 1); }
-});
-renderPrincipleL2();
 
 
 // ── RENDER ──
