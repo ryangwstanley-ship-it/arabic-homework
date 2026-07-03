@@ -2139,6 +2139,7 @@ render();
 // ── TABS ──
 window.switchTab = function(tab) {
 if (isGuestMode && tab === 'home') return;
+const previousTab = currentTab;
 currentTab = tab;
 document.getElementById('app-header').style.display = (tab==='home' || !isInstructor) ? 'none' : 'flex';
 document.getElementById('tab-content-home').style.display = tab==='home' ? 'block' : 'none';
@@ -2177,7 +2178,7 @@ if (gramBtn) gramBtn.style.display = isGuestMode ? 'none' : 'block';
 if (tab==='milestones') {
 document.getElementById('main').scrollTop = 0;
 window.scrollTo(0, 0);
-if (currentTab !== 'milestones') showToast('Progress saved ✓');
+if (previousTab !== 'milestones') showToast('Progress saved ✓');
 renderMilestones();
 if (pendingMilestoneIntro) {
 document.getElementById('milestone-root').style.display = 'none';
