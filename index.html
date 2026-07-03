@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title> ya </title>
+<title> GG </title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Arabic Daily</title>
@@ -1789,6 +1789,17 @@ ${miniRing(s.challengesPct, '🏆')}
 </div>
 </div>`;
 }).join('');
+}
+
+async function renderReportsTab() {
+const root = document.getElementById('reports-root');
+root.innerHTML = '<div style="text-align:center;color:var(--grey);padding:20px">Loading reports…</div>';
+let reportDocs = [];
+try {
+const snap = await getDocs(collection(db,'reports'));
+snap.forEach(d => reportDocs.push({ id: d.id, ...d.data() }));
+} catch(e) { console.error('Reports load error', e); }
+root.innerHTML = '<pre style="padding:20px;background:#f3f4f6;border-radius:10px;overflow:auto">' + JSON.stringify(reportDocs, null, 2) + '</pre>';
 }
 
 function isMidnightPast(dateStr) {
