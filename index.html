@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title> h </title>
+<title> hj </title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Arabic Daily</title>
@@ -3077,7 +3077,7 @@ document.getElementById('principle-back-btn').addEventListener('click', () => {
 });
 document.getElementById('principle-next-btn').addEventListener('click', () => {
   if (principleIdx < activePrinciples.length - 1) { principleIdx++; principleRevealed = false; renderPrinciple(); }
-  else if (isGuestMode) { const code = currentUser || viewingStudent; window.markGrammarDone(studentLesson[code] || 1); }
+  else { const code = currentUser || viewingStudent; window.markGrammarDone(studentLesson[code] || 1); }
 });
 renderPrinciple();
 
