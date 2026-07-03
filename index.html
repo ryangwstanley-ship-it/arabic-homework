@@ -2939,7 +2939,9 @@ renderPrinciple();
 
 // ── RENDER ──
 function render(){
+if(!isGuestMode){
 renderCalendar();renderDayPanel();renderMissedBanner();renderRevisionBanner();
+}
 if(isInstructor&&!isStudentView)buildSidebar();
 if(currentTab==='flashcards')renderFlashcards();
 }
