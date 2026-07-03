@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title> ddf </title>
+<title> f </title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Arabic Daily</title>
@@ -1351,6 +1351,7 @@ window.openReadingForLesson = function(lessonNum) {
 switchTab('story');
 setStoryLesson(lessonNum);
 document.querySelectorAll('.story-title').forEach(t => { t.style.fontWeight = '700'; t.style.color = '#8b2035'; });
+document.querySelectorAll('.story-word.new-reading').forEach(w => { w.style.fontWeight = '700'; w.style.color = '#8b2035'; });
 if (guestTourActive && lessonNum === 1 && guestTourStep === 0) {
 guestTourStep = 1;
 hideGuestCoachmark();
@@ -1368,6 +1369,7 @@ window.openGrammarForLesson = function(lessonNum) {
 switchTab('story');
 setStoryLesson(lessonNum);
 document.querySelectorAll('.story-title').forEach(t => { t.style.fontWeight = '400'; t.style.color = '#1a1a2e'; });
+document.querySelectorAll('.story-word.new-reading').forEach(w => { w.style.fontWeight = '400'; w.style.color = '#1a1a2e'; });
 document.getElementById('principles-wrap').style.display = 'block';
 document.querySelectorAll('#story-lesson-' + Math.min(lessonNum,3) + ' p:not(.story-en-line)').forEach(p => p.style.display = '');
 document.getElementById('story-translation-input').style.display = 'none';
