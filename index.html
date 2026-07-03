@@ -420,6 +420,7 @@ console.log("THE FILE IS LOADING!");
 <div class="sidebar-logo-text">Arabic Daily</div>
 </div>
 <button class="sidebar-nav-btn" id="sidebar-guests-btn" onclick="switchTab('guests')">👤 Guests</button>
+<button class="sidebar-nav-btn" id="sidebar-reports-btn" onclick="switchTab('reports')">📋 Reports</button>
 <div class="sidebar-label">Students</div>
 <div class="sidebar-students" id="sidebar-students"></div>
 
@@ -1786,6 +1787,18 @@ ${r.note ? `<div style="background:#fdf6f3;padding:12px;border-radius:8px;border
 </div>` : ''}
 </div>`;
 }).join('');
+}
+
+async function toggleReportResolved(reportId, currentlyResolved) {
+const root = document.getElementById('reports-root');
+root.innerHTML = '<div style="text-align:center;color:var(--grey);padding:20px">Updating…</div>';
+try {
+await updateDoc(doc(db,'reports', reportId), {
+resolved: !currentlyResolved
+});
+showToast(!currentlyResolved ? 'Marked as resolved ✓' : 'Unmarked');
+renderReportsTab();
+} catch(e) { console.error('Update error', e); showToast('Error — try again'); renderReportsTab(); }
 }
   
 async function renderGuestsTab() {
