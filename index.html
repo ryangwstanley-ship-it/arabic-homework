@@ -1353,14 +1353,12 @@ setTimeout(() => showGuestCoachmark(document.getElementById('guest-flashcards-bt
 };
 
 window.openFlashcardsForLesson = function(lessonNum) {
-if (isGuestMode && !getReadingFraction(lessonNum)) return;
 fcCurrentLesson = lessonNum;
 fcShowLessonPicker = false;
 switchTab('flashcards');
 };
 
 window.openGrammarForLesson = function(lessonNum) {
-if (isGuestMode && getLessonMasteryPercent(lessonNum) < 100) return;
 switchTab('story');
 setStoryLesson(lessonNum);
 document.getElementById('principles-wrap').style.display = 'block';
