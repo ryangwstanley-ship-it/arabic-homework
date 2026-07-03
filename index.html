@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title> d </title>
+<title> dd </title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Arabic Daily</title>
@@ -1350,6 +1350,7 @@ else switchTab('home');
 window.openReadingForLesson = function(lessonNum) {
 switchTab('story');
 setStoryLesson(lessonNum);
+document.querySelectorAll('.story-title').forEach(t => { t.style.fontWeight = '700'; t.style.color = '#8b2035'; });
 if (guestTourActive && lessonNum === 1 && guestTourStep === 0) {
 guestTourStep = 1;
 hideGuestCoachmark();
