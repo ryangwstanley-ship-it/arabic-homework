@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title> ddd  </title>
+<title> ddGJHGd  </title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Arabic Daily</title>
@@ -3024,6 +3024,42 @@ let activePrinciples = PRINCIPLES;
 
 let principleIdx = 0;
 let principleRevealed = false;
+
+let principleIdxL2 = 0;
+let principleRevealedL2 = false;
+
+function renderPrincipleL2() {
+  const qEl = document.getElementById('principle-q-l2');
+  const aEl = document.getElementById('principle-a-l2');
+  const hintEl = document.getElementById('principle-hint-l2');
+  const progEl = document.getElementById('principles-progress-l2');
+  const dotsEl = document.getElementById('principles-dots-l2');
+  const backBtn = document.getElementById('principle-back-btn-l2');
+  const nextBtn = document.getElementById('principle-next-btn-l2');
+  const p = PRINCIPLES_L2[principleIdxL2];
+
+  qEl.innerHTML = p.q;
+  let answerHtml = p.a;
+  if (p.quote) {
+    answerHtml += `<div class="principle-quote"><div class="principle-quote-ar">${p.quote}</div></div>`;
+  }
+  aEl.innerHTML = answerHtml;
+  qEl.style.display = principleRevealedL2 ? 'none' : 'block';
+  aEl.style.display = principleRevealedL2 ? 'block' : 'none';
+  hintEl.textContent = principleRevealedL2 ? "Tap to see the question again" : "Tap when you've found it";
+
+  progEl.textContent = (principleIdxL2 + 1) + ' / ' + PRINCIPLES_L2.length;
+
+  dotsEl.innerHTML = '';
+  PRINCIPLES_L2.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'principle-dot' + (i === principleIdxL2 ? ' active' : '');
+    dotsEl.appendChild(dot);
+  });
+
+  backBtn.style.visibility = principleIdxL2 === 0 ? 'hidden' : 'visible';
+  nextBtn.textContent = principleIdxL2 === PRINCIPLES_L2.length - 1 ? 'Done' : 'Next ›';
+}
 
 function renderPrinciple() {
   const qEl = document.getElementById('principle-q');
