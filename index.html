@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title> dd </title>
+<title> ddf </title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Arabic Daily</title>
@@ -1367,6 +1367,7 @@ switchTab('flashcards');
 window.openGrammarForLesson = function(lessonNum) {
 switchTab('story');
 setStoryLesson(lessonNum);
+document.querySelectorAll('.story-title').forEach(t => { t.style.fontWeight = '400'; t.style.color = '#1a1a2e'; });
 document.getElementById('principles-wrap').style.display = 'block';
 document.querySelectorAll('#story-lesson-' + Math.min(lessonNum,3) + ' p:not(.story-en-line)').forEach(p => p.style.display = '');
 document.getElementById('story-translation-input').style.display = 'none';
