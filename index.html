@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title> Gdsfs new </title>
+<title> Gdsdfdsfdfsddsfsdf </title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Arabic Daily</title>
@@ -455,7 +455,9 @@ console.log("THE FILE IS LOADING!");
 <button class="streak-info-btn" id="streak-info-btn" type="button" aria-label="How streaks work">ⓘ</button>
 <div class="streak-info-popup" id="streak-info-popup">Complete at least 20 flashcards or exercise questions, or upload your homework, today to count toward your streak — the ring above fills up as you go. Miss a day completely and your streak resets to 0.</div>
 </div>
-<div class="revision-lesson" id="revision-lesson-wrap">Lesson 1</div>
+<div class="revision-lesson" id="revision-lesson-wrap" style="cursor:pointer" onclick="window.openLessonDropdown()">Lesson 1</div>
+<div id="lesson-dropdown" style="display:none;position:absolute;background:white;border:1px solid var(--border);border-radius:10px;padding:8px;z-index:1000;top:70px;right:170px;max-height:200px;overflow-y:auto;box-shadow:0 4px 12px rgba(0,0,0,0.15)">
+</div>
 </div>
 <div class="revision-rank">
 <div class="revision-rank-num" id="revision-rank-num">#—</div>
@@ -3053,7 +3055,7 @@ if(isInstructor&&!isStudentView)buildSidebar();
 if(currentTab==='flashcards')renderFlashcards();
 }
 
-const MILESTONE_BUILT_LESSONS = 16;
+const MILESTONE_BUILT_LESSONS = 17;
 
 
 
