@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title> GG </title>
+<title> Giuy </title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Arabic Daily</title>
@@ -292,6 +292,8 @@
 .fc-delete-btn:hover { opacity: 1; }
 .report-btn { position: absolute; top: 10px; left: 10px; background: none; border: none; font-size: 12px; color: #b0a99e; cursor: pointer; padding: 2px 4px; opacity: 0.6; }
 .report-btn:hover { opacity: 1; }
+.page-report-btn { position: fixed; top: 20px; right: 20px; background: none; border: none; font-size: 20px; cursor: pointer; opacity: 0.5; z-index: 100; }
+.page-report-btn:hover { opacity: 1; }
 
 .fc-rating-wrap { display: none; gap: 8px; margin-bottom: 20px; }
 .fc-rating-wrap.visible { display: flex; }
@@ -472,6 +474,7 @@ console.log("THE FILE IS LOADING!");
 
 <!-- HOME TAB -->
 <div id="tab-content-home" class="content" style="display:none">
+<button class="page-report-btn" onclick="window.openReportPopup('Home page issue')">⚠️</button>
 <div class="section-label">What would you like to do?</div>
 <div style="display:flex;flex-direction:column;gap:16px;margin-top:8px;max-width:420px">
 <div class="home-card" id="home-btn-start">
