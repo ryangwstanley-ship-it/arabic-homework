@@ -1962,8 +1962,7 @@ allCardActivity[code] = data.cardActivity || {};
 fcDeletedCards = data.deleted || {};
 studentLesson[code] = data.lesson || 1;
 exProgress = data.exProgress || {};
-readingDone = data.readingDone || {};
-grammarDone = data.grammarDone || {};
+// Reading and Grammar are now loaded from separate documents
 if (data.customCards) {
 Object.entries(data.customCards).forEach(([lessonNum, cards]) => {
 const num = parseInt(lessonNum);
@@ -1974,6 +1973,8 @@ LESSONS[num].cards = [...DEFAULT_LESSONS[num]?.cards || [], ...cards];
 }
 } else {
 fcProgress = {}; allFcActivity[code] = {}; allCardActivity[code] = {}; fcDeletedCards = {}; studentLesson[code] = 1; exProgress = {}; readingDone = {}; grammarDone = {};
+loadReadingData(code);
+loadGrammarData(code);
 }
 } catch(e) { console.error('FC load error',e); }
 }
@@ -2004,11 +2005,21 @@ cardActivity: allCardActivity[code] || {},
 deleted: fcDeletedCards,
 lesson: studentLesson[code] || 1,
 exProgress,
-readingDone,
-grammarDone,
 customCards
 });
 } catch(e) { console.error('FC save error',e); }
+}
+
+async function saveReadingData(code) {
+try {
+await setDoc(doc(db,'reading',code), { readingDone });
+} catch(e) { console.error('Reading save error',e); }
+}
+
+async function saveGrammarData(code) {
+try {
+await setDoc(doc(db,'grammar',code), { grammarDone });
+} catch(e) { console.error('Grammar save error',e); }
 }
 
 async function setStudentLesson(code, lesson) {
