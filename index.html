@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title> Gdsdfdsfdfsddsfsdf </title>
+<title> h </title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Arabic Daily</title>
@@ -2143,6 +2143,30 @@ err.style.display='block'; btn.textContent='Enter'; btn.disabled=false;
 }
 }
 // ── GUEST ──
+window.openLessonDropdown = function() {
+const dropdown = document.getElementById('lesson-dropdown');
+dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+if (dropdown.style.display === 'block') {
+dropdown.innerHTML = '';
+for (let i = 1; i <= 16; i++) {
+const btn = document.createElement('button');
+btn.textContent = `Lesson ${i}`;
+btn.style.cssText = 'display:block;width:100%;padding:10px;border:none;background:none;cursor:pointer;text-align:left;font-size:14px;margin-bottom:4px;border-radius:6px;color:var(--ink)';
+btn.onmouseover = () => btn.style.background = '#f3f4f6';
+btn.onmouseout = () => btn.style.background = 'none';
+btn.onclick = async () => {
+const code = activeStudentCode();
+await updateDoc(doc(db,'students',code),{lesson:i});
+studentLesson[code] = i;
+document.getElementById('revision-lesson-wrap').textContent = `Lesson ${i}`;
+dropdown.style.display = 'none';
+renderMilestones();
+};
+dropdown.appendChild(btn);
+}
+}
+};
+
 let guestName = '';
 let pendingMilestoneIntro = false;
 let guestCodeEdited = false;
