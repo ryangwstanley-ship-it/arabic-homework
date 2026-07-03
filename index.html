@@ -2716,12 +2716,16 @@ cardEl.className='fc-card-wrap';
 cardEl.innerHTML=`
   <div class="fc-card" id="fc-card">
     ${diffBanner}
-    <button class="report-btn" onclick="event.stopPropagation(); window.openReportPopup('Flashcard: Lesson ' + fcCurrentLesson + ' — ' + '${card.ar.replace(/'/g,"")}')">⚠️ Report</button>
+    <button class="report-btn" id="fc-report-btn">⚠️ Report</button>
     <div class="fc-arabic">${card.ar}</div>
     <div class="fc-english">${card.en}</div>
     <div class="fc-tap-hint">Tap to reveal</div>
   </div>`;
 area.appendChild(cardEl);
+document.getElementById('fc-report-btn').addEventListener('click', (e) => {
+e.stopPropagation();
+window.openReportPopup('Flashcard: Lesson ' + fcCurrentLesson + ' — ' + card.ar);
+});
 
 const ratingWrap = document.createElement('div');
 ratingWrap.className='fc-rating-wrap';
