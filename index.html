@@ -618,6 +618,23 @@ console.log("THE FILE IS LOADING!");
 </style>
 <div id="story-lesson-1" style="background:var(--grey-light);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08)">
 
+<div class="principles-wrap" id="principles-wrap-top" style="display:none;margin-top:0;border-top:none;padding-top:0;margin-bottom:24px;border-bottom:1px solid #e5e7eb;padding-bottom:20px">
+<div class="principles-header">
+<span class="section-label" style="margin-bottom:0">Key principles</span>
+<span class="principles-progress" id="principles-progress-top">1 / 5</span>
+</div>
+<div class="principle-card" id="principle-card-top">
+<div class="principle-q" id="principle-q-top"></div>
+<div class="principle-a" id="principle-a-top" style="display:none"></div>
+<div class="principle-hint" id="principle-hint-top">Tap when you've found it</div>
+</div>
+<div class="principles-nav">
+<button class="principles-nav-btn" id="principle-back-btn-top">‹ Back</button>
+<div class="principles-dots" id="principles-dots-top"></div>
+<button class="principles-nav-btn principles-nav-btn-primary" id="principle-next-btn-top">Next ›</button>
+</div>
+</div>
+
 <div style="text-align:center;margin-bottom:20px">
 <div style="font-family:'Scheherazade New', serif;font-size:26px;font-weight:700;color:#1a1a2e">الدَّرْسُ الأَوَّلُ</div>
 <div style="font-size:13px;font-weight:700;letter-spacing:1px;color:#6b7280;text-transform:uppercase;margin-top:2px">Lesson 1</div>
@@ -1347,6 +1364,11 @@ if (isGuestMode && getLessonMasteryPercent(lessonNum) < 100) return;
 switchTab('story');
 setStoryLesson(lessonNum);
 document.getElementById('principles-wrap').style.display = 'block';
+document.querySelectorAll('#story-lesson-' + Math.min(lessonNum,3) + ' p:not(.story-en-line)').forEach(p => p.style.display = '');
+document.getElementById('story-translation-input').style.display = 'none';
+document.querySelector('[onclick*="storySubmitTranslation"]').style.display = 'none';
+document.getElementById('story-reveal').style.display = 'none';
+document.getElementById('story-ratings').style.display = 'none';
 };
 
 window.openExercisesForLesson = function(lessonNum) {
