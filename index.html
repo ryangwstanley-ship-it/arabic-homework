@@ -697,7 +697,9 @@ console.log("THE FILE IS LOADING!");
 </div>
 
 <button id="student-grammar-done-btn" style="display:none;width:100%;margin-top:20px;padding:14px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;visibility:hidden">Mark Grammar as Done ✓</button>
-<button id="reading-save-btn" onclick="readingSaveProgress()" style="width:100%;margin-top:12px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Save Progress</button>
+
+<button id="guest-flashcards-btn" style="display:none;width:100%;margin-top:24px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Save Progress</button>
+
 </div>
 
 <div id="story-lesson-2" style="display:none;background:var(--grey-light);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08)">
@@ -2016,7 +2018,7 @@ async function saveDay(code, dateStr, data) { await setDoc(doc(db,'submissions',
 
 // ── LOGIN ──
 async function handleLogin() {
-const code = document.getElementById('code-input').value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+const code = document.getElementById('code-input').value.trim().toUpperCase();
 const err = document.getElementById('login-error');
 const btn = document.getElementById('login-btn');
 btn.textContent='Signing in…'; btn.disabled=true;
@@ -2033,9 +2035,7 @@ await loadStudentMeta(code);
 await loadFlashcardProgress(code);
 startApp();
 } else {
-enterAsGuest(code);
-await loadFlashcardProgress(code);
-startApp();
+err.style.display='block'; btn.textContent='Enter'; btn.disabled=false;
 }
 }
 // ── GUEST ──
@@ -2144,10 +2144,6 @@ render();
 // ── TABS ──
 window.switchTab = function(tab) {
 if (isGuestMode && tab === 'home') return;
-// Show "progress saved" toast when returning to milestones from other tabs
-if (tab === 'milestones' && (currentTab === 'flashcards' || currentTab === 'exercises' || currentTab === 'challenges' || currentTab === 'story')) {
-  showToast('✓ Progress saved!');
-}
 currentTab = tab;
 document.getElementById('app-header').style.display = (tab==='home' || !isInstructor) ? 'none' : 'flex';
 document.getElementById('tab-content-home').style.display = tab==='home' ? 'block' : 'none';
@@ -2781,8 +2777,7 @@ function storyRenderSentence(lesson) {
       document.getElementById('guest-flashcards-btn').textContent = 'Done';
       showToast('🎉 Congratulations! You finished the reading. Press Done to continue to Flashcards.');
     } else {
-      const srdBtn = document.getElementById('student-reading-done-btn');
-      if (srdBtn) srdBtn.style.display = 'block';
+      document.getElementById('student-reading-done-btn').style.display = 'block';
     }
     document.getElementById('story-translation-input').style.display = 'none';
     document.querySelector('[onclick*="storySubmitTranslation"]').style.display = 'none';
@@ -2939,9 +2934,7 @@ renderPrinciple();
 
 // ── RENDER ──
 function render(){
-if(!isGuestMode){
 renderCalendar();renderDayPanel();renderMissedBanner();renderRevisionBanner();
-}
 if(isInstructor&&!isStudentView)buildSidebar();
 if(currentTab==='flashcards')renderFlashcards();
 }
@@ -3009,23 +3002,6 @@ if (sentenceIdx < totalSentences) {
   }
 }
 });
-
-function readingSaveProgress() {
-  const code = currentUser || viewingStudent;
-  const lesson = studentLesson[code] || 1;
-  const sentenceIdx = storyCurrentSentence[code]?.[lesson] || 0;
-  const totalSentences = STORY_SENTENCES[lesson]?.length || 0;
-  
-  if (sentenceIdx < totalSentences) {
-    showToast('✓ Progress saved!');
-    setTimeout(() => {
-      saveFlashcardData(code);
-      switchTab('milestones');
-    }, 5000);
-  }
-}
-window.readingSaveProgress = readingSaveProgress;
-
 document.getElementById('guest-principles-btn').addEventListener('click', () => {
 document.getElementById('principles-wrap').style.display = 'block';
 document.getElementById('guest-flashcards-btn').style.display = 'none';
@@ -3035,8 +3011,7 @@ guestTourStep = 3;
 hideGuestCoachmark();
 }
 });
-const studentReadBtn = document.getElementById('student-reading-done-btn');
-if (studentReadBtn) studentReadBtn.addEventListener('click', () => {
+document.getElementById('student-reading-done-btn').addEventListener('click', () => {
 const code = currentUser || viewingStudent;
 window.markReadingDone(studentLesson[code] || 1);
 });
