@@ -1635,6 +1635,35 @@ libraryTabs.forEach(tab => {
 libraryOverlay.addEventListener('click', (e) => { if (e.target === libraryOverlay) libraryOverlay.remove(); });
 };
   
+window.openReportPopup = function(context) {
+const overlay = document.createElement('div');
+overlay.className = 'milestone-celebrate-overlay';
+overlay.innerHTML = `<div class="milestone-celebrate-card" style="text-align:left;max-width:320px">
+<div style="font-size:16px;font-weight:700;color:var(--ink);margin-bottom:10px">Report a problem</div>
+<div style="font-size:13px;color:var(--grey);margin-bottom:14px">Optional: tell us what's wrong</div>
+<textarea id="report-note-input" placeholder="What seems wrong? (optional)" style="width:100%;padding:10px;border:2px solid #e5e7eb;border-radius:10px;font-size:14px;min-height:70px;outline:none;font-family:inherit"></textarea>
+<button id="report-submit-btn" style="width:100%;margin-top:12px;padding:12px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">Submit Report</button>
+<button id="report-cancel-btn" style="width:100%;margin-top:8px;padding:10px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer">Cancel</button>
+</div>`;
+document.body.appendChild(overlay);
+document.getElementById('report-submit-btn').onclick = async () => {
+const note = document.getElementById('report-note-input').value.trim();
+const code = currentUser || viewingStudent;
+try {
+await setDoc(doc(db,'reports', Date.now() + '_' + code), {
+studentCode: code,
+context,
+note,
+timestamp: Date.now()
+});
+showToast('Report sent ✓');
+} catch(e) { console.error('Report save error', e); showToast('Report failed — try again'); }
+overlay.remove();
+};
+document.getElementById('report-cancel-btn').onclick = () => overlay.remove();
+overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+};
+
 window.showMasteredMilestone = function(category, lessonNum, reviewCallback) {
 window.switchTab('milestones');
 renderMilestones();
@@ -2656,6 +2685,7 @@ cardEl.className='fc-card-wrap';
 cardEl.innerHTML=`
   <div class="fc-card" id="fc-card">
     ${diffBanner}
+    <button class="report-btn" onclick="event.stopPropagation(); window.openReportPopup('Flashcard: Lesson ' + fcCurrentLesson + ' — ' + '${card.ar.replace(/'/g,"")}')">⚠️ Report</button>
     <div class="fc-arabic">${card.ar}</div>
     <div class="fc-english">${card.en}</div>
     <div class="fc-tap-hint">Tap to reveal</div>
