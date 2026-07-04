@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title> dhhOIUYj </title>
+<title> j </title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Arabic Daily</title>
@@ -1359,8 +1359,7 @@ document.querySelectorAll('.story-word.new-reading, .story-word.new').forEach(w 
 document.getElementById('principles-wrap').style.display = 'none';
 document.getElementById('story-translation-input').style.display = '';
 document.querySelector('[onclick*="storySubmitTranslation"]').style.display = '';
-if (document.getElementById('story-english-btn')) document.getElementById('story-english-btn').style.display = 'none';
-['story-english-btn','story-english-btn-l2','story-english-btn-l3'].forEach(id => { const b = document.getElementById(id); if (b) b.textContent = 'Show English'; });
+['story-english-btn','story-english-btn-l2','story-english-btn-l3'].forEach(id => { const b = document.getElementById(id); if (b) { b.style.display = 'none'; b.textContent = 'Show English'; } });
 document.querySelectorAll('.story-en-line').forEach(line => { line.style.display = 'none'; });
 const box = document.getElementById('story-lesson-' + Math.min(lessonNum, 3));
 const storyText = box.querySelector('[style*="font-size:28px"]');
