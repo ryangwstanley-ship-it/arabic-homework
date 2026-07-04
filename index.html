@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title> dll </title>
+<title> j </title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Arabic Daily</title>
@@ -673,9 +673,9 @@ console.log("THE FILE IS LOADING!");
 <div id="story-correct-en" style="font-size:15px;line-height:1.6;color:#1a1a2e"></div>
 </div>
 <div id="story-ratings" style="display:none;gap:10px">
-<button onclick="storyRateSelf(1, 1)" style="flex:1;padding:12px;background:#fef2f2;color:#b91c1c;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">No idea</button>
-<button onclick="storyRateSelf(1, 2)" style="flex:1;padding:12px;background:#fff7ed;color:#c2410c;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">Nearly got it</button>
-<button onclick="storyRateSelf(1, 3)" style="flex:1;padding:12px;background:#f0fdf4;color:#15803d;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">Got it right</button>
+<button onclick="storyRateSelf(window.storyActiveLesson, 1)" style="flex:1;padding:12px;background:#fef2f2;color:#b91c1c;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">No idea</button>
+<button onclick="storyRateSelf(window.storyActiveLesson, 2)" style="flex:1;padding:12px;background:#fff7ed;color:#c2410c;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">Nearly got it</button>
+<button onclick="storyRateSelf(window.storyActiveLesson, 3)" style="flex:1;padding:12px;background:#f0fdf4;color:#15803d;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">Got it right</button>
 </div>
 
 <button id="story-english-btn" onclick="toggleStoryEnglish()" style="padding:10px 20px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:16px;display:none">Show English</button>
@@ -783,14 +783,18 @@ console.log("THE FILE IS LOADING!");
 <button id="story-english-btn-l3" onclick="toggleStoryEnglish()" style="padding:10px 20px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:16px">Show English</button>
 
 <div style="font-family:'Scheherazade New', serif;font-size:28px;line-height:2;direction:rtl;text-align:right">
-<p><span class="story-line-num">١</span> <span class="story-word" data-en="said" onclick="showWordMeaning(this)">قَالَ</span> <span class="story-word" data-en="Allah" onclick="showWordMeaning(this)">اللَّهُ</span> <span class="story-word new" data-en="the Most High" onclick="showWordMeaning(this)">تَعَالَى</span>:<br>
-<span class="story-word" data-en="say" onclick="showWordMeaning(this)">قُلْ</span> <span class="story-word new" data-en="O" onclick="showWordMeaning(this)">يَا</span> <span class="story-word new" data-en="you" onclick="showWordMeaning(this)">أَيُّهَا</span> <span class="story-word new" data-en="the disbelievers" onclick="showWordMeaning(this)">الْكَافِرُونَ</span><br>
-<span class="story-word" data-en="not" onclick="showWordMeaning(this)">لَا</span> <span class="story-word" data-en="I worship" onclick="showWordMeaning(this)">أَعْبُدُ</span> <span class="story-word" data-en="what" onclick="showWordMeaning(this)">مَا</span> <span class="story-word" data-en="you (pl) worship" onclick="showWordMeaning(this)">تَعْبُدُونَ</span><br>
-<span class="story-word" data-en="and not" onclick="showWordMeaning(this)">وَلَا</span> <span class="story-word new" data-en="you (pl)" onclick="showWordMeaning(this)">أَنْتُمْ</span> <span class="story-word" data-en="worshippers" onclick="showWordMeaning(this)">عَابِدُونَ</span> <span class="story-word" data-en="what" onclick="showWordMeaning(this)">مَا</span> <span class="story-word" data-en="I worship" onclick="showWordMeaning(this)">أَعْبُدُ</span><br>
-<span class="story-word" data-en="and not" onclick="showWordMeaning(this)">وَلَا</span> <span class="story-word new" data-en="I" onclick="showWordMeaning(this)">أَنَا</span> <span class="story-word" data-en="worshipper" onclick="showWordMeaning(this)">عَابِدٌ</span> <span class="story-word" data-en="what" onclick="showWordMeaning(this)">مَا</span> <span class="story-word" data-en="you (pl) worshipped" onclick="showWordMeaning(this)">عَبَدْتُمْ</span><br>
-<span class="story-word" data-en="and not" onclick="showWordMeaning(this)">وَلَا</span> <span class="story-word" data-en="you (pl)" onclick="showWordMeaning(this)">أَنْتُمْ</span> <span class="story-word" data-en="worshippers" onclick="showWordMeaning(this)">عَابِدُونَ</span> <span class="story-word" data-en="what" onclick="showWordMeaning(this)">مَا</span> <span class="story-word" data-en="I worship" onclick="showWordMeaning(this)">أَعْبُدُ</span><br>
-<span class="story-word new" data-en="for you (pl)" onclick="showWordMeaning(this)">لَكُمْ</span> <span class="story-word" data-en="your religion" onclick="showWordMeaning(this)">دِينُكُمْ</span> <span class="story-word new" data-en="and for me" onclick="showWordMeaning(this)">وَلِيَ</span> <span class="story-word" data-en="my religion" onclick="showWordMeaning(this)">دِينِ</span></p>
-<p class="story-en-line">Allah the Most High said: "Say, 'O disbelievers, I do not worship what you worship, nor do you worship what I worship, nor will I worship what you worship, nor will you worship what I worship. For you is your religion, and for me is my religion.'"</p>
+<p><span class="story-line-num">١</span> <span class="story-word" data-en="said" onclick="showWordMeaning(this)">قَالَ</span> <span class="story-word" data-en="Allah" onclick="showWordMeaning(this)">اللَّهُ</span> <span class="story-word new" data-en="the Most High" onclick="showWordMeaning(this)">تَعَالَى</span>: <span class="story-word" data-en="say" onclick="showWordMeaning(this)">قُلْ</span> <span class="story-word new" data-en="O" onclick="showWordMeaning(this)">يَا</span> <span class="story-word new" data-en="you" onclick="showWordMeaning(this)">أَيُّهَا</span> <span class="story-word new" data-en="the disbelievers" onclick="showWordMeaning(this)">الْكَافِرُونَ</span></p>
+<p class="story-en-line">Allah the Most High said: "Say, 'O disbelievers,</p>
+<p><span class="story-line-num">٢</span> <span class="story-word" data-en="not" onclick="showWordMeaning(this)">لَا</span> <span class="story-word" data-en="I worship" onclick="showWordMeaning(this)">أَعْبُدُ</span> <span class="story-word" data-en="what" onclick="showWordMeaning(this)">مَا</span> <span class="story-word" data-en="you (pl) worship" onclick="showWordMeaning(this)">تَعْبُدُونَ</span></p>
+<p class="story-en-line">I do not worship what you worship,</p>
+<p><span class="story-line-num">٣</span> <span class="story-word" data-en="and not" onclick="showWordMeaning(this)">وَلَا</span> <span class="story-word new" data-en="you (pl)" onclick="showWordMeaning(this)">أَنْتُمْ</span> <span class="story-word" data-en="worshippers" onclick="showWordMeaning(this)">عَابِدُونَ</span> <span class="story-word" data-en="what" onclick="showWordMeaning(this)">مَا</span> <span class="story-word" data-en="I worship" onclick="showWordMeaning(this)">أَعْبُدُ</span></p>
+<p class="story-en-line">nor do you worship what I worship,</p>
+<p><span class="story-line-num">٤</span> <span class="story-word" data-en="and not" onclick="showWordMeaning(this)">وَلَا</span> <span class="story-word new" data-en="I" onclick="showWordMeaning(this)">أَنَا</span> <span class="story-word" data-en="worshipper" onclick="showWordMeaning(this)">عَابِدٌ</span> <span class="story-word" data-en="what" onclick="showWordMeaning(this)">مَا</span> <span class="story-word" data-en="you (pl) worshipped" onclick="showWordMeaning(this)">عَبَدْتُمْ</span></p>
+<p class="story-en-line">nor will I worship what you worship,</p>
+<p><span class="story-line-num">٥</span> <span class="story-word" data-en="and not" onclick="showWordMeaning(this)">وَلَا</span> <span class="story-word" data-en="you (pl)" onclick="showWordMeaning(this)">أَنْتُمْ</span> <span class="story-word" data-en="worshippers" onclick="showWordMeaning(this)">عَابِدُونَ</span> <span class="story-word" data-en="what" onclick="showWordMeaning(this)">مَا</span> <span class="story-word" data-en="I worship" onclick="showWordMeaning(this)">أَعْبُدُ</span></p>
+<p class="story-en-line">nor will you worship what I worship.</p>
+<p><span class="story-line-num">٦</span> <span class="story-word new" data-en="for you (pl)" onclick="showWordMeaning(this)">لَكُمْ</span> <span class="story-word" data-en="your religion" onclick="showWordMeaning(this)">دِينُكُمْ</span> <span class="story-word new" data-en="and for me" onclick="showWordMeaning(this)">وَلِيَ</span> <span class="story-word" data-en="my religion" onclick="showWordMeaning(this)">دِينِ</span></p>
+<p class="story-en-line">For you is your religion, and for me is my religion.'"</p>
 <p><span class="story-line-num">٢</span> <span class="story-word" data-en="Ibrahim" onclick="showWordMeaning(this)">إِبْرَاهِيمُ</span> <span class="story-word" data-en="upon" onclick="showWordMeaning(this)">عَلَى</span> <span class="story-word new" data-en="monotheism" onclick="showWordMeaning(this)">التَّوْحِيدِ</span>، <span class="story-word" data-en="and the polytheists" onclick="showWordMeaning(this)">وَالْمُشْرِكُونَ</span> <span class="story-word" data-en="upon" onclick="showWordMeaning(this)">عَلَى</span> <span class="story-word" data-en="disbelief" onclick="showWordMeaning(this)">الْكُفْرِ</span></p>
 <p class="story-en-line">Ibrahim follows monotheism, and the polytheists follow disbelief.</p>
 <p><span class="story-line-num">٣</span> <span class="story-word new" data-en="he" onclick="showWordMeaning(this)">هُوَ</span> <span class="story-word" data-en="worships" onclick="showWordMeaning(this)">يَعْبُدُ</span> <span class="story-word" data-en="Allah" onclick="showWordMeaning(this)">اللَّهَ</span>، <span class="story-word" data-en="and they" onclick="showWordMeaning(this)">وَهُمْ</span> <span class="story-word" data-en="worship" onclick="showWordMeaning(this)">يَعْبُدُونَ</span> <span class="story-word" data-en="the stones" onclick="showWordMeaning(this)">الْحِجَارَةَ</span></p>
@@ -1355,9 +1359,17 @@ document.querySelectorAll('.story-word.new-reading, .story-word.new').forEach(w 
 document.getElementById('principles-wrap').style.display = 'none';
 document.getElementById('story-translation-input').style.display = '';
 document.querySelector('[onclick*="storySubmitTranslation"]').style.display = '';
-if (document.getElementById('story-english-btn')) document.getElementById('story-english-btn').style.display = 'none';
-['story-english-btn','story-english-btn-l2','story-english-btn-l3'].forEach(id => { const b = document.getElementById(id); if (b) b.textContent = 'Show English'; });
+['story-english-btn','story-english-btn-l2','story-english-btn-l3'].forEach(id => { const b = document.getElementById(id); if (b) { b.style.display = 'none'; b.textContent = 'Show English'; } });
 document.querySelectorAll('.story-en-line').forEach(line => { line.style.display = 'none'; });
+const box = document.getElementById('story-lesson-' + Math.min(lessonNum, 3));
+const storyText = box.querySelector('[style*="font-size:28px"]');
+const checkRow = document.querySelector('[onclick*="storySubmitTranslation"]').parentElement;
+box.insertBefore(document.getElementById('story-translation-input'), storyText);
+box.insertBefore(checkRow, storyText);
+box.insertBefore(document.getElementById('story-reveal'), storyText);
+box.insertBefore(document.getElementById('story-ratings'), storyText);
+box.appendChild(document.getElementById('student-reading-done-btn'));
+box.appendChild(document.getElementById('guest-flashcards-btn'));
 storyRenderSentence(lessonNum);
 if (guestTourActive && lessonNum === 1 && guestTourStep === 0) {
 guestTourStep = 1;
@@ -2908,8 +2920,45 @@ const STORY_SENTENCES = {
     { ar: 'صَنَمٌ هُنَا، وَصَنَمٌ هُنَاكَ. أَصْنَامٌ كَثِيرَةٌ جِدًّا', en: 'An idol here, and an idol there. Very many idols.' },
     { ar: 'لِمَاذَا يَعْبُدُونَ الْأَصْنَامَ؟ الْعِبَادَةُ لِلَّهِ فَقَطْ', en: 'Why do they worship the idols? Worship is for Allah alone.' }
   ],
-  2: [],
-  3: []
+  2: [
+    { ar: 'وَكَانَ لِآزَرَ وَلَدٌ', en: 'And Azar had a son.' },
+    { ar: 'وَكَانَ اسْمُ هَذَا الْوَلَدِ إِبْرَاهِيمَ', en: 'And this boy\'s name was Ibrahim.' },
+    { ar: 'وَكَانَ آزَرُ أَبَا إِبْرَاهِيمَ', en: 'And Azar was Ibrahim\'s father.' },
+    { ar: 'وَكَانَ إِبْرَاهِيمُ يَسْكُنُ مَعَ أَبِيهِ فِي الْقَرْيَةِ', en: 'And Ibrahim lived with his father in the village.' },
+    { ar: 'وَكَانَ إِبْرَاهِيمُ يَرَى النَّاسَ يَسْجُدُونَ لِلْأَصْنَامِ', en: 'And Ibrahim saw the people prostrating to the idols.' },
+    { ar: 'وَكَانَ يَرَى النَّاسَ يَعْبُدُونَ الْحِجَارَةَ', en: 'And he saw the people worshipping the stones.' },
+    { ar: 'وَكَانَ يَرَى ذَلِكَ كُلَّ يَوْمٍ', en: 'And he saw that every day.' },
+    { ar: 'وَكَانَ إِبْرَاهِيمُ يَعْرِفُ أَنَّ تِلْكَ الْعِبَادَةَ سَيِّئَةٌ', en: 'And Ibrahim knew that this worship was bad.' },
+    { ar: 'وَكَانَ يَعْرِفُ أَنَّ الْأَصْنَامَ حِجَارَةٌ فَقَطْ', en: 'And he knew the idols were only stones.' },
+    { ar: 'وَكَانَ إِبْرَاهِيمُ يَقُولُ فِي نَفْسِهِ: لِمَاذَا يَسْجُدُونَ لِلْأَصْنَامِ؟', en: 'And Ibrahim said to himself: Why do they prostrate to the idols?' },
+    { ar: 'هُمْ يَعْبُدُونَ الْحِجَارَةَ — وَالْحِجَارَةُ لَا تَنْفَعُ شَيْئًا', en: 'They worship the stones — but the stones are of no benefit at all.' },
+    { ar: 'وَمَا كَانَ إِبْرَاهِيمُ مِنَ الْمُشْرِكِينَ', en: 'And Ibrahim was not one of the polytheists.' },
+    { ar: 'بَلْ كَانَ عَلَى دِينٍ آخَرَ', en: 'Rather, he followed another religion.' },
+    { ar: 'وَكَانَ رَبُّهُ اللَّهَ', en: 'And his Lord was Allah.' },
+    { ar: 'وَلَمْ يَعْبُدْ إِبْرَاهِيمُ الْأَصْنَامَ', en: 'And Ibrahim did not worship the idols.' },
+    { ar: 'وَلَنْ يَتْرُكَ إِبْرَاهِيمُ النَّاسَ فِي الشِّرْكِ', en: 'And Ibrahim will not abandon the people to polytheism.' }
+  ],
+  3: [
+    { ar: 'قَالَ اللَّهُ تَعَالَى: قُلْ يَا أَيُّهَا الْكَافِرُونَ', en: 'Allah the Most High said: "Say, \'O disbelievers,' },
+    { ar: 'لَا أَعْبُدُ مَا تَعْبُدُونَ', en: 'I do not worship what you worship,' },
+    { ar: 'وَلَا أَنْتُمْ عَابِدُونَ مَا أَعْبُدُ', en: 'nor do you worship what I worship,' },
+    { ar: 'وَلَا أَنَا عَابِدٌ مَا عَبَدْتُمْ', en: 'nor will I worship what you worship,' },
+    { ar: 'وَلَا أَنْتُمْ عَابِدُونَ مَا أَعْبُدُ', en: 'nor will you worship what I worship.' },
+    { ar: 'لَكُمْ دِينُكُمْ وَلِيَ دِينِ', en: 'For you is your religion, and for me is my religion.\'"' },
+    { ar: 'إِبْرَاهِيمُ عَلَى التَّوْحِيدِ، وَالْمُشْرِكُونَ عَلَى الْكُفْرِ', en: 'Ibrahim follows monotheism, and the polytheists follow disbelief.' },
+    { ar: 'هُوَ يَعْبُدُ اللَّهَ، وَهُمْ يَعْبُدُونَ الْحِجَارَةَ', en: 'He worships Allah, and they worship the stones.' },
+    { ar: 'لَيْسَ الصَّنَمُ إِلَهًا — هُوَ حَجَرٌ فَقَطْ', en: 'The idol is not a god — it is only a stone.' },
+    { ar: 'وَكَانَ إِبْرَاهِيمُ يَعْرِفُ أَنَّ رَبَّهُ اللَّهُ وَحْدَهُ', en: 'And Ibrahim knew his Lord was Allah alone.' },
+    { ar: 'وَكَانَ يَعْرِفُ أَنَّ الْعِبَادَةَ لِلَّهِ فَقَطْ', en: 'And he knew that worship is for Allah only.' },
+    { ar: 'وَتَرَكَ إِبْرَاهِيمُ الشِّرْكَ — وَلَمْ يَتْرُكْ دِينَ التَّوْحِيدِ', en: 'And Ibrahim abandoned polytheism — but did not abandon the religion of monotheism.' },
+    { ar: 'كَانَ يَنْصَحُ النَّاسَ وَيَدْعُوهُمْ إِلَى اللَّهِ', en: 'He used to advise the people and invite them to Allah.' },
+    { ar: 'نَحْنُ الْـمُسْلِمُونَ نَعْبُدُ اللَّهَ وَحْدَهُ', en: 'We, the Muslims, worship Allah alone.' },
+    { ar: 'رَبُّنَا اللَّهُ، وَدِينُنَا التَّوْحِيدُ', en: 'Our Lord is Allah, and our religion is monotheism.' },
+    { ar: 'وَأَنْتَ يَا طَالِبَ الْعِلْمِ — هَلْ أَنْتَ مِثْلُ إِبْرَاهِيمَ؟', en: 'And you, O seeker of knowledge — are you like Ibrahim?' },
+    { ar: 'أَنَا مُسْلِمٌ، وَأَنْتَ مُسْلِمٌ، وَأَنْتُمُ الْمُسْلِمُونَ عَلَى دِينِ إِبْرَاهِيمَ — إِنْ شَاءَ اللَّهُ', en: 'I am a Muslim, you are a Muslim, and you are all Muslims upon the religion of Ibrahim — if Allah wills.' },
+    { ar: 'وَأَنْتَ يَا طَالِبَ الْعِلْمِ — دِينُكَ التَّوْحِيدُ، وَرَبُّكَ اللَّهُ', en: 'And you, O seeker of knowledge — your religion is monotheism, and your Lord is Allah.' },
+    { ar: 'فَاعْبُدْهُ وَحْدَهُ، وَلَا تَتْرُكْ دِينَكَ أَبَدًا', en: 'So worship Him alone, and never abandon your religion.' }
+  ]
 };
 
 function storyRenderSentence(lesson) {
@@ -3056,6 +3105,7 @@ function renderPrinciple() {
 }
 
 function setStoryLesson(lesson) {
+window.storyActiveLesson = lesson;
 const shown = Math.min(lesson, 3);
 document.getElementById('story-lesson-1').style.display = shown === 1 ? 'block' : 'none';
 document.getElementById('story-lesson-2').style.display = shown === 2 ? 'block' : 'none';
@@ -3079,6 +3129,12 @@ document.getElementById('principle-back-btn').addEventListener('click', () => {
 document.getElementById('principle-next-btn').addEventListener('click', () => {
   if (principleIdx < activePrinciples.length - 1) { principleIdx++; principleRevealed = false; renderPrinciple(); }
   else { const code = currentUser || viewingStudent; window.markGrammarDone(studentLesson[code] || 1); }
+});
+const arNumDigits = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+[1,2,3].forEach(n => {
+  document.querySelectorAll('#story-lesson-' + n + ' .story-line-num').forEach((badge, i) => {
+    badge.textContent = String(i + 1).split('').map(d => arNumDigits[d]).join('');
+  });
 });
 renderPrinciple();
 
