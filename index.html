@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title> dlKJH </title>
+<title> d </title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Arabic Daily</title>
@@ -3100,6 +3100,12 @@ document.getElementById('principle-back-btn').addEventListener('click', () => {
 document.getElementById('principle-next-btn').addEventListener('click', () => {
   if (principleIdx < activePrinciples.length - 1) { principleIdx++; principleRevealed = false; renderPrinciple(); }
   else { const code = currentUser || viewingStudent; window.markGrammarDone(studentLesson[code] || 1); }
+});
+const arNumDigits = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+[1,2,3].forEach(n => {
+  document.querySelectorAll('#story-lesson-' + n + ' .story-line-num').forEach((badge, i) => {
+    badge.textContent = String(i + 1).split('').map(d => arNumDigits[d]).join('');
+  });
 });
 renderPrinciple();
 
