@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title> under development </title>
+<title> dll </title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Arabic Daily</title>
@@ -290,6 +290,10 @@
 /* Delete button on card */
 .fc-delete-btn { position: absolute; top: 12px; right: 12px; width: 28px; height: 28px; border-radius: 50%; border: none; background: #fee2e2; color: #b91c1c; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0.6; transition: opacity 0.2s; }
 .fc-delete-btn:hover { opacity: 1; }
+.report-btn { position: absolute; top: 10px; left: 10px; background: none; border: none; font-size: 12px; color: #b0a99e; cursor: pointer; padding: 2px 4px; opacity: 0.6; }
+.report-btn:hover { opacity: 1; }
+.page-report-btn { position: fixed; top: 20px; right: 20px; background: none; border: none; font-size: 20px; cursor: pointer; opacity: 0.5; z-index: 100; }
+.page-report-btn:hover { opacity: 1; }
 
 .fc-rating-wrap { display: none; gap: 8px; margin-bottom: 20px; }
 .fc-rating-wrap.visible { display: flex; }
@@ -363,7 +367,8 @@
 .principle-item-content-examples { font-size: 12px; color: var(--ink); direction: rtl; margin-bottom: 10px; line-height: 1.6; font-family: 'Scheherazade New', serif; }
 .principle-item-content-explanation { font-size: 12px; color: var(--grey); line-height: 1.6; }
 /* TOAST */
-.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: #8b2035; color: white; padding: 12px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; z-index: 200; transition: transform 0.3s; white-space: nowrap; }
+/* TOAST */
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: #10b981; color: white; padding: 12px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; z-index: 200; transition: transform 0.3s; white-space: nowrap; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4); }
 .toast.show { transform: translateX(-50%) translateY(0); }
 .no-submission-msg { background: var(--grey-light); border-radius: var(--card-radius); padding: 20px; text-align: center; color: var(--grey); font-size: 14px; margin-bottom: 20px; }
 .locked-msg { background: #fef2f2; border-radius: var(--card-radius); padding: 16px; text-align: center; color: #b91c1c; font-size: 14px; margin-bottom: 20px; border: 1.5px solid #fca5a5; }
@@ -417,6 +422,7 @@ console.log("THE FILE IS LOADING!");
 <div class="sidebar-logo-text">Arabic Daily</div>
 </div>
 <button class="sidebar-nav-btn" id="sidebar-guests-btn" onclick="switchTab('guests')">👤 Guests</button>
+<button class="sidebar-nav-btn" id="sidebar-reports-btn" onclick="switchTab('reports')">📋 Reports</button>
 <div class="sidebar-label">Students</div>
 <div class="sidebar-students" id="sidebar-students"></div>
 
@@ -449,11 +455,14 @@ console.log("THE FILE IS LOADING!");
 <button class="streak-info-btn" id="streak-info-btn" type="button" aria-label="How streaks work">ⓘ</button>
 <div class="streak-info-popup" id="streak-info-popup">Complete at least 20 flashcards or exercise questions, or upload your homework, today to count toward your streak — the ring above fills up as you go. Miss a day completely and your streak resets to 0.</div>
 </div>
-<div class="revision-lesson" id="revision-lesson-wrap">Lesson 1</div>
+<div class="revision-lesson" id="revision-lesson-wrap" style="cursor:pointer" onclick="window.openLessonDropdown()">Lesson 1</div>
 </div>
 <div class="revision-rank">
 <div class="revision-rank-num" id="revision-rank-num">#—</div>
 <div class="revision-rank-label">your rank</div>
+</div>
+<button class="page-report-btn" style="position:relative;top:0;right:0;opacity:0.6;font-size:18px;background:none;border:none;cursor:pointer" onclick="window.openReportPopup('App issue')">⚠️</button>
+<div id="lesson-dropdown" style="display:none;position:absolute;background:white;border:1px solid var(--border);border-radius:10px;padding:8px;z-index:1000;top:70px;right:20px;max-height:200px;overflow-y:auto;box-shadow:0 4px 12px rgba(0,0,0,0.15)">
 </div>
 </div>
 
@@ -468,6 +477,7 @@ console.log("THE FILE IS LOADING!");
 
 <!-- HOME TAB -->
 <div id="tab-content-home" class="content" style="display:none">
+<button class="page-report-btn" onclick="window.openReportPopup('Home page issue')">⚠️</button>
 <div class="section-label">What would you like to do?</div>
 <div style="display:flex;flex-direction:column;gap:16px;margin-top:8px;max-width:420px">
 <div class="home-card" id="home-btn-start">
@@ -563,9 +573,20 @@ console.log("THE FILE IS LOADING!");
 <div id="guests-root" style="margin-top:8px"></div>
 </div>
 
+<!-- REPORTS TAB (instructor only) -->
+<div id="tab-content-reports" class="content" style="display:none">
+<div class="section-label">Student Reports</div>
+<div id="reports-root" style="margin-top:8px">
+<div style="padding:20px;text-align:center;color:#8a7f6e">
+<p>📋 Reports from students will appear here</p>
+<p style="font-size:12px;margin-top:10px">This is placeholder text to test if the tab works</p>
+</div>
+</div>
+</div>
+
 <!-- FLASHCARDS PAGE -->
 <div id="tab-content-flashcards" class="content" style="display:none">
-<div class="back-row" id="flashcards-back-row" onclick="switchTab('milestones')"><span class="back-btn">‹</span><span class="screen-title">Flashcards</span></div>
+<div class="back-row" id="flashcards-back-row" onclick="switchTab('milestones')"><span class="back-btn">‹</span><span class="screen-title">Save and Return Home</span></div>
 <div class="section-label">Lessons</div>
 <button id="fc-prev-lessons-btn" style="margin-bottom:14px;padding:10px 16px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer">Previous Lessons</button>
 <div class="fc-lesson-picker" id="fc-lesson-picker" style="display:none"></div>
@@ -577,21 +598,22 @@ console.log("THE FILE IS LOADING!");
 </div>
 <!-- EXERCISES PAGE -->
 <div id="tab-content-exercises" class="content" style="display:none">
-<div class="back-row" id="exercises-back-row" onclick="switchTab('milestones')"><span class="back-btn">‹</span><span class="screen-title">Exercises</span></div>
+<div class="back-row" id="exercises-back-row" onclick="switchTab('milestones')"><span class="back-btn">‹</span><span class="screen-title">Save and Return Home</span></div>
 <div id="ex-root"></div>
 </div>
 <!-- CHALLENGES PAGE -->
 <div id="tab-content-challenges" class="content" style="display:none">
-<div class="back-row" id="challenges-back-row" onclick="switchTab('milestones')"><span class="back-btn">‹</span><span class="screen-title">Challenges</span></div>
+<div class="back-row" id="challenges-back-row" onclick="switchTab('milestones')"><span class="back-btn">‹</span><span class="screen-title">Save and Return Home</span></div>
 <div id="challenges-root"></div>
 </div>
 <!-- STORY TAB -->
 <!-- STORY TAB -->
 <div id="tab-content-story" class="content" style="display:none">
-<div class="back-row" id="story-back-row" onclick="switchTab('milestones')"><span class="back-btn">‹</span><span class="screen-title">Start Lesson</span></div>
+<div class="back-row" id="story-back-row" onclick="switchTab('milestones')"><span class="back-btn">‹</span><span class="screen-title">Save and Return Home</span></div>
 <style>
 .story-word { cursor:pointer; }
-.story-word.new { font-weight:700; color:#8b2035; }
+.story-word.new-reading, .story-word.new { font-weight:700; color:#8b2035; }
+.story-word.new-grammar { font-weight:400; color:#1a1a2e; }
 .story-word:hover { background:#fef3f2; border-radius:4px; }
 .story-line-num { display:inline-block; direction:ltr; unicode-bidi:isolate; background:#8b2035; color:#fff; font-family:'Scheherazade New', serif; font-size:14px; font-weight:700; width:26px; height:26px; line-height:26px; text-align:center; border-radius:50%; margin-left:10px; vertical-align:middle; }
 .story-en-line { display:none; font-family:-apple-system,sans-serif; font-size:15px; line-height:1.7; color:#374151; background:#f9fafb; border-radius:8px; padding:10px 14px; margin:6px 0 16px 0; direction:ltr; text-align:left; }
@@ -600,14 +622,14 @@ console.log("THE FILE IS LOADING!");
 .principles-wrap { margin-top:24px; border-top:1px solid #e5e7eb; padding-top:20px; }
 .principles-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
 .principles-progress { font-size:12px; font-weight:600; color:#6b7280; }
-.principle-card { background:#f9fafb; border-radius:16px; padding:24px; box-shadow:0 2px 8px rgba(0,0,0,0.06); min-height:140px; cursor:pointer; text-align:center; }
+.principle-card { background:#fdf6f3; border:2px solid #8b2035; border-radius:16px; padding:24px; box-shadow:0 4px 16px rgba(139,32,53,0.15); min-height:140px; cursor:pointer; text-align:center; }
 .principle-q { font-size:15px; color:#374151; line-height:1.7; }
 .principle-q .pq-ar { font-family:'Scheherazade New', serif; font-size:22px; direction:rtl; display:inline-block; color:#8b2035; font-weight:700; }
 .principle-a { font-size:14px; color:#374151; line-height:1.6; text-align:left; }
 .principle-a .pa-ar { font-family:'Scheherazade New', serif; font-size:20px; direction:rtl; display:block; color:#8b2035; font-weight:700; margin:8px 0; text-align:right; }
 .principle-quote { margin-top:14px; padding:10px 14px; border-left:3px solid #8b2035; background:#fdf6f3; }
 .principle-quote-ar { font-family:'Scheherazade New', serif; font-size:18px; direction:rtl; text-align:right; color:#2b2520; line-height:1.9; }
-.principle-hint { margin-top:16px; font-size:12px; color:#8b2035; font-weight:600; }
+.principle-hint { display:none; }
 .principles-nav { display:flex; justify-content:space-between; align-items:center; margin-top:14px; }
 .principles-nav-btn { padding:9px 16px; border-radius:10px; border:none; background:#f3f4f6; color:#6b7280; font-size:13px; font-weight:600; cursor:pointer; }
 .principles-nav-btn-primary { background:#8b2035; color:#fff; }
@@ -620,60 +642,10 @@ console.log("THE FILE IS LOADING!");
 <div style="text-align:center;margin-bottom:20px">
 <div style="font-family:'Scheherazade New', serif;font-size:26px;font-weight:700;color:#1a1a2e">الدَّرْسُ الأَوَّلُ</div>
 <div style="font-size:13px;font-weight:700;letter-spacing:1px;color:#6b7280;text-transform:uppercase;margin-top:2px">Lesson 1</div>
-<div style="font-size:14px;color:#6b7280;margin-top:10px;line-height:1.5">Today you will learn how to identify plural words.<br>You will also learn how to identify feminine words.</div>
+<div style="font-size:14px;color:#6b7280;margin-top:10px;line-height:1.5">Today you will learn how to identify plural words.<br>You will also learn the two types of plurals: broken and regular.</div>
 </div>
 
-<div style="font-family:'Scheherazade New', serif;font-size:20px;font-weight:700;color:#1a1a2e;direction:rtl;text-align:right;border-top:1px solid #e5e7eb;padding-top:16px;margin-bottom:14px">STORY 1 — آزَرُ وَالْأَصْنَامُ</div>
-
-<input type="text" id="story-translation-input" placeholder="Type your English translation here..." style="width:100%;padding:12px;border:2px solid #e5e7eb;border-radius:10px;font-size:15px;margin-bottom:12px;outline:none">
-<div style="display:flex;gap:10px;margin-bottom:16px">
-<button onclick="storySubmitTranslation(1)" style="flex:1;padding:12px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">Check ✓</button>
-</div>
-<div id="story-reveal" style="display:none;background:#f3f4f6;border:1px solid #d1d5db;border-radius:10px;padding:14px;margin-bottom:16px">
-<div style="font-size:13px;color:#6b7280;margin-bottom:8px">Model translation:</div>
-<div id="story-correct-en" style="font-size:15px;line-height:1.6;color:#1a1a2e"></div>
-</div>
-<div id="story-ratings" style="display:none;gap:10px">
-<button onclick="storyRateSelf(1, 1)" style="flex:1;padding:12px;background:#f3f4f6;color:#374151;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">😕 No idea</button>
-<button onclick="storyRateSelf(1, 2)" style="flex:1;padding:12px;background:#f3f4f6;color:#374151;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">🤔 Nearly got it</button>
-<button onclick="storyRateSelf(1, 3)" style="flex:1;padding:12px;background:#f3f4f6;color:#374151;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">✓ Got it right</button>
-</div>
-
-<button id="story-english-btn" onclick="toggleStoryEnglish()" style="padding:10px 20px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:16px">Show English</button>
-  
-<div style="font-family:'Scheherazade New', serif;font-size:28px;line-height:2;direction:rtl;text-align:right">
-<p><span class="story-line-num">١</span> <span class="story-word new" data-en="before" onclick="showWordMeaning(this)">قَبْلَ</span> <span class="story-word new" data-en="days" onclick="showWordMeaning(this)">أَيَّامٍ</span> <span class="story-word new" data-en="many" onclick="showWordMeaning(this)">كَثِيرَةٍ</span> <span class="story-word new" data-en="very" onclick="showWordMeaning(this)">جِدًّا</span>، <span class="story-word new" data-en="was" onclick="showWordMeaning(this)">كَانَ</span> <span class="story-word new" data-en="there" onclick="showWordMeaning(this)">هُنَاكَ</span> <span class="story-word new" data-en="a man" onclick="showWordMeaning(this)">رَجُلٌ</span></p>
-<p class="story-en-line">Many days ago, there was a man.</p>
-<p><span class="story-line-num">٢</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word new" data-en="this (m)" onclick="showWordMeaning(this)">هَذَا</span> <span class="story-word" data-en="the man" onclick="showWordMeaning(this)">الرَّجُلُ</span> <span class="story-word new" data-en="he lives" onclick="showWordMeaning(this)">يَسْكُنُ</span> <span class="story-word new" data-en="in" onclick="showWordMeaning(this)">فِي</span> <span class="story-word new" data-en="a village" onclick="showWordMeaning(this)">قَرْيَةٍ</span></p>
-<p class="story-en-line">And this man lived in a village.</p>
-<p><span class="story-line-num">٣</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word new" data-en="name of" onclick="showWordMeaning(this)">اسْمُ</span> <span class="story-word" data-en="this (m)" onclick="showWordMeaning(this)">هَذَا</span> <span class="story-word" data-en="the man" onclick="showWordMeaning(this)">الرَّجُلِ</span> <span class="story-word new" data-en="Azar (a name)" onclick="showWordMeaning(this)">آزَرَ</span></p>
-<p class="story-en-line">And this man's name was Azar.</p>
-<p><span class="story-line-num">٤</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word" data-en="Azar (a name)" onclick="showWordMeaning(this)">آزَرُ</span> <span class="story-word new" data-en="a polytheist" onclick="showWordMeaning(this)">مُشْرِكًا</span></p>
-<p class="story-en-line">And Azar was a polytheist.</p>
-<p><span class="story-line-num">٥</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word new" data-en="with" onclick="showWordMeaning(this)">مَعَ</span> <span class="story-word" data-en="Azar (a name)" onclick="showWordMeaning(this)">آزَرَ</span> <span class="story-word new" data-en="people" onclick="showWordMeaning(this)">نَاسٌ</span> <span class="story-word" data-en="many" onclick="showWordMeaning(this)">كَثِيرُونَ</span></p>
-<p class="story-en-line">And with Azar were many people.</p>
-<p><span class="story-line-num">٦</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word new" data-en="these" onclick="showWordMeaning(this)">هَؤُلَاءِ</span> <span class="story-word" data-en="the people" onclick="showWordMeaning(this)">النَّاسُ</span> <span class="story-word" data-en="polytheists" onclick="showWordMeaning(this)">مُشْرِكِينَ</span> <span class="story-word new" data-en="also" onclick="showWordMeaning(this)">أَيْضًا</span></p>
-<p class="story-en-line">And these people were polytheists too.</p>
-<p><span class="story-line-num">٧</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word" data-en="Azar (a name)" onclick="showWordMeaning(this)">آزَرُ</span> <span class="story-word" data-en="he lives" onclick="showWordMeaning(this)">يَسْكُنُ</span> <span class="story-word" data-en="with" onclick="showWordMeaning(this)">مَعَ</span> <span class="story-word" data-en="the polytheists" onclick="showWordMeaning(this)">الْمُشْرِكِينَ</span> <span class="story-word" data-en="in" onclick="showWordMeaning(this)">فِي</span> <span class="story-word new" data-en="this (f)" onclick="showWordMeaning(this)">هَذِهِ</span> <span class="story-word" data-en="the village" onclick="showWordMeaning(this)">الْقَرْيَةِ</span></p>
-<p class="story-en-line">And Azar lived with the polytheists in this village.</p>
-<p><span class="story-line-num">٨</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word" data-en="in" onclick="showWordMeaning(this)">فِي</span> <span class="story-word" data-en="this (f)" onclick="showWordMeaning(this)">هَذِهِ</span> <span class="story-word" data-en="the village" onclick="showWordMeaning(this)">الْقَرْيَةِ</span> <span class="story-word new" data-en="idols" onclick="showWordMeaning(this)">أَصْنَامٌ</span> <span class="story-word" data-en="many" onclick="showWordMeaning(this)">كَثِيرَةٌ</span> <span class="story-word" data-en="very" onclick="showWordMeaning(this)">جِدًّا</span></p>
-<p class="story-en-line">And in this village there were very many idols.</p>
-<p><span class="story-line-num">٩</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word" data-en="the people" onclick="showWordMeaning(this)">النَّاسُ</span> <span class="story-word new" data-en="they worship" onclick="showWordMeaning(this)">يَعْبُدُونَ</span> <span class="story-word" data-en="this (f)" onclick="showWordMeaning(this)">هَذِهِ</span> <span class="story-word" data-en="the idols" onclick="showWordMeaning(this)">الْأَصْنَامَ</span></p>
-<p class="story-en-line">And the people worshipped these idols.</p>
-<p><span class="story-line-num">١٠</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word" data-en="the people" onclick="showWordMeaning(this)">النَّاسُ</span> <span class="story-word new" data-en="they prostrate" onclick="showWordMeaning(this)">يَسْجُدُونَ</span> <span class="story-word new" data-en="to them" onclick="showWordMeaning(this)">لَهَا</span></p>
-<p class="story-en-line">And the people prostrated to them.</p>
-<p><span class="story-line-num">١١</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word" data-en="Azar (a name)" onclick="showWordMeaning(this)">آزَرُ</span> <span class="story-word" data-en="he worships" onclick="showWordMeaning(this)">يَعْبُدُ</span> <span class="story-word" data-en="the idols" onclick="showWordMeaning(this)">الْأَصْنَامَ</span> <span class="story-word" data-en="also" onclick="showWordMeaning(this)">أَيْضًا</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word" data-en="Azar (a name)" onclick="showWordMeaning(this)">آزَرُ</span> <span class="story-word" data-en="he prostrates" onclick="showWordMeaning(this)">يَسْجُدُ</span> <span class="story-word" data-en="to them" onclick="showWordMeaning(this)">لَهَا</span> <span class="story-word" data-en="also" onclick="showWordMeaning(this)">أَيْضًا</span></p>
-<p class="story-en-line">And Azar worshipped the idols too, and Azar prostrated to them too.</p>
-<p><span class="story-line-num">١٢</span> <span class="story-word" data-en="an idol" onclick="showWordMeaning(this)">صَنَمٌ</span> <span class="story-word new" data-en="here" onclick="showWordMeaning(this)">هُنَا</span>، <span class="story-word" data-en="and an idol" onclick="showWordMeaning(this)">وَصَنَمٌ</span> <span class="story-word" data-en="there" onclick="showWordMeaning(this)">هُنَاكَ</span>. <span class="story-word" data-en="idols" onclick="showWordMeaning(this)">أَصْنَامٌ</span> <span class="story-word" data-en="many" onclick="showWordMeaning(this)">كَثِيرَةٌ</span> <span class="story-word" data-en="very" onclick="showWordMeaning(this)">جِدًّا</span></p>
-<p class="story-en-line">An idol here, and an idol there. Very many idols.</p>
-<p><span class="story-line-num">١٣</span> <span class="story-word new" data-en="why" onclick="showWordMeaning(this)">لِمَاذَا</span> <span class="story-word" data-en="they worship" onclick="showWordMeaning(this)">يَعْبُدُونَ</span> <span class="story-word" data-en="the idols" onclick="showWordMeaning(this)">الْأَصْنَامَ</span>؟ <span class="story-word new" data-en="the worship" onclick="showWordMeaning(this)">الْعِبَادَةُ</span> <span class="story-word new" data-en="to Allah" onclick="showWordMeaning(this)">لِلَّهِ</span> <span class="story-word new" data-en="only" onclick="showWordMeaning(this)">فَقَطْ</span></p>
-<p class="story-en-line">Why do they worship the idols? Worship is for Allah alone.</p>
-</div>
-
-<button id="student-reading-done-btn" style="display:none;width:100%;margin-top:20px;padding:14px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer" onclick="markReadingDone(studentLesson[currentUser || viewingStudent] || 1)">Mark Reading as Done ✓</button>
-
-
-<div class="principles-wrap" id="principles-wrap">
+<div class="principles-wrap" id="principles-wrap" style="display:none">
 <div class="principles-header">
 <span class="section-label" style="margin-bottom:0">Key principles</span>
 <span class="principles-progress" id="principles-progress">1 / 5</span>
@@ -690,7 +662,58 @@ console.log("THE FILE IS LOADING!");
 </div>
 </div>
 
-<button id="student-grammar-done-btn" style="display:none;width:100%;margin-top:20px;padding:14px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Mark Grammar as Done ✓</button>
+<div class="story-title" style="font-family:'Scheherazade New', serif;font-size:20px;font-weight:400;color:#1a1a2e;direction:rtl;text-align:right;border-top:1px solid #e5e7eb;padding-top:16px;margin-bottom:14px">STORY 1 — آزَرُ وَالْأَصْنَامُ</div>
+
+<input type="text" id="story-translation-input" placeholder="Type your English translation here..." style="width:100%;padding:12px;border:2px solid #e5e7eb;border-radius:10px;font-size:15px;margin-bottom:12px;outline:none">
+<div style="display:flex;gap:10px;margin-bottom:16px">
+<button onclick="storySubmitTranslation(1)" style="flex:1;padding:12px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">Check ✓</button>
+</div>
+<div id="story-reveal" style="display:none;background:#f3f4f6;border:1px solid #d1d5db;border-radius:10px;padding:14px;margin-bottom:16px">
+<div style="font-size:13px;color:#6b7280;margin-bottom:8px">Model translation:</div>
+<div id="story-correct-en" style="font-size:15px;line-height:1.6;color:#1a1a2e"></div>
+</div>
+<div id="story-ratings" style="display:none;gap:10px">
+<button onclick="storyRateSelf(1, 1)" style="flex:1;padding:12px;background:#fef2f2;color:#b91c1c;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">No idea</button>
+<button onclick="storyRateSelf(1, 2)" style="flex:1;padding:12px;background:#fff7ed;color:#c2410c;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">Nearly got it</button>
+<button onclick="storyRateSelf(1, 3)" style="flex:1;padding:12px;background:#f0fdf4;color:#15803d;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">Got it right</button>
+</div>
+
+<button id="story-english-btn" onclick="toggleStoryEnglish()" style="padding:10px 20px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:16px;display:none">Show English</button>
+  
+<div style="font-family:'Scheherazade New', serif;font-size:28px;line-height:2;direction:rtl;text-align:right">
+<p><span class="story-line-num">١</span> <span class="story-word new-reading" data-en="before" onclick="showWordMeaning(this)">قَبْلَ</span> <span class="story-word new-reading" data-en="days" onclick="showWordMeaning(this)">أَيَّامٍ</span> <span class="story-word new-reading" data-en="many" onclick="showWordMeaning(this)">كَثِيرَةٍ</span> <span class="story-word new-reading" data-en="very" onclick="showWordMeaning(this)">جِدًّا</span>، <span class="story-word new-reading" data-en="was" onclick="showWordMeaning(this)">كَانَ</span> <span class="story-word new-reading" data-en="there" onclick="showWordMeaning(this)">هُنَاكَ</span> <span class="story-word new-reading" data-en="a man" onclick="showWordMeaning(this)">رَجُلٌ</span></p>
+<p class="story-en-line">Many days ago, there was a man.</p>
+<p><span class="story-line-num">٢</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word new-reading" data-en="this (m)" onclick="showWordMeaning(this)">هَذَا</span> <span class="story-word" data-en="the man" onclick="showWordMeaning(this)">الرَّجُلُ</span> <span class="story-word new-reading" data-en="he lives" onclick="showWordMeaning(this)">يَسْكُنُ</span> <span class="story-word new-reading" data-en="in" onclick="showWordMeaning(this)">فِي</span> <span class="story-word new-reading" data-en="a village" onclick="showWordMeaning(this)">قَرْيَةٍ</span></p>
+<p class="story-en-line">And this man lived in a village.</p>
+<p><span class="story-line-num">٣</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word new-reading" data-en="name of" onclick="showWordMeaning(this)">اسْمُ</span> <span class="story-word" data-en="this (m)" onclick="showWordMeaning(this)">هَذَا</span> <span class="story-word" data-en="the man" onclick="showWordMeaning(this)">الرَّجُلِ</span> <span class="story-word new-reading" data-en="Azar (a name)" onclick="showWordMeaning(this)">آزَرَ</span></p>
+<p class="story-en-line">And this man's name was Azar.</p>
+<p><span class="story-line-num">٤</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word" data-en="Azar (a name)" onclick="showWordMeaning(this)">آزَرُ</span> <span class="story-word new-reading" data-en="a polytheist" onclick="showWordMeaning(this)">مُشْرِكًا</span></p>
+<p class="story-en-line">And Azar was a polytheist.</p>
+<p><span class="story-line-num">٥</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word new-reading" data-en="with" onclick="showWordMeaning(this)">مَعَ</span> <span class="story-word" data-en="Azar (a name)" onclick="showWordMeaning(this)">آزَرَ</span> <span class="story-word new-reading" data-en="people" onclick="showWordMeaning(this)">نَاسٌ</span> <span class="story-word" data-en="many" onclick="showWordMeaning(this)">كَثِيرُونَ</span></p>
+<p class="story-en-line">And with Azar were many people.</p>
+<p><span class="story-line-num">٦</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word new-reading" data-en="these" onclick="showWordMeaning(this)">هَؤُلَاءِ</span> <span class="story-word" data-en="the people" onclick="showWordMeaning(this)">النَّاسُ</span> <span class="story-word" data-en="polytheists" onclick="showWordMeaning(this)">مُشْرِكِينَ</span> <span class="story-word new-reading" data-en="also" onclick="showWordMeaning(this)">أَيْضًا</span></p>
+<p class="story-en-line">And these people were polytheists too.</p>
+<p><span class="story-line-num">٧</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word" data-en="Azar (a name)" onclick="showWordMeaning(this)">آزَرُ</span> <span class="story-word" data-en="he lives" onclick="showWordMeaning(this)">يَسْكُنُ</span> <span class="story-word" data-en="with" onclick="showWordMeaning(this)">مَعَ</span> <span class="story-word" data-en="the polytheists" onclick="showWordMeaning(this)">الْمُشْرِكِينَ</span> <span class="story-word" data-en="in" onclick="showWordMeaning(this)">فِي</span> <span class="story-word new-reading" data-en="this (f)" onclick="showWordMeaning(this)">هَذِهِ</span> <span class="story-word" data-en="the village" onclick="showWordMeaning(this)">الْقَرْيَةِ</span></p>
+<p class="story-en-line">And Azar lived with the polytheists in this village.</p>
+<p><span class="story-line-num">٨</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word" data-en="in" onclick="showWordMeaning(this)">فِي</span> <span class="story-word" data-en="this (f)" onclick="showWordMeaning(this)">هَذِهِ</span> <span class="story-word" data-en="the village" onclick="showWordMeaning(this)">الْقَرْيَةِ</span> <span class="story-word new-reading" data-en="idols" onclick="showWordMeaning(this)">أَصْنَامٌ</span> <span class="story-word" data-en="many" onclick="showWordMeaning(this)">كَثِيرَةٌ</span> <span class="story-word" data-en="very" onclick="showWordMeaning(this)">جِدًّا</span></p>
+<p class="story-en-line">And in this village there were very many idols.</p>
+<p><span class="story-line-num">٩</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word" data-en="the people" onclick="showWordMeaning(this)">النَّاسُ</span> <span class="story-word new-reading" data-en="they worship" onclick="showWordMeaning(this)">يَعْبُدُونَ</span> <span class="story-word" data-en="this (f)" onclick="showWordMeaning(this)">هَذِهِ</span> <span class="story-word" data-en="the idols" onclick="showWordMeaning(this)">الْأَصْنَامَ</span></p>
+<p class="story-en-line">And the people worshipped these idols.</p>
+<p><span class="story-line-num">١٠</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word" data-en="the people" onclick="showWordMeaning(this)">النَّاسُ</span> <span class="story-word new-reading" data-en="they prostrate" onclick="showWordMeaning(this)">يَسْجُدُونَ</span> <span class="story-word new-reading" data-en="to them" onclick="showWordMeaning(this)">لَهَا</span></p>
+<p class="story-en-line">And the people prostrated to them.</p>
+<p><span class="story-line-num">١١</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word" data-en="Azar (a name)" onclick="showWordMeaning(this)">آزَرُ</span> <span class="story-word new-reading" data-en="he worships" onclick="showWordMeaning(this)">يَعْبُدُ</span> <span class="story-word" data-en="the idols" onclick="showWordMeaning(this)">الْأَصْنَامَ</span> <span class="story-word" data-en="also" onclick="showWordMeaning(this)">أَيْضًا</span> <span class="story-word" data-en="and was" onclick="showWordMeaning(this)">وَكَانَ</span> <span class="story-word" data-en="Azar (a name)" onclick="showWordMeaning(this)">آزَرُ</span> <span class="story-word new-reading" data-en="he prostrates" onclick="showWordMeaning(this)">يَسْجُدُ</span> <span class="story-word" data-en="to them" onclick="showWordMeaning(this)">لَهَا</span> <span class="story-word" data-en="also" onclick="showWordMeaning(this)">أَيْضًا</span></p>
+<p class="story-en-line">And Azar worshipped the idols too, and Azar prostrated to them too.</p>
+<p><span class="story-line-num">١٢</span> <span class="story-word" data-en="an idol" onclick="showWordMeaning(this)">صَنَمٌ</span> <span class="story-word new-reading" data-en="here" onclick="showWordMeaning(this)">هُنَا</span>، <span class="story-word" data-en="and an idol" onclick="showWordMeaning(this)">وَصَنَمٌ</span> <span class="story-word" data-en="there" onclick="showWordMeaning(this)">هُنَاكَ</span>. <span class="story-word" data-en="idols" onclick="showWordMeaning(this)">أَصْنَامٌ</span> <span class="story-word" data-en="many" onclick="showWordMeaning(this)">كَثِيرَةٌ</span> <span class="story-word" data-en="very" onclick="showWordMeaning(this)">جِدًّا</span></p>
+<p class="story-en-line">An idol here, and an idol there. Very many idols.</p>
+<p><span class="story-line-num">١٣</span> <span class="story-word new-reading" data-en="why" onclick="showWordMeaning(this)">لِمَاذَا</span> <span class="story-word" data-en="they worship" onclick="showWordMeaning(this)">يَعْبُدُونَ</span> <span class="story-word" data-en="the idols" onclick="showWordMeaning(this)">الْأَصْنَامَ</span>؟ <span class="story-word new-reading" data-en="the worship" onclick="showWordMeaning(this)">الْعِبَادَةُ</span> <span class="story-word new-reading" data-en="to Allah" onclick="showWordMeaning(this)">لِلَّهِ</span> <span class="story-word new-reading" data-en="only" onclick="showWordMeaning(this)">فَقَطْ</span></p>
+<p class="story-en-line">Why do they worship the idols? Worship is for Allah alone.</p>
+</div>
+<button id="student-reading-done-btn" style="display:none;width:100%;margin-top:20px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Done</button>
+
+
+
+
+<button id="student-grammar-done-btn" style="display:none;width:100%;margin-top:20px;padding:14px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;visibility:hidden">Mark Grammar as Done ✓</button>
 
 <button id="guest-flashcards-btn" style="display:none;width:100%;margin-top:24px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Done</button>
 
@@ -705,7 +728,7 @@ console.log("THE FILE IS LOADING!");
 <div style="font-size:14px;color:#6b7280;margin-top:8px;line-height:1.5">In this lesson, you will learn about definite nouns and how they affect adjectives</div>
 </div>
 
-<div style="font-family:'Scheherazade New', serif;font-size:20px;font-weight:700;color:#1a1a2e;direction:rtl;text-align:right;border-top:1px solid #e5e7eb;padding-top:16px;margin-bottom:14px">STORY 2 — إِبْرَاهِيمُ يَرَى الشِّرْكَ</div>
+<div class="story-title" style="font-family:'Scheherazade New', serif;font-size:20px;font-weight:700;color:#1a1a2e;direction:rtl;text-align:right;border-top:1px solid #e5e7eb;padding-top:16px;margin-bottom:14px">STORY 2 — إِبْرَاهِيمُ يَرَى الشِّرْكَ</div>
 
 <button id="story-english-btn-l2" onclick="toggleStoryEnglish()" style="padding:10px 20px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:16px">Show English</button>
 
@@ -755,7 +778,7 @@ console.log("THE FILE IS LOADING!");
 <div style="font-size:14px;color:#6b7280;margin-top:8px;line-height:1.5">In this lesson, you will learn about present tense verbs and their pronouns</div>
 </div>
 
-<div style="font-family:'Scheherazade New', serif;font-size:20px;font-weight:700;color:#1a1a2e;direction:rtl;text-align:right;border-top:1px solid #e5e7eb;padding-top:16px;margin-bottom:14px">STORY 3 — التَّوْحِيدُ</div>
+<div class="story-title" style="font-family:'Scheherazade New', serif;font-size:20px;font-weight:700;color:#1a1a2e;direction:rtl;text-align:right;border-top:1px solid #e5e7eb;padding-top:16px;margin-bottom:14px">STORY 3 — التَّوْحِيدُ</div>
 
 <button id="story-english-btn-l3" onclick="toggleStoryEnglish()" style="padding:10px 20px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:16px">Show English</button>
 
@@ -1277,10 +1300,19 @@ setTimeout(() => overlay.remove(), 300);
 // celebration (first time it's truly new progress) or just hops to the Milestones
 // map directly (if it was already done, e.g. tapping the button again).
 window.markReadingDone = async function(lessonNum) {
+const code = currentUser || viewingStudent;
+const sentenceIdx = storyCurrentSentence[code]?.[lessonNum] || 0;
+const totalSentences = STORY_SENTENCES[lessonNum]?.length || 0;
+
+// Only mark reading as done if they actually finished all sentences
+if (sentenceIdx < totalSentences && isGuestMode) {
+  window.switchTab('milestones');
+  return;
+}
+
 const oldFrac = window.getLessonProgressSum(lessonNum);
 const already = !!readingDone[lessonNum];
 readingDone[lessonNum] = true;
-const code = currentUser || viewingStudent;
 if (!storyProgress[code]) storyProgress[code] = {};
 storyProgress[code][lessonNum] = true;
 await saveFlashcardData(code);
@@ -1318,6 +1350,15 @@ else switchTab('home');
 window.openReadingForLesson = function(lessonNum) {
 switchTab('story');
 setStoryLesson(lessonNum);
+document.querySelectorAll('.story-title').forEach(t => { t.style.fontWeight = '700'; t.style.color = '#8b2035'; });
+document.querySelectorAll('.story-word.new-reading, .story-word.new').forEach(w => { w.style.fontWeight = '700'; w.style.color = '#8b2035'; });
+document.getElementById('principles-wrap').style.display = 'none';
+document.getElementById('story-translation-input').style.display = '';
+document.querySelector('[onclick*="storySubmitTranslation"]').style.display = '';
+if (document.getElementById('story-english-btn')) document.getElementById('story-english-btn').style.display = 'none';
+['story-english-btn','story-english-btn-l2','story-english-btn-l3'].forEach(id => { const b = document.getElementById(id); if (b) b.textContent = 'Show English'; });
+document.querySelectorAll('.story-en-line').forEach(line => { line.style.display = 'none'; });
+storyRenderSentence(lessonNum);
 if (guestTourActive && lessonNum === 1 && guestTourStep === 0) {
 guestTourStep = 1;
 hideGuestCoachmark();
@@ -1326,17 +1367,25 @@ setTimeout(() => showGuestCoachmark(document.getElementById('guest-flashcards-bt
 };
 
 window.openFlashcardsForLesson = function(lessonNum) {
-if (isGuestMode && !getReadingFraction(lessonNum)) return;
 fcCurrentLesson = lessonNum;
 fcShowLessonPicker = false;
 switchTab('flashcards');
 };
 
 window.openGrammarForLesson = function(lessonNum) {
-if (isGuestMode && getLessonMasteryPercent(lessonNum) < 100) return;
 switchTab('story');
 setStoryLesson(lessonNum);
+document.querySelectorAll('.story-title').forEach(t => { t.style.fontWeight = '400'; t.style.color = '#1a1a2e'; });
+document.querySelectorAll('.story-word.new-reading, .story-word.new').forEach(w => { w.style.fontWeight = '400'; w.style.color = '#1a1a2e'; });
+document.querySelectorAll('.story-en-line').forEach(line => { line.style.display = 'none'; });
+['story-english-btn','story-english-btn-l2','story-english-btn-l3'].forEach(id => { const b = document.getElementById(id); if (b) b.textContent = 'Show English'; });
 document.getElementById('principles-wrap').style.display = 'block';
+document.querySelectorAll('#story-lesson-' + Math.min(lessonNum,3) + ' p:not(.story-en-line)').forEach(p => p.style.display = '');
+document.getElementById('story-translation-input').style.display = 'none';
+document.querySelector('[onclick*="storySubmitTranslation"]').style.display = 'none';
+document.getElementById('story-reveal').style.display = 'none';
+document.getElementById('story-ratings').style.display = 'none';
+['story-english-btn','story-english-btn-l2','story-english-btn-l3'].forEach(id => { const b = document.getElementById(id); if (b) b.style.display = 'inline-block'; });
 };
 
 window.openExercisesForLesson = function(lessonNum) {
@@ -1619,6 +1668,64 @@ libraryTabs.forEach(tab => {
 libraryOverlay.addEventListener('click', (e) => { if (e.target === libraryOverlay) libraryOverlay.remove(); });
 };
   
+window.openReportPopup = function(context) {
+const overlay = document.createElement('div');
+overlay.className = 'milestone-celebrate-overlay';
+overlay.innerHTML = `<div class="milestone-celebrate-card" style="text-align:left;max-width:320px">
+<div style="font-size:16px;font-weight:700;color:var(--ink);margin-bottom:10px">Report a problem</div>
+<div style="font-size:13px;color:var(--grey);margin-bottom:14px">Optional: tell us what's wrong</div>
+<textarea id="report-note-input" placeholder="What seems wrong? (optional)" style="width:100%;padding:10px;border:2px solid #e5e7eb;border-radius:10px;font-size:14px;min-height:70px;outline:none;font-family:inherit"></textarea>
+<button id="report-submit-btn" style="width:100%;margin-top:12px;padding:12px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">Submit Report</button>
+<button id="report-cancel-btn" style="width:100%;margin-top:8px;padding:10px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer">Cancel</button>
+</div>`;
+document.body.appendChild(overlay);
+document.getElementById('report-submit-btn').onclick = async () => {
+const note = document.getElementById('report-note-input').value.trim();
+const code = currentUser || viewingStudent;
+try {
+await setDoc(doc(db,'reports', Date.now() + '_' + code), {
+studentCode: code,
+context,
+note,
+timestamp: Date.now()
+});
+showToast('Report sent ✓');
+} catch(e) { console.error('Report save error', e); showToast('Report failed — try again'); }
+overlay.remove();
+};
+document.getElementById('report-cancel-btn').onclick = () => overlay.remove();
+overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+};
+
+window.openReportPopup = function(context) {
+const overlay = document.createElement('div');
+overlay.className = 'milestone-celebrate-overlay';
+overlay.innerHTML = `<div class="milestone-celebrate-card" style="text-align:left;max-width:320px">
+<div style="font-size:16px;font-weight:700;color:var(--ink);margin-bottom:10px">Report a problem</div>
+<div style="font-size:13px;color:var(--grey);margin-bottom:14px">Optional: tell us what's wrong</div>
+<textarea id="report-note-input" placeholder="What seems wrong? (optional)" style="width:100%;padding:10px;border:2px solid #e5e7eb;border-radius:10px;font-size:14px;min-height:70px;outline:none;font-family:inherit"></textarea>
+<button id="report-submit-btn" style="width:100%;margin-top:12px;padding:12px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">Submit Report</button>
+<button id="report-cancel-btn" style="width:100%;margin-top:8px;padding:10px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer">Cancel</button>
+</div>`;
+document.body.appendChild(overlay);
+document.getElementById('report-submit-btn').onclick = async () => {
+const note = document.getElementById('report-note-input').value.trim();
+const code = currentUser || viewingStudent;
+try {
+await setDoc(doc(db,'reports', Date.now() + '_' + code), {
+studentCode: code,
+context,
+note,
+timestamp: Date.now()
+});
+showToast('Report sent ✓');
+} catch(e) { console.error('Report save error', e); showToast('Report failed — try again'); }
+overlay.remove();
+};
+document.getElementById('report-cancel-btn').onclick = () => overlay.remove();
+overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+};
+
 window.showMasteredMilestone = function(category, lessonNum, reviewCallback) {
 window.switchTab('milestones');
 renderMilestones();
@@ -1699,6 +1806,31 @@ ${miniRing(s.flashcardsPct, '🃏')}
 ${miniRing(s.exercisesPct, '✏️')}
 ${miniRing(s.challengesPct, '🏆')}
 </div>
+</div>`;
+}).join('');
+}
+
+async function renderReportsTab() {
+const root = document.getElementById('reports-root');
+root.innerHTML = '<div style="text-align:center;color:var(--grey);padding:20px">Loading reports…</div>';
+let reportDocs = [];
+try {
+const snap = await getDocs(collection(db,'reports'));
+snap.forEach(d => reportDocs.push({ id: d.id, ...d.data() }));
+} catch(e) { console.error('Reports load error', e); }
+if (!reportDocs.length) {
+root.innerHTML = '<div class="no-submission-msg">No reports yet.</div>';
+return;
+}
+reportDocs.sort((a,b) => (b.timestamp||0) - (a.timestamp||0));
+root.innerHTML = reportDocs.map(r => {
+const studentName = STUDENTS[r.studentCode]?.name || r.studentCode;
+const date = new Date(r.timestamp).toLocaleDateString();
+return `<div style="background:white;border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px">
+<div style="font-weight:600;color:var(--ink);margin-bottom:6px">${studentName}</div>
+<div style="font-size:13px;color:var(--grey);margin-bottom:8px">${r.context}</div>
+<div style="font-size:14px;color:var(--ink);padding:10px;background:#f9fafb;border-radius:8px;margin-bottom:8px">${r.note || '(no message)'}</div>
+<div style="font-size:12px;color:var(--grey)">${date}</div>
 </div>`;
 }).join('');
 }
@@ -2024,6 +2156,29 @@ err.style.display='block'; btn.textContent='Enter'; btn.disabled=false;
 }
 }
 // ── GUEST ──
+window.openLessonDropdown = function() {
+console.log('openLessonDropdown called');
+const dropdown = document.getElementById('lesson-dropdown');
+dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+if (dropdown.style.display === 'block') {
+dropdown.innerHTML = '';
+for (let i = 1; i <= 16; i++) {
+const btn = document.createElement('button');
+btn.textContent = `Lesson ${i}`;
+btn.style.cssText = 'display:block;width:100%;padding:10px;border:none;background:none;cursor:pointer;text-align:left;font-size:14px;margin-bottom:4px;border-radius:6px;color:var(--ink)';
+btn.onmouseover = () => btn.style.background = '#f3f4f6';
+btn.onmouseout = () => btn.style.background = 'none';
+btn.onclick = async () => {
+const code = activeStudentCode();
+await setStudentLesson(code, i);
+dropdown.style.display = 'none';
+renderMilestones();
+};
+dropdown.appendChild(btn);
+}
+}
+};
+
 let guestName = '';
 let pendingMilestoneIntro = false;
 let guestCodeEdited = false;
@@ -2051,9 +2206,7 @@ guestActiveWordCount = 5;
 currentUser = code;
 isInstructor = false;
 document.getElementById('home-btn-upload').style.display = 'none';
-document.getElementById('story-back-row').style.display = 'none';
 document.getElementById('principles-wrap').style.display = 'none';
-document.getElementById('guest-flashcards-btn').style.display = 'block';
 }
 
 window.startGuestJourney = async function() {
@@ -2129,6 +2282,7 @@ render();
 // ── TABS ──
 window.switchTab = function(tab) {
 if (isGuestMode && tab === 'home') return;
+const previousTab = currentTab;
 currentTab = tab;
 document.getElementById('app-header').style.display = (tab==='home' || !isInstructor) ? 'none' : 'flex';
 document.getElementById('tab-content-home').style.display = tab==='home' ? 'block' : 'none';
@@ -2159,14 +2313,13 @@ if (tab==='exercises' && typeof exShowPicker === 'function' && !checkGuestLock('
 if (tab==='challenges' && typeof exShowChallengesPicker === 'function' && !checkGuestLock('challenges', reviseLessonNum)) { exPickerLesson = null; exShowChallengesPicker(); }
 if (tab==='story') {
 setStoryLesson(studentLesson[activeStudentCode()] || 1);
-const readBtn = document.getElementById('student-reading-done-btn');
 const gramBtn = document.getElementById('student-grammar-done-btn');
-if (readBtn) readBtn.style.display = isGuestMode ? 'none' : 'block';
 if (gramBtn) gramBtn.style.display = isGuestMode ? 'none' : 'block';
 }
 if (tab==='milestones') {
 document.getElementById('main').scrollTop = 0;
 window.scrollTo(0, 0);
+if (previousTab !== 'milestones') showToast('Progress saved ✓');
 renderMilestones();
 if (pendingMilestoneIntro) {
 document.getElementById('milestone-root').style.display = 'none';
@@ -2175,6 +2328,8 @@ pendingMilestoneIntro = false;
 }
 }
 if (tab==='guests') renderGuestsTab();
+document.getElementById('tab-content-reports').style.display = tab==='reports' ? 'block' : 'none';
+if (tab==='reports') renderReportsTab();
 }
 
 function checkGuestLock(tab, lessonNum) {
@@ -2642,11 +2797,16 @@ cardEl.className='fc-card-wrap';
 cardEl.innerHTML=`
   <div class="fc-card" id="fc-card">
     ${diffBanner}
+    <button class="report-btn" id="fc-report-btn">⚠️ Report</button>
     <div class="fc-arabic">${card.ar}</div>
     <div class="fc-english">${card.en}</div>
     <div class="fc-tap-hint">Tap to reveal</div>
   </div>`;
 area.appendChild(cardEl);
+document.getElementById('fc-report-btn').addEventListener('click', (e) => {
+e.stopPropagation();
+window.openReportPopup('Flashcard: Lesson ' + fcCurrentLesson + ' — ' + card.ar);
+});
 
 const ratingWrap = document.createElement('div');
 ratingWrap.className='fc-rating-wrap';
@@ -2705,7 +2865,7 @@ function closeModal(){document.getElementById('modal').classList.remove('open');
 let toastTimer;
 let storyProgress = {};
 let storyCurrentSentence = {};
-function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2500);}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),5000);}
 function showMasteryGain(diff){const el=document.createElement('div');el.className='mastery-gain-popup';el.textContent=`+${diff}%`;document.body.appendChild(el);setTimeout(()=>el.remove(),1400);}
 function showWordMeaning(el) { showToast(el.textContent + ' = ' + el.dataset.en); }
 function toggleStoryEnglish() {
@@ -2755,17 +2915,22 @@ const STORY_SENTENCES = {
 function storyRenderSentence(lesson) {
   const code = currentUser || viewingStudent;
   const sentenceIdx = storyCurrentSentence[code][lesson];
-  
-  if (sentenceIdx >= 13) {
-    document.getElementById('student-reading-done-btn').style.display = 'block';
-    document.getElementById('story-translation-input').style.display = 'none';
-    document.querySelector('[onclick*="storySubmitTranslation"]').style.display = 'none';
-    document.getElementById('story-reveal').style.display = 'none';
-    document.getElementById('story-ratings').style.display = 'none';
-    return;
-  }
-  
   const sentences = STORY_SENTENCES[lesson] || [];
+  
+  if (!sentences.length || sentenceIdx >= sentences.length) {
+  const isGuest = isGuestMode;
+  if (isGuest) {
+    document.getElementById('guest-flashcards-btn').style.display = 'block';
+  } else {
+    document.getElementById('student-reading-done-btn').style.display = 'block';
+  }
+  document.getElementById('story-translation-input').style.display = 'none';
+  document.querySelector('[onclick*="storySubmitTranslation"]').style.display = 'none';
+  document.getElementById('story-reveal').style.display = 'none';
+  document.getElementById('story-ratings').style.display = 'none';
+  return;
+}
+  
   const sentence = sentences[sentenceIdx];
   
   const arabicLines = document.querySelectorAll('#story-lesson-' + lesson + ' p:not(.story-en-line)');
@@ -2798,23 +2963,30 @@ function storyRateSelf(lesson, rating) {
   storyCurrentSentence[code][lesson]++;
   storyRenderSentence(lesson);
   document.getElementById('story-translation-input').disabled = false;
-  document.querySelector('.story-microstep-check').disabled = false;
   saveFlashcardData(code);
 }
 window.storyRateSelf = storyRateSelf;
 
 const PRINCIPLES = [
   {
-    q: `Go back and look at the idol sentence — <span class="pq-ar">صَنَمٌ</span> shows up, then <span class="pq-ar">أَصْنَامٌ</span> shows up right after it. What's different about how they're written?`,
-    a: `Plurals usually have more letters than the singular.<br><span class="pa-ar">صَنَمٌ ← أَصْنَامٌ &nbsp;&nbsp; رَجُلٌ ← رِجَالٌ</span>`
+    q: `Why is "polytheist" written two ways in the story?<br><span class="pq-ar">مُشْرِكٌ</span><br><span class="pq-ar">مُشْرِكُونَ</span>`,
+    a: `Human plurals are made with ـونَ / ـينَ / ـاتٌ.`
   },
   {
-    q: `In the story, "the polytheists" is <span class="pq-ar">مُشْرِكِينَ</span> — it looks like the singular word with something added on the end. But "the idols" is <span class="pq-ar">أَصْنَامٌ</span> — a totally different shape. Why do you think that is?`,
-    a: `Arabic plurals come in two types: one for people, one for everything else (objects, ideas, animals). People-plurals are regular — just add وْنَ / يْنَ / اتٌ. Everything-else plurals usually change shape entirely and must be memorised.<br><span class="pa-ar">مُشْرِكٌ ← مُشْرِكُونَ (people, regular) &nbsp;&nbsp; صَنَمٌ ← أَصْنَامٌ (everything-else, irregular)</span>`
+     q: `One way to spot a plural: it usually has more letters than the singular. Look at these three examples and try to work out the pattern:<br><span class="pq-ar">رَجُلٌ ← رِجَالٌ</span><br><span class="pq-ar">صَنَمٌ ← أَصْنَامٌ</span><br><span class="pq-ar">اِسْمٌ ← أَسْمَاءٌ</span>`,
+    a: `Plurals usually have more letters than their singular form, so if the word has quite a few letters, you can guess that it's plural`
   },
   {
-    q: `You met <span class="pq-ar">الرَّجُلُ</span> (the man) and <span class="pq-ar">قَرْيَةٍ</span> (a village) in the story. Based on what you just learned, what do you think "men" and "villages" look like?`,
-    a: `Most principles have exceptions: رَجُلٌ → رِجَالٌ is irregular even though it's a people-word. قَرْيَةٌ → قُرًى is irregular too — and actually has fewer letters, breaking the usual "more letters" pattern.`
+    q: `Why do these principles matter?`,
+    a: `They save you from memorising every single word — the pattern helps you work out new plurals on your own. But these principles have exceptions, so you'll still need to memorise some words by heart.`
+  },
+  {
+    q: `Why is idols written as أصنام instead of صنمون؟`,
+    a: `Plurals are two types: human and non-human. Human plurals have the consistent ending we mentioned, whereas non-human plurals are irregular and must be memorised.<br>Human plurals: مُشْرِكٌ ← مُشْرِكُونَ, رَجُلٌ ← رِجَالٌ<br>Non-human plurals: صَنَمٌ ← أَصْنَامٌ, قَرْيَةٌ ← قُرًى`
+  },
+  {
+    q: `Almost all principles have a few exceptions, for example:`,
+    a: `رِجَالٌ — this is a human plural, but it doesn't follow the regular ـونَ/ـينَ/ـاتٌ pattern, so it must be memorised.<br>قُرَى — this plural actually has fewer letters than its singular قَرْيَةٌ, breaking the usual "more letters" pattern.`
   }
 ];
 
@@ -2906,7 +3078,7 @@ document.getElementById('principle-back-btn').addEventListener('click', () => {
 });
 document.getElementById('principle-next-btn').addEventListener('click', () => {
   if (principleIdx < activePrinciples.length - 1) { principleIdx++; principleRevealed = false; renderPrinciple(); }
-  else if (isGuestMode) { const code = currentUser || viewingStudent; window.markGrammarDone(studentLesson[code] || 1); }
+  else { const code = currentUser || viewingStudent; window.markGrammarDone(studentLesson[code] || 1); }
 });
 renderPrinciple();
 
@@ -2918,7 +3090,7 @@ if(isInstructor&&!isStudentView)buildSidebar();
 if(currentTab==='flashcards')renderFlashcards();
 }
 
-const MILESTONE_BUILT_LESSONS = 3;
+const MILESTONE_BUILT_LESSONS = 17;
 
 
 
@@ -2960,10 +3132,28 @@ if (!guestCodeEdited) document.getElementById('guest-code-input').value = sugges
 document.getElementById('guest-code-input').addEventListener('input', () => { guestCodeEdited = true; });
 document.getElementById('guest-flashcards-btn').addEventListener('click', () => {
 const code = currentUser || viewingStudent;
-window.markReadingDone(studentLesson[code] || 1);
-if (guestTourActive && guestTourStep === 1) {
-guestTourStep = 2;
-hideGuestCoachmark();
+const lesson = studentLesson[code] || 1;
+const sentenceIdx = storyCurrentSentence[code]?.[lesson] || 0;
+const totalSentences = STORY_SENTENCES[lesson]?.length || 0;
+
+if (sentenceIdx < totalSentences) {
+  showToast('✓ Progress saved! You can pick up where you left off later.');
+  setTimeout(() => {
+    window.markReadingDone(lesson);
+    if (guestTourActive && guestTourStep === 1) {
+      guestTourStep = 2;
+      hideGuestCoachmark();
+    }
+  }, 1500);
+} else {
+  showToast('🎉 Lesson complete! Moving to Flashcards...');
+  setTimeout(() => {
+    window.markReadingDone(lesson);
+    if (guestTourActive && guestTourStep === 1) {
+      guestTourStep = 2;
+      hideGuestCoachmark();
+    }
+  }, 1500);
 }
 });
 document.getElementById('guest-principles-btn').addEventListener('click', () => {
