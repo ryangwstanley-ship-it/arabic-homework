@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title> hddddd </title>
+<title> d </title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Arabic Daily</title>
@@ -1377,6 +1377,8 @@ switchTab('story');
 setStoryLesson(lessonNum);
 document.querySelectorAll('.story-title').forEach(t => { t.style.fontWeight = '400'; t.style.color = '#1a1a2e'; });
 document.querySelectorAll('.story-word.new-reading, .story-word.new').forEach(w => { w.style.fontWeight = '400'; w.style.color = '#1a1a2e'; });
+document.querySelectorAll('.story-en-line').forEach(line => { line.style.display = 'none'; });
+['story-english-btn','story-english-btn-l2','story-english-btn-l3'].forEach(id => { const b = document.getElementById(id); if (b) b.textContent = 'Show English'; });
 document.getElementById('principles-wrap').style.display = 'block';
 document.querySelectorAll('#story-lesson-' + Math.min(lessonNum,3) + ' p:not(.story-en-line)').forEach(p => p.style.display = '');
 document.getElementById('story-translation-input').style.display = 'none';
