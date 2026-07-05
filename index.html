@@ -61,6 +61,7 @@
 .status-dot.green { background: var(--dot-green); }
 .status-dot.red { background: var(--dot-red); }
 .status-dot.grey { background: rgba(255,255,255,0.2); }
+.status-dot.blue { background: #3b82f6; }
 .hw-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; background: rgba(255,255,255,0.15); }
 .hw-dot.done { background: var(--dot-green); }
 .sidebar-bottom { padding: 12px 8px; border-top: 1px solid rgba(255,255,255,0.1); white-space: nowrap; }
@@ -382,13 +383,12 @@ console.log("THE FILE IS LOADING!");
 
 <div id="login-screen">
 <div class="login-logo">Yusr Arabic</div>
-<div class="login-title">Arabic Daily</div>
-<div class="login-subtitle">Daily homework tracker</div>
 <button class="guest-btn" id="guest-start-btn">Start Your Journey</button>
-<div class="login-divider">For premium users, enter code</div>
+<button class="guest-btn" id="leaderboard-btn" style="background:#2563eb">Leaderboard</button>
+<div class="login-divider">Already with us? Enter your code</div>
 <div class="login-card login-card-small">
 <label>Your code</label>
-<input type="text" id="code-input" maxlength="6" placeholder="ABC123" autocomplete="off">
+<input type="text" id="code-input" maxlength="12" placeholder="ABC123" autocomplete="off">
 <div class="login-error" id="login-error">Code not recognised. Try again.</div>
 <button class="login-btn" id="login-btn">Enter</button>
 </div>
@@ -406,14 +406,6 @@ console.log("THE FILE IS LOADING!");
 <div class="login-error" id="guest-new-error">Please enter a name first.</div>
 <button class="guest-btn" id="guest-create-btn" style="margin-top:14px;margin-bottom:0">Start Your Journey</button>
 </div>
-
-<div class="login-divider" style="margin-top:18px">Already have a guest code?</div>
-<div class="login-card login-card-small">
-<label>Your guest code</label>
-<input type="text" id="guest-return-code-input" placeholder="Enter your code" autocomplete="off" maxlength="12">
-<div class="login-error" id="guest-return-error">Code not found. Check and try again.</div>
-<button class="login-btn" id="guest-return-btn">Continue</button>
-</div>
 </div>
 
 <div id="app">
@@ -424,6 +416,7 @@ console.log("THE FILE IS LOADING!");
 </div>
 <button class="sidebar-nav-btn" id="sidebar-guests-btn" onclick="switchTab('guests')">👤 Guests</button>
 <button class="sidebar-nav-btn" id="sidebar-reports-btn" onclick="switchTab('reports')">📋 Reports</button>
+<button class="sidebar-nav-btn" id="sidebar-leaderboard-btn" onclick="switchTab('leaderboard-admin')">🏆 Leaderboard</button>
 <div class="sidebar-label">Students</div>
 <div class="sidebar-students" id="sidebar-students"></div>
 
@@ -585,6 +578,12 @@ console.log("THE FILE IS LOADING!");
 </div>
 </div>
 
+<!-- LEADERBOARD ADMIN TAB (instructor only) -->
+<div id="tab-content-leaderboard-admin" class="content" style="display:none">
+<div class="section-label">Leaderboard Editor</div>
+<div id="leaderboard-admin-root" style="margin-top:8px"></div>
+</div>
+
 <!-- FLASHCARDS PAGE -->
 <div id="tab-content-flashcards" class="content" style="display:none">
 <div class="back-row" id="flashcards-back-row" onclick="switchTab('milestones')"><span class="back-btn">‹</span><span class="screen-title">Save and Return Home</span></div>
@@ -603,6 +602,13 @@ console.log("THE FILE IS LOADING!");
 <div class="back-row" id="exercises-back-row" onclick="switchTab('milestones')"><span class="back-btn">‹</span><span class="screen-title">Save and Return Home</span></div>
 <div id="ex-root"></div>
 </div>
+
+<!-- LEADERBOARD PAGE -->
+<div id="tab-content-leaderboard" class="content" style="display:none">
+<div class="section-label">Leaderboard</div>
+<div id="leaderboard-root" style="margin-top:8px"></div>
+</div>
+
 <!-- CHALLENGES PAGE -->
 <div id="tab-content-challenges" class="content" style="display:none">
 <div class="back-row" id="challenges-back-row" onclick="switchTab('milestones')"><span class="back-btn">‹</span><span class="screen-title">Save and Return Home</span></div>
@@ -857,6 +863,7 @@ let isStudentView = false, calYear, calMonth, selectedDate = null;
 let submissions = {}, sidebarCollapsed = false;
 let currentTab = 'homework';
 let isGuestMode = false;
+let didMakeProgress = false;
 let guestLessonDone = false;
 
 // Flashcard state
@@ -1211,6 +1218,7 @@ setTimeout(() => overlay.remove(), 300);
 // celebration (first time it's truly new progress) or just hops to the Milestones
 // map directly (if it was already done, e.g. tapping the button again).
 window.markReadingDone = async function(lessonNum) {
+didMakeProgress = true;
 const code = currentUser || viewingStudent;
 const sentenceIdx = storyCurrentSentence[code]?.[lessonNum] || 0;
 const lessonStoryData = window.LESSON_STORIES ? window.LESSON_STORIES.find(s => s.lesson === lessonNum) : null;
@@ -1723,12 +1731,13 @@ root.innerHTML = guestDocs.map((g, i) => {
 const s = snapshots[i];
 const streak = getStreak(g.code);
 const status = getStudentStatus(g.code);
+const guestProgress = hasMadeProgressToday(g.code);
 return `<div class="guest-card">
 <div class="guest-card-top">
 <div class="guest-card-name">${g.name || 'Guest'}</div>
 <div class="guest-card-code">${g.code}</div>
 </div>
-<div class="guest-card-meta">Lesson ${s.lesson} · ${(storyProgress[g.code] && storyProgress[g.code][s.lesson]) ? '📖 ✓' : ''} · 🔥 ${streak} day streak · <span class="status-dot ${status}"></span></div>
+<div class="guest-card-meta">Lesson ${s.lesson} · ${(storyProgress[g.code] && storyProgress[g.code][s.lesson]) ? '📖 ✓' : ''} · 🔥 ${streak} day streak${guestProgress ? ' · <span class="status-dot blue" title="Made progress today"></span>' : ''} · <span class="status-dot ${status}"></span></div>
 <div class="guest-card-rings">
 ${miniRing(s.flashcardsPct, '🃏')}
 ${miniRing(s.exercisesPct, '✏️')}
@@ -1736,6 +1745,161 @@ ${miniRing(s.challengesPct, '🏆')}
 </div>
 </div>`;
 }).join('');
+}
+
+// ── LEADERBOARD ──
+async function loadLeaderboard() {
+  try {
+    const snap = await getDoc(doc(db, 'leaderboard', 'main'));
+    return snap.exists() ? (snap.data().entries || []) : [];
+  } catch(e) { console.error('Leaderboard load error', e); return []; }
+}
+
+async function saveLeaderboard(entries) {
+  try {
+    await setDoc(doc(db, 'leaderboard', 'main'), { entries: entries.filter(e => e.name && e.name.trim()), updatedAt: Date.now() });
+  } catch(e) { console.error('Leaderboard save error', e); }
+}
+
+function buildLeaderboardHtml(entries, isEditing) {
+  const sorted = [...entries].sort((a, b) => (b.score || 0) - (a.score || 0));
+  let html = '<div style="display:flex;flex-direction:column;gap:6px;max-width:420px">';
+  sorted.forEach((entry, i) => {
+    const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `<span style="display:inline-block;width:24px;text-align:center">${i + 1}</span>`;
+    if (isEditing) {
+      html += `<div style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--grey-light);border-radius:10px">
+        <div style="font-size:18px">${medal}</div>
+        <div style="flex:1;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis">${entry.name}</div>
+        <input class="lb-score-input" data-name="${entry.name.replace(/"/g, '&quot;')}" value="${entry.score || 0}" type="number" style="width:70px;padding:8px;border:2px solid var(--border);border-radius:6px;font-size:14px;text-align:center">
+        <button class="lb-del-btn" data-name="${entry.name.replace(/"/g, '&quot;')}" style="padding:6px 10px;background:#ef4444;color:white;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer">✕</button>
+      </div>`;
+    } else {
+      html += `<div style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--grey-light);border-radius:10px">
+        <div style="font-size:18px">${medal}</div>
+        <div style="flex:1;font-weight:600">${entry.name}</div>
+        <div style="font-weight:700;color:var(--blue)">${entry.score || 0}</div>
+      </div>`;
+    }
+  });
+  html += '</div>';
+  return { html, sorted };
+}
+
+async function renderLeaderboardAdmin() {
+  const root = document.getElementById('leaderboard-admin-root');
+  root.innerHTML = '<div style="text-align:center;color:var(--grey);padding:20px">Loading…</div>';
+  let entries = await loadLeaderboard();
+
+  // Build today's active list (students + guests)
+  const activeToday = [];
+  Object.keys(STUDENTS).forEach(code => {
+    if (hasMadeProgressToday(code)) activeToday.push({ name: STUDENTS[code].name, code, type: 'student' });
+  });
+  try {
+    const guestSnap = await getDocs(collection(db, 'guests'));
+    guestSnap.forEach(d => {
+      const g = { code: d.id, ...d.data() };
+      if (hasMadeProgressToday(g.code)) activeToday.push({ name: g.name || 'Guest', code: g.code, type: 'guest' });
+    });
+  } catch(e) {}
+
+    function redraw() {
+    let fullHtml = '';
+    if (activeToday.length) {
+      fullHtml += '<div style="margin-bottom:20px"><div style="font-size:13px;font-weight:700;color:var(--grey);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px">Today\'s Active (' + activeToday.length + ')</div>';
+      fullHtml += '<div style="display:flex;flex-direction:column;gap:4px;max-width:420px">';
+      activeToday.forEach(p => {
+        const entry = entries.find(e => e.name === p.name);
+        const score = entry ? (entry.score || 0) : 0;
+        fullHtml += `<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#eff6ff;border-radius:8px;border:1px solid #bfdbfe">
+          <div style="font-size:11px;font-weight:700;color:#2563eb;text-transform:uppercase">${p.type}</div>
+          <div style="flex:1;font-weight:600;font-size:14px">${p.name}</div>
+          <div style="font-size:13px;color:var(--grey)">${score} pts</div>
+        </div>`;
+      });
+      fullHtml += '</div></div>';
+    }
+    const { html, sorted } = buildLeaderboardHtml(entries, true);
+    fullHtml += html;
+    fullHtml += '<div style="display:flex;gap:10px;margin-top:16px;max-width:420px;flex-wrap:wrap">';
+    fullHtml += '<div style="display:flex;gap:8px;flex:1;min-width:200px">';
+    fullHtml += '<input id="lb-new-name" placeholder="Student name" style="flex:1;padding:10px;border:2px solid var(--border);border-radius:8px;font-size:14px">';
+    fullHtml += '<input id="lb-new-score" placeholder="0" type="number" style="width:70px;padding:10px;border:2px solid var(--border);border-radius:8px;font-size:14px;text-align:center">';
+    fullHtml += '</div>';
+    fullHtml += '<button id="lb-add-btn" style="padding:10px 16px;background:#f3f4f6;color:var(--ink);border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">+ Add</button>';
+    fullHtml += '<button id="lb-save-btn" style="padding:10px 16px;background:#2563eb;color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">Save</button>';
+    fullHtml += '<button id="lb-reset-btn" style="padding:10px 16px;background:#ef4444;color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">Reset All to 0</button>';
+    fullHtml += '</div>';
+    fullHtml += `<div style="margin-top:10px;font-size:12px;color:var(--grey)">${sorted.length} student${sorted.length !== 1 ? 's' : ''} · Total: ${sorted.reduce((s, e) => s + (e.score || 0), 0)} pts</div>`;
+    root.innerHTML = fullHtml;
+
+    // Score change → update entry and auto-reorder
+    root.querySelectorAll('.lb-score-input').forEach(input => {
+      input.onchange = () => {
+        const name = input.dataset.name;
+        const newScore = parseInt(input.value) || 0;
+        const idx = entries.findIndex(e => e.name === name);
+        if (idx !== -1) entries[idx].score = newScore;
+        redraw();
+      };
+    });
+
+    // Delete
+    root.querySelectorAll('.lb-del-btn').forEach(btn => {
+      btn.onclick = () => {
+        const name = btn.dataset.name;
+        entries = entries.filter(e => e.name !== name);
+        redraw();
+      };
+    });
+
+    // Add new row
+    document.getElementById('lb-add-btn').onclick = () => {
+      const nameInput = document.getElementById('lb-new-name');
+      const scoreInput = document.getElementById('lb-new-score');
+      const name = nameInput.value.trim();
+      const score = parseInt(scoreInput.value) || 0;
+      if (!name) { showToast('Enter a name first'); return; }
+      if (entries.find(e => e.name === name)) { showToast('Name already exists'); return; }
+      entries.push({ name, score });
+      redraw();
+    };
+
+    // Save to Firebase
+    document.getElementById('lb-reset-btn').onclick = async () => {
+  if (!confirm('Reset ALL scores to 0?')) return;
+  entries.forEach(e => e.score = 0);
+  await saveLeaderboard(entries);
+  showToast('All scores reset to 0');
+  redraw();
+};
+
+document.getElementById('lb-save-btn').onclick = async () => {
+      await saveLeaderboard(entries);
+      showToast('Leaderboard saved ✓');
+    };
+  }
+
+  redraw();
+}
+
+async function renderLeaderboardPublic() {
+  const root = document.getElementById('leaderboard-root');
+  root.innerHTML = '<div style="text-align:center;color:var(--grey);padding:20px">Loading…</div>';
+  const entries = await loadLeaderboard();
+  if (!entries.length) {
+    root.innerHTML = '<div style="text-align:center;padding:40px;color:var(--grey)">No entries yet.</div>';
+    return;
+  }
+let fullHtml = `<button id="lb-invite-btn" style="width:100%;max-width:420px;margin-bottom:20px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">For an extra point, make small progress today in the app</button>`;
+const { html } = buildLeaderboardHtml(entries, false);
+fullHtml += html;
+root.innerHTML = fullHtml;
+document.getElementById('lb-invite-btn').onclick = () => {
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('tabs-bar').style.display = 'none';
+};
 }
 
 async function renderReportsTab() {
@@ -1834,6 +1998,16 @@ if (dayQualifiesForStreak(code, key)) break;
 else count++;
 }
 return count;
+}
+
+function hasMadeProgressToday(code) {
+const today = todayKey();
+const lesson = studentLesson[code] || 1;
+const didCards = ((allCardActivity[code] || {})[today] || 0) > 0;
+const didHomework = !!(submissions[code]?.[today] && (submissions[code][today].images?.length || submissions[code][today].text));
+const didReading = !!readingDone[lesson];
+const didGrammar = !!grammarDone[lesson];
+return didCards || didHomework || didReading || didGrammar;
 }
 
 function getStudentStatus(code) {
@@ -2082,7 +2256,20 @@ await loadStudentMeta(code);
 await loadFlashcardProgress(code);
 startApp();
 } else {
+// Try guest code
+let data = null;
+try {
+const snap = await getDoc(doc(db,'guests',code));
+if (snap.exists()) data = snap.data();
+} catch(e) { console.error('Guest lookup error', e); }
+if (data) {
+guestName = data.name || '';
+enterAsGuest(code);
+await loadFlashcardProgress(code);
+startApp();
+} else {
 err.style.display='block'; btn.textContent='Enter'; btn.disabled=false;
+}
 }
 }
 // ── GUEST ──
@@ -2239,8 +2426,8 @@ document.getElementById('tab-story').classList.toggle('active', tab==='story');
 const reviseCode = currentUser || viewingStudent;
 const reviseLessonNum = studentLesson[reviseCode] || 1;
 if (tab==='flashcards') { fcCurrentLesson = studentLesson[activeStudentCode()] || 1; fcShowLessonPicker = true; renderFlashcards(); }
-if (tab==='exercises' && typeof exShowPicker === 'function' && !checkGuestLock('exercises', reviseLessonNum)) { exPickerLesson = null; exShowPicker(); }
-if (tab==='challenges' && typeof exShowChallengesPicker === 'function' && !checkGuestLock('challenges', reviseLessonNum)) { exPickerLesson = null; exShowChallengesPicker(); }
+if (tab==='exercises' && typeof exShowPicker === 'function') { exPickerLesson = null; exShowPicker(); }
+if (tab==='challenges' && typeof exShowChallengesPicker === 'function') { exPickerLesson = null; exShowChallengesPicker(); }
 if (tab==='story') {
 setStoryLesson(studentLesson[activeStudentCode()] || 1);
 const gramBtn = document.getElementById('student-grammar-done-btn');
@@ -2249,7 +2436,10 @@ if (gramBtn) gramBtn.style.display = isGuestMode ? 'none' : 'block';
 if (tab==='milestones') {
 document.getElementById('main').scrollTop = 0;
 window.scrollTo(0, 0);
-if (previousTab !== 'milestones') showToast('Progress saved ✓');
+if (previousTab !== 'milestones' && didMakeProgress) {
+  showToast('Progress saved ✓');
+  didMakeProgress = false;
+}
 renderMilestones();
 if (pendingMilestoneIntro) {
 document.getElementById('milestone-root').style.display = 'none';
@@ -2259,20 +2449,14 @@ pendingMilestoneIntro = false;
 }
 if (tab==='guests') renderGuestsTab();
 document.getElementById('tab-content-reports').style.display = tab==='reports' ? 'block' : 'none';
+document.getElementById('tab-content-leaderboard').style.display = tab==='leaderboard' ? 'block' : 'none';
+document.getElementById('tab-content-leaderboard-admin').style.display = tab==='leaderboard-admin' ? 'block' : 'none';
 if (tab==='reports') renderReportsTab();
+if (tab==='leaderboard-admin') renderLeaderboardAdmin();
+if (tab==='leaderboard') renderLeaderboardPublic();
 }
 
-function checkGuestLock(tab, lessonNum) {
-if (isGuestMode && tab === 'exercises' && !getGrammarFraction(lessonNum)) {
-document.getElementById('ex-root').innerHTML = '<div class="locked-msg">🔒 Finish the Grammar Principles to unlock exercises.</div>';
-return true;
-}
-if (isGuestMode && tab === 'challenges' && getExercisesFraction(lessonNum) < 1) {
-document.getElementById('challenges-root').innerHTML = '<div class="locked-msg">🔒 Finish the Exercises to unlock challenges.</div>';
-return true;
-}
-return false;
-}
+
 
 // ── SIDEBAR ──
 function buildSidebar() {
@@ -2284,9 +2468,10 @@ const s = STUDENTS[code]; const status = getStudentStatus(code); const streak = 
 const todaySub = submissions[code]?.[today];
 const didHomework = !!(todaySub && (todaySub.images?.length || todaySub.text));
 const todayCount = (allCardActivity[code]||{})[today] || 0;
+const madeProgress = hasMadeProgressToday(code);
 const el = document.createElement('div');
 el.className='sidebar-student'+(code===viewingStudent?' active':'');
-el.innerHTML=`<div class="sidebar-avatar">${idx+1}</div><div class="sidebar-info"><div class="sidebar-name">${s.name}</div><div class="sidebar-streak">🔥 ${streak} day streak · 📇 ${todayCount}/20 today</div></div><div class="hw-dot ${didHomework?'done':''}" title="Homework today"></div><div class="status-dot ${status}"></div>`;
+el.innerHTML=`<div class="sidebar-avatar">${idx+1}</div><div class="sidebar-info"><div class="sidebar-name">${s.name}</div><div class="sidebar-streak">🔥 ${streak} day streak · 📇 ${todayCount}/20 today</div></div><div class="hw-dot ${didHomework?'done':''}" title="Homework today"></div>${madeProgress ? '<div class="status-dot blue" title="Made progress today"></div>' : ''}<div class="status-dot ${status}"></div>`;
 el.onclick=async()=>{ viewingStudent=code; updateHeaderForInstructor(); buildSidebar(); render(); };
 wrap.appendChild(el);
 });
@@ -2505,6 +2690,7 @@ const existing=subs[selectedDate]||{};
 const dayData={images:[...(existing.images||[]),...imgs],text:text||(existing.text||''),reviewed:false};
 submissions[code][selectedDate]=dayData;
 await saveDay(code,selectedDate,dayData);
+didMakeProgress = true;
 showToast('Homework submitted ✓');
 }
 render();
@@ -2772,6 +2958,7 @@ document.getElementById('fc-rating-wrap').classList.add('visible');
 
 ratingWrap.querySelectorAll('.fc-rating-btn').forEach(btn=>{
 btn.addEventListener('click',async()=>{
+didMakeProgress = true;
 const rating = parseInt(btn.dataset.r);
 const oldPct = getLessonMasteryPercent(fcCurrentLesson);
 const oldFrac = window.getLessonProgressSum(fcCurrentLesson);
@@ -3102,13 +3289,20 @@ document.getElementById('guest-start-btn').addEventListener('click', () => {
 document.getElementById('login-screen').style.display = 'none';
 document.getElementById('guest-setup-screen').style.display = 'flex';
 });
+document.getElementById('leaderboard-btn').addEventListener('click', () => {
+document.getElementById('login-screen').style.display = 'none';
+document.getElementById('app').style.display = 'block';
+document.getElementById('tabs-bar').style.display = 'none';
+switchTab('leaderboard');
+});
 document.getElementById('guest-setup-back-row').addEventListener('click', () => {
 document.getElementById('guest-setup-screen').style.display = 'none';
 document.getElementById('login-screen').style.display = 'flex';
 });
 document.getElementById('guest-create-btn').addEventListener('click', () => window.startGuestJourney());
 
-document.getElementById('guest-return-btn').addEventListener('click', () => window.continueAsGuest());
+const guestReturnBtn = document.getElementById('guest-return-btn');
+if (guestReturnBtn) guestReturnBtn.addEventListener('click', () => window.continueAsGuest());
 document.getElementById('guest-name-input').addEventListener('input', () => {
 if (!guestCodeEdited) document.getElementById('guest-code-input').value = suggestGuestCode(document.getElementById('guest-name-input').value);
 });
