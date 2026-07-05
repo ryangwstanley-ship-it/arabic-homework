@@ -230,7 +230,7 @@
 .submit-btn:disabled { background: var(--grey); cursor: not-allowed; }
 
 /* ── FLASHCARDS ── */
-.fc-lesson-picker { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+.fc-lesson-picker { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; align-items: flex-start; }
 .fc-lesson-btn { padding: 12px 14px; border-radius: 16px; border: 2px solid var(--border); background: var(--grey-light); cursor: pointer; color: var(--grey); transition: all 0.2s; text-align: center; min-width: 90px; }
 .fc-lesson-btn.state-complete { background: #edf5ec; border-color: #aecbab; }
 .fc-lesson-btn.state-untouched { background: #f2f0ec; border-color: var(--border); }
@@ -592,6 +592,7 @@ console.log("THE FILE IS LOADING!");
 <button id="fc-prev-lessons-btn" style="margin-bottom:14px;padding:10px 16px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer">Previous Lessons</button>
 <div class="fc-lesson-picker" id="fc-lesson-picker" style="display:none"></div>
 
+<button id="fc-back-to-decks-btn" style="display:none;margin-bottom:14px;padding:10px 16px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer">← Decks</button>
 <div id="fc-area"></div>
 
 <button id="guest-principles-btn" style="display:none;width:100%;margin-top:20px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Done</button>
@@ -710,7 +711,7 @@ const db = getFirestore(firebaseApp);
 
 
 // ── FLASHCARD DATA (now loaded from GitHub) ──
-let DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS, PLURAL_QUESTIONS, FEMININE_QUESTIONS, SUFFIX_TRANSLATION_QUESTIONS, DEMO_TRANSLATION_QUESTIONS, ADJECTIVE_AGREEMENT_TRANSLATION_QUESTIONS, PLURAL_TYPE_QUESTIONS, CHALLENGE_1_WORDS, TRANSLATION_1_QUESTIONS, CHALLENGE_2_SENTENCES, LESSON_STORIES;
+let DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, CHANGE_WORD_QUESTIONS_L2, CHANGE_WORD_QUESTIONS_L3, CHANGE_WORD_QUESTIONS_L4, CHANGE_WORD_QUESTIONS_L5, CHANGE_WORD_QUESTIONS_L6, TRUE_FALSE_QUESTIONS, TRUE_FALSE_QUESTIONS_L2, TRUE_FALSE_QUESTIONS_L3, TRUE_FALSE_QUESTIONS_L4, TRUE_FALSE_QUESTIONS_L5, TRUE_FALSE_QUESTIONS_L6, COMPREHENSION_QUESTIONS_L1, COMPREHENSION_QUESTIONS_L2, COMPREHENSION_QUESTIONS_L3, COMPREHENSION_QUESTIONS_L4, COMPREHENSION_QUESTIONS_L5, COMPREHENSION_QUESTIONS_L6, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS, PLURAL_QUESTIONS, FEMININE_QUESTIONS, SUFFIX_TRANSLATION_QUESTIONS, DEMO_TRANSLATION_QUESTIONS, ADJECTIVE_AGREEMENT_TRANSLATION_QUESTIONS, PLURAL_TYPE_QUESTIONS, CHALLENGE_1_WORDS, CHALLENGE_1_WORDS_L2, CHALLENGE_1_WORDS_L3, CHALLENGE_1_WORDS_L4, CHALLENGE_1_WORDS_L5, CHALLENGE_1_WORDS_L6, TRANSLATION_1_QUESTIONS, CHALLENGE_2_SENTENCES, LESSON_STORIES;
 async function loadVocabData() {
 
 const url = 'https://raw.githubusercontent.com/ryangwstanley-ship-it/database/main/website%20data%20base?t=' + Date.now();
@@ -718,14 +719,30 @@ const res = await fetch(url);
 const code = await res.text();
 const runner = new Function(
 code.replaceAll('export const', 'const') +
-'; return { DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, TRUE_FALSE_QUESTIONS, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS, PLURAL_QUESTIONS, FEMININE_QUESTIONS, SUFFIX_TRANSLATION_QUESTIONS, DEMO_TRANSLATION_QUESTIONS, ADJECTIVE_AGREEMENT_TRANSLATION_QUESTIONS, PLURAL_TYPE_QUESTIONS, CHALLENGE_1_WORDS, TRANSLATION_1_QUESTIONS, CHALLENGE_2_SENTENCES, LESSON_STORIES };'
+'; return { DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, CHANGE_WORD_QUESTIONS_L2, CHANGE_WORD_QUESTIONS_L3, CHANGE_WORD_QUESTIONS_L4, CHANGE_WORD_QUESTIONS_L5, CHANGE_WORD_QUESTIONS_L6, TRUE_FALSE_QUESTIONS, TRUE_FALSE_QUESTIONS_L2, TRUE_FALSE_QUESTIONS_L3, TRUE_FALSE_QUESTIONS_L4, TRUE_FALSE_QUESTIONS_L5, TRUE_FALSE_QUESTIONS_L6, COMPREHENSION_QUESTIONS_L1, COMPREHENSION_QUESTIONS_L2, COMPREHENSION_QUESTIONS_L3, COMPREHENSION_QUESTIONS_L4, COMPREHENSION_QUESTIONS_L5, COMPREHENSION_QUESTIONS_L6, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS, PLURAL_QUESTIONS, FEMININE_QUESTIONS, SUFFIX_TRANSLATION_QUESTIONS, DEMO_TRANSLATION_QUESTIONS, ADJECTIVE_AGREEMENT_TRANSLATION_QUESTIONS, PLURAL_TYPE_QUESTIONS, CHALLENGE_1_WORDS, CHALLENGE_1_WORDS_L2, CHALLENGE_1_WORDS_L3, CHALLENGE_1_WORDS_L4, CHALLENGE_1_WORDS_L5, CHALLENGE_1_WORDS_L6, TRANSLATION_1_QUESTIONS, CHALLENGE_2_SENTENCES, LESSON_STORIES };'
 );
 const data = runner();
 DEFAULT_LESSONS = data.DEFAULT_LESSONS;
 FILL_GAP_QUESTIONS = data.FILL_GAP_QUESTIONS;
 WORD_ORDER_QUESTIONS = data.WORD_ORDER_QUESTIONS;
 CHANGE_WORD_QUESTIONS = data.CHANGE_WORD_QUESTIONS;
+CHANGE_WORD_QUESTIONS_L2 = data.CHANGE_WORD_QUESTIONS_L2;
+CHANGE_WORD_QUESTIONS_L3 = data.CHANGE_WORD_QUESTIONS_L3;
+CHANGE_WORD_QUESTIONS_L4 = data.CHANGE_WORD_QUESTIONS_L4;
+CHANGE_WORD_QUESTIONS_L5 = data.CHANGE_WORD_QUESTIONS_L5;
+CHANGE_WORD_QUESTIONS_L6 = data.CHANGE_WORD_QUESTIONS_L6;
 TRUE_FALSE_QUESTIONS = data.TRUE_FALSE_QUESTIONS;
+TRUE_FALSE_QUESTIONS_L2 = data.TRUE_FALSE_QUESTIONS_L2;
+TRUE_FALSE_QUESTIONS_L3 = data.TRUE_FALSE_QUESTIONS_L3;
+TRUE_FALSE_QUESTIONS_L4 = data.TRUE_FALSE_QUESTIONS_L4;
+TRUE_FALSE_QUESTIONS_L5 = data.TRUE_FALSE_QUESTIONS_L5;
+TRUE_FALSE_QUESTIONS_L6 = data.TRUE_FALSE_QUESTIONS_L6;
+COMPREHENSION_QUESTIONS_L1 = data.COMPREHENSION_QUESTIONS_L1;
+COMPREHENSION_QUESTIONS_L2 = data.COMPREHENSION_QUESTIONS_L2;
+COMPREHENSION_QUESTIONS_L3 = data.COMPREHENSION_QUESTIONS_L3;
+COMPREHENSION_QUESTIONS_L4 = data.COMPREHENSION_QUESTIONS_L4;
+COMPREHENSION_QUESTIONS_L5 = data.COMPREHENSION_QUESTIONS_L5;
+COMPREHENSION_QUESTIONS_L6 = data.COMPREHENSION_QUESTIONS_L6;
 DEMONSTRATIVE_QUESTIONS = data.DEMONSTRATIVE_QUESTIONS;
 SUFFIX_PRONOUN_QUESTIONS = data.SUFFIX_PRONOUN_QUESTIONS;
 ADJECTIVE_AGREEMENT_QUESTIONS = data.ADJECTIVE_AGREEMENT_QUESTIONS;
@@ -736,6 +753,11 @@ DEMO_TRANSLATION_QUESTIONS = data.DEMO_TRANSLATION_QUESTIONS;
 ADJECTIVE_AGREEMENT_TRANSLATION_QUESTIONS = data.ADJECTIVE_AGREEMENT_TRANSLATION_QUESTIONS;
 PLURAL_TYPE_QUESTIONS = data.PLURAL_TYPE_QUESTIONS;
 CHALLENGE_1_WORDS = data.CHALLENGE_1_WORDS;
+CHALLENGE_1_WORDS_L2 = data.CHALLENGE_1_WORDS_L2;
+CHALLENGE_1_WORDS_L3 = data.CHALLENGE_1_WORDS_L3;
+CHALLENGE_1_WORDS_L4 = data.CHALLENGE_1_WORDS_L4;
+CHALLENGE_1_WORDS_L5 = data.CHALLENGE_1_WORDS_L5;
+CHALLENGE_1_WORDS_L6 = data.CHALLENGE_1_WORDS_L6;
 TRANSLATION_1_QUESTIONS = data.TRANSLATION_1_QUESTIONS;
 CHALLENGE_2_SENTENCES = data.CHALLENGE_2_SENTENCES;
 LESSON_STORIES = data.LESSON_STORIES;
@@ -743,6 +765,11 @@ LESSON_STORIES = data.LESSON_STORIES;
 window.FILL_GAP_QUESTIONS = FILL_GAP_QUESTIONS;
 window.WORD_ORDER_QUESTIONS = WORD_ORDER_QUESTIONS;
 window.CHANGE_WORD_QUESTIONS = CHANGE_WORD_QUESTIONS;
+window.CHANGE_WORD_QUESTIONS_L2 = CHANGE_WORD_QUESTIONS_L2;
+window.CHANGE_WORD_QUESTIONS_L3 = CHANGE_WORD_QUESTIONS_L3;
+window.CHANGE_WORD_QUESTIONS_L4 = CHANGE_WORD_QUESTIONS_L4;
+window.CHANGE_WORD_QUESTIONS_L5 = CHANGE_WORD_QUESTIONS_L5;
+window.CHANGE_WORD_QUESTIONS_L6 = CHANGE_WORD_QUESTIONS_L6;
 window.TRUE_FALSE_QUESTIONS = TRUE_FALSE_QUESTIONS;
 window.DEMONSTRATIVE_QUESTIONS = DEMONSTRATIVE_QUESTIONS;
 window.SUFFIX_PRONOUN_QUESTIONS = SUFFIX_PRONOUN_QUESTIONS;
@@ -754,6 +781,11 @@ window.DEMO_TRANSLATION_QUESTIONS = DEMO_TRANSLATION_QUESTIONS;
 window.ADJECTIVE_AGREEMENT_TRANSLATION_QUESTIONS = ADJECTIVE_AGREEMENT_TRANSLATION_QUESTIONS;
 window.PLURAL_TYPE_QUESTIONS = PLURAL_TYPE_QUESTIONS;
 window.CHALLENGE_1_WORDS = CHALLENGE_1_WORDS;
+window.CHALLENGE_1_WORDS_L2 = CHALLENGE_1_WORDS_L2;
+window.CHALLENGE_1_WORDS_L3 = CHALLENGE_1_WORDS_L3;
+window.CHALLENGE_1_WORDS_L4 = CHALLENGE_1_WORDS_L4;
+window.CHALLENGE_1_WORDS_L5 = CHALLENGE_1_WORDS_L5;
+window.CHALLENGE_1_WORDS_L6 = CHALLENGE_1_WORDS_L6;
 window.TRANSLATION_1_QUESTIONS = TRANSLATION_1_QUESTIONS;
 window.CHALLENGE_2_SENTENCES = CHALLENGE_2_SENTENCES;
 window.LESSON_STORIES = LESSON_STORIES;
@@ -764,6 +796,17 @@ window.FILL_GAP_QUESTIONS = FILL_GAP_QUESTIONS;
 window.WORD_ORDER_QUESTIONS = WORD_ORDER_QUESTIONS;
 window.CHANGE_WORD_QUESTIONS = CHANGE_WORD_QUESTIONS;
 window.TRUE_FALSE_QUESTIONS = TRUE_FALSE_QUESTIONS;
+window.TRUE_FALSE_QUESTIONS_L2 = TRUE_FALSE_QUESTIONS_L2;
+window.TRUE_FALSE_QUESTIONS_L3 = TRUE_FALSE_QUESTIONS_L3;
+window.TRUE_FALSE_QUESTIONS_L4 = TRUE_FALSE_QUESTIONS_L4;
+window.TRUE_FALSE_QUESTIONS_L5 = TRUE_FALSE_QUESTIONS_L5;
+window.TRUE_FALSE_QUESTIONS_L6 = TRUE_FALSE_QUESTIONS_L6;
+window.COMPREHENSION_QUESTIONS_L1 = COMPREHENSION_QUESTIONS_L1;
+window.COMPREHENSION_QUESTIONS_L2 = COMPREHENSION_QUESTIONS_L2;
+window.COMPREHENSION_QUESTIONS_L3 = COMPREHENSION_QUESTIONS_L3;
+window.COMPREHENSION_QUESTIONS_L4 = COMPREHENSION_QUESTIONS_L4;
+window.COMPREHENSION_QUESTIONS_L5 = COMPREHENSION_QUESTIONS_L5;
+window.COMPREHENSION_QUESTIONS_L6 = COMPREHENSION_QUESTIONS_L6;
 window.DEMONSTRATIVE_QUESTIONS = DEMONSTRATIVE_QUESTIONS;
 window.SUFFIX_PRONOUN_QUESTIONS = SUFFIX_PRONOUN_QUESTIONS;
 window.ADJECTIVE_AGREEMENT_QUESTIONS = ADJECTIVE_AGREEMENT_QUESTIONS;
@@ -886,7 +929,7 @@ return { total: activeIdxs.length, remaining: activeIdxs.length - easyCount };
 // been fully mastered at 100% — e.g. 3 of 9 modes mastered = 1/3 lit, so
 // finishing one more mode at 100% always walks the character 1/9 further.
 function getExercisesFraction(lessonNum) {
-const modes = Object.keys(EX_LESSON_MAP).filter(m => EX_LESSON_MAP[m] === lessonNum && m !== 'challenge1' && m !== 'challenge2');
+const modes = Object.keys(EX_LESSON_MAP).filter(m => EX_LESSON_MAP[m] === lessonNum && m.indexOf('challenge') !== 0 && m.indexOf('comprehension') !== 0);
 if (!modes.length) return 0;
 const totalPct = modes.reduce((sum, m) => sum + window.getExerciseMasteryPercent(m, exGetQuestionCount(m)), 0);
 return totalPct / (modes.length * 100);
@@ -896,7 +939,7 @@ return totalPct / (modes.length * 100);
 // challenges that have been submitted (lessons with none built yet are
 // automatically fully lit).
 function getChallengesFraction(lessonNum) {
-const challengeModes = Object.keys(EX_LESSON_MAP).filter(m => EX_LESSON_MAP[m] === lessonNum && (m === 'challenge1' || m === 'challenge2'));
+const challengeModes = Object.keys(EX_LESSON_MAP).filter(m => EX_LESSON_MAP[m] === lessonNum && (m.indexOf('challenge') === 0 || m.indexOf('comprehension') === 0));
 if (!challengeModes.length) return 0;
 const submittedCount = challengeModes.filter(m => window.hasSubmittedChallenge(m)).length;
 return submittedCount / challengeModes.length;
@@ -1644,7 +1687,7 @@ const cards = (LESSONS[lesson] && LESSONS[lesson].cards) || [];
 const activeIdxs = cards.map((_,i)=>i).filter(i => !deleted.includes(i));
 const easyCount = activeIdxs.filter(i => (fc[`${lesson}_${i}`]||{}).lastRating === 3).length;
 const flashcardsPct = activeIdxs.length ? Math.round((easyCount/activeIdxs.length)*100) : 0;
-const exModes = Object.keys(EX_LESSON_MAP).filter(m => EX_LESSON_MAP[m] === lesson && m !== 'challenge1' && m !== 'challenge2');
+const exModes = Object.keys(EX_LESSON_MAP).filter(m => EX_LESSON_MAP[m] === lesson && m.indexOf('challenge') !== 0 && m.indexOf('comprehension') !== 0);
 const masteredModes = exModes.filter(m => {
 const poolLength = exGetQuestionCount(m);
 if (!poolLength) return false;
@@ -1654,7 +1697,7 @@ for (let i = 0; i < poolLength; i++) { if (prog[i] === 3) easy++; }
 return easy === poolLength;
 });
 const exercisesPct = exModes.length ? Math.round((masteredModes.length/exModes.length)*100) : 100;
-const challengeModes = Object.keys(EX_LESSON_MAP).filter(m => EX_LESSON_MAP[m] === lesson && (m === 'challenge1' || m === 'challenge2'));
+const challengeModes = Object.keys(EX_LESSON_MAP).filter(m => EX_LESSON_MAP[m] === lesson && (m.indexOf('challenge') === 0 || m.indexOf('comprehension') === 0));
 const submittedCount = challengeModes.filter(m => !!ep[m]).length;
 const challengesPct = challengeModes.length ? Math.round((submittedCount/challengeModes.length)*100) : 100;
 return { lesson, flashcardsPct, exercisesPct, challengesPct };
@@ -1948,10 +1991,11 @@ window.hasSubmittedChallenge = function(mode) {
 return !!exProgress[mode];
 };
 
-window.exSubmitChallenge1 = async function() {
+window.exSubmitChallenge1 = async function(mode) {
+mode = mode || 'challenge1';
 const code = activeStudentCode();
 const today = todayKey();
-const words = window.CHALLENGE_1_WORDS || [];
+const words = (CHALLENGE1_WORDS_BY_MODE[mode] && CHALLENGE1_WORDS_BY_MODE[mode]()) || [];
 const answers = words.map((w, i) => {
 const el = document.getElementById('ch1-input-' + i);
 return { ar: w.ar, en: w.en, answer: el ? el.value.trim() : '' };
@@ -1959,7 +2003,8 @@ return { ar: w.ar, en: w.en, answer: el ? el.value.trim() : '' };
 const filled = answers.filter(a => a.answer);
 if (!filled.length) { showToast('Write at least one sentence first'); return; }
 
-let block = '📋 Challenge 1 — Lesson 1 (a sentence with each word)';
+const lessonNum = EX_LESSON_MAP[mode];
+let block = '📋 Challenge 1 — Lesson ' + lessonNum + ' (a sentence with each word)';
 answers.forEach((a, i) => {
 block += `\n${i+1}. ${a.ar} (${a.en}): ${a.answer || '—'}`;
 });
@@ -1971,9 +2016,9 @@ if (!submissions[code]) submissions[code] = {};
 submissions[code][today] = dayData;
 await saveDay(code, today, dayData);
 
-const oldFrac = window.getLessonProgressSum(EX_LESSON_MAP['challenge1']);
-exProgress['challenge1'] = true;
-window.triggerMilestoneWalk(EX_LESSON_MAP['challenge1'], oldFrac, window.getLessonProgressSum(EX_LESSON_MAP['challenge1']), 'challenges');
+const oldFrac = window.getLessonProgressSum(lessonNum);
+exProgress[mode] = true;
+window.triggerMilestoneWalk(lessonNum, oldFrac, window.getLessonProgressSum(lessonNum), 'challenges');
 for (let i = 0; i < filled.length; i++) incrementCardActivity(code);
 await saveFlashcardData(code);
 
@@ -2193,7 +2238,7 @@ document.getElementById('tab-homework').classList.toggle('active', tab==='homewo
 document.getElementById('tab-story').classList.toggle('active', tab==='story');
 const reviseCode = currentUser || viewingStudent;
 const reviseLessonNum = studentLesson[reviseCode] || 1;
-if (tab==='flashcards') { fcCurrentLesson = studentLesson[activeStudentCode()] || 1; fcShowLessonPicker = false; renderFlashcards(); }
+if (tab==='flashcards') { fcCurrentLesson = studentLesson[activeStudentCode()] || 1; fcShowLessonPicker = true; renderFlashcards(); }
 if (tab==='exercises' && typeof exShowPicker === 'function' && !checkGuestLock('exercises', reviseLessonNum)) { exPickerLesson = null; exShowPicker(); }
 if (tab==='challenges' && typeof exShowChallengesPicker === 'function' && !checkGuestLock('challenges', reviseLessonNum)) { exPickerLesson = null; exShowChallengesPicker(); }
 if (tab==='story') {
@@ -2593,9 +2638,7 @@ const maxLesson = (studentLesson[code] !== undefined) ? studentLesson[code] : 1;
 picker.style.display = fcShowLessonPicker ? 'flex' : 'none';
 const fcPrevBtn = document.getElementById('fc-prev-lessons-btn');
 if (fcPrevBtn) {
-fcPrevBtn.style.display = maxLesson > 1 ? 'inline-block' : 'none';
-fcPrevBtn.textContent = fcShowLessonPicker ? 'Hide Previous Lessons' : 'Previous Lessons';
-fcPrevBtn.onclick = () => { fcShowLessonPicker = !fcShowLessonPicker; renderFlashcards(); };
+fcPrevBtn.style.display = 'none';
 }
 if (isGuestMode) {
 const principlesBtn = document.getElementById('guest-principles-btn');
@@ -2603,10 +2646,12 @@ const unlocked = getLessonMasteryPercent(fcCurrentLesson) >= 100;
 if (principlesBtn) principlesBtn.style.display = unlocked ? 'block' : 'none';
 
 }
-Object.entries(LESSONS).forEach(([num, lesson]) => {
+const fcSortedEntries = Object.entries(LESSONS)
+.filter(([num]) => parseInt(num) !== 0 && parseInt(num) <= maxLesson)
+.sort((a, b) => parseInt(b[0]) - parseInt(a[0]));
+let fcPrevLessonNum = null;
+fcSortedEntries.forEach(([num, lesson]) => {
 const lessonNum = parseInt(num);
-if (lessonNum === 0) return; // Skip the unused "Advanced students" placeholder lesson
-if (lessonNum > maxLesson) return; // Skip lessons beyond student's level
 const pct = getLessonMasteryPercent(num);
 const counts = getLessonMasteryCounts(num);
 const completed = counts.total - counts.remaining;
@@ -2614,9 +2659,12 @@ const state = pct === 100 ? 'state-complete' : pct === 0 ? 'state-untouched' : '
 const badge = pct === 100 ? 'COMPLETED 100%' : `PROGRESS: ${pct}%`;
 const btn = document.createElement('button');
 btn.className='fc-lesson-btn '+state+(num==fcCurrentLesson?' active':'');
+if (fcPrevLessonNum !== null && lessonNum !== fcPrevLessonNum) btn.style.marginTop = '18px';
+fcPrevLessonNum = lessonNum;
 btn.innerHTML = `<div class="fc-lesson-top">${miniRing(pct, '🃏')}<div class="fc-lesson-info"><div class="fc-lesson-badge">${badge}</div><div class="fc-lesson-count">${counts.remaining} card${counts.remaining!==1?'s':''} until mastery</div></div></div><div class="fc-lesson-name">${lesson.name}</div>`;
 btn.onclick=()=>{
 fcCurrentLesson=num;
+fcShowLessonPicker = false;
 if (pct === 100) {
 window.showMasteredMilestone('flashcards', num, () => { window.switchTab('flashcards'); });
 } else {
@@ -2633,6 +2681,12 @@ if (!fcQueue.length) { if (isGuestMode) buildGuestFcQueue(); else buildFcQueue()
 
 const area = document.getElementById('fc-area');
 area.innerHTML='';
+area.style.display = fcShowLessonPicker ? 'none' : 'block';
+const fcBackBtn = document.getElementById('fc-back-to-decks-btn');
+if (fcBackBtn) {
+fcBackBtn.style.display = fcShowLessonPicker ? 'none' : 'inline-block';
+fcBackBtn.onclick = () => { fcShowLessonPicker = true; renderFlashcards(); };
+}
 
 if (!fcQueue.length || fcCurrentIdx >= fcQueue.length) {
 if (isGuestMode) {
@@ -3236,6 +3290,21 @@ pool.push({ ar: c.ar, target: exStripHarakat(c.ar), en: c.en });
 return pool;
 }
 
+function exBuildVocabTransPool(lessonNum) {
+const cards = (window.LESSONS && window.LESSONS[lessonNum] && window.LESSONS[lessonNum].cards) ? window.LESSONS[lessonNum].cards : [];
+const pool = [];
+cards.forEach(c => {
+if (c.ar.includes('/')) {
+const parts = c.ar.split('/').map(s => s.trim());
+pool.push({ ar: parts[0], en: c.en });
+pool.push({ ar: parts[1], en: c.en });
+} else {
+pool.push({ ar: c.ar, en: c.en });
+}
+});
+return pool;
+}
+
 // Build a self-check session: 11 random words from the Lesson 1 pool
 function exBuildEngSelfCheckPool() {
 const full = exBuildLesson1Pool();
@@ -3249,9 +3318,14 @@ plural: 1, pluraltype: 1,
 typeharakat: 1, typeenglish: 1,
 suffixpronoun: 1, suffixtrans: 1, aetrans: 1, challenge1: 1, challenge2: 1,
 adjectiveagreement: 2, adjectiveagreementtrans: 2,
-demonstrative: 2, demotrans: 2, feminine: 2
+demonstrative: 2, demotrans: 2, feminine: 2,
+vocabtrans1: 1, vocabtrans2: 2, vocabtrans3: 3, vocabtrans4: 4, vocabtrans5: 5, vocabtrans6: 6,
+challenge1l2: 2, challenge1l3: 3, challenge1l4: 4, challenge1l5: 5, challenge1l6: 6,
+changeword2: 2, changeword3: 3, changeword4: 4, changeword5: 5, changeword6: 6,
+truefalse2: 2, truefalse3: 3, truefalse4: 4, truefalse5: 5, truefalse6: 6,
+comprehension1: 1, comprehension2: 2, comprehension3: 3, comprehension4: 4, comprehension5: 5, comprehension6: 6
 };
-const EX_MAX_LESSON = 2;
+const EX_MAX_LESSON = 6;
 let exPickerLesson = null;
 
 const EX_CARDS = [
@@ -3264,26 +3338,69 @@ const EX_CARDS = [
 { mode:'suffixpronoun', icon:'🔤', title:'Suffix Pronouns', desc:'Does the attached pronoun (ـهُ / ـهَا / ـهُمْ) match the first word? True or false.' },
 { mode:'suffixtrans', icon:'✍️', title:'Suffix Pronouns — Translate', desc:'Read the English, write the Arabic, then reveal and grade yourself.' },
 { mode:'changeword', icon:'✏️', title:'Change One Word', desc:'A sentence has one wrong word. Type the correct replacement.' },
+{ mode:'changeword2', icon:'✏️', title:'Change One Word', desc:'A sentence has one wrong word. Type the correct replacement.' },
+{ mode:'changeword3', icon:'✏️', title:'Change One Word', desc:'A sentence has one wrong word. Type the correct replacement.' },
+{ mode:'changeword4', icon:'✏️', title:'Change One Word', desc:'A sentence has one wrong word. Type the correct replacement.' },
+{ mode:'changeword5', icon:'✏️', title:'Change One Word', desc:'A sentence has one wrong word. Type the correct replacement.' },
+{ mode:'changeword6', icon:'✏️', title:'Change One Word', desc:'A sentence has one wrong word. Type the correct replacement.' },
 { mode:'truefalse', icon:'✅', title:'True or False', desc:'Is the sentence correct or does it contain an error?' },
+{ mode:'truefalse2', icon:'✅', title:'True or False', desc:'Is the sentence correct or does it contain an error?' },
+{ mode:'truefalse3', icon:'✅', title:'True or False', desc:'Is the sentence correct or does it contain an error?' },
+{ mode:'truefalse4', icon:'✅', title:'True or False', desc:'Is the sentence correct or does it contain an error?' },
+{ mode:'truefalse5', icon:'✅', title:'True or False', desc:'Is the sentence correct or does it contain an error?' },
+{ mode:'truefalse6', icon:'✅', title:'True or False', desc:'Is the sentence correct or does it contain an error?' },
 { mode:'aetrans', icon:'🔁', title:'Arabic → English', desc:'Read the Arabic sentence, translate it in your head, then reveal and grade yourself.' },
 { mode:'challenge1', icon:'🏆', title:'Challenge 1', desc:"Write your own sentence using each of 15 key words. We'll go over these together in lesson." },
 { mode:'challenge2', icon:'🏆', title:'Challenge 2', desc:"Translate each English sentence into Arabic. We'll go over these together in lesson." },
+{ mode:'challenge1l2', icon:'🏆', title:'Challenge 1', desc:"Write your own sentence using each of 15 key words. We'll go over these together in lesson." },
+{ mode:'challenge1l3', icon:'🏆', title:'Challenge 1', desc:"Write your own sentence using each of 15 key words. We'll go over these together in lesson." },
+{ mode:'challenge1l4', icon:'🏆', title:'Challenge 1', desc:"Write your own sentence using each of 15 key words. We'll go over these together in lesson." },
+{ mode:'challenge1l5', icon:'🏆', title:'Challenge 1', desc:"Write your own sentence using each of 15 key words. We'll go over these together in lesson." },
+{ mode:'challenge1l6', icon:'🏆', title:'Challenge 1', desc:"Write your own sentence using each of 15 key words. We'll go over these together in lesson." },
+{ mode:'comprehension1', icon:'💬', title:'Comprehension', desc:"Answer 15 questions about the story in a full Arabic sentence. We'll go over these together in lesson." },
+{ mode:'comprehension2', icon:'💬', title:'Comprehension', desc:"Answer 15 questions about the story in a full Arabic sentence. We'll go over these together in lesson." },
+{ mode:'comprehension3', icon:'💬', title:'Comprehension', desc:"Answer 15 questions about the story in a full Arabic sentence. We'll go over these together in lesson." },
+{ mode:'comprehension4', icon:'💬', title:'Comprehension', desc:"Answer 15 questions about the story in a full Arabic sentence. We'll go over these together in lesson." },
+{ mode:'comprehension5', icon:'💬', title:'Comprehension', desc:"Answer 15 questions about the story in a full Arabic sentence. We'll go over these together in lesson." },
+{ mode:'comprehension6', icon:'💬', title:'Comprehension', desc:"Answer 15 questions about the story in a full Arabic sentence. We'll go over these together in lesson." },
 { mode:'demonstrative', icon:'👉', title:'Demonstrative Pronouns', desc:'Practise هذا / هذه / هؤلاء agreement with true/false and correction questions.' },
 { mode:'demotrans', icon:'👉', title:'Demonstrative Pronouns — Translate', desc:'Read the English, write the Arabic demonstrative phrase, then reveal and grade yourself.' },
 { mode:'adjectiveagreement', icon:'✨', title:'Adjective Agreement', desc:'Noun-adjective agreement: is the adjective correctly matched to the noun?' },
-{ mode:'adjectiveagreementtrans', icon:'✨', title:'Adjective Agreement — Translate', desc:'Read the English, write the Arabic noun + adjective, then reveal and grade yourself.' }
+{ mode:'adjectiveagreementtrans', icon:'✨', title:'Adjective Agreement — Translate', desc:'Read the English, write the Arabic noun + adjective, then reveal and grade yourself.' },
+{ mode:'vocabtrans1', icon:'📖', title:'Vocab — Translate', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' },
+{ mode:'vocabtrans2', icon:'📖', title:'Vocab — Translate', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' },
+{ mode:'vocabtrans3', icon:'📖', title:'Vocab — Translate', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' },
+{ mode:'vocabtrans4', icon:'📖', title:'Vocab — Translate', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' },
+{ mode:'vocabtrans5', icon:'📖', title:'Vocab — Translate', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' },
+{ mode:'vocabtrans6', icon:'📖', title:'Vocab — Translate', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' }
 ];
 function exGetQuestionCount(mode) {
 return mode==='fillgap' ? FILL_GAP_QUESTIONS.length
 : mode==='wordorder' ? WORD_ORDER_QUESTIONS.length
 : mode==='truefalse' ? TRUE_FALSE_QUESTIONS.length
+: mode==='truefalse2' ? TRUE_FALSE_QUESTIONS_L2.length
+: mode==='truefalse3' ? TRUE_FALSE_QUESTIONS_L3.length
+: mode==='truefalse4' ? TRUE_FALSE_QUESTIONS_L4.length
+: mode==='truefalse5' ? TRUE_FALSE_QUESTIONS_L5.length
+: mode==='truefalse6' ? TRUE_FALSE_QUESTIONS_L6.length
 : mode==='changeword' ? CHANGE_WORD_QUESTIONS.length
+: mode==='changeword2' ? CHANGE_WORD_QUESTIONS_L2.length
+: mode==='changeword3' ? CHANGE_WORD_QUESTIONS_L3.length
+: mode==='changeword4' ? CHANGE_WORD_QUESTIONS_L4.length
+: mode==='changeword5' ? CHANGE_WORD_QUESTIONS_L5.length
+: mode==='changeword6' ? CHANGE_WORD_QUESTIONS_L6.length
 : mode==='demonstrative' ? DEMONSTRATIVE_QUESTIONS.length
 : mode==='demotrans' ? DEMO_TRANSLATION_QUESTIONS.length
 : mode==='suffixpronoun' ? SUFFIX_PRONOUN_QUESTIONS.length
 : mode==='suffixtrans' ? SUFFIX_TRANSLATION_QUESTIONS.length
 : mode==='adjectiveagreement' ? ADJECTIVE_AGREEMENT_QUESTIONS.length
 : mode==='adjectiveagreementtrans' ? ADJECTIVE_AGREEMENT_TRANSLATION_QUESTIONS.length
+: mode==='vocabtrans1' ? exBuildVocabTransPool(1).length
+: mode==='vocabtrans2' ? exBuildVocabTransPool(2).length
+: mode==='vocabtrans3' ? exBuildVocabTransPool(3).length
+: mode==='vocabtrans4' ? exBuildVocabTransPool(4).length
+: mode==='vocabtrans5' ? exBuildVocabTransPool(5).length
+: mode==='vocabtrans6' ? exBuildVocabTransPool(6).length
 : mode==='plural' ? PLURAL_QUESTIONS.length
 : mode==='feminine' ? FEMININE_QUESTIONS.length
 : mode==='pluraltype' ? PLURAL_TYPE_QUESTIONS.length * 2
@@ -3298,7 +3415,7 @@ const defaultLesson = Math.min(window.getCurrentLesson(), EX_MAX_LESSON);
 const viewingLesson = exPickerLesson || defaultLesson;
 const isPastLesson = viewingLesson < defaultLesson;
 
-const cardsHtml = EX_CARDS.filter(c => EX_LESSON_MAP[c.mode] === viewingLesson && c.mode !== 'challenge1' && c.mode !== 'challenge2').map(c => {
+const cardsHtml = EX_CARDS.filter(c => EX_LESSON_MAP[c.mode] === viewingLesson && c.mode.indexOf('challenge') !== 0 && c.mode.indexOf('comprehension') !== 0).map(c => {
 if (c.mode === 'challenge1' || c.mode === 'challenge2') {
 const submitted = window.hasSubmittedChallenge && window.hasSubmittedChallenge(c.mode);
 return `<div class="ex-card" id="btn-${c.mode}">
@@ -3336,7 +3453,7 @@ ${cardsHtml}
   ${(defaultLesson > 1 && !isPastLesson) ? `<button id="ex-prev-lessons-btn" style="width:100%;margin-top:18px;padding:12px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">Previous Lessons</button>` : ''}
 `);
 
-EX_CARDS.filter(c => EX_LESSON_MAP[c.mode] === viewingLesson && c.mode !== 'challenge1' && c.mode !== 'challenge2').forEach(c => {
+EX_CARDS.filter(c => EX_LESSON_MAP[c.mode] === viewingLesson && c.mode.indexOf('challenge') !== 0 && c.mode.indexOf('comprehension') !== 0).forEach(c => {
 document.getElementById('btn-' + c.mode).onclick = () => {
 const lessonNum = EX_LESSON_MAP[c.mode];
 if (c.mode === 'challenge1' || c.mode === 'challenge2') {
@@ -3362,7 +3479,7 @@ function exShowChallengesPicker() {
 const defaultLesson = Math.min(window.getCurrentLesson(), EX_MAX_LESSON);
 const viewingLesson = exPickerLesson || defaultLesson;
 const isPastLesson = viewingLesson < defaultLesson;
-const challengeCards = EX_CARDS.filter(c => EX_LESSON_MAP[c.mode] === viewingLesson && (c.mode === 'challenge1' || c.mode === 'challenge2'));
+const challengeCards = EX_CARDS.filter(c => EX_LESSON_MAP[c.mode] === viewingLesson && (c.mode.indexOf('challenge') === 0 || c.mode.indexOf('comprehension') === 0));
 const cardsHtml = challengeCards.map(c => {
 const submitted = window.hasSubmittedChallenge && window.hasSubmittedChallenge(c.mode);
 return `<div class="ex-card" id="chbtn-${c.mode}">
@@ -3382,7 +3499,7 @@ document.getElementById('challenges-root').innerHTML = `
 challengeCards.forEach(c => {
 document.getElementById('chbtn-' + c.mode).onclick = () => {
 const lessonNum = EX_LESSON_MAP[c.mode];
-const open = () => c.mode === 'challenge1' ? exShowChallenge1() : exShowChallenge2();
+const open = () => c.mode.indexOf('comprehension') === 0 ? exShowComprehension(c.mode) : c.mode === 'challenge2' ? exShowChallenge2() : exShowChallenge1(c.mode);
 if (window.hasSubmittedChallenge(c.mode)) { window.showMasteredMilestone('challenges', lessonNum, open); return; }
 open();
 };
@@ -3406,8 +3523,18 @@ btn.onclick = () => { exPickerLesson = parseInt(btn.dataset.lesson); exShowPicke
 document.getElementById('ex-lesson-pick-back').onclick = exShowPicker;
 }
 
-function exShowChallenge1() {
-const words = window.CHALLENGE_1_WORDS || [];
+const CHALLENGE1_WORDS_BY_MODE = {
+challenge1: () => window.CHALLENGE_1_WORDS,
+challenge1l2: () => window.CHALLENGE_1_WORDS_L2,
+challenge1l3: () => window.CHALLENGE_1_WORDS_L3,
+challenge1l4: () => window.CHALLENGE_1_WORDS_L4,
+challenge1l5: () => window.CHALLENGE_1_WORDS_L5,
+challenge1l6: () => window.CHALLENGE_1_WORDS_L6
+};
+
+function exShowChallenge1(mode) {
+mode = mode || 'challenge1';
+const words = (CHALLENGE1_WORDS_BY_MODE[mode] && CHALLENGE1_WORDS_BY_MODE[mode]()) || [];
 let html = `
 <div class="section-label">🏆 Challenge 1 — Make a sentence</div>
 <div style="background:var(--grey-light);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
@@ -3425,9 +3552,76 @@ html += `
 <button id="ch1-back-btn" style="width:100%;margin-top:8px;padding:10px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">← Back</button>
 </div>`;
 document.getElementById('challenges-root').innerHTML = html;
-document.getElementById('ch1-submit-btn').onclick = () => window.exSubmitChallenge1();
+document.getElementById('ch1-submit-btn').onclick = () => window.exSubmitChallenge1(mode);
 document.getElementById('ch1-back-btn').onclick = exShowChallengesPicker;
 }
+
+const COMPREHENSION_QUESTIONS_BY_MODE = {
+comprehension1: () => window.COMPREHENSION_QUESTIONS_L1,
+comprehension2: () => window.COMPREHENSION_QUESTIONS_L2,
+comprehension3: () => window.COMPREHENSION_QUESTIONS_L3,
+comprehension4: () => window.COMPREHENSION_QUESTIONS_L4,
+comprehension5: () => window.COMPREHENSION_QUESTIONS_L5,
+comprehension6: () => window.COMPREHENSION_QUESTIONS_L6
+};
+
+function exShowComprehension(mode) {
+const questions = (COMPREHENSION_QUESTIONS_BY_MODE[mode] && COMPREHENSION_QUESTIONS_BY_MODE[mode]()) || [];
+let html = `
+<div class="section-label">💬 Comprehension — Answer in Arabic</div>
+<div style="background:var(--grey-light);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
+<div style="font-size:14px;color:#6b7280;margin-bottom:20px;line-height:1.6">Read each question about the story and write your answer as a full Arabic sentence. Don't worry about getting it perfect — we'll go over these together in your next lesson.</div>`;
+questions.forEach((q, i) => {
+html += `
+<div style="margin-bottom:18px">
+<div style="font-family:'Scheherazade New', serif;font-size:1.3em;direction:rtl;text-align:right;color:#8b2035;font-weight:700">${q.ar}</div>
+<div style="font-size:12px;color:#6b7280;margin-bottom:6px">${q.en}</div>
+<textarea id="comp-input-${i}" placeholder="Write your answer..." style="width:100%;padding:10px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:1.1em;direction:rtl;text-align:right;font-family:inherit;min-height:50px;outline:none;box-sizing:border-box"></textarea>
+</div>`;
+});
+html += `
+<button id="comp-submit-btn" style="width:100%;margin-top:8px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">Submit Comprehension</button>
+<button id="comp-back-btn" style="width:100%;margin-top:8px;padding:10px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">← Back</button>
+</div>`;
+document.getElementById('challenges-root').innerHTML = html;
+document.getElementById('comp-submit-btn').onclick = () => window.exSubmitComprehension(mode);
+document.getElementById('comp-back-btn').onclick = exShowChallengesPicker;
+}
+
+window.exSubmitComprehension = async function(mode) {
+const code = activeStudentCode();
+const today = todayKey();
+const questions = (COMPREHENSION_QUESTIONS_BY_MODE[mode] && COMPREHENSION_QUESTIONS_BY_MODE[mode]()) || [];
+const answers = questions.map((q, i) => {
+const el = document.getElementById('comp-input-' + i);
+return { ar: q.ar, en: q.en, answer: el ? el.value.trim() : '' };
+});
+const filled = answers.filter(a => a.answer);
+if (!filled.length) { showToast('Answer at least one question first'); return; }
+
+const lessonNum = EX_LESSON_MAP[mode];
+let block = '📋 Comprehension — Lesson ' + lessonNum + ' (story questions)';
+answers.forEach((a, i) => {
+block += `\n${i+1}. ${a.ar} (${a.en})\n   ${a.answer || '—'}`;
+});
+
+const existing = submissions[code]?.[today] || {};
+const newText = (existing.text ? existing.text + '\n\n' : '') + block;
+const dayData = { images: existing.images || [], text: newText, reviewed: false };
+if (!submissions[code]) submissions[code] = {};
+submissions[code][today] = dayData;
+await saveDay(code, today, dayData);
+
+const oldFrac = window.getLessonProgressSum(lessonNum);
+exProgress[mode] = true;
+window.triggerMilestoneWalk(lessonNum, oldFrac, window.getLessonProgressSum(lessonNum), 'challenges');
+for (let i = 0; i < filled.length; i++) incrementCardActivity(code);
+await saveFlashcardData(code);
+
+showToast('Submitted! Your teacher will go over this with you in your next lesson.');
+render();
+if (typeof exShowChallengesPicker === 'function') exShowChallengesPicker();
+};
 
 function exShowChallenge2() {
 const sentences = window.CHALLENGE_2_SENTENCES || [];
@@ -3454,7 +3648,7 @@ function exShowSetup(mode) {
 exMode = mode;
 const title = mode === 'fillgap' ? '📝 Fill the Gap'
 : mode === 'wordorder' ? '🔀 Word Order'
-: mode === 'changeword' ? '✏️ Change One Word'
+: mode === 'changeword' || mode === 'changeword2' || mode === 'changeword3' || mode === 'changeword4' || mode === 'changeword5' || mode === 'changeword6' ? '✏️ Change One Word'
 : mode === 'demonstrative' ? '👉 Demonstrative Pronouns'
 : mode === 'suffixpronoun' ? '🔤 Suffix Pronouns'
 : mode === 'plural' ? '👥 Spot the Plural'
@@ -3464,6 +3658,7 @@ const title = mode === 'fillgap' ? '📝 Fill the Gap'
 : mode === 'suffixtrans' ? '✍️ Suffix Pronouns — Translate'
 : mode === 'demotrans' ? '👉 Demonstrative Pronouns — Translate'
 : mode === 'adjectiveagreementtrans' ? '✨ Adjective Agreement — Translate'
+: mode === 'vocabtrans1' || mode === 'vocabtrans2' || mode === 'vocabtrans3' || mode === 'vocabtrans4' || mode === 'vocabtrans5' || mode === 'vocabtrans6' ? '📖 Vocab — Translate'
 : mode === 'pluraltype' ? '🧩 Spot the Pattern'
 : mode === 'aetrans' ? '🔁 Arabic → English'
 : '✅ True or False';
@@ -3486,6 +3681,11 @@ function exBuildTaggedPool(mode) {
 return mode === 'fillgap' ? FILL_GAP_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
 : mode === 'wordorder' ? WORD_ORDER_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
 : mode === 'changeword' ? CHANGE_WORD_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
+: mode === 'changeword2' ? CHANGE_WORD_QUESTIONS_L2.map((q,i) => ({ ...q, __idx: i }))
+: mode === 'changeword3' ? CHANGE_WORD_QUESTIONS_L3.map((q,i) => ({ ...q, __idx: i }))
+: mode === 'changeword4' ? CHANGE_WORD_QUESTIONS_L4.map((q,i) => ({ ...q, __idx: i }))
+: mode === 'changeword5' ? CHANGE_WORD_QUESTIONS_L5.map((q,i) => ({ ...q, __idx: i }))
+: mode === 'changeword6' ? CHANGE_WORD_QUESTIONS_L6.map((q,i) => ({ ...q, __idx: i }))
 : mode === 'demonstrative' ? DEMONSTRATIVE_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
 : mode === 'suffixpronoun' ? SUFFIX_PRONOUN_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
 : mode === 'adjectiveagreement' ? ADJECTIVE_AGREEMENT_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
@@ -3496,8 +3696,19 @@ return mode === 'fillgap' ? FILL_GAP_QUESTIONS.map((q,i) => ({ ...q, __idx: i })
 : mode === 'suffixtrans' ? SUFFIX_TRANSLATION_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
 : mode === 'demotrans' ? DEMO_TRANSLATION_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
 : mode === 'adjectiveagreementtrans' ? ADJECTIVE_AGREEMENT_TRANSLATION_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
+: mode === 'vocabtrans1' ? exBuildVocabTransPool(1).map((q,i) => ({ ...q, __idx: i }))
+: mode === 'vocabtrans2' ? exBuildVocabTransPool(2).map((q,i) => ({ ...q, __idx: i }))
+: mode === 'vocabtrans3' ? exBuildVocabTransPool(3).map((q,i) => ({ ...q, __idx: i }))
+: mode === 'vocabtrans4' ? exBuildVocabTransPool(4).map((q,i) => ({ ...q, __idx: i }))
+: mode === 'vocabtrans5' ? exBuildVocabTransPool(5).map((q,i) => ({ ...q, __idx: i }))
+: mode === 'vocabtrans6' ? exBuildVocabTransPool(6).map((q,i) => ({ ...q, __idx: i }))
 : mode === 'pluraltype' ? exBuildPluralTypeDeck().map((q,i) => ({ ...q, __idx: i }))
 : mode === 'aetrans' ? TRANSLATION_1_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
+: mode === 'truefalse2' ? TRUE_FALSE_QUESTIONS_L2.map((q,i) => ({ ...q, __idx: i }))
+: mode === 'truefalse3' ? TRUE_FALSE_QUESTIONS_L3.map((q,i) => ({ ...q, __idx: i }))
+: mode === 'truefalse4' ? TRUE_FALSE_QUESTIONS_L4.map((q,i) => ({ ...q, __idx: i }))
+: mode === 'truefalse5' ? TRUE_FALSE_QUESTIONS_L5.map((q,i) => ({ ...q, __idx: i }))
+: mode === 'truefalse6' ? TRUE_FALSE_QUESTIONS_L6.map((q,i) => ({ ...q, __idx: i }))
 : TRUE_FALSE_QUESTIONS.map((q,i) => ({ ...q, __idx: i }));
 }
 
@@ -3605,7 +3816,7 @@ inp.value = '';
 setTimeout(() => inp.focus(), 50);
 document.getElementById('ex-check-btn').onclick = exSubmitFill;
 inp.onkeydown = e => { if (e.key === 'Enter') exSubmitFill(); };
-} else if (exMode === 'truefalse' || exMode === 'demonstrative' || exMode === 'suffixpronoun' || exMode === 'adjectiveagreement') {
+} else if (exMode === 'truefalse' || exMode === 'truefalse2' || exMode === 'truefalse3' || exMode === 'truefalse4' || exMode === 'truefalse5' || exMode === 'truefalse6' || exMode === 'demonstrative' || exMode === 'suffixpronoun' || exMode === 'adjectiveagreement') {
 const q = exQuestions[exCurrent];
 document.getElementById('ex-instruction').textContent = 'Is this sentence correct?';
 document.getElementById('ex-sentence').innerHTML = q.sentence;
@@ -3624,7 +3835,7 @@ tfWrap.innerHTML = `
 document.getElementById('ex-sentence').after(tfWrap);
 document.getElementById('ex-tf-true').onclick = () => exSubmitTrueFalse(true);
 document.getElementById('ex-tf-false').onclick = () => exSubmitTrueFalse(false);
-} else if (exMode === 'changeword') {
+} else if (exMode === 'changeword' || exMode === 'changeword2' || exMode === 'changeword3' || exMode === 'changeword4' || exMode === 'changeword5' || exMode === 'changeword6') {
 const q = exQuestions[exCurrent];
 document.getElementById('ex-instruction').textContent = 'One word is wrong — type the correct word';
 document.getElementById('ex-sentence').innerHTML = q.sentence;
@@ -3741,7 +3952,7 @@ freshBtn.textContent = 'Reveal ←';
 freshBtn.onclick = exSubmitDemoTrans;
 inp.onkeydown = e => { if (e.key === 'Enter') exSubmitDemoTrans(); };
 }
-else if (exMode === 'adjectiveagreementtrans') {
+else if (exMode === 'adjectiveagreementtrans' || exMode === 'vocabtrans1' || exMode === 'vocabtrans2' || exMode === 'vocabtrans3' || exMode === 'vocabtrans4' || exMode === 'vocabtrans5' || exMode === 'vocabtrans6') {
 const q = exQuestions[exCurrent];
 const existingType = document.getElementById('ex-tf-btns');
 if (existingType) existingType.remove();
