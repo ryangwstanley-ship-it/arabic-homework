@@ -62,6 +62,7 @@
 .status-dot.red { background: var(--dot-red); }
 .status-dot.grey { background: rgba(255,255,255,0.2); }
 .status-dot.blue { background: #3b82f6; }
+.status-dot.yellow { background: var(--dot-yellow); }
 .hw-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; background: rgba(255,255,255,0.15); }
 .hw-dot.done { background: var(--dot-green); }
 .sidebar-bottom { padding: 12px 8px; border-top: 1px solid rgba(255,255,255,0.1); white-space: nowrap; }
@@ -175,14 +176,10 @@
 .day-num { font-size: 14px; color: var(--ink); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
 .other-month .day-num { color: var(--border); }
 
-/* Activity squares instead of dots */
-.dots { display: flex; gap: 2px; margin-top: 3px; height: 8px; align-items: center; flex-wrap: wrap; justify-content: center; }
-.dot { width: 7px; height: 7px; border-radius: 2px; flex-shrink: 0; }
-.dot-green { background: var(--dot-green); }
-.dot-blue { background: var(--dot-blue); }
-.dot-yellow { background: var(--dot-yellow); }
-/* Flashcard activity square */
-.dot-fc { background: #8b5cf6; }
+.cal-day.day-green { background: #22c55e; }
+.cal-day.day-green .day-num { color: white; font-weight: 700; }
+.cal-day.day-blue { background: #3b82f6; }
+.cal-day.day-blue .day-num { color: white; font-weight: 700; }
 
 .cal-legend { display: flex; gap: 12px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); flex-wrap: wrap; }
 .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--grey); }
@@ -192,7 +189,8 @@
 .day-card { border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; background: var(--grey-light); color: var(--ink); }
 .day-card.card-green { background: #16a34a; color: white; }
 .day-card.card-yellow { background: #ca8a04; color: white; }
-.day-card.card-blue { background: var(--blue); color: white; }
+.day-card.card-blue { background: #3b82f6; color: white; }
+.day-card.card-gray { background: #8a7f6e; color: white; }
 .day-card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; }
 .day-badge { background: rgba(0,0,0,0.1); border-radius: 20px; padding: 4px 10px; font-size: 12px; font-weight: 600; }
 .day-card.card-green .day-badge, .day-card.card-yellow .day-badge, .day-card.card-blue .day-badge { background: rgba(255,255,255,0.2); }
@@ -358,16 +356,16 @@
 .modal-overlay.open { display: flex; }
 .modal-img { max-width: 100%; max-height: 80vh; border-radius: 12px; object-fit: contain; }
 .modal-close { position: absolute; top: 16px; right: 16px; background: var(--grey-light); border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-.principle-item { padding: 12px 16px; border-bottom: 1px solid var(--border); cursor: pointer; user-select: none; transition: background 0.2s; }
+.principle-item { padding: 20px; border-bottom: 1px solid var(--border); cursor: pointer; user-select: none; transition: background 0.2s; }
 .principle-item:hover { background: var(--blue-light); }
-.principle-item-header { display: flex; align-items: center; gap: 12px; font-weight: 500; color: var(--ink); }
-.principle-item-toggle { font-size: 12px; color: var(--grey); transition: transform 0.2s; }
+.principle-item-header { display: flex; align-items: center; gap: 14px; font-weight: 600; color: var(--ink); font-size: 16px; }
+.principle-item-toggle { font-size: 14px; color: var(--grey); transition: transform 0.2s; }
 .principle-item-toggle.open { transform: rotate(90deg); }
-.principle-item-content { display: none; margin-top: 12px; padding: 14px; background: var(--blue-light); border-radius: 10px; }
+.principle-item-content { display: none; margin-top: 16px; padding: 20px; background: var(--blue-light); border-radius: 12px; }
 .principle-item-content.open { display: block; }
-.principle-item-content-title { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 8px; }
-.principle-item-content-examples { font-size: 12px; color: var(--ink); direction: rtl; margin-bottom: 10px; line-height: 1.6; font-family: 'Scheherazade New', serif; }
-.principle-item-content-explanation { font-size: 12px; color: var(--grey); line-height: 1.6; }
+.principle-item-content-title { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 10px; }
+.principle-item-content-examples { font-size: 20px; color: var(--ink); direction: rtl; margin-bottom: 14px; line-height: 1.9; font-family: 'Scheherazade New', serif; }
+.principle-item-content-explanation { font-size: 16px; color: var(--grey); line-height: 1.8; }
 /* TOAST */
 /* TOAST */
 .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: #10b981; color: white; padding: 12px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; z-index: 200; transition: transform 0.3s; white-space: nowrap; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4); }
@@ -450,6 +448,7 @@ console.log("THE FILE IS LOADING!");
 <div class="streak-info-popup" id="streak-info-popup">Complete at least 20 flashcards or exercise questions, or upload your homework, today to count toward your streak — the ring above fills up as you go. Miss a day completely and your streak resets to 0.</div>
 </div>
 <div class="revision-lesson" id="revision-lesson-wrap" style="cursor:pointer" onclick="window.openLessonDropdown()">Lesson 1</div>
+<div id="progress-saved-text" style="display:none;font-size:11px;font-weight:700;color:#bfdbfe;margin-top:2px">✓ Progress saved today</div>
 </div>
 <div class="revision-rank">
 <div class="revision-rank-num" id="revision-rank-num">#—</div>
@@ -530,8 +529,6 @@ console.log("THE FILE IS LOADING!");
 <div class="cal-grid" id="cal-grid"></div>
 <div class="cal-legend">
 <div class="legend-item"><div class="legend-sq" style="background:var(--dot-green)"></div> Submitted</div>
-<div class="legend-item"><div class="legend-sq" style="background:var(--dot-blue)"></div> Reviewed</div>
-<div class="legend-item"><div class="legend-sq" style="background:var(--dot-yellow)"></div> Made up</div>
 <div class="legend-item"><div class="legend-sq" style="background:#8b5cf6"></div> Flashcards</div>
 </div>
 </div>
@@ -541,7 +538,7 @@ console.log("THE FILE IS LOADING!");
 <div class="day-badge" id="day-badge">Day —</div>
 <div class="day-status" id="day-status" style="margin-top:6px"></div>
 </div>
-<button class="review-btn" id="review-btn" style="display:none"></button>
+
 </div>
 <div class="day-date" id="day-date" style="margin-top:8px"></div>
 </div>
@@ -609,10 +606,25 @@ console.log("THE FILE IS LOADING!");
 <div id="leaderboard-root" style="margin-top:8px"></div>
 </div>
 
-<!-- CHALLENGES PAGE -->
+<!<!-- CHALLENGES PAGE -->
 <div id="tab-content-challenges" class="content" style="display:none">
 <div class="back-row" id="challenges-back-row" onclick="switchTab('milestones')"><span class="back-btn">‹</span><span class="screen-title">Save and Return Home</span></div>
 <div id="challenges-root"></div>
+</div>
+
+<!-- LIBRARY PAGE -->
+<div id="tab-content-library" class="content" style="display:none">
+<div class="back-row" id="library-back-row" onclick="switchTab('milestones')"><span class="back-btn">‹</span><span class="screen-title">Save and Return Home</span></div>
+<div class="tabs" id="library-tabs" style="border-bottom:1px solid var(--border);padding:0;margin-bottom:16px">
+<button class="tab library-tab active" data-tab="principles" style="flex:1;text-align:center;padding:12px">All Principles</button>
+<button class="tab library-tab" data-tab="vocab" style="flex:1;text-align:center;padding:12px">All Vocab</button>
+<button class="tab library-tab" data-tab="lessons" style="flex:1;text-align:center;padding:12px">All Lessons</button>
+</div>
+<div id="library-content" style="min-height:200px">
+<div class="library-pane" data-pane="principles" style="display:block" id="principles-pane"></div>
+<div class="library-pane" data-pane="vocab" style="display:none" id="vocab-pane"></div>
+<div class="library-pane" data-pane="lessons" style="display:none" id="lessons-pane"></div>
+</div>
 </div>
 <!-- STORY TAB -->
 <!-- STORY TAB -->
@@ -702,7 +714,7 @@ console.log("THE FILE IS LOADING!");
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 const firebaseConfig = {
 apiKey: "AIzaSyBmeQwuWPeuQtdC-7w3SyBb2K5ljvvqBGY",
@@ -720,8 +732,12 @@ const db = getFirestore(firebaseApp);
 let DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, CHANGE_WORD_QUESTIONS_L2, CHANGE_WORD_QUESTIONS_L3, CHANGE_WORD_QUESTIONS_L4, CHANGE_WORD_QUESTIONS_L5, CHANGE_WORD_QUESTIONS_L6, TRUE_FALSE_QUESTIONS, TRUE_FALSE_QUESTIONS_L2, TRUE_FALSE_QUESTIONS_L3, TRUE_FALSE_QUESTIONS_L4, TRUE_FALSE_QUESTIONS_L5, TRUE_FALSE_QUESTIONS_L6, COMPREHENSION_QUESTIONS_L1, COMPREHENSION_QUESTIONS_L2, COMPREHENSION_QUESTIONS_L3, COMPREHENSION_QUESTIONS_L4, COMPREHENSION_QUESTIONS_L5, COMPREHENSION_QUESTIONS_L6, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS, PLURAL_QUESTIONS, FEMININE_QUESTIONS, SUFFIX_TRANSLATION_QUESTIONS, DEMO_TRANSLATION_QUESTIONS, ADJECTIVE_AGREEMENT_TRANSLATION_QUESTIONS, PLURAL_TYPE_QUESTIONS, CHALLENGE_1_WORDS, CHALLENGE_1_WORDS_L2, CHALLENGE_1_WORDS_L3, CHALLENGE_1_WORDS_L4, CHALLENGE_1_WORDS_L5, CHALLENGE_1_WORDS_L6, TRANSLATION_1_QUESTIONS, CHALLENGE_2_SENTENCES, LESSON_STORIES;
 async function loadVocabData() {
 
-const url = 'https://raw.githubusercontent.com/ryangwstanley-ship-it/database/main/website%20data%20base?t=' + Date.now();
+const url = 'https://cdn.jsdelivr.net/gh/ryangwstanley-ship-it/database@main/website%20data%20base?t=' + Date.now();
 const res = await fetch(url);
+if (!res.ok) {
+  alert('Could not load the app data right now. Please refresh the page in a moment.');
+  throw new Error('Database fetch failed: ' + res.status);
+}
 const code = await res.text();
 const runner = new Function(
 code.replaceAll('export const', 'const') +
@@ -863,11 +879,39 @@ let isStudentView = false, calYear, calMonth, selectedDate = null;
 let submissions = {}, sidebarCollapsed = false;
 let currentTab = 'homework';
 let isGuestMode = false;
-let didMakeProgress = false;
+function updateProgressBanner() {
+  const banner = document.getElementById('revision-banner');
+  const badge = document.getElementById('progress-saved-text');
+  if (!banner || !badge) return;
+  const code = activeStudentCode ? activeStudentCode() : currentUser;
+  if (hasMadeProgressToday(code)) {
+    banner.style.background = '#2563eb';
+    badge.style.display = 'block';
+  } else {
+    banner.style.background = '';
+    badge.style.display = 'none';
+  }
+}
+let _didMakeProgress = false;
+Object.defineProperty(window, 'didMakeProgress', {
+  get() { return _didMakeProgress; },
+  set(val) {
+    _didMakeProgress = val;
+    if (val) {
+      const banner = document.getElementById('revision-banner');
+      const badge = document.getElementById('progress-saved-text');
+      if (banner) banner.style.background = '#4a6fa5';
+      if (badge) badge.style.display = 'block';
+    }
+  }
+});
+window.didMakeProgress = false;
 let guestLessonDone = false;
 
 // Flashcard state
 let fcProgress = {};
+
+
 let fcCurrentLesson = 1;
 let fcShowLessonPicker = false;
 let fcQueue = [];
@@ -883,11 +927,13 @@ let allCardActivity = {};
 // Current lesson level, per student: studentLesson[code] = 1-16
 let studentLesson = {};
 
-function incrementCardActivity(code) {
+// Exposed on window so the plain <script> further down (exercises code) can call it too —
+// module scripts don't leak top-level functions to other <script> tags otherwise.
+window.incrementCardActivity = function(code) {
 const today = todayKey();
 if (!allCardActivity[code]) allCardActivity[code] = {};
 allCardActivity[code][today] = (allCardActivity[code][today] || 0) + 1;
-}
+};
 // Per-exercise question mastery: exProgress[mode][questionIndex] = 1(Hard)/2(Medium)/3(Easy)
 let exProgress = {};
 // Whether the Reading (Story) and Grammar (Principles) milestone has been marked done for a lesson: readingDone[lessonNum] / grammarDone[lessonNum] = true
@@ -1160,7 +1206,7 @@ inner += isActiveTent
 ? `<g id="ms-tent-${stop.lesson}" style="cursor:pointer" onclick="window.openLessonTentMenu(${stop.lesson})"><circle cx="${x}" cy="${y-25}" r="72" fill="#F4C14E" fill-opacity="0.16" stroke="#F4C14E" stroke-width="2" stroke-opacity="0.7"/>${piece}</g>`
 : piece;
 } else {
-const lit = msStopFraction(stop, currentLevel) > 0;
+const lit = msStopFraction(stop, currentLevel) >= 1;
 const tappable = stop.lesson <= currentLevel;
 const stopIdxInLesson = MS_TORCH_INDEX[stop.key];
 const isNext = nextMilestone && nextMilestone.lesson === stop.lesson && nextMilestone.index === stopIdxInLesson;
@@ -1217,8 +1263,9 @@ setTimeout(() => overlay.remove(), 300);
 // Marks "Reading" done for a lesson, saves it, and either plays the walk-forward
 // celebration (first time it's truly new progress) or just hops to the Milestones
 // map directly (if it was already done, e.g. tapping the button again).
+
 window.markReadingDone = async function(lessonNum) {
-didMakeProgress = true;
+window.didMakeProgress = true;
 const code = currentUser || viewingStudent;
 const sentenceIdx = storyCurrentSentence[code]?.[lessonNum] || 0;
 const lessonStoryData = window.LESSON_STORIES ? window.LESSON_STORIES.find(s => s.lesson === lessonNum) : null;
@@ -1292,6 +1339,7 @@ if (box && storyText) {
   box.appendChild(document.getElementById('guest-flashcards-btn'));
 }
 storyRenderSentence(lessonNum);
+if (typeof setStoryViewMode === 'function') setStoryViewMode('sentence');
 if (guestTourActive && lessonNum === 1 && guestTourStep === 0) {
 guestTourStep = 1;
 hideGuestCoachmark();
@@ -1312,6 +1360,8 @@ document.querySelectorAll('.story-title').forEach(t => { t.style.fontWeight = '4
 document.querySelectorAll('.story-word.new-reading, .story-word.new').forEach(w => { w.style.fontWeight = '400'; w.style.color = '#1a1a2e'; });
 document.querySelectorAll('.story-en-line').forEach(line => { line.style.display = 'none'; });
 ['story-english-btn','story-english-btn-l2','story-english-btn-l3'].forEach(id => { const b = document.getElementById(id); if (b) b.textContent = 'Show English'; });
+const modeToggleWrap = document.getElementById('story-mode-toggle');
+if (modeToggleWrap) modeToggleWrap.style.display = 'none';
 document.getElementById('principles-wrap').style.display = 'block';
 const dynContainerForGrammar = document.getElementById('story-lesson-dynamic');
 if (dynContainerForGrammar) dynContainerForGrammar.appendChild(document.getElementById('principles-wrap'));
@@ -1400,32 +1450,12 @@ setTimeout(() => showGuestCoachmark(document.getElementById('guest-flashcards-bt
 }
 };
 document.getElementById('tent-menu-homework').onclick = () => { overlay.remove(); switchTab('homework'); };
-document.getElementById('tent-menu-library').onclick = () => { overlay.remove(); openLibrary(); };
+document.getElementById('tent-menu-library').onclick = () => { overlay.remove(); switchTab('library'); };
 document.getElementById('tent-menu-close').onclick = () => overlay.remove();
 overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
 };
 
-window.openLibrary = function() {
-const libraryOverlay = document.createElement('div');
-libraryOverlay.className = 'milestone-celebrate-overlay';
-libraryOverlay.innerHTML = `<div class="milestone-celebrate-card" style="text-align:left;max-width:500px;max-height:600px;overflow-y:auto">
-<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;position:sticky;top:0;background:var(--grey-light);padding-bottom:10px">
-<div style="font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--grey)">Library</div>
-<button id="library-close-btn" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--grey)">✕</button>
-</div>
-<div class="tabs" id="library-tabs" style="border-bottom:1px solid var(--border);padding:0;margin-bottom:0">
-<button class="tab library-tab active" data-tab="principles" style="flex:1;text-align:center;padding:12px">All Principles</button>
-<button class="tab library-tab" data-tab="vocab" style="flex:1;text-align:center;padding:12px">All Vocab</button>
-<button class="tab library-tab" data-tab="lessons" style="flex:1;text-align:center;padding:12px">All Lessons</button>
-</div>
-<div id="library-content" style="min-height:200px">
-<div class="library-pane" data-pane="principles" style="display:block" id="principles-pane"></div>
-<div class="library-pane" data-pane="vocab" style="display:none" id="vocab-pane"></div>
-<div class="library-pane" data-pane="lessons" style="display:none" id="lessons-pane"></div>
-</div>
-</div>`;
-document.body.appendChild(libraryOverlay);
-
+window.renderLibrary = function() {
 const principlesData = [
   { lesson: 1, title: 'Plurals: Broken vs Intact', examples: 'رَجُلٌ — رِجَالٌ — صَنَمٌ — أَصْنَامٌ — قَرْيَةٌ — قُرًى — يَوْمٌ — أَيَّامٌ — اسْمٌ — أَسْمَاءٌ', explanation: 'Arabic plurals come in two types. For inanimate objects, the word changes shape entirely and must be memorised — this is called a broken plural. For people, you simply add "oon", "een", or "aat" to the end — this is called an intact plural. Adjectives, verbs and pronouns must match whichever plural type is used.' },
   { lesson: 1, title: 'Femininity: Ta Marbuta', examples: 'قَرْيَةٌ — عِبَادَةٌ — مَدْرَسَةٌ — أَصْنَامٌ — قُرًى — أَيَّامٌ — رِجَالٌ — أَسْمَاءٌ — سَيَّارَةٌ — كَثِيرَةٌ\nرَجُلٌ كَبِيرٌ — قَرْيَةٌ كَبِيرَةٌ — أَصْنَامٌ كَبِيرَةٌ — مُشْرِكُونَ كَبِيرُونَ — مُشْرِكَاتٌ كَبِيرَاتٌ', explanation: 'A word is feminine if it ends in the letter "ta marbuta". All broken plurals are also feminine, even if they do not end in "ta marbuta". This means adjectives describing them must take the feminine form. As mentioned, broken plurals are used for inanimate objects, so when we use an adjective, we have to put "taa marbuta". As for adjective for people, we just put "uun, een, aat".' },
@@ -1498,7 +1528,7 @@ lessonsPane.innerHTML = lessonsData.map((l, idx) => `
 </div>
 <div class="principle-item-content" data-lidx="${idx}">
 <div class="principle-item-content-examples" style="text-align:right">${l.title}</div>
-<div class="principle-item-content-explanation" style="direction:rtl;text-align:right;font-family:'Scheherazade New', serif;font-size:16px;line-height:2;white-space:pre-line;color:var(--ink)">${l.text}</div>
+<div class="principle-item-content-explanation" style="direction:rtl;text-align:right;font-family:'Scheherazade New', serif;font-size:20px;line-height:2;white-space:pre-line;color:var(--ink)">${l.text}</div>
 </div>
 </div>
 `).join('');
@@ -1572,7 +1602,7 @@ vocabPane.innerHTML = vocabData.map((v, idx) => `
 </div>
 <div class="principle-item-content" data-vidx="${idx}">
 <div class="principle-item-content-explanation" style="line-height:1.9">
-${v.words.map(w => `<span style="direction:rtl;font-family:'Scheherazade New', serif;font-size:15px;color:var(--ink)">${w.ar}</span> — ${w.en}<br>`).join('')}
+${v.words.map(w => `<span style="direction:rtl;font-family:'Scheherazade New', serif;font-size:20px;color:var(--ink)">${w.ar}</span> — ${w.en}<br>`).join('')}
 </div>
 </div>
 </div>
@@ -1587,8 +1617,6 @@ document.querySelectorAll('#vocab-pane .principle-item').forEach(item => {
   };
 });
 
-document.getElementById('library-close-btn').onclick = () => libraryOverlay.remove();
-
 const libraryTabs = document.querySelectorAll('.library-tab');
 const libraryPanes = document.querySelectorAll('.library-pane');
 
@@ -1600,8 +1628,6 @@ libraryTabs.forEach(tab => {
     document.querySelector(`.library-pane[data-pane="${tab.dataset.tab}"]`).style.display = 'block';
   };
 });
-
-libraryOverlay.addEventListener('click', (e) => { if (e.target === libraryOverlay) libraryOverlay.remove(); });
 };
   
 window.openReportPopup = function(context) {
@@ -1762,15 +1788,25 @@ async function saveLeaderboard(entries) {
 }
 
 function buildLeaderboardHtml(entries, isEditing) {
+  entries.forEach(e => {
+    if (e.days && e.days.length === 7) e.score = e.days.reduce((s, d) => s + (d || 0), 0);
+  });
   const sorted = [...entries].sort((a, b) => (b.score || 0) - (a.score || 0));
   let html = '<div style="display:flex;flex-direction:column;gap:6px;max-width:420px">';
   sorted.forEach((entry, i) => {
     const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `<span style="display:inline-block;width:24px;text-align:center">${i + 1}</span>`;
     if (isEditing) {
-      html += `<div style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--grey-light);border-radius:10px">
+      const days = entry.days && entry.days.length === 7 ? entry.days : [0,0,0,0,0,0,0];
+      const total = days.reduce((s, d) => s + (d || 0), 0);
+      let dayBoxes = '';
+      days.forEach((d, di) => {
+        dayBoxes += `<input class="lb-day-input" data-name="${entry.name.replace(/"/g, '&quot;')}" data-day="${di}" value="${d}" type="number" min="0" max="6" style="width:32px;padding:6px 2px;border:2px solid var(--border);border-radius:6px;font-size:12px;text-align:center">`;
+      });
+      html += `<div style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--grey-light);border-radius:10px;flex-wrap:wrap">
         <div style="font-size:18px">${medal}</div>
-        <div style="flex:1;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis">${entry.name}</div>
-        <input class="lb-score-input" data-name="${entry.name.replace(/"/g, '&quot;')}" value="${entry.score || 0}" type="number" style="width:70px;padding:8px;border:2px solid var(--border);border-radius:6px;font-size:14px;text-align:center">
+        <div style="flex:1;font-weight:600;min-width:90px;overflow:hidden;text-overflow:ellipsis">${entry.name}</div>
+        <div style="display:flex;gap:3px">${dayBoxes}</div>
+        <div style="width:36px;text-align:center;font-weight:700;color:var(--blue);font-size:14px">${total}</div>
         <button class="lb-del-btn" data-name="${entry.name.replace(/"/g, '&quot;')}" style="padding:6px 10px;background:#ef4444;color:white;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer">✕</button>
       </div>`;
     } else {
@@ -1833,13 +1869,18 @@ async function renderLeaderboardAdmin() {
     fullHtml += `<div style="margin-top:10px;font-size:12px;color:var(--grey)">${sorted.length} student${sorted.length !== 1 ? 's' : ''} · Total: ${sorted.reduce((s, e) => s + (e.score || 0), 0)} pts</div>`;
     root.innerHTML = fullHtml;
 
-    // Score change → update entry and auto-reorder
-    root.querySelectorAll('.lb-score-input').forEach(input => {
+    // Day box change → update that day's points, recalc total, auto-reorder
+    root.querySelectorAll('.lb-day-input').forEach(input => {
       input.onchange = () => {
         const name = input.dataset.name;
-        const newScore = parseInt(input.value) || 0;
+        const dayIndex = parseInt(input.dataset.day);
+        const newVal = parseInt(input.value) || 0;
         const idx = entries.findIndex(e => e.name === name);
-        if (idx !== -1) entries[idx].score = newScore;
+        if (idx !== -1) {
+          if (!entries[idx].days || entries[idx].days.length !== 7) entries[idx].days = [0,0,0,0,0,0,0];
+          entries[idx].days[dayIndex] = newVal;
+          entries[idx].score = entries[idx].days.reduce((s, d) => s + (d || 0), 0);
+        }
         redraw();
       };
     });
@@ -1861,14 +1902,14 @@ async function renderLeaderboardAdmin() {
       const score = parseInt(scoreInput.value) || 0;
       if (!name) { showToast('Enter a name first'); return; }
       if (entries.find(e => e.name === name)) { showToast('Name already exists'); return; }
-      entries.push({ name, score });
+      entries.push({ name, days: [0,0,0,0,0,0,0], score: 0 });
       redraw();
     };
 
     // Save to Firebase
     document.getElementById('lb-reset-btn').onclick = async () => {
   if (!confirm('Reset ALL scores to 0?')) return;
-  entries.forEach(e => e.score = 0);
+  entries.forEach(e => { e.score = 0; e.days = [0,0,0,0,0,0,0]; });
   await saveLeaderboard(entries);
   showToast('All scores reset to 0');
   redraw();
@@ -1891,7 +1932,17 @@ async function renderLeaderboardPublic() {
     root.innerHTML = '<div style="text-align:center;padding:40px;color:var(--grey)">No entries yet.</div>';
     return;
   }
-let fullHtml = `<button id="lb-invite-btn" style="width:100%;max-width:420px;margin-bottom:20px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">For an extra point, make small progress today in the app</button>`;
+let fullHtml = `<div style="width:100%;max-width:420px;margin-bottom:16px;padding:14px 16px;background:var(--grey-light);border-radius:10px;font-size:13px;line-height:1.7">
+  <div style="font-weight:700;margin-bottom:6px;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;color:var(--grey)">How you earn points (max 6/day)</div>
+  <div>• Participating</div>
+  <div>• Correct answer and grammar</div>
+  <div>• 3-day streak</div>
+  <div>• Correcting another student's mistake</div>
+  <div>• Progressing in the Arabic app</div>
+  <div>• Completing your streak in the Arabic app</div>
+</div>`;
+fullHtml += `<a href="https://chat.whatsapp.com/CnL9pk0lxbSC6hom5v5ulC" target="_blank" style="display:block;width:100%;max-width:420px;margin-bottom:16px;padding:14px;background:#25D366;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;text-align:center;text-decoration:none;box-sizing:border-box">💬 Join the Arabic Group Chat</a>`;
+fullHtml += `<button id="lb-invite-btn" style="width:100%;max-width:420px;margin-bottom:20px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">For an extra point, make small progress today in the app</button>`;
 const { html } = buildLeaderboardHtml(entries, false);
 fullHtml += html;
 root.innerHTML = fullHtml;
@@ -1919,13 +1970,25 @@ root.innerHTML = reportDocs.map(r => {
 const studentName = STUDENTS[r.studentCode]?.name || r.studentCode;
 const date = new Date(r.timestamp).toLocaleDateString();
 return `<div style="background:white;border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px">
-<div style="font-weight:600;color:var(--ink);margin-bottom:6px">${studentName}</div>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+<div style="font-weight:600;color:var(--ink)">${studentName}</div>
+<button onclick="window.deleteReport('${r.id}')" style="background:none;border:none;color:var(--grey);font-size:13px;cursor:pointer;padding:2px 6px">✕ Delete</button>
+</div>
 <div style="font-size:13px;color:var(--grey);margin-bottom:8px">${r.context}</div>
 <div style="font-size:14px;color:var(--ink);padding:10px;background:#f9fafb;border-radius:8px;margin-bottom:8px">${r.note || '(no message)'}</div>
 <div style="font-size:12px;color:var(--grey)">${date}</div>
 </div>`;
 }).join('');
 }
+
+window.deleteReport = async function(id) {
+try {
+await deleteDoc(doc(db,'reports', id));
+} catch(e) { console.error('Report delete error', e); showToast('Delete failed — try again'); return; }
+renderReportsTab();
+await window.loadReportsCache();
+buildSidebar();
+};
 
 function isMidnightPast(dateStr) {
 const [y,m,d] = dateStr.split('-').map(Number);
@@ -2077,6 +2140,7 @@ allCardActivity[code] = data.cardActivity || {};
 fcDeletedCards = data.deleted || {};
 studentLesson[code] = data.lesson || 1;
 exProgress = data.exProgress || {};
+exChallengeDraft = data.exChallengeDraft || {};
 readingDone = data.readingDone || {};
 grammarDone = data.grammarDone || {};
 if (data.customCards) {
@@ -2088,7 +2152,7 @@ LESSONS[num].cards = [...DEFAULT_LESSONS[num]?.cards || [], ...cards];
 });
 }
 } else {
-fcProgress = {}; allFcActivity[code] = {}; allCardActivity[code] = {}; fcDeletedCards = {}; studentLesson[code] = 1; exProgress = {}; readingDone = {}; grammarDone = {};
+fcProgress = {}; allFcActivity[code] = {}; allCardActivity[code] = {}; fcDeletedCards = {}; studentLesson[code] = 1; exProgress = {}; exChallengeDraft = {}; readingDone = {}; grammarDone = {};
 }
 } catch(e) { console.error('FC load error',e); }
 }
@@ -2119,6 +2183,7 @@ cardActivity: allCardActivity[code] || {},
 deleted: fcDeletedCards,
 lesson: studentLesson[code] || 1,
 exProgress,
+exChallengeDraft,
 readingDone,
 grammarDone,
 customCards
@@ -2165,26 +2230,60 @@ window.hasSubmittedChallenge = function(mode) {
 return !!exProgress[mode];
 };
 
+window.exAdvanceChallenge1 = function(mode) {
+mode = mode || 'challenge1';
+const words = (CHALLENGE1_WORDS_BY_MODE[mode] && CHALLENGE1_WORDS_BY_MODE[mode]()) || [];
+const w = words[ch1Index];
+const el = document.getElementById('ch1-input');
+ch1Answers.push({ ar: w.ar, en: w.en, answer: el ? el.value.trim() : '' });
+window.didMakeProgress = true;
+if (ch1Index < words.length - 1) {
+ch1Index++;
+exChallengeDraft[mode] = { index: ch1Index, answers: ch1Answers.slice() };
+incrementCardActivity(activeStudentCode());
+saveFlashcardData(activeStudentCode());
+window.saveChallenge1Progress(mode);
+exShowChallenge1(mode);
+} else {
+window.exSubmitChallenge1(mode);
+}
+};
+
+window.saveChallenge1Progress = async function(mode) {
+mode = mode || 'challenge1';
+const code = activeStudentCode();
+const today = todayKey();
+const filled = ch1Answers.filter(a => a.answer);
+if (!filled.length) return;
+const lessonNum = EX_LESSON_MAP[mode];
+const header = '📋 Challenge 1 — Lesson ' + lessonNum + ' (a sentence with each word)';
+let block = header;
+filled.forEach((a, i) => { block += `\n${i+1}. ${a.ar} (${a.en}): ${a.answer}`; });
+const existing = submissions[code]?.[today] || {};
+const newText = upsertChallengeBlock(existing.text, header, block);
+const dayData = { images: existing.images || [], text: newText, reviewed: false };
+if (!submissions[code]) submissions[code] = {};
+submissions[code][today] = dayData;
+await saveDay(code, today, dayData);
+};
+
 window.exSubmitChallenge1 = async function(mode) {
 mode = mode || 'challenge1';
 const code = activeStudentCode();
 const today = todayKey();
-const words = (CHALLENGE1_WORDS_BY_MODE[mode] && CHALLENGE1_WORDS_BY_MODE[mode]()) || [];
-const answers = words.map((w, i) => {
-const el = document.getElementById('ch1-input-' + i);
-return { ar: w.ar, en: w.en, answer: el ? el.value.trim() : '' };
-});
+const answers = ch1Answers;
 const filled = answers.filter(a => a.answer);
 if (!filled.length) { showToast('Write at least one sentence first'); return; }
 
 const lessonNum = EX_LESSON_MAP[mode];
-let block = '📋 Challenge 1 — Lesson ' + lessonNum + ' (a sentence with each word)';
-answers.forEach((a, i) => {
-block += `\n${i+1}. ${a.ar} (${a.en}): ${a.answer || '—'}`;
+const header = '📋 Challenge 1 — Lesson ' + lessonNum + ' (a sentence with each word)';
+let block = header;
+filled.forEach((a, i) => {
+block += `\n${i+1}. ${a.ar} (${a.en}): ${a.answer}`;
 });
 
 const existing = submissions[code]?.[today] || {};
-const newText = (existing.text ? existing.text + '\n\n' : '') + block;
+const newText = upsertChallengeBlock(existing.text, header, block);
 const dayData = { images: existing.images || [], text: newText, reviewed: false };
 if (!submissions[code]) submissions[code] = {};
 submissions[code][today] = dayData;
@@ -2192,6 +2291,7 @@ await saveDay(code, today, dayData);
 
 const oldFrac = window.getLessonProgressSum(lessonNum);
 exProgress[mode] = true;
+delete exChallengeDraft[mode];
 window.triggerMilestoneWalk(lessonNum, oldFrac, window.getLessonProgressSum(lessonNum), 'challenges');
 for (let i = 0; i < filled.length; i++) incrementCardActivity(code);
 await saveFlashcardData(code);
@@ -2201,24 +2301,55 @@ render();
 if (typeof exShowChallengesPicker === 'function') exShowChallengesPicker();
 };
 
+window.exAdvanceChallenge2 = function() {
+const sentences = window.CHALLENGE_2_SENTENCES || [];
+const s = sentences[ch2Index];
+const el = document.getElementById('ch2-input');
+ch2Answers.push({ en: s.en, answer: el ? el.value.trim() : '' });
+window.didMakeProgress = true;
+if (ch2Index < sentences.length - 1) {
+ch2Index++;
+exChallengeDraft['challenge2'] = { index: ch2Index, answers: ch2Answers.slice() };
+incrementCardActivity(activeStudentCode());
+saveFlashcardData(activeStudentCode());
+window.saveChallenge2Progress();
+exShowChallenge2();
+} else {
+window.exSubmitChallenge2();
+}
+};
+
+window.saveChallenge2Progress = async function() {
+const code = activeStudentCode();
+const today = todayKey();
+const filled = ch2Answers.filter(a => a.answer);
+if (!filled.length) return;
+const header = '📋 Challenge 2 — Lesson 1 (English → Arabic translation)';
+let block = header;
+filled.forEach((a, i) => { block += `\n${i+1}. ${a.en}\n   ${a.answer}`; });
+const existing = submissions[code]?.[today] || {};
+const newText = upsertChallengeBlock(existing.text, header, block);
+const dayData = { images: existing.images || [], text: newText, reviewed: false };
+if (!submissions[code]) submissions[code] = {};
+submissions[code][today] = dayData;
+await saveDay(code, today, dayData);
+};
+
 window.exSubmitChallenge2 = async function() {
 const code = activeStudentCode();
 const today = todayKey();
-const sentences = window.CHALLENGE_2_SENTENCES || [];
-const answers = sentences.map((s, i) => {
-const el = document.getElementById('ch2-input-' + i);
-return { en: s.en, answer: el ? el.value.trim() : '' };
-});
+const answers = ch2Answers;
 const filled = answers.filter(a => a.answer);
 if (!filled.length) { showToast('Translate at least one sentence first'); return; }
 
-let block = '📋 Challenge 2 — Lesson 1 (English → Arabic translation)';
-answers.forEach((a, i) => {
-block += `\n${i+1}. ${a.en}\n   ${a.answer || '—'}`;
+const header = '📋 Challenge 2 — Lesson 1 (English → Arabic translation)';
+let block = header;
+answers.filter(a => a.answer).forEach((a, i) => {
+block += `\n${i+1}. ${a.en}\n   ${a.answer}`;
 });
 
 const existing = submissions[code]?.[today] || {};
-const newText = (existing.text ? existing.text + '\n\n' : '') + block;
+const newText = upsertChallengeBlock(existing.text, header, block);
 const dayData = { images: existing.images || [], text: newText, reviewed: false };
 if (!submissions[code]) submissions[code] = {};
 submissions[code][today] = dayData;
@@ -2226,17 +2357,26 @@ await saveDay(code, today, dayData);
 
 const oldFrac = window.getLessonProgressSum(EX_LESSON_MAP['challenge2']);
 exProgress['challenge2'] = true;
+delete exChallengeDraft['challenge2'];
 window.triggerMilestoneWalk(EX_LESSON_MAP['challenge2'], oldFrac, window.getLessonProgressSum(EX_LESSON_MAP['challenge2']), 'challenges');
 for (let i = 0; i < filled.length; i++) incrementCardActivity(code);
 await saveFlashcardData(code);
 
-showToast('Submitted! Your teacher will go over this with you in your next lesson.');
+window.showToast('Submitted! Your teacher will go over this with you in your next lesson.');
 render();
-if (typeof exShowPicker === 'function') exShowPicker();
+if (typeof exShowChallengesPicker === 'function') exShowChallengesPicker();
 };
 
-async function saveDay(code, dateStr, data) { await setDoc(doc(db,'submissions',code,'days',dateStr), data); }
+// Finds an existing challenge block by its header and updates it in place;
+// adds it as new if it's not there yet. Stops partial answers from piling up as duplicates.
+function upsertChallengeBlock(existingText, header, block) {
+const blocks = existingText ? existingText.split('\n\n') : [];
+const idx = blocks.findIndex(b => b.startsWith(header));
+if (idx >= 0) blocks[idx] = block; else blocks.push(block);
+return blocks.join('\n\n');
+}
 
+async function saveDay(code, dateStr, data) { await setDoc(doc(db,'submissions',code,'days',dateStr), data); }
 // ── LOGIN ──
 async function handleLogin() {
 const code = document.getElementById('code-input').value.trim().toUpperCase();
@@ -2386,11 +2526,12 @@ sidebar.style.display='flex'; sidebar.style.flexDirection='column';
 document.getElementById('sidebar-toggle').style.display='flex';
 if (window.innerWidth < 600) { sidebarCollapsed=true; sidebar.classList.add('collapsed'); }
 document.getElementById('tab-content-homework').style.display='block';
-buildSidebar(); updateHeaderForInstructor();
+window.loadReportsCache().then(buildSidebar); updateHeaderForInstructor();
 } else {
 app.style.display='block'; app.style.maxWidth='480px'; app.style.margin='0 auto';
 document.getElementById('header-title').textContent='My Homework';
 document.getElementById('header-sub').textContent = isGuestMode ? guestName : (STUDENTS[currentUser]?.display||'');
+updateProgressBanner();
 switchTab('milestones');
 }
 render();
@@ -2407,6 +2548,8 @@ document.getElementById('tab-content-homework').style.display = tab==='homework'
 document.getElementById('tab-content-flashcards').style.display = tab==='flashcards' ? 'block' : 'none';
 document.getElementById('tab-content-exercises').style.display = tab==='exercises' ? 'block' : 'none';
 document.getElementById('tab-content-challenges').style.display = tab==='challenges' ? 'block' : 'none';
+document.getElementById('tab-content-library').style.display = tab==='library' ? 'block' : 'none';
+if (tab==='library' && typeof renderLibrary === 'function') renderLibrary();
 if (tab === 'story') {
   const lesson = studentLesson[currentUser || viewingStudent] || 1;
   initializeStory(lesson);
@@ -2430,15 +2573,16 @@ if (tab==='exercises' && typeof exShowPicker === 'function') { exPickerLesson = 
 if (tab==='challenges' && typeof exShowChallengesPicker === 'function') { exPickerLesson = null; exShowChallengesPicker(); }
 if (tab==='story') {
 setStoryLesson(studentLesson[activeStudentCode()] || 1);
+if (typeof setStoryViewMode === 'function') setStoryViewMode('sentence');
 const gramBtn = document.getElementById('student-grammar-done-btn');
 if (gramBtn) gramBtn.style.display = isGuestMode ? 'none' : 'block';
 }
 if (tab==='milestones') {
 document.getElementById('main').scrollTop = 0;
 window.scrollTo(0, 0);
-if (previousTab !== 'milestones' && didMakeProgress) {
+if (previousTab !== 'milestones' && window.didMakeProgress) {
   showToast('Progress saved ✓');
-  didMakeProgress = false;
+  window.didMakeProgress = false;
 }
 renderMilestones();
 if (pendingMilestoneIntro) {
@@ -2459,20 +2603,30 @@ if (tab==='leaderboard') renderLeaderboardPublic();
 
 
 // ── SIDEBAR ──
+window.loadReportsCache = async function() {
+window.reportsCache = [];
+try {
+const snap = await getDocs(collection(db,'reports'));
+snap.forEach(d => window.reportsCache.push({ id: d.id, ...d.data() }));
+} catch(e) { console.error('Reports load error', e); }
+};
+
 function buildSidebar() {
 const wrap = document.getElementById('sidebar-students'); wrap.innerHTML='';
 const ranked = getRankedStudents();
 const today = todayKey();
+const hasDot = code => dayQualifiesForStreak(code, today) || ((allCardActivity[code]||{})[today]||0)>0 || (window.reportsCache||[]).some(r => r.studentCode === code);
+ranked.sort((a,b) => (hasDot(b)?1:0) - (hasDot(a)?1:0));
 ranked.forEach((code, idx) => {
-const s = STUDENTS[code]; const status = getStudentStatus(code); const streak = getStreak(code);
-const todaySub = submissions[code]?.[today];
-const didHomework = !!(todaySub && (todaySub.images?.length || todaySub.text));
+const s = STUDENTS[code]; const streak = getStreak(code);
 const todayCount = (allCardActivity[code]||{})[today] || 0;
-const madeProgress = hasMadeProgressToday(code);
+const streakDoneToday = dayQualifiesForStreak(code, today);
+const progressDotClass = streakDoneToday ? 'green' : (todayCount>0 ? 'blue' : 'grey');
+const hasReport = (window.reportsCache||[]).some(r => r.studentCode === code);
 const el = document.createElement('div');
 el.className='sidebar-student'+(code===viewingStudent?' active':'');
-el.innerHTML=`<div class="sidebar-avatar">${idx+1}</div><div class="sidebar-info"><div class="sidebar-name">${s.name}</div><div class="sidebar-streak">🔥 ${streak} day streak · 📇 ${todayCount}/20 today</div></div><div class="hw-dot ${didHomework?'done':''}" title="Homework today"></div>${madeProgress ? '<div class="status-dot blue" title="Made progress today"></div>' : ''}<div class="status-dot ${status}"></div>`;
-el.onclick=async()=>{ viewingStudent=code; updateHeaderForInstructor(); buildSidebar(); render(); };
+el.innerHTML=`<div class="sidebar-avatar">${idx+1}</div><div class="sidebar-info"><div class="sidebar-name">${s.name}</div><div class="sidebar-streak">🔥 ${streak} day streak · 📇 ${todayCount}/20 today</div></div><div class="status-dot ${progressDotClass}" title="Today's progress"></div><div class="status-dot ${hasReport?'yellow':'grey'}" title="${hasReport?'Has an open report':'No open reports'}"></div>`;
+el.onclick=async()=>{ viewingStudent=code; switchTab('homework'); updateHeaderForInstructor(); buildSidebar(); render(); };
 wrap.appendChild(el);
 });
 }
@@ -2527,6 +2681,7 @@ document.getElementById('revision-streak-text').textContent = `🔥 ${streak} da
 
 const ranked = getRankedStudents();
 document.getElementById('revision-rank-num').textContent = `#${ranked.indexOf(code)+1}`;
+updateProgressBanner();
 
 const lessonWrap = document.getElementById('revision-lesson-wrap');
 const lesson = studentLesson[code] || 1;
@@ -2565,18 +2720,9 @@ else if(selSub?.makeupFor)cell.classList.add('sel-yellow');
 else if(selSub?.images?.length>0||selSub?.text)cell.classList.add('sel-green');
 }
 const n=document.createElement('div');n.className='day-num';n.textContent=d;cell.appendChild(n);
-const squares=document.createElement('div');squares.className='dots';
-const sub=subs[key];
-if(sub){
-if(sub.makeupFor){const sy=document.createElement('div');sy.className='dot dot-yellow';squares.appendChild(sy);}
-else if(sub.images?.length>0||sub.text){const sg=document.createElement('div');sg.className='dot dot-green';squares.appendChild(sg);}
-if(sub.reviewed){const sb=document.createElement('div');sb.className='dot dot-blue';squares.appendChild(sb);}
-}
-// Flashcard activity square
-if((allCardActivity[code]||{})[key] >= 1){
-const sf=document.createElement('div');sf.className='dot dot-fc';squares.appendChild(sf);
-}
-cell.appendChild(squares); cell.onclick=()=>{selectedDate=key;renderDayPanel();renderCalendar();}; grid.appendChild(cell);
+if(dayQualifiesForStreak(code, key))cell.classList.add('day-green');
+else if(((allCardActivity[code]||{})[key]||0)>0)cell.classList.add('day-blue');
+cell.onclick=()=>{selectedDate=key;renderDayPanel();renderCalendar();}; grid.appendChild(cell);
 }
 const remaining=(7-((startOffset+daysInMonth)%7))%7;
 for(let d=1;d<=remaining;d++){const cell=document.createElement('div');cell.className='cal-day other-month';const n=document.createElement('div');n.className='day-num';n.textContent=d;cell.appendChild(n);grid.appendChild(cell);}
@@ -2587,20 +2733,20 @@ function renderDayPanel() {
 if(!selectedDate){document.getElementById('day-card').style.display='none';return;}
 const code=activeStudentCode(); const subs=submissions[code]||{}; const sub=subs[selectedDate];
 const hasImages=sub?.images?.length>0; const hasText=!!sub?.text; const hasContent=hasImages||hasText||!!sub?.makeupFor;
-const reviewed=sub?.reviewed; const isMakeup=!!sub?.makeupFor;
+const isMakeup=!!sub?.makeupFor;
+const cardCount=(allCardActivity[code]||{})[selectedDate]||0;
+const streakDone=dayQualifiesForStreak(code, selectedDate);
+const anyProgress=cardCount>0||hasContent;
 const allKeys=Object.keys(subs).filter(k=>{const s=subs[k];return s&&(s.images?.length>0||s.text||s.makeupFor);}).sort();
 const dayNum=allKeys.indexOf(selectedDate)+1||null;
-
 const dayCardEl=document.getElementById('day-card');
 dayCardEl.style.display='block'; dayCardEl.className='day-card';
-if(reviewed)dayCardEl.classList.add('card-blue');
-else if(isMakeup)dayCardEl.classList.add('card-yellow');
-else if(hasContent)dayCardEl.classList.add('card-green');
-
+if(streakDone)dayCardEl.classList.add('card-green');
+else if(anyProgress)dayCardEl.classList.add('card-blue');
+else dayCardEl.classList.add('card-gray');
 document.getElementById('day-badge').textContent=dayNum?`Day ${dayNum}`:(hasContent?'Make-up':'No submission');
 document.getElementById('day-date').textContent=formatDateLong(selectedDate);
-document.getElementById('day-status').textContent=hasContent?(reviewed?'✓ Reviewed':(isMakeup?'• Made up':'• Uploaded')):'';
-
+document.getElementById('day-status').textContent=streakDone?'✓ Streak complete':(anyProgress?'• Some progress':'No activity');
 // Show flashcard/exercise activity if any
 const fcCount = (allCardActivity[code] || {})[selectedDate];
 if (fcCount) {
@@ -2608,12 +2754,7 @@ const existing = document.getElementById('day-status');
 existing.textContent += (existing.textContent ? ' · ' : '') + `🃏 ${fcCount} cards`;
 }
 
-const reviewBtn=document.getElementById('review-btn');
-if(isInstructor&&!isStudentView&&hasContent){
-reviewBtn.style.display='block';
-reviewBtn.className=reviewed?'review-btn reviewed':'review-btn not-reviewed';
-reviewBtn.textContent=reviewed?'✓ Reviewed':'Mark as reviewed?';
-} else { reviewBtn.style.display='none'; }
+
 
 const area=document.getElementById('submissions-area'); area.innerHTML='';
 if(hasText){
@@ -2627,8 +2768,8 @@ sub.images.forEach(src=>{
 const wrap=document.createElement('div');wrap.className='submission-thumb';
 const img=document.createElement('img');img.src=src;img.onclick=()=>openModal(src);wrap.appendChild(img);
 const badge=document.createElement('div');
-badge.className='submission-badge '+(reviewed?'reviewed-badge':(isMakeup?'makeup-badge':'uploaded-badge'));
-badge.textContent=reviewed?'Reviewed':(isMakeup?'Made up':'Uploaded');
+badge.className='submission-badge '+(isMakeup?'makeup-badge':'uploaded-badge');
+badge.textContent=isMakeup?'Made up':'Uploaded';
 wrap.appendChild(badge);grid.appendChild(wrap);
 });
 area.appendChild(grid);
@@ -2958,7 +3099,7 @@ document.getElementById('fc-rating-wrap').classList.add('visible');
 
 ratingWrap.querySelectorAll('.fc-rating-btn').forEach(btn=>{
 btn.addEventListener('click',async()=>{
-didMakeProgress = true;
+window.didMakeProgress = true;
 const rating = parseInt(btn.dataset.r);
 const oldPct = getLessonMasteryPercent(fcCurrentLesson);
 const oldFrac = window.getLessonProgressSum(fcCurrentLesson);
@@ -2992,6 +3133,7 @@ let toastTimer;
 let storyProgress = {};
 let storyCurrentSentence = {};
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),5000);}
+window.showToast = showToast;
 function showMasteryGain(diff){const el=document.createElement('div');el.className='mastery-gain-popup';el.textContent=`+${diff}%`;document.body.appendChild(el);setTimeout(()=>el.remove(),1400);}
 function showWordMeaning(el) { showToast(el.textContent + ' = ' + el.dataset.en); }
 function toggleStoryEnglish() {
@@ -3007,6 +3149,15 @@ if (btn3) btn3.textContent = isHidden ? 'Hide English' : 'Show English';
 }
 window.showWordMeaning = showWordMeaning;
 window.toggleStoryEnglish = toggleStoryEnglish;
+function toggleStoryFullEnglish() {
+  const lines = document.querySelectorAll('.story-full-en-line');
+  if (!lines.length) return;
+  const isHidden = lines[0].style.display === 'none';
+  lines.forEach(line => { line.style.display = isHidden ? 'block' : 'none'; });
+  const btn = document.getElementById('story-full-english-btn');
+  if (btn) btn.textContent = isHidden ? 'Hide English' : 'Show English';
+}
+window.toggleStoryFullEnglish = toggleStoryFullEnglish;
 function initializeStory(lesson) {
   const code = currentUser || viewingStudent;
   if (!storyCurrentSentence[code]) storyCurrentSentence[code] = {};
@@ -3068,11 +3219,6 @@ function storyRenderSentence(lesson) {
 window.storyRenderSentence = storyRenderSentence;
 
 function storySubmitTranslation(lesson) {
-  const input = document.getElementById('story-translation-input');
-  if (!input.value.trim()) {
-    showToast('Please type a translation first');
-    return;
-  }
   document.getElementById('story-reveal').style.display = 'block';
   document.getElementById('story-ratings').style.display = 'flex';
   document.getElementById('story-translation-input').disabled = true;
@@ -3082,6 +3228,8 @@ window.storySubmitTranslation = storySubmitTranslation;
 
 function storyRateSelf(lesson, rating) {
   const code = currentUser || viewingStudent;
+  window.didMakeProgress = true;
+  incrementCardActivity(code);
   storyCurrentSentence[code][lesson]++;
   storyRenderSentence(lesson);
   document.getElementById('story-translation-input').disabled = false;
@@ -3177,6 +3325,37 @@ function renderPrinciple() {
   nextBtn.textContent = principleIdx === activePrinciples.length - 1 ? 'Done' : 'Next ›';
 }
 
+function setStoryViewMode(mode) {
+  const wordsContainer = document.getElementById('story-words-container');
+  const fullContainer = document.getElementById('story-full-container');
+  if (!wordsContainer || !fullContainer) return;
+  const input = document.getElementById('story-translation-input');
+  const checkBtn = document.querySelector('[onclick*="storySubmitTranslation"]');
+  const fullEnglishBtn = document.getElementById('story-full-english-btn');
+  if (mode === 'full') {
+    wordsContainer.style.display = 'none';
+    fullContainer.style.display = 'block';
+    if (input) input.style.display = 'none';
+    if (checkBtn) checkBtn.style.display = 'none';
+    document.getElementById('story-reveal').style.display = 'none';
+    document.getElementById('story-ratings').style.display = 'none';
+    if (fullEnglishBtn) fullEnglishBtn.style.display = 'inline-block';
+  } else {
+    wordsContainer.style.display = 'block';
+    fullContainer.style.display = 'none';
+    if (input) input.style.display = '';
+    if (checkBtn) checkBtn.style.display = '';
+    if (fullEnglishBtn) fullEnglishBtn.style.display = 'none';
+    storyRenderSentence(window.storyActiveLesson);
+  }
+  document.querySelectorAll('.story-mode-btn').forEach(btn => {
+    const active = btn.dataset.mode === mode;
+    btn.style.background = active ? '#8b2035' : 'white';
+    btn.style.color = active ? 'white' : '#8b2035';
+  });
+}
+window.setStoryViewMode = setStoryViewMode;
+
 function setStoryLesson(lesson) {
 window.storyActiveLesson = lesson;
 
@@ -3197,8 +3376,25 @@ if (storyData) {
   const arLessonNames = ['الأَوَّلُ','الثَّانِي','الثَّالِثُ','الرَّابِعُ','الخَامِسُ','السَّادِسُ','السَّابِعُ','الثَّامِنُ','التَّاسِعُ','العَاشِرُ'];
   const title = storyData.title || 'Lesson ' + lesson;
   const text = storyData.text.replace(/\n/g, '<br>');
+  const arNumDigits = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+  const fullStoryHtml = storyData.sentences ? storyData.sentences.map((sentence, i) => {
+    const badge = String(i + 1).split('').map(d => arNumDigits[d]).join('');
+    const wordsHtml = sentence.words.map(w => {
+      const cls = w.isNew ? 'story-word new-reading' : 'story-word';
+      return '<span class="' + cls + '" data-en="' + w.en + '" onclick="showWordMeaning(this)">' + w.ar + '</span>';
+    }).join(' ');
+    return '<p><span class="story-line-num">' + badge + '</span> ' + wordsHtml + '</p>'
+      + '<p class="story-full-en-line" style="display:none;font-family:-apple-system,sans-serif;font-size:15px;line-height:1.7;color:#374151;background:#f9fafb;border-radius:8px;padding:10px 14px;margin:0 0 16px 0;direction:ltr;text-align:left">' + sentence.en + '</p>';
+  }).join('') : '';
+   
   const bodyHtml = storyData.sentences
-    ? '<div id="story-words-container" style="font-family:\'Scheherazade New\', serif;font-size:28px;line-height:2;direction:rtl;text-align:right"></div>'
+    ? `<div id="story-mode-toggle" style="display:flex;gap:8px;margin-bottom:16px">
+        <button class="story-mode-btn" data-mode="sentence" onclick="setStoryViewMode('sentence')" style="flex:1;padding:10px;border-radius:10px;border:2px solid #8b2035;background:#8b2035;color:white;font-size:13px;font-weight:700;cursor:pointer">📝 Sentence by Sentence</button>
+        <button class="story-mode-btn" data-mode="full" onclick="setStoryViewMode('full')" style="flex:1;padding:10px;border-radius:10px;border:2px solid #8b2035;background:white;color:#8b2035;font-size:13px;font-weight:700;cursor:pointer">📖 Full Story</button>
+      </div>
+      <button id="story-full-english-btn" onclick="toggleStoryFullEnglish()" style="display:none;padding:10px 20px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:16px">Show English</button>
+      <div id="story-words-container" style="font-family:'Scheherazade New', serif;font-size:28px;line-height:2;direction:rtl;text-align:right"></div>
+      <div id="story-full-container" style="display:none;font-family:'Scheherazade New', serif;font-size:28px;line-height:2;direction:rtl;text-align:right">${fullStoryHtml}</div>`
     : `<div style="font-family:'Scheherazade New', serif;font-size:18px;line-height:2;direction:rtl;text-align:right;white-space:pre-line">${text}</div>`;
   ['story-translation-input','story-reveal','story-ratings','student-reading-done-btn','guest-flashcards-btn','principles-wrap'].forEach(id => {
     const el = document.getElementById(id);
@@ -3217,6 +3413,18 @@ if (storyData) {
     ${bodyHtml}
   `;
   dynContainer.style.display = 'block';
+  const wordsAnchor = document.getElementById('story-words-container');
+  if (wordsAnchor) {
+    const checkBtnEl = document.querySelector('[onclick*="storySubmitTranslation"]');
+    const checkRowEl = checkBtnEl ? checkBtnEl.parentElement : null;
+    const transInputEl = document.getElementById('story-translation-input');
+    const revealEl = document.getElementById('story-reveal');
+    const ratingsEl = document.getElementById('story-ratings');
+    if (transInputEl) wordsAnchor.parentElement.insertBefore(transInputEl, wordsAnchor);
+    if (checkRowEl) wordsAnchor.parentElement.insertBefore(checkRowEl, wordsAnchor);
+    if (revealEl) wordsAnchor.parentElement.insertBefore(revealEl, wordsAnchor);
+    if (ratingsEl) wordsAnchor.parentElement.insertBefore(ratingsEl, wordsAnchor);
+  }
 } else {
   // Fallback to hardcoded HTML only if no database data
   dynContainer.style.display = 'none';
@@ -3230,10 +3438,12 @@ activePrinciples = newPrinciples;
 principleIdx = 0;
 principleRevealed = false;
 }
+
 renderPrinciple();
 }
 
 document.getElementById('principle-card').addEventListener('click', () => {
+
   principleRevealed = !principleRevealed;
   renderPrinciple();
 });
@@ -3241,8 +3451,11 @@ document.getElementById('principle-back-btn').addEventListener('click', () => {
   if (principleIdx > 0) { principleIdx--; principleRevealed = false; renderPrinciple(); }
 });
 document.getElementById('principle-next-btn').addEventListener('click', () => {
+  window.didMakeProgress = true;
+  const code = currentUser || viewingStudent;
+  incrementCardActivity(code);
   if (principleIdx < activePrinciples.length - 1) { principleIdx++; principleRevealed = false; renderPrinciple(); }
-  else { const code = currentUser || viewingStudent; window.markGrammarDone(studentLesson[code] || 1); }
+  else { window.markGrammarDone(studentLesson[code] || 1); }
 });
 const arNumDigits = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
 [1,2,3].forEach(n => {
@@ -3357,7 +3570,7 @@ document.getElementById('code-input').addEventListener('keydown',e=>{if(e.key===
 document.getElementById('sidebar-toggle').addEventListener('click',toggleSidebar);
 document.getElementById('prev-month-btn').addEventListener('click',()=>{calMonth--;if(calMonth<0){calMonth=11;calYear--;}renderCalendar();});
 document.getElementById('next-month-btn').addEventListener('click',()=>{calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCalendar();});
-document.getElementById('review-btn').addEventListener('click',toggleReview);
+
 document.getElementById('modal').addEventListener('click',closeModal);
 document.getElementById('modal-close-btn').addEventListener('click',e=>{e.stopPropagation();closeModal();});
 document.getElementById('streak-info-btn').addEventListener('click', (e) => {
@@ -3400,6 +3613,10 @@ popup.style.display = 'none';
 
 // ── EXERCISE ENGINE ──
 let exMode = null, exQuestions = [], exCurrent = 0, exAnswered = 0;
+let ch1Index = 0, ch1Answers = [];
+let ch2Index = 0, ch2Answers = [];
+let exChallengeDraft = {};
+let compIndex = 0, compAnswers = [];
 let exDotEarned = false;
 let exWordSelected = [], exWordBank = [];
 let exFemSelected = [];
@@ -3693,7 +3910,20 @@ document.getElementById('challenges-root').innerHTML = `
 challengeCards.forEach(c => {
 document.getElementById('chbtn-' + c.mode).onclick = () => {
 const lessonNum = EX_LESSON_MAP[c.mode];
-const open = () => c.mode.indexOf('comprehension') === 0 ? exShowComprehension(c.mode) : c.mode === 'challenge2' ? exShowChallenge2() : exShowChallenge1(c.mode);
+const open = () => {
+if (c.mode.indexOf('comprehension') === 0) { compIndex = 0; compAnswers = []; exShowComprehension(c.mode); return; }
+if (c.mode === 'challenge2') {
+const draft2 = exChallengeDraft['challenge2'];
+ch2Index = draft2 ? draft2.index : 0;
+ch2Answers = draft2 ? draft2.answers.slice() : [];
+exShowChallenge2();
+return;
+}
+const draft1 = exChallengeDraft[c.mode];
+ch1Index = draft1 ? draft1.index : 0;
+ch1Answers = draft1 ? draft1.answers.slice() : [];
+exShowChallenge1(c.mode);
+};
 if (window.hasSubmittedChallenge(c.mode)) { window.showMasteredMilestone('challenges', lessonNum, open); return; }
 open();
 };
@@ -3729,24 +3959,23 @@ challenge1l6: () => window.CHALLENGE_1_WORDS_L6
 function exShowChallenge1(mode) {
 mode = mode || 'challenge1';
 const words = (CHALLENGE1_WORDS_BY_MODE[mode] && CHALLENGE1_WORDS_BY_MODE[mode]()) || [];
+const w = words[ch1Index];
+const isLast = ch1Index === words.length - 1;
 let html = `
 <div class="section-label">🏆 Challenge 1 — Make a sentence</div>
 <div style="background:var(--grey-light);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
-<div style="font-size:14px;color:#6b7280;margin-bottom:20px;line-height:1.6">Write your own Arabic sentence using each word below. Don't worry about getting it perfect — we'll go over these together in your next lesson.</div>`;
-words.forEach((w, i) => {
-html += `
+<div style="font-size:13px;color:#6b7280;margin-bottom:14px;font-weight:600">Question ${ch1Index+1} of ${words.length}</div>
+<div style="font-size:14px;color:#6b7280;margin-bottom:20px;line-height:1.6">Write your own Arabic sentence using the word below. Don't worry about getting it perfect — we'll go over these together in your next lesson.</div>
 <div style="margin-bottom:18px">
 <div style="font-family:'Scheherazade New', serif;font-size:1.4em;direction:rtl;text-align:right;color:#8b2035;font-weight:700">${w.ar}</div>
 <div style="font-size:12px;color:#6b7280;margin-bottom:6px">${w.en}</div>
-<textarea id="ch1-input-${i}" placeholder="Write your sentence..." style="width:100%;padding:10px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:1.1em;direction:rtl;text-align:right;font-family:inherit;min-height:50px;outline:none;box-sizing:border-box"></textarea>
-</div>`;
-});
-html += `
-<button id="ch1-submit-btn" style="width:100%;margin-top:8px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">Submit Challenge</button>
+<textarea id="ch1-input" placeholder="Write your sentence..." style="width:100%;padding:10px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:1.1em;direction:rtl;text-align:right;font-family:inherit;min-height:50px;outline:none;box-sizing:border-box"></textarea>
+</div>
+<button id="ch1-next-btn" style="width:100%;margin-top:8px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">${isLast ? 'Submit Challenge' : 'Next'}</button>
 <button id="ch1-back-btn" style="width:100%;margin-top:8px;padding:10px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">← Back</button>
 </div>`;
 document.getElementById('challenges-root').innerHTML = html;
-document.getElementById('ch1-submit-btn').onclick = () => window.exSubmitChallenge1(mode);
+document.getElementById('ch1-next-btn').onclick = () => window.exAdvanceChallenge1(mode);
 document.getElementById('ch1-back-btn').onclick = exShowChallengesPicker;
 }
 
@@ -3761,46 +3990,76 @@ comprehension6: () => window.COMPREHENSION_QUESTIONS_L6
 
 function exShowComprehension(mode) {
 const questions = (COMPREHENSION_QUESTIONS_BY_MODE[mode] && COMPREHENSION_QUESTIONS_BY_MODE[mode]()) || [];
+const q = questions[compIndex];
+const isLast = compIndex === questions.length - 1;
 let html = `
 <div class="section-label">💬 Comprehension — Answer in Arabic</div>
 <div style="background:var(--grey-light);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
-<div style="font-size:14px;color:#6b7280;margin-bottom:20px;line-height:1.6">Read each question about the story and write your answer as a full Arabic sentence. Don't worry about getting it perfect — we'll go over these together in your next lesson.</div>`;
-questions.forEach((q, i) => {
-html += `
+<div style="font-size:13px;color:#6b7280;margin-bottom:14px;font-weight:600">Question ${compIndex+1} of ${questions.length}</div>
+<div style="font-size:14px;color:#6b7280;margin-bottom:20px;line-height:1.6">Read the question about the story and write your answer as a full Arabic sentence. Don't worry about getting it perfect — we'll go over these together in your next lesson.</div>
 <div style="margin-bottom:18px">
 <div style="font-family:'Scheherazade New', serif;font-size:1.3em;direction:rtl;text-align:right;color:#8b2035;font-weight:700">${q.ar}</div>
 <div style="font-size:12px;color:#6b7280;margin-bottom:6px">${q.en}</div>
-<textarea id="comp-input-${i}" placeholder="Write your answer..." style="width:100%;padding:10px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:1.1em;direction:rtl;text-align:right;font-family:inherit;min-height:50px;outline:none;box-sizing:border-box"></textarea>
-</div>`;
-});
-html += `
-<button id="comp-submit-btn" style="width:100%;margin-top:8px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">Submit Comprehension</button>
+<textarea id="comp-input" placeholder="Write your answer..." style="width:100%;padding:10px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:1.1em;direction:rtl;text-align:right;font-family:inherit;min-height:50px;outline:none;box-sizing:border-box"></textarea>
+</div>
+<button id="comp-next-btn" style="width:100%;margin-top:8px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">${isLast ? 'Submit Comprehension' : 'Next'}</button>
 <button id="comp-back-btn" style="width:100%;margin-top:8px;padding:10px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">← Back</button>
 </div>`;
 document.getElementById('challenges-root').innerHTML = html;
-document.getElementById('comp-submit-btn').onclick = () => window.exSubmitComprehension(mode);
+document.getElementById('comp-next-btn').onclick = () => window.exAdvanceComprehension(mode);
 document.getElementById('comp-back-btn').onclick = exShowChallengesPicker;
 }
+
+window.exAdvanceComprehension = function(mode) {
+const questions = (COMPREHENSION_QUESTIONS_BY_MODE[mode] && COMPREHENSION_QUESTIONS_BY_MODE[mode]()) || [];
+const q = questions[compIndex];
+const el = document.getElementById('comp-input');
+compAnswers.push({ ar: q.ar, en: q.en, answer: el ? el.value.trim() : '' });
+window.didMakeProgress = true;
+if (compIndex < questions.length - 1) {
+compIndex++;
+incrementCardActivity(activeStudentCode());
+saveFlashcardData(activeStudentCode());
+window.saveComprehensionProgress(mode);
+exShowComprehension(mode);
+} else {
+window.exSubmitComprehension(mode);
+}
+};
+
+window.saveComprehensionProgress = async function(mode) {
+const code = activeStudentCode();
+const today = todayKey();
+const filled = compAnswers.filter(a => a.answer);
+if (!filled.length) return;
+const lessonNum = EX_LESSON_MAP[mode];
+const header = '📋 Comprehension — Lesson ' + lessonNum + ' (story questions)';
+let block = header;
+filled.forEach((a, i) => { block += `\n${i+1}. ${a.ar} (${a.en})\n   ${a.answer}`; });
+const existing = submissions[code]?.[today] || {};
+const newText = upsertChallengeBlock(existing.text, header, block);
+const dayData = { images: existing.images || [], text: newText, reviewed: false };
+if (!submissions[code]) submissions[code] = {};
+submissions[code][today] = dayData;
+await saveDay(code, today, dayData);
+};
 
 window.exSubmitComprehension = async function(mode) {
 const code = activeStudentCode();
 const today = todayKey();
-const questions = (COMPREHENSION_QUESTIONS_BY_MODE[mode] && COMPREHENSION_QUESTIONS_BY_MODE[mode]()) || [];
-const answers = questions.map((q, i) => {
-const el = document.getElementById('comp-input-' + i);
-return { ar: q.ar, en: q.en, answer: el ? el.value.trim() : '' };
-});
+const answers = compAnswers;
 const filled = answers.filter(a => a.answer);
-if (!filled.length) { showToast('Answer at least one question first'); return; }
+if (!filled.length) { window.showToast('Answer at least one question first'); return; }
 
 const lessonNum = EX_LESSON_MAP[mode];
-let block = '📋 Comprehension — Lesson ' + lessonNum + ' (story questions)';
-answers.forEach((a, i) => {
-block += `\n${i+1}. ${a.ar} (${a.en})\n   ${a.answer || '—'}`;
+const header = '📋 Comprehension — Lesson ' + lessonNum + ' (story questions)';
+let block = header;
+filled.forEach((a, i) => {
+block += `\n${i+1}. ${a.ar} (${a.en})\n   ${a.answer}`;
 });
 
 const existing = submissions[code]?.[today] || {};
-const newText = (existing.text ? existing.text + '\n\n' : '') + block;
+const newText = upsertChallengeBlock(existing.text, header, block);
 const dayData = { images: existing.images || [], text: newText, reviewed: false };
 if (!submissions[code]) submissions[code] = {};
 submissions[code][today] = dayData;
@@ -3819,22 +4078,22 @@ if (typeof exShowChallengesPicker === 'function') exShowChallengesPicker();
 
 function exShowChallenge2() {
 const sentences = window.CHALLENGE_2_SENTENCES || [];
+const s = sentences[ch2Index];
+const isLast = ch2Index === sentences.length - 1;
 let html = `
 <div class="section-label">🏆 Challenge 2 — Translate to Arabic</div>
 <div style="background:var(--grey-light);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
-<div style="font-size:14px;color:#6b7280;margin-bottom:20px;line-height:1.6">Translate each English sentence into Arabic. Don't worry about getting it perfect — we'll go over these together in your next lesson.</div>`;
-sentences.forEach((s, i) => {
-html += `
+<div style="font-size:13px;color:#6b7280;margin-bottom:14px;font-weight:600">Question ${ch2Index+1} of ${sentences.length}</div>
+<div style="font-size:14px;color:#6b7280;margin-bottom:20px;line-height:1.6">Translate the English sentence into Arabic. Don't worry about getting it perfect — we'll go over these together in your next lesson.</div>
 <div style="margin-bottom:18px">
-<div style="font-size:1em;direction:ltr;text-align:left;color:#1a1a2e;margin-bottom:6px">${i+1}. ${s.en}</div>
-<textarea id="ch2-input-${i}" placeholder="Write the Arabic translation..." style="width:100%;padding:10px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:1.2em;direction:rtl;text-align:right;font-family:'Scheherazade New', serif;min-height:50px;outline:none;box-sizing:border-box"></textarea>
-</div>`;
-});
-html += `
-<button id="ch2-submit-btn" style="width:100%;margin-top:8px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">Submit Challenge</button>
+<div style="font-size:1em;direction:ltr;text-align:left;color:#1a1a2e;margin-bottom:6px">${s.en}</div>
+<textarea id="ch2-input" placeholder="Write the Arabic translation..." style="width:100%;padding:10px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:1.2em;direction:rtl;text-align:right;font-family:'Scheherazade New', serif;min-height:50px;outline:none;box-sizing:border-box"></textarea>
+</div>
+<button id="ch2-next-btn" style="width:100%;margin-top:8px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">${isLast ? 'Submit Challenge' : 'Next'}</button>
 <button id="ch2-back-btn" style="width:100%;margin-top:8px;padding:10px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">← Back</button>
 </div>`;
-document.getElementById('ch2-submit-btn').onclick = () => window.exSubmitChallenge2();
+document.getElementById('challenges-root').innerHTML = html;
+document.getElementById('ch2-next-btn').onclick = () => window.exAdvanceChallenge2();
 document.getElementById('ch2-back-btn').onclick = exShowChallengesPicker;
 }
 
@@ -4448,6 +4707,7 @@ wireRatingButtons();
 }
 
 function exRate(rating) {
+window.didMakeProgress = true;
 const q = exQuestions[exCurrent];
 const lessonNum = EX_LESSON_MAP[exMode];
 const oldMastery = window.getExerciseMasteryPercent(exMode, exGetQuestionCount(exMode));
