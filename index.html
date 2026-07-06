@@ -863,7 +863,7 @@ let isStudentView = false, calYear, calMonth, selectedDate = null;
 let submissions = {}, sidebarCollapsed = false;
 let currentTab = 'homework';
 let isGuestMode = false;
-let didMakeProgress = false;
+window.didMakeProgress = false;
 let guestLessonDone = false;
 
 // Flashcard state
@@ -1217,8 +1217,9 @@ setTimeout(() => overlay.remove(), 300);
 // Marks "Reading" done for a lesson, saves it, and either plays the walk-forward
 // celebration (first time it's truly new progress) or just hops to the Milestones
 // map directly (if it was already done, e.g. tapping the button again).
+
 window.markReadingDone = async function(lessonNum) {
-didMakeProgress = true;
+window.didMakeProgress = true;
 const code = currentUser || viewingStudent;
 const sentenceIdx = storyCurrentSentence[code]?.[lessonNum] || 0;
 const lessonStoryData = window.LESSON_STORIES ? window.LESSON_STORIES.find(s => s.lesson === lessonNum) : null;
@@ -2165,15 +2166,26 @@ window.hasSubmittedChallenge = function(mode) {
 return !!exProgress[mode];
 };
 
+window.exAdvanceChallenge1 = function(mode) {
+mode = mode || 'challenge1';
+const words = (CHALLENGE1_WORDS_BY_MODE[mode] && CHALLENGE1_WORDS_BY_MODE[mode]()) || [];
+const w = words[ch1Index];
+const el = document.getElementById('ch1-input');
+ch1Answers.push({ ar: w.ar, en: w.en, answer: el ? el.value.trim() : '' });
+window.didMakeProgress = true;
+if (ch1Index < words.length - 1) {
+ch1Index++;
+exShowChallenge1(mode);
+} else {
+window.exSubmitChallenge1(mode);
+}
+};
+
 window.exSubmitChallenge1 = async function(mode) {
 mode = mode || 'challenge1';
 const code = activeStudentCode();
 const today = todayKey();
-const words = (CHALLENGE1_WORDS_BY_MODE[mode] && CHALLENGE1_WORDS_BY_MODE[mode]()) || [];
-const answers = words.map((w, i) => {
-const el = document.getElementById('ch1-input-' + i);
-return { ar: w.ar, en: w.en, answer: el ? el.value.trim() : '' };
-});
+const answers = ch1Answers;
 const filled = answers.filter(a => a.answer);
 if (!filled.length) { showToast('Write at least one sentence first'); return; }
 
@@ -2201,14 +2213,24 @@ render();
 if (typeof exShowChallengesPicker === 'function') exShowChallengesPicker();
 };
 
+window.exAdvanceChallenge2 = function() {
+const sentences = window.CHALLENGE_2_SENTENCES || [];
+const s = sentences[ch2Index];
+const el = document.getElementById('ch2-input');
+ch2Answers.push({ en: s.en, answer: el ? el.value.trim() : '' });
+window.didMakeProgress = true;
+if (ch2Index < sentences.length - 1) {
+ch2Index++;
+exShowChallenge2();
+} else {
+window.exSubmitChallenge2();
+}
+};
+
 window.exSubmitChallenge2 = async function() {
 const code = activeStudentCode();
 const today = todayKey();
-const sentences = window.CHALLENGE_2_SENTENCES || [];
-const answers = sentences.map((s, i) => {
-const el = document.getElementById('ch2-input-' + i);
-return { en: s.en, answer: el ? el.value.trim() : '' };
-});
+const answers = ch2Answers;
 const filled = answers.filter(a => a.answer);
 if (!filled.length) { showToast('Translate at least one sentence first'); return; }
 
@@ -2230,13 +2252,12 @@ window.triggerMilestoneWalk(EX_LESSON_MAP['challenge2'], oldFrac, window.getLess
 for (let i = 0; i < filled.length; i++) incrementCardActivity(code);
 await saveFlashcardData(code);
 
-showToast('Submitted! Your teacher will go over this with you in your next lesson.');
+window.showToast('Submitted! Your teacher will go over this with you in your next lesson.');
 render();
-if (typeof exShowPicker === 'function') exShowPicker();
+if (typeof exShowChallengesPicker === 'function') exShowChallengesPicker();
 };
 
 async function saveDay(code, dateStr, data) { await setDoc(doc(db,'submissions',code,'days',dateStr), data); }
-
 // ── LOGIN ──
 async function handleLogin() {
 const code = document.getElementById('code-input').value.trim().toUpperCase();
@@ -2436,9 +2457,9 @@ if (gramBtn) gramBtn.style.display = isGuestMode ? 'none' : 'block';
 if (tab==='milestones') {
 document.getElementById('main').scrollTop = 0;
 window.scrollTo(0, 0);
-if (previousTab !== 'milestones' && didMakeProgress) {
+if (previousTab !== 'milestones' && window.didMakeProgress) {
   showToast('Progress saved ✓');
-  didMakeProgress = false;
+  window.didMakeProgress = false;
 }
 renderMilestones();
 if (pendingMilestoneIntro) {
@@ -2958,7 +2979,7 @@ document.getElementById('fc-rating-wrap').classList.add('visible');
 
 ratingWrap.querySelectorAll('.fc-rating-btn').forEach(btn=>{
 btn.addEventListener('click',async()=>{
-didMakeProgress = true;
+window.didMakeProgress = true;
 const rating = parseInt(btn.dataset.r);
 const oldPct = getLessonMasteryPercent(fcCurrentLesson);
 const oldFrac = window.getLessonProgressSum(fcCurrentLesson);
@@ -2992,6 +3013,7 @@ let toastTimer;
 let storyProgress = {};
 let storyCurrentSentence = {};
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),5000);}
+window.showToast = showToast;
 function showMasteryGain(diff){const el=document.createElement('div');el.className='mastery-gain-popup';el.textContent=`+${diff}%`;document.body.appendChild(el);setTimeout(()=>el.remove(),1400);}
 function showWordMeaning(el) { showToast(el.textContent + ' = ' + el.dataset.en); }
 function toggleStoryEnglish() {
@@ -3082,6 +3104,7 @@ window.storySubmitTranslation = storySubmitTranslation;
 
 function storyRateSelf(lesson, rating) {
   const code = currentUser || viewingStudent;
+  window.didMakeProgress = true;
   storyCurrentSentence[code][lesson]++;
   storyRenderSentence(lesson);
   document.getElementById('story-translation-input').disabled = false;
@@ -3241,6 +3264,7 @@ document.getElementById('principle-back-btn').addEventListener('click', () => {
   if (principleIdx > 0) { principleIdx--; principleRevealed = false; renderPrinciple(); }
 });
 document.getElementById('principle-next-btn').addEventListener('click', () => {
+  window.didMakeProgress = true;
   if (principleIdx < activePrinciples.length - 1) { principleIdx++; principleRevealed = false; renderPrinciple(); }
   else { const code = currentUser || viewingStudent; window.markGrammarDone(studentLesson[code] || 1); }
 });
@@ -3400,6 +3424,9 @@ popup.style.display = 'none';
 
 // ── EXERCISE ENGINE ──
 let exMode = null, exQuestions = [], exCurrent = 0, exAnswered = 0;
+let ch1Index = 0, ch1Answers = [];
+let ch2Index = 0, ch2Answers = [];
+let compIndex = 0, compAnswers = [];
 let exDotEarned = false;
 let exWordSelected = [], exWordBank = [];
 let exFemSelected = [];
@@ -3693,7 +3720,12 @@ document.getElementById('challenges-root').innerHTML = `
 challengeCards.forEach(c => {
 document.getElementById('chbtn-' + c.mode).onclick = () => {
 const lessonNum = EX_LESSON_MAP[c.mode];
-const open = () => c.mode.indexOf('comprehension') === 0 ? exShowComprehension(c.mode) : c.mode === 'challenge2' ? exShowChallenge2() : exShowChallenge1(c.mode);
+const open = () => {
+if (c.mode.indexOf('comprehension') === 0) { compIndex = 0; compAnswers = []; exShowComprehension(c.mode); return; }
+if (c.mode === 'challenge2') { ch2Index = 0; ch2Answers = []; exShowChallenge2(); return; }
+ch1Index = 0; ch1Answers = [];
+exShowChallenge1(c.mode);
+};
 if (window.hasSubmittedChallenge(c.mode)) { window.showMasteredMilestone('challenges', lessonNum, open); return; }
 open();
 };
@@ -3729,24 +3761,23 @@ challenge1l6: () => window.CHALLENGE_1_WORDS_L6
 function exShowChallenge1(mode) {
 mode = mode || 'challenge1';
 const words = (CHALLENGE1_WORDS_BY_MODE[mode] && CHALLENGE1_WORDS_BY_MODE[mode]()) || [];
+const w = words[ch1Index];
+const isLast = ch1Index === words.length - 1;
 let html = `
 <div class="section-label">🏆 Challenge 1 — Make a sentence</div>
 <div style="background:var(--grey-light);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
-<div style="font-size:14px;color:#6b7280;margin-bottom:20px;line-height:1.6">Write your own Arabic sentence using each word below. Don't worry about getting it perfect — we'll go over these together in your next lesson.</div>`;
-words.forEach((w, i) => {
-html += `
+<div style="font-size:13px;color:#6b7280;margin-bottom:14px;font-weight:600">Question ${ch1Index+1} of ${words.length}</div>
+<div style="font-size:14px;color:#6b7280;margin-bottom:20px;line-height:1.6">Write your own Arabic sentence using the word below. Don't worry about getting it perfect — we'll go over these together in your next lesson.</div>
 <div style="margin-bottom:18px">
 <div style="font-family:'Scheherazade New', serif;font-size:1.4em;direction:rtl;text-align:right;color:#8b2035;font-weight:700">${w.ar}</div>
 <div style="font-size:12px;color:#6b7280;margin-bottom:6px">${w.en}</div>
-<textarea id="ch1-input-${i}" placeholder="Write your sentence..." style="width:100%;padding:10px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:1.1em;direction:rtl;text-align:right;font-family:inherit;min-height:50px;outline:none;box-sizing:border-box"></textarea>
-</div>`;
-});
-html += `
-<button id="ch1-submit-btn" style="width:100%;margin-top:8px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">Submit Challenge</button>
+<textarea id="ch1-input" placeholder="Write your sentence..." style="width:100%;padding:10px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:1.1em;direction:rtl;text-align:right;font-family:inherit;min-height:50px;outline:none;box-sizing:border-box"></textarea>
+</div>
+<button id="ch1-next-btn" style="width:100%;margin-top:8px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">${isLast ? 'Submit Challenge' : 'Next'}</button>
 <button id="ch1-back-btn" style="width:100%;margin-top:8px;padding:10px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">← Back</button>
 </div>`;
 document.getElementById('challenges-root').innerHTML = html;
-document.getElementById('ch1-submit-btn').onclick = () => window.exSubmitChallenge1(mode);
+document.getElementById('ch1-next-btn').onclick = () => window.exAdvanceChallenge1(mode);
 document.getElementById('ch1-back-btn').onclick = exShowChallengesPicker;
 }
 
@@ -3761,37 +3792,46 @@ comprehension6: () => window.COMPREHENSION_QUESTIONS_L6
 
 function exShowComprehension(mode) {
 const questions = (COMPREHENSION_QUESTIONS_BY_MODE[mode] && COMPREHENSION_QUESTIONS_BY_MODE[mode]()) || [];
+const q = questions[compIndex];
+const isLast = compIndex === questions.length - 1;
 let html = `
 <div class="section-label">💬 Comprehension — Answer in Arabic</div>
 <div style="background:var(--grey-light);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
-<div style="font-size:14px;color:#6b7280;margin-bottom:20px;line-height:1.6">Read each question about the story and write your answer as a full Arabic sentence. Don't worry about getting it perfect — we'll go over these together in your next lesson.</div>`;
-questions.forEach((q, i) => {
-html += `
+<div style="font-size:13px;color:#6b7280;margin-bottom:14px;font-weight:600">Question ${compIndex+1} of ${questions.length}</div>
+<div style="font-size:14px;color:#6b7280;margin-bottom:20px;line-height:1.6">Read the question about the story and write your answer as a full Arabic sentence. Don't worry about getting it perfect — we'll go over these together in your next lesson.</div>
 <div style="margin-bottom:18px">
 <div style="font-family:'Scheherazade New', serif;font-size:1.3em;direction:rtl;text-align:right;color:#8b2035;font-weight:700">${q.ar}</div>
 <div style="font-size:12px;color:#6b7280;margin-bottom:6px">${q.en}</div>
-<textarea id="comp-input-${i}" placeholder="Write your answer..." style="width:100%;padding:10px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:1.1em;direction:rtl;text-align:right;font-family:inherit;min-height:50px;outline:none;box-sizing:border-box"></textarea>
-</div>`;
-});
-html += `
-<button id="comp-submit-btn" style="width:100%;margin-top:8px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">Submit Comprehension</button>
+<textarea id="comp-input" placeholder="Write your answer..." style="width:100%;padding:10px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:1.1em;direction:rtl;text-align:right;font-family:inherit;min-height:50px;outline:none;box-sizing:border-box"></textarea>
+</div>
+<button id="comp-next-btn" style="width:100%;margin-top:8px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">${isLast ? 'Submit Comprehension' : 'Next'}</button>
 <button id="comp-back-btn" style="width:100%;margin-top:8px;padding:10px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">← Back</button>
 </div>`;
 document.getElementById('challenges-root').innerHTML = html;
-document.getElementById('comp-submit-btn').onclick = () => window.exSubmitComprehension(mode);
+document.getElementById('comp-next-btn').onclick = () => window.exAdvanceComprehension(mode);
 document.getElementById('comp-back-btn').onclick = exShowChallengesPicker;
 }
+
+window.exAdvanceComprehension = function(mode) {
+const questions = (COMPREHENSION_QUESTIONS_BY_MODE[mode] && COMPREHENSION_QUESTIONS_BY_MODE[mode]()) || [];
+const q = questions[compIndex];
+const el = document.getElementById('comp-input');
+compAnswers.push({ ar: q.ar, en: q.en, answer: el ? el.value.trim() : '' });
+window.didMakeProgress = true;
+if (compIndex < questions.length - 1) {
+compIndex++;
+exShowComprehension(mode);
+} else {
+window.exSubmitComprehension(mode);
+}
+};
 
 window.exSubmitComprehension = async function(mode) {
 const code = activeStudentCode();
 const today = todayKey();
-const questions = (COMPREHENSION_QUESTIONS_BY_MODE[mode] && COMPREHENSION_QUESTIONS_BY_MODE[mode]()) || [];
-const answers = questions.map((q, i) => {
-const el = document.getElementById('comp-input-' + i);
-return { ar: q.ar, en: q.en, answer: el ? el.value.trim() : '' };
-});
+const answers = compAnswers;
 const filled = answers.filter(a => a.answer);
-if (!filled.length) { showToast('Answer at least one question first'); return; }
+if (!filled.length) { window.showToast('Answer at least one question first'); return; }
 
 const lessonNum = EX_LESSON_MAP[mode];
 let block = '📋 Comprehension — Lesson ' + lessonNum + ' (story questions)';
@@ -3819,22 +3859,22 @@ if (typeof exShowChallengesPicker === 'function') exShowChallengesPicker();
 
 function exShowChallenge2() {
 const sentences = window.CHALLENGE_2_SENTENCES || [];
+const s = sentences[ch2Index];
+const isLast = ch2Index === sentences.length - 1;
 let html = `
 <div class="section-label">🏆 Challenge 2 — Translate to Arabic</div>
 <div style="background:var(--grey-light);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
-<div style="font-size:14px;color:#6b7280;margin-bottom:20px;line-height:1.6">Translate each English sentence into Arabic. Don't worry about getting it perfect — we'll go over these together in your next lesson.</div>`;
-sentences.forEach((s, i) => {
-html += `
+<div style="font-size:13px;color:#6b7280;margin-bottom:14px;font-weight:600">Question ${ch2Index+1} of ${sentences.length}</div>
+<div style="font-size:14px;color:#6b7280;margin-bottom:20px;line-height:1.6">Translate the English sentence into Arabic. Don't worry about getting it perfect — we'll go over these together in your next lesson.</div>
 <div style="margin-bottom:18px">
-<div style="font-size:1em;direction:ltr;text-align:left;color:#1a1a2e;margin-bottom:6px">${i+1}. ${s.en}</div>
-<textarea id="ch2-input-${i}" placeholder="Write the Arabic translation..." style="width:100%;padding:10px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:1.2em;direction:rtl;text-align:right;font-family:'Scheherazade New', serif;min-height:50px;outline:none;box-sizing:border-box"></textarea>
-</div>`;
-});
-html += `
-<button id="ch2-submit-btn" style="width:100%;margin-top:8px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">Submit Challenge</button>
+<div style="font-size:1em;direction:ltr;text-align:left;color:#1a1a2e;margin-bottom:6px">${s.en}</div>
+<textarea id="ch2-input" placeholder="Write the Arabic translation..." style="width:100%;padding:10px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:1.2em;direction:rtl;text-align:right;font-family:'Scheherazade New', serif;min-height:50px;outline:none;box-sizing:border-box"></textarea>
+</div>
+<button id="ch2-next-btn" style="width:100%;margin-top:8px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">${isLast ? 'Submit Challenge' : 'Next'}</button>
 <button id="ch2-back-btn" style="width:100%;margin-top:8px;padding:10px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">← Back</button>
 </div>`;
-document.getElementById('ch2-submit-btn').onclick = () => window.exSubmitChallenge2();
+document.getElementById('challenges-root').innerHTML = html;
+document.getElementById('ch2-next-btn').onclick = () => window.exAdvanceChallenge2();
 document.getElementById('ch2-back-btn').onclick = exShowChallengesPicker;
 }
 
@@ -4448,6 +4488,7 @@ wireRatingButtons();
 }
 
 function exRate(rating) {
+window.didMakeProgress = true;
 const q = exQuestions[exCurrent];
 const lessonNum = EX_LESSON_MAP[exMode];
 const oldMastery = window.getExerciseMasteryPercent(exMode, exGetQuestionCount(exMode));
