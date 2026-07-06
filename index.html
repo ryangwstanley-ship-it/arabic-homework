@@ -1160,7 +1160,7 @@ inner += isActiveTent
 ? `<g id="ms-tent-${stop.lesson}" style="cursor:pointer" onclick="window.openLessonTentMenu(${stop.lesson})"><circle cx="${x}" cy="${y-25}" r="72" fill="#F4C14E" fill-opacity="0.16" stroke="#F4C14E" stroke-width="2" stroke-opacity="0.7"/>${piece}</g>`
 : piece;
 } else {
-const lit = msStopFraction(stop, currentLevel) > 0;
+const lit = msStopFraction(stop, currentLevel) >= 1;
 const tappable = stop.lesson <= currentLevel;
 const stopIdxInLesson = MS_TORCH_INDEX[stop.key];
 const isNext = nextMilestone && nextMilestone.lesson === stop.lesson && nextMilestone.index === stopIdxInLesson;
@@ -2078,6 +2078,7 @@ allCardActivity[code] = data.cardActivity || {};
 fcDeletedCards = data.deleted || {};
 studentLesson[code] = data.lesson || 1;
 exProgress = data.exProgress || {};
+exChallengeDraft = data.exChallengeDraft || {};
 readingDone = data.readingDone || {};
 grammarDone = data.grammarDone || {};
 if (data.customCards) {
@@ -2089,7 +2090,7 @@ LESSONS[num].cards = [...DEFAULT_LESSONS[num]?.cards || [], ...cards];
 });
 }
 } else {
-fcProgress = {}; allFcActivity[code] = {}; allCardActivity[code] = {}; fcDeletedCards = {}; studentLesson[code] = 1; exProgress = {}; readingDone = {}; grammarDone = {};
+fcProgress = {}; allFcActivity[code] = {}; allCardActivity[code] = {}; fcDeletedCards = {}; studentLesson[code] = 1; exProgress = {}; exChallengeDraft = {}; readingDone = {}; grammarDone = {};
 }
 } catch(e) { console.error('FC load error',e); }
 }
@@ -2120,6 +2121,7 @@ cardActivity: allCardActivity[code] || {},
 deleted: fcDeletedCards,
 lesson: studentLesson[code] || 1,
 exProgress,
+exChallengeDraft,
 readingDone,
 grammarDone,
 customCards
@@ -2175,6 +2177,9 @@ ch1Answers.push({ ar: w.ar, en: w.en, answer: el ? el.value.trim() : '' });
 window.didMakeProgress = true;
 if (ch1Index < words.length - 1) {
 ch1Index++;
+exChallengeDraft[mode] = { index: ch1Index, answers: ch1Answers.slice() };
+incrementCardActivity(activeStudentCode());
+saveFlashcardData(activeStudentCode());
 exShowChallenge1(mode);
 } else {
 window.exSubmitChallenge1(mode);
@@ -2204,6 +2209,7 @@ await saveDay(code, today, dayData);
 
 const oldFrac = window.getLessonProgressSum(lessonNum);
 exProgress[mode] = true;
+delete exChallengeDraft[mode];
 window.triggerMilestoneWalk(lessonNum, oldFrac, window.getLessonProgressSum(lessonNum), 'challenges');
 for (let i = 0; i < filled.length; i++) incrementCardActivity(code);
 await saveFlashcardData(code);
@@ -2221,6 +2227,9 @@ ch2Answers.push({ en: s.en, answer: el ? el.value.trim() : '' });
 window.didMakeProgress = true;
 if (ch2Index < sentences.length - 1) {
 ch2Index++;
+exChallengeDraft['challenge2'] = { index: ch2Index, answers: ch2Answers.slice() };
+incrementCardActivity(activeStudentCode());
+saveFlashcardData(activeStudentCode());
 exShowChallenge2();
 } else {
 window.exSubmitChallenge2();
@@ -2248,6 +2257,7 @@ await saveDay(code, today, dayData);
 
 const oldFrac = window.getLessonProgressSum(EX_LESSON_MAP['challenge2']);
 exProgress['challenge2'] = true;
+delete exChallengeDraft['challenge2'];
 window.triggerMilestoneWalk(EX_LESSON_MAP['challenge2'], oldFrac, window.getLessonProgressSum(EX_LESSON_MAP['challenge2']), 'challenges');
 for (let i = 0; i < filled.length; i++) incrementCardActivity(code);
 await saveFlashcardData(code);
@@ -3105,6 +3115,7 @@ window.storySubmitTranslation = storySubmitTranslation;
 function storyRateSelf(lesson, rating) {
   const code = currentUser || viewingStudent;
   window.didMakeProgress = true;
+  incrementCardActivity(code);
   storyCurrentSentence[code][lesson]++;
   storyRenderSentence(lesson);
   document.getElementById('story-translation-input').disabled = false;
@@ -3265,8 +3276,10 @@ document.getElementById('principle-back-btn').addEventListener('click', () => {
 });
 document.getElementById('principle-next-btn').addEventListener('click', () => {
   window.didMakeProgress = true;
+  const code = currentUser || viewingStudent;
+  incrementCardActivity(code);
   if (principleIdx < activePrinciples.length - 1) { principleIdx++; principleRevealed = false; renderPrinciple(); }
-  else { const code = currentUser || viewingStudent; window.markGrammarDone(studentLesson[code] || 1); }
+  else { window.markGrammarDone(studentLesson[code] || 1); }
 });
 const arNumDigits = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
 [1,2,3].forEach(n => {
@@ -3426,6 +3439,7 @@ popup.style.display = 'none';
 let exMode = null, exQuestions = [], exCurrent = 0, exAnswered = 0;
 let ch1Index = 0, ch1Answers = [];
 let ch2Index = 0, ch2Answers = [];
+let exChallengeDraft = {};
 let compIndex = 0, compAnswers = [];
 let exDotEarned = false;
 let exWordSelected = [], exWordBank = [];
@@ -3722,8 +3736,16 @@ document.getElementById('chbtn-' + c.mode).onclick = () => {
 const lessonNum = EX_LESSON_MAP[c.mode];
 const open = () => {
 if (c.mode.indexOf('comprehension') === 0) { compIndex = 0; compAnswers = []; exShowComprehension(c.mode); return; }
-if (c.mode === 'challenge2') { ch2Index = 0; ch2Answers = []; exShowChallenge2(); return; }
-ch1Index = 0; ch1Answers = [];
+if (c.mode === 'challenge2') {
+const draft2 = exChallengeDraft['challenge2'];
+ch2Index = draft2 ? draft2.index : 0;
+ch2Answers = draft2 ? draft2.answers.slice() : [];
+exShowChallenge2();
+return;
+}
+const draft1 = exChallengeDraft[c.mode];
+ch1Index = draft1 ? draft1.index : 0;
+ch1Answers = draft1 ? draft1.answers.slice() : [];
 exShowChallenge1(c.mode);
 };
 if (window.hasSubmittedChallenge(c.mode)) { window.showMasteredMilestone('challenges', lessonNum, open); return; }
