@@ -62,6 +62,7 @@
 .status-dot.red { background: var(--dot-red); }
 .status-dot.grey { background: rgba(255,255,255,0.2); }
 .status-dot.blue { background: #3b82f6; }
+.status-dot.yellow { background: var(--dot-yellow); }
 .hw-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; background: rgba(255,255,255,0.15); }
 .hw-dot.done { background: var(--dot-green); }
 .sidebar-bottom { padding: 12px 8px; border-top: 1px solid rgba(255,255,255,0.1); white-space: nowrap; }
@@ -447,6 +448,7 @@ console.log("THE FILE IS LOADING!");
 <div class="streak-info-popup" id="streak-info-popup">Complete at least 20 flashcards or exercise questions, or upload your homework, today to count toward your streak — the ring above fills up as you go. Miss a day completely and your streak resets to 0.</div>
 </div>
 <div class="revision-lesson" id="revision-lesson-wrap" style="cursor:pointer" onclick="window.openLessonDropdown()">Lesson 1</div>
+<div id="progress-saved-text" style="display:none;font-size:11px;font-weight:700;color:#bfdbfe;margin-top:2px">✓ Progress saved today</div>
 </div>
 <div class="revision-rank">
 <div class="revision-rank-num" id="revision-rank-num">#—</div>
@@ -712,7 +714,7 @@ console.log("THE FILE IS LOADING!");
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 const firebaseConfig = {
 apiKey: "AIzaSyBmeQwuWPeuQtdC-7w3SyBb2K5ljvvqBGY",
@@ -730,8 +732,12 @@ const db = getFirestore(firebaseApp);
 let DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, CHANGE_WORD_QUESTIONS_L2, CHANGE_WORD_QUESTIONS_L3, CHANGE_WORD_QUESTIONS_L4, CHANGE_WORD_QUESTIONS_L5, CHANGE_WORD_QUESTIONS_L6, TRUE_FALSE_QUESTIONS, TRUE_FALSE_QUESTIONS_L2, TRUE_FALSE_QUESTIONS_L3, TRUE_FALSE_QUESTIONS_L4, TRUE_FALSE_QUESTIONS_L5, TRUE_FALSE_QUESTIONS_L6, COMPREHENSION_QUESTIONS_L1, COMPREHENSION_QUESTIONS_L2, COMPREHENSION_QUESTIONS_L3, COMPREHENSION_QUESTIONS_L4, COMPREHENSION_QUESTIONS_L5, COMPREHENSION_QUESTIONS_L6, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS, PLURAL_QUESTIONS, FEMININE_QUESTIONS, SUFFIX_TRANSLATION_QUESTIONS, DEMO_TRANSLATION_QUESTIONS, ADJECTIVE_AGREEMENT_TRANSLATION_QUESTIONS, PLURAL_TYPE_QUESTIONS, CHALLENGE_1_WORDS, CHALLENGE_1_WORDS_L2, CHALLENGE_1_WORDS_L3, CHALLENGE_1_WORDS_L4, CHALLENGE_1_WORDS_L5, CHALLENGE_1_WORDS_L6, TRANSLATION_1_QUESTIONS, CHALLENGE_2_SENTENCES, LESSON_STORIES;
 async function loadVocabData() {
 
-const url = 'https://raw.githubusercontent.com/ryangwstanley-ship-it/database/main/website%20data%20base?t=' + Date.now();
+const url = 'https://cdn.jsdelivr.net/gh/ryangwstanley-ship-it/database@main/website%20data%20base?t=' + Date.now();
 const res = await fetch(url);
+if (!res.ok) {
+  alert('Could not load the app data right now. Please refresh the page in a moment.');
+  throw new Error('Database fetch failed: ' + res.status);
+}
 const code = await res.text();
 const runner = new Function(
 code.replaceAll('export const', 'const') +
@@ -873,11 +879,39 @@ let isStudentView = false, calYear, calMonth, selectedDate = null;
 let submissions = {}, sidebarCollapsed = false;
 let currentTab = 'homework';
 let isGuestMode = false;
+function updateProgressBanner() {
+  const banner = document.getElementById('revision-banner');
+  const badge = document.getElementById('progress-saved-text');
+  if (!banner || !badge) return;
+  const code = activeStudentCode ? activeStudentCode() : currentUser;
+  if (hasMadeProgressToday(code)) {
+    banner.style.background = '#2563eb';
+    badge.style.display = 'block';
+  } else {
+    banner.style.background = '';
+    badge.style.display = 'none';
+  }
+}
+let _didMakeProgress = false;
+Object.defineProperty(window, 'didMakeProgress', {
+  get() { return _didMakeProgress; },
+  set(val) {
+    _didMakeProgress = val;
+    if (val) {
+      const banner = document.getElementById('revision-banner');
+      const badge = document.getElementById('progress-saved-text');
+      if (banner) banner.style.background = '#4a6fa5';
+      if (badge) badge.style.display = 'block';
+    }
+  }
+});
 window.didMakeProgress = false;
 let guestLessonDone = false;
 
 // Flashcard state
 let fcProgress = {};
+
+
 let fcCurrentLesson = 1;
 let fcShowLessonPicker = false;
 let fcQueue = [];
@@ -1305,6 +1339,7 @@ if (box && storyText) {
   box.appendChild(document.getElementById('guest-flashcards-btn'));
 }
 storyRenderSentence(lessonNum);
+if (typeof setStoryViewMode === 'function') setStoryViewMode('sentence');
 if (guestTourActive && lessonNum === 1 && guestTourStep === 0) {
 guestTourStep = 1;
 hideGuestCoachmark();
@@ -1325,6 +1360,8 @@ document.querySelectorAll('.story-title').forEach(t => { t.style.fontWeight = '4
 document.querySelectorAll('.story-word.new-reading, .story-word.new').forEach(w => { w.style.fontWeight = '400'; w.style.color = '#1a1a2e'; });
 document.querySelectorAll('.story-en-line').forEach(line => { line.style.display = 'none'; });
 ['story-english-btn','story-english-btn-l2','story-english-btn-l3'].forEach(id => { const b = document.getElementById(id); if (b) b.textContent = 'Show English'; });
+const modeToggleWrap = document.getElementById('story-mode-toggle');
+if (modeToggleWrap) modeToggleWrap.style.display = 'none';
 document.getElementById('principles-wrap').style.display = 'block';
 const dynContainerForGrammar = document.getElementById('story-lesson-dynamic');
 if (dynContainerForGrammar) dynContainerForGrammar.appendChild(document.getElementById('principles-wrap'));
@@ -1751,15 +1788,25 @@ async function saveLeaderboard(entries) {
 }
 
 function buildLeaderboardHtml(entries, isEditing) {
+  entries.forEach(e => {
+    if (e.days && e.days.length === 7) e.score = e.days.reduce((s, d) => s + (d || 0), 0);
+  });
   const sorted = [...entries].sort((a, b) => (b.score || 0) - (a.score || 0));
   let html = '<div style="display:flex;flex-direction:column;gap:6px;max-width:420px">';
   sorted.forEach((entry, i) => {
     const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `<span style="display:inline-block;width:24px;text-align:center">${i + 1}</span>`;
     if (isEditing) {
-      html += `<div style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--grey-light);border-radius:10px">
+      const days = entry.days && entry.days.length === 7 ? entry.days : [0,0,0,0,0,0,0];
+      const total = days.reduce((s, d) => s + (d || 0), 0);
+      let dayBoxes = '';
+      days.forEach((d, di) => {
+        dayBoxes += `<input class="lb-day-input" data-name="${entry.name.replace(/"/g, '&quot;')}" data-day="${di}" value="${d}" type="number" min="0" max="6" style="width:32px;padding:6px 2px;border:2px solid var(--border);border-radius:6px;font-size:12px;text-align:center">`;
+      });
+      html += `<div style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--grey-light);border-radius:10px;flex-wrap:wrap">
         <div style="font-size:18px">${medal}</div>
-        <div style="flex:1;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis">${entry.name}</div>
-        <input class="lb-score-input" data-name="${entry.name.replace(/"/g, '&quot;')}" value="${entry.score || 0}" type="number" style="width:70px;padding:8px;border:2px solid var(--border);border-radius:6px;font-size:14px;text-align:center">
+        <div style="flex:1;font-weight:600;min-width:90px;overflow:hidden;text-overflow:ellipsis">${entry.name}</div>
+        <div style="display:flex;gap:3px">${dayBoxes}</div>
+        <div style="width:36px;text-align:center;font-weight:700;color:var(--blue);font-size:14px">${total}</div>
         <button class="lb-del-btn" data-name="${entry.name.replace(/"/g, '&quot;')}" style="padding:6px 10px;background:#ef4444;color:white;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer">✕</button>
       </div>`;
     } else {
@@ -1822,13 +1869,18 @@ async function renderLeaderboardAdmin() {
     fullHtml += `<div style="margin-top:10px;font-size:12px;color:var(--grey)">${sorted.length} student${sorted.length !== 1 ? 's' : ''} · Total: ${sorted.reduce((s, e) => s + (e.score || 0), 0)} pts</div>`;
     root.innerHTML = fullHtml;
 
-    // Score change → update entry and auto-reorder
-    root.querySelectorAll('.lb-score-input').forEach(input => {
+    // Day box change → update that day's points, recalc total, auto-reorder
+    root.querySelectorAll('.lb-day-input').forEach(input => {
       input.onchange = () => {
         const name = input.dataset.name;
-        const newScore = parseInt(input.value) || 0;
+        const dayIndex = parseInt(input.dataset.day);
+        const newVal = parseInt(input.value) || 0;
         const idx = entries.findIndex(e => e.name === name);
-        if (idx !== -1) entries[idx].score = newScore;
+        if (idx !== -1) {
+          if (!entries[idx].days || entries[idx].days.length !== 7) entries[idx].days = [0,0,0,0,0,0,0];
+          entries[idx].days[dayIndex] = newVal;
+          entries[idx].score = entries[idx].days.reduce((s, d) => s + (d || 0), 0);
+        }
         redraw();
       };
     });
@@ -1850,14 +1902,14 @@ async function renderLeaderboardAdmin() {
       const score = parseInt(scoreInput.value) || 0;
       if (!name) { showToast('Enter a name first'); return; }
       if (entries.find(e => e.name === name)) { showToast('Name already exists'); return; }
-      entries.push({ name, score });
+      entries.push({ name, days: [0,0,0,0,0,0,0], score: 0 });
       redraw();
     };
 
     // Save to Firebase
     document.getElementById('lb-reset-btn').onclick = async () => {
   if (!confirm('Reset ALL scores to 0?')) return;
-  entries.forEach(e => e.score = 0);
+  entries.forEach(e => { e.score = 0; e.days = [0,0,0,0,0,0,0]; });
   await saveLeaderboard(entries);
   showToast('All scores reset to 0');
   redraw();
@@ -1880,7 +1932,17 @@ async function renderLeaderboardPublic() {
     root.innerHTML = '<div style="text-align:center;padding:40px;color:var(--grey)">No entries yet.</div>';
     return;
   }
-let fullHtml = `<button id="lb-invite-btn" style="width:100%;max-width:420px;margin-bottom:20px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">For an extra point, make small progress today in the app</button>`;
+let fullHtml = `<div style="width:100%;max-width:420px;margin-bottom:16px;padding:14px 16px;background:var(--grey-light);border-radius:10px;font-size:13px;line-height:1.7">
+  <div style="font-weight:700;margin-bottom:6px;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;color:var(--grey)">How you earn points (max 6/day)</div>
+  <div>• Participating</div>
+  <div>• Correct answer and grammar</div>
+  <div>• 3-day streak</div>
+  <div>• Correcting another student's mistake</div>
+  <div>• Progressing in the Arabic app</div>
+  <div>• Completing your streak in the Arabic app</div>
+</div>`;
+fullHtml += `<a href="https://chat.whatsapp.com/CnL9pk0lxbSC6hom5v5ulC" target="_blank" style="display:block;width:100%;max-width:420px;margin-bottom:16px;padding:14px;background:#25D366;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;text-align:center;text-decoration:none;box-sizing:border-box">💬 Join the Arabic Group Chat</a>`;
+fullHtml += `<button id="lb-invite-btn" style="width:100%;max-width:420px;margin-bottom:20px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">For an extra point, make small progress today in the app</button>`;
 const { html } = buildLeaderboardHtml(entries, false);
 fullHtml += html;
 root.innerHTML = fullHtml;
@@ -1908,13 +1970,25 @@ root.innerHTML = reportDocs.map(r => {
 const studentName = STUDENTS[r.studentCode]?.name || r.studentCode;
 const date = new Date(r.timestamp).toLocaleDateString();
 return `<div style="background:white;border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px">
-<div style="font-weight:600;color:var(--ink);margin-bottom:6px">${studentName}</div>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+<div style="font-weight:600;color:var(--ink)">${studentName}</div>
+<button onclick="window.deleteReport('${r.id}')" style="background:none;border:none;color:var(--grey);font-size:13px;cursor:pointer;padding:2px 6px">✕ Delete</button>
+</div>
 <div style="font-size:13px;color:var(--grey);margin-bottom:8px">${r.context}</div>
 <div style="font-size:14px;color:var(--ink);padding:10px;background:#f9fafb;border-radius:8px;margin-bottom:8px">${r.note || '(no message)'}</div>
 <div style="font-size:12px;color:var(--grey)">${date}</div>
 </div>`;
 }).join('');
 }
+
+window.deleteReport = async function(id) {
+try {
+await deleteDoc(doc(db,'reports', id));
+} catch(e) { console.error('Report delete error', e); showToast('Delete failed — try again'); return; }
+renderReportsTab();
+await window.loadReportsCache();
+buildSidebar();
+};
 
 function isMidnightPast(dateStr) {
 const [y,m,d] = dateStr.split('-').map(Number);
@@ -2452,11 +2526,12 @@ sidebar.style.display='flex'; sidebar.style.flexDirection='column';
 document.getElementById('sidebar-toggle').style.display='flex';
 if (window.innerWidth < 600) { sidebarCollapsed=true; sidebar.classList.add('collapsed'); }
 document.getElementById('tab-content-homework').style.display='block';
-buildSidebar(); updateHeaderForInstructor();
+window.loadReportsCache().then(buildSidebar); updateHeaderForInstructor();
 } else {
 app.style.display='block'; app.style.maxWidth='480px'; app.style.margin='0 auto';
 document.getElementById('header-title').textContent='My Homework';
 document.getElementById('header-sub').textContent = isGuestMode ? guestName : (STUDENTS[currentUser]?.display||'');
+updateProgressBanner();
 switchTab('milestones');
 }
 render();
@@ -2498,6 +2573,7 @@ if (tab==='exercises' && typeof exShowPicker === 'function') { exPickerLesson = 
 if (tab==='challenges' && typeof exShowChallengesPicker === 'function') { exPickerLesson = null; exShowChallengesPicker(); }
 if (tab==='story') {
 setStoryLesson(studentLesson[activeStudentCode()] || 1);
+if (typeof setStoryViewMode === 'function') setStoryViewMode('sentence');
 const gramBtn = document.getElementById('student-grammar-done-btn');
 if (gramBtn) gramBtn.style.display = isGuestMode ? 'none' : 'block';
 }
@@ -2527,20 +2603,30 @@ if (tab==='leaderboard') renderLeaderboardPublic();
 
 
 // ── SIDEBAR ──
+window.loadReportsCache = async function() {
+window.reportsCache = [];
+try {
+const snap = await getDocs(collection(db,'reports'));
+snap.forEach(d => window.reportsCache.push({ id: d.id, ...d.data() }));
+} catch(e) { console.error('Reports load error', e); }
+};
+
 function buildSidebar() {
 const wrap = document.getElementById('sidebar-students'); wrap.innerHTML='';
 const ranked = getRankedStudents();
 const today = todayKey();
+const hasDot = code => dayQualifiesForStreak(code, today) || ((allCardActivity[code]||{})[today]||0)>0 || (window.reportsCache||[]).some(r => r.studentCode === code);
+ranked.sort((a,b) => (hasDot(b)?1:0) - (hasDot(a)?1:0));
 ranked.forEach((code, idx) => {
-const s = STUDENTS[code]; const status = getStudentStatus(code); const streak = getStreak(code);
-const todaySub = submissions[code]?.[today];
-const didHomework = !!(todaySub && (todaySub.images?.length || todaySub.text));
+const s = STUDENTS[code]; const streak = getStreak(code);
 const todayCount = (allCardActivity[code]||{})[today] || 0;
-const madeProgress = hasMadeProgressToday(code);
+const streakDoneToday = dayQualifiesForStreak(code, today);
+const progressDotClass = streakDoneToday ? 'green' : (todayCount>0 ? 'blue' : 'grey');
+const hasReport = (window.reportsCache||[]).some(r => r.studentCode === code);
 const el = document.createElement('div');
 el.className='sidebar-student'+(code===viewingStudent?' active':'');
-el.innerHTML=`<div class="sidebar-avatar">${idx+1}</div><div class="sidebar-info"><div class="sidebar-name">${s.name}</div><div class="sidebar-streak">🔥 ${streak} day streak · 📇 ${todayCount}/20 today</div></div><div class="hw-dot ${didHomework?'done':''}" title="Homework today"></div>${madeProgress ? '<div class="status-dot blue" title="Made progress today"></div>' : ''}<div class="status-dot ${status}"></div>`;
-el.onclick=async()=>{ viewingStudent=code; updateHeaderForInstructor(); buildSidebar(); render(); };
+el.innerHTML=`<div class="sidebar-avatar">${idx+1}</div><div class="sidebar-info"><div class="sidebar-name">${s.name}</div><div class="sidebar-streak">🔥 ${streak} day streak · 📇 ${todayCount}/20 today</div></div><div class="status-dot ${progressDotClass}" title="Today's progress"></div><div class="status-dot ${hasReport?'yellow':'grey'}" title="${hasReport?'Has an open report':'No open reports'}"></div>`;
+el.onclick=async()=>{ viewingStudent=code; switchTab('homework'); updateHeaderForInstructor(); buildSidebar(); render(); };
 wrap.appendChild(el);
 });
 }
@@ -2595,6 +2681,7 @@ document.getElementById('revision-streak-text').textContent = `🔥 ${streak} da
 
 const ranked = getRankedStudents();
 document.getElementById('revision-rank-num').textContent = `#${ranked.indexOf(code)+1}`;
+updateProgressBanner();
 
 const lessonWrap = document.getElementById('revision-lesson-wrap');
 const lesson = studentLesson[code] || 1;
@@ -3062,6 +3149,15 @@ if (btn3) btn3.textContent = isHidden ? 'Hide English' : 'Show English';
 }
 window.showWordMeaning = showWordMeaning;
 window.toggleStoryEnglish = toggleStoryEnglish;
+function toggleStoryFullEnglish() {
+  const lines = document.querySelectorAll('.story-full-en-line');
+  if (!lines.length) return;
+  const isHidden = lines[0].style.display === 'none';
+  lines.forEach(line => { line.style.display = isHidden ? 'block' : 'none'; });
+  const btn = document.getElementById('story-full-english-btn');
+  if (btn) btn.textContent = isHidden ? 'Hide English' : 'Show English';
+}
+window.toggleStoryFullEnglish = toggleStoryFullEnglish;
 function initializeStory(lesson) {
   const code = currentUser || viewingStudent;
   if (!storyCurrentSentence[code]) storyCurrentSentence[code] = {};
@@ -3123,11 +3219,6 @@ function storyRenderSentence(lesson) {
 window.storyRenderSentence = storyRenderSentence;
 
 function storySubmitTranslation(lesson) {
-  const input = document.getElementById('story-translation-input');
-  if (!input.value.trim()) {
-    showToast('Please type a translation first');
-    return;
-  }
   document.getElementById('story-reveal').style.display = 'block';
   document.getElementById('story-ratings').style.display = 'flex';
   document.getElementById('story-translation-input').disabled = true;
@@ -3234,6 +3325,37 @@ function renderPrinciple() {
   nextBtn.textContent = principleIdx === activePrinciples.length - 1 ? 'Done' : 'Next ›';
 }
 
+function setStoryViewMode(mode) {
+  const wordsContainer = document.getElementById('story-words-container');
+  const fullContainer = document.getElementById('story-full-container');
+  if (!wordsContainer || !fullContainer) return;
+  const input = document.getElementById('story-translation-input');
+  const checkBtn = document.querySelector('[onclick*="storySubmitTranslation"]');
+  const fullEnglishBtn = document.getElementById('story-full-english-btn');
+  if (mode === 'full') {
+    wordsContainer.style.display = 'none';
+    fullContainer.style.display = 'block';
+    if (input) input.style.display = 'none';
+    if (checkBtn) checkBtn.style.display = 'none';
+    document.getElementById('story-reveal').style.display = 'none';
+    document.getElementById('story-ratings').style.display = 'none';
+    if (fullEnglishBtn) fullEnglishBtn.style.display = 'inline-block';
+  } else {
+    wordsContainer.style.display = 'block';
+    fullContainer.style.display = 'none';
+    if (input) input.style.display = '';
+    if (checkBtn) checkBtn.style.display = '';
+    if (fullEnglishBtn) fullEnglishBtn.style.display = 'none';
+    storyRenderSentence(window.storyActiveLesson);
+  }
+  document.querySelectorAll('.story-mode-btn').forEach(btn => {
+    const active = btn.dataset.mode === mode;
+    btn.style.background = active ? '#8b2035' : 'white';
+    btn.style.color = active ? 'white' : '#8b2035';
+  });
+}
+window.setStoryViewMode = setStoryViewMode;
+
 function setStoryLesson(lesson) {
 window.storyActiveLesson = lesson;
 
@@ -3254,8 +3376,25 @@ if (storyData) {
   const arLessonNames = ['الأَوَّلُ','الثَّانِي','الثَّالِثُ','الرَّابِعُ','الخَامِسُ','السَّادِسُ','السَّابِعُ','الثَّامِنُ','التَّاسِعُ','العَاشِرُ'];
   const title = storyData.title || 'Lesson ' + lesson;
   const text = storyData.text.replace(/\n/g, '<br>');
+  const arNumDigits = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+  const fullStoryHtml = storyData.sentences ? storyData.sentences.map((sentence, i) => {
+    const badge = String(i + 1).split('').map(d => arNumDigits[d]).join('');
+    const wordsHtml = sentence.words.map(w => {
+      const cls = w.isNew ? 'story-word new-reading' : 'story-word';
+      return '<span class="' + cls + '" data-en="' + w.en + '" onclick="showWordMeaning(this)">' + w.ar + '</span>';
+    }).join(' ');
+    return '<p><span class="story-line-num">' + badge + '</span> ' + wordsHtml + '</p>'
+      + '<p class="story-full-en-line" style="display:none;font-family:-apple-system,sans-serif;font-size:15px;line-height:1.7;color:#374151;background:#f9fafb;border-radius:8px;padding:10px 14px;margin:0 0 16px 0;direction:ltr;text-align:left">' + sentence.en + '</p>';
+  }).join('') : '';
+   
   const bodyHtml = storyData.sentences
-    ? '<div id="story-words-container" style="font-family:\'Scheherazade New\', serif;font-size:28px;line-height:2;direction:rtl;text-align:right"></div>'
+    ? `<div id="story-mode-toggle" style="display:flex;gap:8px;margin-bottom:16px">
+        <button class="story-mode-btn" data-mode="sentence" onclick="setStoryViewMode('sentence')" style="flex:1;padding:10px;border-radius:10px;border:2px solid #8b2035;background:#8b2035;color:white;font-size:13px;font-weight:700;cursor:pointer">📝 Sentence by Sentence</button>
+        <button class="story-mode-btn" data-mode="full" onclick="setStoryViewMode('full')" style="flex:1;padding:10px;border-radius:10px;border:2px solid #8b2035;background:white;color:#8b2035;font-size:13px;font-weight:700;cursor:pointer">📖 Full Story</button>
+      </div>
+      <button id="story-full-english-btn" onclick="toggleStoryFullEnglish()" style="display:none;padding:10px 20px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:16px">Show English</button>
+      <div id="story-words-container" style="font-family:'Scheherazade New', serif;font-size:28px;line-height:2;direction:rtl;text-align:right"></div>
+      <div id="story-full-container" style="display:none;font-family:'Scheherazade New', serif;font-size:28px;line-height:2;direction:rtl;text-align:right">${fullStoryHtml}</div>`
     : `<div style="font-family:'Scheherazade New', serif;font-size:18px;line-height:2;direction:rtl;text-align:right;white-space:pre-line">${text}</div>`;
   ['story-translation-input','story-reveal','story-ratings','student-reading-done-btn','guest-flashcards-btn','principles-wrap'].forEach(id => {
     const el = document.getElementById(id);
@@ -3274,6 +3413,18 @@ if (storyData) {
     ${bodyHtml}
   `;
   dynContainer.style.display = 'block';
+  const wordsAnchor = document.getElementById('story-words-container');
+  if (wordsAnchor) {
+    const checkBtnEl = document.querySelector('[onclick*="storySubmitTranslation"]');
+    const checkRowEl = checkBtnEl ? checkBtnEl.parentElement : null;
+    const transInputEl = document.getElementById('story-translation-input');
+    const revealEl = document.getElementById('story-reveal');
+    const ratingsEl = document.getElementById('story-ratings');
+    if (transInputEl) wordsAnchor.parentElement.insertBefore(transInputEl, wordsAnchor);
+    if (checkRowEl) wordsAnchor.parentElement.insertBefore(checkRowEl, wordsAnchor);
+    if (revealEl) wordsAnchor.parentElement.insertBefore(revealEl, wordsAnchor);
+    if (ratingsEl) wordsAnchor.parentElement.insertBefore(ratingsEl, wordsAnchor);
+  }
 } else {
   // Fallback to hardcoded HTML only if no database data
   dynContainer.style.display = 'none';
@@ -3287,10 +3438,12 @@ activePrinciples = newPrinciples;
 principleIdx = 0;
 principleRevealed = false;
 }
+
 renderPrinciple();
 }
 
 document.getElementById('principle-card').addEventListener('click', () => {
+
   principleRevealed = !principleRevealed;
   renderPrinciple();
 });
