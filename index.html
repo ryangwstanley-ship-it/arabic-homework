@@ -175,14 +175,10 @@
 .day-num { font-size: 14px; color: var(--ink); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
 .other-month .day-num { color: var(--border); }
 
-/* Activity squares instead of dots */
-.dots { display: flex; gap: 2px; margin-top: 3px; height: 8px; align-items: center; flex-wrap: wrap; justify-content: center; }
-.dot { width: 7px; height: 7px; border-radius: 2px; flex-shrink: 0; }
-.dot-green { background: var(--dot-green); }
-.dot-blue { background: var(--dot-blue); }
-.dot-yellow { background: var(--dot-yellow); }
-/* Flashcard activity square */
-.dot-fc { background: #8b5cf6; }
+.cal-day.day-green { background: #22c55e; }
+.cal-day.day-green .day-num { color: white; font-weight: 700; }
+.cal-day.day-blue { background: #3b82f6; }
+.cal-day.day-blue .day-num { color: white; font-weight: 700; }
 
 .cal-legend { display: flex; gap: 12px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); flex-wrap: wrap; }
 .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--grey); }
@@ -192,7 +188,8 @@
 .day-card { border-radius: var(--card-radius); padding: 20px; margin-bottom: 20px; background: var(--grey-light); color: var(--ink); }
 .day-card.card-green { background: #16a34a; color: white; }
 .day-card.card-yellow { background: #ca8a04; color: white; }
-.day-card.card-blue { background: var(--blue); color: white; }
+.day-card.card-blue { background: #3b82f6; color: white; }
+.day-card.card-gray { background: #8a7f6e; color: white; }
 .day-card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; }
 .day-badge { background: rgba(0,0,0,0.1); border-radius: 20px; padding: 4px 10px; font-size: 12px; font-weight: 600; }
 .day-card.card-green .day-badge, .day-card.card-yellow .day-badge, .day-card.card-blue .day-badge { background: rgba(255,255,255,0.2); }
@@ -358,16 +355,16 @@
 .modal-overlay.open { display: flex; }
 .modal-img { max-width: 100%; max-height: 80vh; border-radius: 12px; object-fit: contain; }
 .modal-close { position: absolute; top: 16px; right: 16px; background: var(--grey-light); border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-.principle-item { padding: 12px 16px; border-bottom: 1px solid var(--border); cursor: pointer; user-select: none; transition: background 0.2s; }
+.principle-item { padding: 20px; border-bottom: 1px solid var(--border); cursor: pointer; user-select: none; transition: background 0.2s; }
 .principle-item:hover { background: var(--blue-light); }
-.principle-item-header { display: flex; align-items: center; gap: 12px; font-weight: 500; color: var(--ink); }
-.principle-item-toggle { font-size: 12px; color: var(--grey); transition: transform 0.2s; }
+.principle-item-header { display: flex; align-items: center; gap: 14px; font-weight: 600; color: var(--ink); font-size: 16px; }
+.principle-item-toggle { font-size: 14px; color: var(--grey); transition: transform 0.2s; }
 .principle-item-toggle.open { transform: rotate(90deg); }
-.principle-item-content { display: none; margin-top: 12px; padding: 14px; background: var(--blue-light); border-radius: 10px; }
+.principle-item-content { display: none; margin-top: 16px; padding: 20px; background: var(--blue-light); border-radius: 12px; }
 .principle-item-content.open { display: block; }
-.principle-item-content-title { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 8px; }
-.principle-item-content-examples { font-size: 12px; color: var(--ink); direction: rtl; margin-bottom: 10px; line-height: 1.6; font-family: 'Scheherazade New', serif; }
-.principle-item-content-explanation { font-size: 12px; color: var(--grey); line-height: 1.6; }
+.principle-item-content-title { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 10px; }
+.principle-item-content-examples { font-size: 20px; color: var(--ink); direction: rtl; margin-bottom: 14px; line-height: 1.9; font-family: 'Scheherazade New', serif; }
+.principle-item-content-explanation { font-size: 16px; color: var(--grey); line-height: 1.8; }
 /* TOAST */
 /* TOAST */
 .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: #10b981; color: white; padding: 12px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; z-index: 200; transition: transform 0.3s; white-space: nowrap; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4); }
@@ -530,8 +527,6 @@ console.log("THE FILE IS LOADING!");
 <div class="cal-grid" id="cal-grid"></div>
 <div class="cal-legend">
 <div class="legend-item"><div class="legend-sq" style="background:var(--dot-green)"></div> Submitted</div>
-<div class="legend-item"><div class="legend-sq" style="background:var(--dot-blue)"></div> Reviewed</div>
-<div class="legend-item"><div class="legend-sq" style="background:var(--dot-yellow)"></div> Made up</div>
 <div class="legend-item"><div class="legend-sq" style="background:#8b5cf6"></div> Flashcards</div>
 </div>
 </div>
@@ -541,7 +536,7 @@ console.log("THE FILE IS LOADING!");
 <div class="day-badge" id="day-badge">Day —</div>
 <div class="day-status" id="day-status" style="margin-top:6px"></div>
 </div>
-<button class="review-btn" id="review-btn" style="display:none"></button>
+
 </div>
 <div class="day-date" id="day-date" style="margin-top:8px"></div>
 </div>
@@ -609,10 +604,25 @@ console.log("THE FILE IS LOADING!");
 <div id="leaderboard-root" style="margin-top:8px"></div>
 </div>
 
-<!-- CHALLENGES PAGE -->
+<!<!-- CHALLENGES PAGE -->
 <div id="tab-content-challenges" class="content" style="display:none">
 <div class="back-row" id="challenges-back-row" onclick="switchTab('milestones')"><span class="back-btn">‹</span><span class="screen-title">Save and Return Home</span></div>
 <div id="challenges-root"></div>
+</div>
+
+<!-- LIBRARY PAGE -->
+<div id="tab-content-library" class="content" style="display:none">
+<div class="back-row" id="library-back-row" onclick="switchTab('milestones')"><span class="back-btn">‹</span><span class="screen-title">Save and Return Home</span></div>
+<div class="tabs" id="library-tabs" style="border-bottom:1px solid var(--border);padding:0;margin-bottom:16px">
+<button class="tab library-tab active" data-tab="principles" style="flex:1;text-align:center;padding:12px">All Principles</button>
+<button class="tab library-tab" data-tab="vocab" style="flex:1;text-align:center;padding:12px">All Vocab</button>
+<button class="tab library-tab" data-tab="lessons" style="flex:1;text-align:center;padding:12px">All Lessons</button>
+</div>
+<div id="library-content" style="min-height:200px">
+<div class="library-pane" data-pane="principles" style="display:block" id="principles-pane"></div>
+<div class="library-pane" data-pane="vocab" style="display:none" id="vocab-pane"></div>
+<div class="library-pane" data-pane="lessons" style="display:none" id="lessons-pane"></div>
+</div>
 </div>
 <!-- STORY TAB -->
 <!-- STORY TAB -->
@@ -883,11 +893,13 @@ let allCardActivity = {};
 // Current lesson level, per student: studentLesson[code] = 1-16
 let studentLesson = {};
 
-function incrementCardActivity(code) {
+// Exposed on window so the plain <script> further down (exercises code) can call it too —
+// module scripts don't leak top-level functions to other <script> tags otherwise.
+window.incrementCardActivity = function(code) {
 const today = todayKey();
 if (!allCardActivity[code]) allCardActivity[code] = {};
 allCardActivity[code][today] = (allCardActivity[code][today] || 0) + 1;
-}
+};
 // Per-exercise question mastery: exProgress[mode][questionIndex] = 1(Hard)/2(Medium)/3(Easy)
 let exProgress = {};
 // Whether the Reading (Story) and Grammar (Principles) milestone has been marked done for a lesson: readingDone[lessonNum] / grammarDone[lessonNum] = true
@@ -1401,32 +1413,12 @@ setTimeout(() => showGuestCoachmark(document.getElementById('guest-flashcards-bt
 }
 };
 document.getElementById('tent-menu-homework').onclick = () => { overlay.remove(); switchTab('homework'); };
-document.getElementById('tent-menu-library').onclick = () => { overlay.remove(); openLibrary(); };
+document.getElementById('tent-menu-library').onclick = () => { overlay.remove(); switchTab('library'); };
 document.getElementById('tent-menu-close').onclick = () => overlay.remove();
 overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
 };
 
-window.openLibrary = function() {
-const libraryOverlay = document.createElement('div');
-libraryOverlay.className = 'milestone-celebrate-overlay';
-libraryOverlay.innerHTML = `<div class="milestone-celebrate-card" style="text-align:left;max-width:500px;max-height:600px;overflow-y:auto">
-<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;position:sticky;top:0;background:var(--grey-light);padding-bottom:10px">
-<div style="font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--grey)">Library</div>
-<button id="library-close-btn" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--grey)">✕</button>
-</div>
-<div class="tabs" id="library-tabs" style="border-bottom:1px solid var(--border);padding:0;margin-bottom:0">
-<button class="tab library-tab active" data-tab="principles" style="flex:1;text-align:center;padding:12px">All Principles</button>
-<button class="tab library-tab" data-tab="vocab" style="flex:1;text-align:center;padding:12px">All Vocab</button>
-<button class="tab library-tab" data-tab="lessons" style="flex:1;text-align:center;padding:12px">All Lessons</button>
-</div>
-<div id="library-content" style="min-height:200px">
-<div class="library-pane" data-pane="principles" style="display:block" id="principles-pane"></div>
-<div class="library-pane" data-pane="vocab" style="display:none" id="vocab-pane"></div>
-<div class="library-pane" data-pane="lessons" style="display:none" id="lessons-pane"></div>
-</div>
-</div>`;
-document.body.appendChild(libraryOverlay);
-
+window.renderLibrary = function() {
 const principlesData = [
   { lesson: 1, title: 'Plurals: Broken vs Intact', examples: 'رَجُلٌ — رِجَالٌ — صَنَمٌ — أَصْنَامٌ — قَرْيَةٌ — قُرًى — يَوْمٌ — أَيَّامٌ — اسْمٌ — أَسْمَاءٌ', explanation: 'Arabic plurals come in two types. For inanimate objects, the word changes shape entirely and must be memorised — this is called a broken plural. For people, you simply add "oon", "een", or "aat" to the end — this is called an intact plural. Adjectives, verbs and pronouns must match whichever plural type is used.' },
   { lesson: 1, title: 'Femininity: Ta Marbuta', examples: 'قَرْيَةٌ — عِبَادَةٌ — مَدْرَسَةٌ — أَصْنَامٌ — قُرًى — أَيَّامٌ — رِجَالٌ — أَسْمَاءٌ — سَيَّارَةٌ — كَثِيرَةٌ\nرَجُلٌ كَبِيرٌ — قَرْيَةٌ كَبِيرَةٌ — أَصْنَامٌ كَبِيرَةٌ — مُشْرِكُونَ كَبِيرُونَ — مُشْرِكَاتٌ كَبِيرَاتٌ', explanation: 'A word is feminine if it ends in the letter "ta marbuta". All broken plurals are also feminine, even if they do not end in "ta marbuta". This means adjectives describing them must take the feminine form. As mentioned, broken plurals are used for inanimate objects, so when we use an adjective, we have to put "taa marbuta". As for adjective for people, we just put "uun, een, aat".' },
@@ -1499,7 +1491,7 @@ lessonsPane.innerHTML = lessonsData.map((l, idx) => `
 </div>
 <div class="principle-item-content" data-lidx="${idx}">
 <div class="principle-item-content-examples" style="text-align:right">${l.title}</div>
-<div class="principle-item-content-explanation" style="direction:rtl;text-align:right;font-family:'Scheherazade New', serif;font-size:16px;line-height:2;white-space:pre-line;color:var(--ink)">${l.text}</div>
+<div class="principle-item-content-explanation" style="direction:rtl;text-align:right;font-family:'Scheherazade New', serif;font-size:20px;line-height:2;white-space:pre-line;color:var(--ink)">${l.text}</div>
 </div>
 </div>
 `).join('');
@@ -1573,7 +1565,7 @@ vocabPane.innerHTML = vocabData.map((v, idx) => `
 </div>
 <div class="principle-item-content" data-vidx="${idx}">
 <div class="principle-item-content-explanation" style="line-height:1.9">
-${v.words.map(w => `<span style="direction:rtl;font-family:'Scheherazade New', serif;font-size:15px;color:var(--ink)">${w.ar}</span> — ${w.en}<br>`).join('')}
+${v.words.map(w => `<span style="direction:rtl;font-family:'Scheherazade New', serif;font-size:20px;color:var(--ink)">${w.ar}</span> — ${w.en}<br>`).join('')}
 </div>
 </div>
 </div>
@@ -1588,8 +1580,6 @@ document.querySelectorAll('#vocab-pane .principle-item').forEach(item => {
   };
 });
 
-document.getElementById('library-close-btn').onclick = () => libraryOverlay.remove();
-
 const libraryTabs = document.querySelectorAll('.library-tab');
 const libraryPanes = document.querySelectorAll('.library-pane');
 
@@ -1601,8 +1591,6 @@ libraryTabs.forEach(tab => {
     document.querySelector(`.library-pane[data-pane="${tab.dataset.tab}"]`).style.display = 'block';
   };
 });
-
-libraryOverlay.addEventListener('click', (e) => { if (e.target === libraryOverlay) libraryOverlay.remove(); });
 };
   
 window.openReportPopup = function(context) {
@@ -2180,10 +2168,29 @@ ch1Index++;
 exChallengeDraft[mode] = { index: ch1Index, answers: ch1Answers.slice() };
 incrementCardActivity(activeStudentCode());
 saveFlashcardData(activeStudentCode());
+window.saveChallenge1Progress(mode);
 exShowChallenge1(mode);
 } else {
 window.exSubmitChallenge1(mode);
 }
+};
+
+window.saveChallenge1Progress = async function(mode) {
+mode = mode || 'challenge1';
+const code = activeStudentCode();
+const today = todayKey();
+const filled = ch1Answers.filter(a => a.answer);
+if (!filled.length) return;
+const lessonNum = EX_LESSON_MAP[mode];
+const header = '📋 Challenge 1 — Lesson ' + lessonNum + ' (a sentence with each word)';
+let block = header;
+filled.forEach((a, i) => { block += `\n${i+1}. ${a.ar} (${a.en}): ${a.answer}`; });
+const existing = submissions[code]?.[today] || {};
+const newText = upsertChallengeBlock(existing.text, header, block);
+const dayData = { images: existing.images || [], text: newText, reviewed: false };
+if (!submissions[code]) submissions[code] = {};
+submissions[code][today] = dayData;
+await saveDay(code, today, dayData);
 };
 
 window.exSubmitChallenge1 = async function(mode) {
@@ -2195,13 +2202,14 @@ const filled = answers.filter(a => a.answer);
 if (!filled.length) { showToast('Write at least one sentence first'); return; }
 
 const lessonNum = EX_LESSON_MAP[mode];
-let block = '📋 Challenge 1 — Lesson ' + lessonNum + ' (a sentence with each word)';
-answers.forEach((a, i) => {
-block += `\n${i+1}. ${a.ar} (${a.en}): ${a.answer || '—'}`;
+const header = '📋 Challenge 1 — Lesson ' + lessonNum + ' (a sentence with each word)';
+let block = header;
+filled.forEach((a, i) => {
+block += `\n${i+1}. ${a.ar} (${a.en}): ${a.answer}`;
 });
 
 const existing = submissions[code]?.[today] || {};
-const newText = (existing.text ? existing.text + '\n\n' : '') + block;
+const newText = upsertChallengeBlock(existing.text, header, block);
 const dayData = { images: existing.images || [], text: newText, reviewed: false };
 if (!submissions[code]) submissions[code] = {};
 submissions[code][today] = dayData;
@@ -2230,10 +2238,27 @@ ch2Index++;
 exChallengeDraft['challenge2'] = { index: ch2Index, answers: ch2Answers.slice() };
 incrementCardActivity(activeStudentCode());
 saveFlashcardData(activeStudentCode());
+window.saveChallenge2Progress();
 exShowChallenge2();
 } else {
 window.exSubmitChallenge2();
 }
+};
+
+window.saveChallenge2Progress = async function() {
+const code = activeStudentCode();
+const today = todayKey();
+const filled = ch2Answers.filter(a => a.answer);
+if (!filled.length) return;
+const header = '📋 Challenge 2 — Lesson 1 (English → Arabic translation)';
+let block = header;
+filled.forEach((a, i) => { block += `\n${i+1}. ${a.en}\n   ${a.answer}`; });
+const existing = submissions[code]?.[today] || {};
+const newText = upsertChallengeBlock(existing.text, header, block);
+const dayData = { images: existing.images || [], text: newText, reviewed: false };
+if (!submissions[code]) submissions[code] = {};
+submissions[code][today] = dayData;
+await saveDay(code, today, dayData);
 };
 
 window.exSubmitChallenge2 = async function() {
@@ -2243,13 +2268,14 @@ const answers = ch2Answers;
 const filled = answers.filter(a => a.answer);
 if (!filled.length) { showToast('Translate at least one sentence first'); return; }
 
-let block = '📋 Challenge 2 — Lesson 1 (English → Arabic translation)';
-answers.forEach((a, i) => {
-block += `\n${i+1}. ${a.en}\n   ${a.answer || '—'}`;
+const header = '📋 Challenge 2 — Lesson 1 (English → Arabic translation)';
+let block = header;
+answers.filter(a => a.answer).forEach((a, i) => {
+block += `\n${i+1}. ${a.en}\n   ${a.answer}`;
 });
 
 const existing = submissions[code]?.[today] || {};
-const newText = (existing.text ? existing.text + '\n\n' : '') + block;
+const newText = upsertChallengeBlock(existing.text, header, block);
 const dayData = { images: existing.images || [], text: newText, reviewed: false };
 if (!submissions[code]) submissions[code] = {};
 submissions[code][today] = dayData;
@@ -2266,6 +2292,15 @@ window.showToast('Submitted! Your teacher will go over this with you in your nex
 render();
 if (typeof exShowChallengesPicker === 'function') exShowChallengesPicker();
 };
+
+// Finds an existing challenge block by its header and updates it in place;
+// adds it as new if it's not there yet. Stops partial answers from piling up as duplicates.
+function upsertChallengeBlock(existingText, header, block) {
+const blocks = existingText ? existingText.split('\n\n') : [];
+const idx = blocks.findIndex(b => b.startsWith(header));
+if (idx >= 0) blocks[idx] = block; else blocks.push(block);
+return blocks.join('\n\n');
+}
 
 async function saveDay(code, dateStr, data) { await setDoc(doc(db,'submissions',code,'days',dateStr), data); }
 // ── LOGIN ──
@@ -2438,6 +2473,8 @@ document.getElementById('tab-content-homework').style.display = tab==='homework'
 document.getElementById('tab-content-flashcards').style.display = tab==='flashcards' ? 'block' : 'none';
 document.getElementById('tab-content-exercises').style.display = tab==='exercises' ? 'block' : 'none';
 document.getElementById('tab-content-challenges').style.display = tab==='challenges' ? 'block' : 'none';
+document.getElementById('tab-content-library').style.display = tab==='library' ? 'block' : 'none';
+if (tab==='library' && typeof renderLibrary === 'function') renderLibrary();
 if (tab === 'story') {
   const lesson = studentLesson[currentUser || viewingStudent] || 1;
   initializeStory(lesson);
@@ -2596,18 +2633,9 @@ else if(selSub?.makeupFor)cell.classList.add('sel-yellow');
 else if(selSub?.images?.length>0||selSub?.text)cell.classList.add('sel-green');
 }
 const n=document.createElement('div');n.className='day-num';n.textContent=d;cell.appendChild(n);
-const squares=document.createElement('div');squares.className='dots';
-const sub=subs[key];
-if(sub){
-if(sub.makeupFor){const sy=document.createElement('div');sy.className='dot dot-yellow';squares.appendChild(sy);}
-else if(sub.images?.length>0||sub.text){const sg=document.createElement('div');sg.className='dot dot-green';squares.appendChild(sg);}
-if(sub.reviewed){const sb=document.createElement('div');sb.className='dot dot-blue';squares.appendChild(sb);}
-}
-// Flashcard activity square
-if((allCardActivity[code]||{})[key] >= 1){
-const sf=document.createElement('div');sf.className='dot dot-fc';squares.appendChild(sf);
-}
-cell.appendChild(squares); cell.onclick=()=>{selectedDate=key;renderDayPanel();renderCalendar();}; grid.appendChild(cell);
+if(dayQualifiesForStreak(code, key))cell.classList.add('day-green');
+else if(((allCardActivity[code]||{})[key]||0)>0)cell.classList.add('day-blue');
+cell.onclick=()=>{selectedDate=key;renderDayPanel();renderCalendar();}; grid.appendChild(cell);
 }
 const remaining=(7-((startOffset+daysInMonth)%7))%7;
 for(let d=1;d<=remaining;d++){const cell=document.createElement('div');cell.className='cal-day other-month';const n=document.createElement('div');n.className='day-num';n.textContent=d;cell.appendChild(n);grid.appendChild(cell);}
@@ -2618,20 +2646,20 @@ function renderDayPanel() {
 if(!selectedDate){document.getElementById('day-card').style.display='none';return;}
 const code=activeStudentCode(); const subs=submissions[code]||{}; const sub=subs[selectedDate];
 const hasImages=sub?.images?.length>0; const hasText=!!sub?.text; const hasContent=hasImages||hasText||!!sub?.makeupFor;
-const reviewed=sub?.reviewed; const isMakeup=!!sub?.makeupFor;
+const isMakeup=!!sub?.makeupFor;
+const cardCount=(allCardActivity[code]||{})[selectedDate]||0;
+const streakDone=dayQualifiesForStreak(code, selectedDate);
+const anyProgress=cardCount>0||hasContent;
 const allKeys=Object.keys(subs).filter(k=>{const s=subs[k];return s&&(s.images?.length>0||s.text||s.makeupFor);}).sort();
 const dayNum=allKeys.indexOf(selectedDate)+1||null;
-
 const dayCardEl=document.getElementById('day-card');
 dayCardEl.style.display='block'; dayCardEl.className='day-card';
-if(reviewed)dayCardEl.classList.add('card-blue');
-else if(isMakeup)dayCardEl.classList.add('card-yellow');
-else if(hasContent)dayCardEl.classList.add('card-green');
-
+if(streakDone)dayCardEl.classList.add('card-green');
+else if(anyProgress)dayCardEl.classList.add('card-blue');
+else dayCardEl.classList.add('card-gray');
 document.getElementById('day-badge').textContent=dayNum?`Day ${dayNum}`:(hasContent?'Make-up':'No submission');
 document.getElementById('day-date').textContent=formatDateLong(selectedDate);
-document.getElementById('day-status').textContent=hasContent?(reviewed?'✓ Reviewed':(isMakeup?'• Made up':'• Uploaded')):'';
-
+document.getElementById('day-status').textContent=streakDone?'✓ Streak complete':(anyProgress?'• Some progress':'No activity');
 // Show flashcard/exercise activity if any
 const fcCount = (allCardActivity[code] || {})[selectedDate];
 if (fcCount) {
@@ -2639,12 +2667,7 @@ const existing = document.getElementById('day-status');
 existing.textContent += (existing.textContent ? ' · ' : '') + `🃏 ${fcCount} cards`;
 }
 
-const reviewBtn=document.getElementById('review-btn');
-if(isInstructor&&!isStudentView&&hasContent){
-reviewBtn.style.display='block';
-reviewBtn.className=reviewed?'review-btn reviewed':'review-btn not-reviewed';
-reviewBtn.textContent=reviewed?'✓ Reviewed':'Mark as reviewed?';
-} else { reviewBtn.style.display='none'; }
+
 
 const area=document.getElementById('submissions-area'); area.innerHTML='';
 if(hasText){
@@ -2658,8 +2681,8 @@ sub.images.forEach(src=>{
 const wrap=document.createElement('div');wrap.className='submission-thumb';
 const img=document.createElement('img');img.src=src;img.onclick=()=>openModal(src);wrap.appendChild(img);
 const badge=document.createElement('div');
-badge.className='submission-badge '+(reviewed?'reviewed-badge':(isMakeup?'makeup-badge':'uploaded-badge'));
-badge.textContent=reviewed?'Reviewed':(isMakeup?'Made up':'Uploaded');
+badge.className='submission-badge '+(isMakeup?'makeup-badge':'uploaded-badge');
+badge.textContent=isMakeup?'Made up':'Uploaded';
 wrap.appendChild(badge);grid.appendChild(wrap);
 });
 area.appendChild(grid);
@@ -3394,7 +3417,7 @@ document.getElementById('code-input').addEventListener('keydown',e=>{if(e.key===
 document.getElementById('sidebar-toggle').addEventListener('click',toggleSidebar);
 document.getElementById('prev-month-btn').addEventListener('click',()=>{calMonth--;if(calMonth<0){calMonth=11;calYear--;}renderCalendar();});
 document.getElementById('next-month-btn').addEventListener('click',()=>{calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCalendar();});
-document.getElementById('review-btn').addEventListener('click',toggleReview);
+
 document.getElementById('modal').addEventListener('click',closeModal);
 document.getElementById('modal-close-btn').addEventListener('click',e=>{e.stopPropagation();closeModal();});
 document.getElementById('streak-info-btn').addEventListener('click', (e) => {
@@ -3842,10 +3865,30 @@ compAnswers.push({ ar: q.ar, en: q.en, answer: el ? el.value.trim() : '' });
 window.didMakeProgress = true;
 if (compIndex < questions.length - 1) {
 compIndex++;
+incrementCardActivity(activeStudentCode());
+saveFlashcardData(activeStudentCode());
+window.saveComprehensionProgress(mode);
 exShowComprehension(mode);
 } else {
 window.exSubmitComprehension(mode);
 }
+};
+
+window.saveComprehensionProgress = async function(mode) {
+const code = activeStudentCode();
+const today = todayKey();
+const filled = compAnswers.filter(a => a.answer);
+if (!filled.length) return;
+const lessonNum = EX_LESSON_MAP[mode];
+const header = '📋 Comprehension — Lesson ' + lessonNum + ' (story questions)';
+let block = header;
+filled.forEach((a, i) => { block += `\n${i+1}. ${a.ar} (${a.en})\n   ${a.answer}`; });
+const existing = submissions[code]?.[today] || {};
+const newText = upsertChallengeBlock(existing.text, header, block);
+const dayData = { images: existing.images || [], text: newText, reviewed: false };
+if (!submissions[code]) submissions[code] = {};
+submissions[code][today] = dayData;
+await saveDay(code, today, dayData);
 };
 
 window.exSubmitComprehension = async function(mode) {
@@ -3856,13 +3899,14 @@ const filled = answers.filter(a => a.answer);
 if (!filled.length) { window.showToast('Answer at least one question first'); return; }
 
 const lessonNum = EX_LESSON_MAP[mode];
-let block = '📋 Comprehension — Lesson ' + lessonNum + ' (story questions)';
-answers.forEach((a, i) => {
-block += `\n${i+1}. ${a.ar} (${a.en})\n   ${a.answer || '—'}`;
+const header = '📋 Comprehension — Lesson ' + lessonNum + ' (story questions)';
+let block = header;
+filled.forEach((a, i) => {
+block += `\n${i+1}. ${a.ar} (${a.en})\n   ${a.answer}`;
 });
 
 const existing = submissions[code]?.[today] || {};
-const newText = (existing.text ? existing.text + '\n\n' : '') + block;
+const newText = upsertChallengeBlock(existing.text, header, block);
 const dayData = { images: existing.images || [], text: newText, reviewed: false };
 if (!submissions[code]) submissions[code] = {};
 submissions[code][today] = dayData;
