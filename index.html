@@ -451,6 +451,10 @@ console.log("THE FILE IS LOADING!");
 </div>
 <div class="revision-lesson" id="revision-lesson-wrap" style="cursor:pointer" onclick="window.openLessonDropdown()">Lesson 1</div>
 <div id="progress-saved-text" style="display:none;font-size:11px;font-weight:700;color:#bfdbfe;margin-top:2px">✓ Progress saved today</div>
+<label id="homework-checkin-wrap" style="display:none;align-items:center;gap:6px;margin-top:6px;font-size:12px;color:rgba(255,255,255,0.85);cursor:pointer">
+<input type="checkbox" id="homework-checkin-box" style="width:16px;height:16px;cursor:pointer">
+I did my homework today
+</label>
 </div>
 <div class="revision-rank">
 <div class="revision-rank-num" id="revision-rank-num">#—</div>
@@ -680,8 +684,10 @@ console.log("THE FILE IS LOADING!");
 
 <input type="text" id="story-translation-input" placeholder="Type your English translation here..." style="width:100%;padding:12px;border:2px solid #e5e7eb;border-radius:10px;font-size:15px;margin-bottom:12px;outline:none">
 <div style="display:flex;gap:10px;margin-bottom:16px">
-<button onclick="storySubmitTranslation(1)" style="flex:1;padding:12px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">Check ✓</button>
+<button id="story-back-btn" onclick="window.storyGoBack(window.storyActiveLesson)" style="display:none;padding:12px 16px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">‹ Back</button>
+<button onclick="storySubmitTranslation(window.storyActiveLesson)" style="flex:1;padding:12px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">Check ✓</button>
 </div>
+<button id="story-resume-btn" onclick="window.storyReturnToLive(window.storyActiveLesson)" style="display:none;width:100%;padding:10px;background:#eef2ff;color:#4338ca;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:16px">Return to current sentence ›</button>
 <div id="story-reveal" style="display:none;background:#f3f4f6;border:1px solid #d1d5db;border-radius:10px;padding:14px;margin-bottom:16px">
 <div style="font-size:13px;color:#6b7280;margin-bottom:8px">Model translation:</div>
 <div id="story-correct-en" style="font-size:15px;line-height:1.6;color:#1a1a2e"></div>
@@ -981,8 +987,10 @@ utterance.rate = 0.85;
 window.speechSynthesis.speak(utterance);
 };
 function todayKey() { return dateKey(new Date()); }
+window.todayKey = todayKey;
 function formatDateLong(key) { const [y,m,d]=key.split('-').map(Number); return new Date(y,m-1,d).toLocaleDateString('en-GB',{weekday:'long',year:'numeric',month:'long',day:'numeric'}); }
 function activeStudentCode() { return isInstructor && !isStudentView ? viewingStudent : currentUser; }
+window.activeStudentCode = activeStudentCode;
 window.getCurrentLesson = function() { return studentLesson[activeStudentCode()] || 1; };
 function miniRing(percent, emoji, centered) {
 const r = 18, c = 2 * Math.PI * r;
@@ -2083,7 +2091,7 @@ function dayQualifiesForStreak(code, key) {
 const cardCount = (allCardActivity[code] || {})[key] || 0;
 if (cardCount >= 20) return true;
 const sub = submissions[code]?.[key];
-return !!(sub && (sub.images?.length > 0 || sub.text));
+return !!(sub && (sub.images?.length > 0 || sub.text || sub.checkedIn));
 }
 
 // Whether the student has ever had a single qualifying day, via either route —
@@ -2092,7 +2100,7 @@ function hasEverQualified(code) {
 const activity = allCardActivity[code] || {};
 if (Object.keys(activity).some(k => activity[k] >= 20)) return true;
 const subs = submissions[code] || {};
-return Object.values(subs).some(s => s && (s.images?.length > 0 || s.text));
+return Object.values(subs).some(s => s && (s.images?.length > 0 || s.text || s.checkedIn));
 }
   
 function getMissedDays(code) {
@@ -2105,7 +2113,7 @@ for (let i = 1; i <= 60; i++) {
 const d = new Date(now); d.setDate(now.getDate() - i);
 const key = dateKey(d);
 if (key < firstSubmission) break;
-if (isMidnightPast(key) && (!subs[key] || (!subs[key].images?.length && !subs[key].text))) missed.push(key);
+if (isMidnightPast(key) && (!subs[key] || (!subs[key].images?.length && !subs[key].text && !subs[key].checkedIn))) missed.push(key);
 }
 return missed.sort();
 }
@@ -2149,7 +2157,7 @@ function hasMadeProgressToday(code) {
 const today = todayKey();
 const lesson = studentLesson[code] || 1;
 const didCards = ((allCardActivity[code] || {})[today] || 0) > 0;
-const didHomework = !!(submissions[code]?.[today] && (submissions[code][today].images?.length || submissions[code][today].text));
+const didHomework = !!(submissions[code]?.[today] && (submissions[code][today].images?.length || submissions[code][today].text || submissions[code][today].checkedIn));
 const didReading = !!readingDone[lesson];
 const didGrammar = !!grammarDone[lesson];
 return didCards || didHomework || didReading || didGrammar;
@@ -2167,7 +2175,7 @@ const missed = [], now = new Date();
 const activity = allCardActivity[code] || {};
 const subs = submissions[code] || {};
 const activityKeys = Object.keys(activity);
-const qualifyingSubKeys = Object.keys(subs).filter(k => { const s = subs[k]; return s && (s.images?.length > 0 || s.text); });
+const qualifyingSubKeys = Object.keys(subs).filter(k => { const s = subs[k]; return s && (s.images?.length > 0 || s.text || s.checkedIn); });
 const allKeys = [...activityKeys, ...qualifyingSubKeys].sort();
 if (!allKeys.length) return [];
 const firstDay = allKeys[0];
@@ -2272,8 +2280,10 @@ customCards
 });
 } catch(e) { console.error('FC save error',e); }
 }
+window.saveFlashcardData = saveFlashcardData;
 
 async function setStudentLesson(code, lesson) {
+
 studentLesson[code] = lesson;
 try {
 await setDoc(doc(db,'flashcards',code), { lesson }, { merge: true });
@@ -2317,7 +2327,7 @@ mode = mode || 'challenge1';
 const words = (CHALLENGE1_WORDS_BY_MODE[mode] && CHALLENGE1_WORDS_BY_MODE[mode]()) || [];
 const w = words[ch1Index];
 const el = document.getElementById('ch1-input');
-ch1Answers.push({ ar: w.ar, en: w.en, answer: el ? el.value.trim() : '' });
+ch1Answers[ch1Index] = { ar: w.ar, en: w.en, answer: el ? el.value.trim() : '' };
 window.didMakeProgress = true;
 if (ch1Index < words.length - 1) {
 ch1Index++;
@@ -2383,12 +2393,17 @@ render();
 if (typeof exShowChallengesPicker === 'function') exShowChallengesPicker();
 };
 
+window.exGoBackChallenge2 = function(mode) {
+mode = mode || 'challenge2';
+if (ch2Index > 0) { ch2Index--; exShowChallenge2(mode); } else { exShowChallengesPicker(); }
+};
+
 window.exAdvanceChallenge2 = function(mode) {
 mode = mode || 'challenge2';
 const sentences = (CHALLENGE2_SENTENCES_BY_MODE[mode] && CHALLENGE2_SENTENCES_BY_MODE[mode]()) || [];
 const s = sentences[ch2Index];
 const el = document.getElementById('ch2-input');
-ch2Answers.push({ en: s.en, answer: el ? el.value.trim() : '' });
+ch2Answers[ch2Index] = { en: s.en, answer: el ? el.value.trim() : '' };
 window.didMakeProgress = true;
 if (ch2Index < sentences.length - 1) {
 ch2Index++;
@@ -2775,6 +2790,15 @@ document.getElementById('revision-streak-text').textContent = `🔥 ${streak} da
 const ranked = getRankedStudents();
 document.getElementById('revision-rank-num').textContent = `#${ranked.indexOf(code)+1}`;
 updateProgressBanner();
+
+const checkinWrap = document.getElementById('homework-checkin-wrap');
+const checkinBox = document.getElementById('homework-checkin-box');
+if (checkinWrap && checkinBox) {
+checkinWrap.style.display = (code === 'FHD001' && (!isInstructor || isStudentView)) ? 'flex' : 'none';
+const doneToday = dayQualifiesForStreak(code, todayKey());
+checkinBox.checked = doneToday;
+checkinBox.disabled = doneToday;
+}
 
 const lessonWrap = document.getElementById('revision-lesson-wrap');
 const lesson = studentLesson[code] || 1;
@@ -3186,6 +3210,13 @@ cardEl.innerHTML=`
     <div class="fc-tap-hint">Tap to reveal</div>
   </div>`;
 area.appendChild(cardEl);
+if (fcCurrentIdx > 0) {
+const fcBackBtn = document.createElement('button');
+fcBackBtn.textContent = '‹ Back';
+fcBackBtn.style.cssText = 'margin:8px auto 0;display:block;padding:8px 16px;background:#f3f4f6;color:#6b7280;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer';
+fcBackBtn.onclick = () => { fcCurrentIdx = Math.max(0, fcCurrentIdx - 1); renderFlashcards(); };
+area.appendChild(fcBackBtn);
+}
 document.getElementById('fc-report-btn').addEventListener('click', (e) => {
 e.stopPropagation();
 window.addToReadLater('flashcard', card.ar, card.en, fcCurrentLesson);
@@ -3257,6 +3288,7 @@ function closeModal(){document.getElementById('modal').classList.remove('open');
 let toastTimer;
 let storyProgress = {};
 let storyCurrentSentence = {};
+let storyReviewSentence = {};
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),5000);}
 window.showToast = showToast;
 function showMasteryGain(diff){const el=document.createElement('div');el.className='mastery-gain-popup';el.textContent=`+${diff}%`;document.body.appendChild(el);setTimeout(()=>el.remove(),1400);}
@@ -3295,6 +3327,7 @@ function initializeStory(lesson) {
     storyCurrentSentence[code][lesson] = 0;
   }
   if (!storyProgress[code]) storyProgress[code] = {};
+  if (storyReviewSentence[code]) delete storyReviewSentence[code][lesson];
 }
 window.initializeStory = initializeStory;
 
@@ -3303,7 +3336,8 @@ window.initializeStory = initializeStory;
 
 function storyRenderSentence(lesson) {
   const code = currentUser || viewingStudent;
-  const sentenceIdx = storyCurrentSentence[code][lesson];
+  const reviewIdx = storyReviewSentence[code] && storyReviewSentence[code][lesson];
+  const sentenceIdx = (reviewIdx !== undefined && reviewIdx !== null) ? reviewIdx : storyCurrentSentence[code][lesson];
   const storyData = window.LESSON_STORIES ? window.LESSON_STORIES.find(s => s.lesson === lesson) : null;
   const sentences = (storyData && storyData.sentences) ? storyData.sentences : [];
   
@@ -3318,6 +3352,7 @@ function storyRenderSentence(lesson) {
   document.querySelector('[onclick*="storySubmitTranslation"]').style.display = 'none';
   document.getElementById('story-reveal').style.display = 'none';
   document.getElementById('story-ratings').style.display = 'none';
+  updateStoryBackUI(lesson);
   return;
 }
   
@@ -3346,13 +3381,45 @@ function storyRenderSentence(lesson) {
   document.querySelector('[onclick*="storySubmitTranslation"]').disabled = false;
   document.getElementById('story-reveal').style.display = 'none';
   document.getElementById('story-ratings').style.display = 'none';
+  updateStoryBackUI(lesson);
 }
 window.storyRenderSentence = storyRenderSentence;
 
+function updateStoryBackUI(lesson) {
+  const code = currentUser || viewingStudent;
+  const reviewIdx = storyReviewSentence[code] && storyReviewSentence[code][lesson];
+  const isReviewing = reviewIdx !== undefined && reviewIdx !== null;
+  const backBtn = document.getElementById('story-back-btn');
+  const resumeBtn = document.getElementById('story-resume-btn');
+  if (backBtn) backBtn.style.display = (isReviewing ? reviewIdx > 0 : (storyCurrentSentence[code] && storyCurrentSentence[code][lesson] > 0)) ? 'inline-block' : 'none';
+  if (resumeBtn) resumeBtn.style.display = isReviewing ? 'block' : 'none';
+}
+
+function storyGoBack(lesson) {
+  const code = currentUser || viewingStudent;
+  if (!storyReviewSentence[code]) storyReviewSentence[code] = {};
+  const current = storyReviewSentence[code][lesson];
+  const startFrom = (current !== undefined && current !== null) ? current : storyCurrentSentence[code][lesson];
+  if (startFrom > 0) {
+    storyReviewSentence[code][lesson] = startFrom - 1;
+    storyRenderSentence(lesson);
+  }
+}
+window.storyGoBack = storyGoBack;
+
+function storyReturnToLive(lesson) {
+  const code = currentUser || viewingStudent;
+  if (storyReviewSentence[code]) delete storyReviewSentence[code][lesson];
+  storyRenderSentence(lesson);
+}
+window.storyReturnToLive = storyReturnToLive;
+
 function storySubmitTranslation(lesson) {
   const input = document.getElementById('story-translation-input');
+  const code = currentUser || viewingStudent;
+  const isReviewing = storyReviewSentence[code] && storyReviewSentence[code][lesson] !== undefined && storyReviewSentence[code][lesson] !== null;
   if (!input.value.trim()) {
-    const code = currentUser || viewingStudent;
+    if (isReviewing) { window.storyReturnToLive(lesson); return; }
     storyCurrentSentence[code][lesson]++;
     storyRenderSentence(lesson);
     saveFlashcardData(code);
@@ -3369,6 +3436,12 @@ function storyRateSelf(lesson, rating) {
   const code = currentUser || viewingStudent;
   window.didMakeProgress = true;
   incrementCardActivity(code);
+  const isReviewing = storyReviewSentence[code] && storyReviewSentence[code][lesson] !== undefined && storyReviewSentence[code][lesson] !== null;
+  if (isReviewing) {
+    saveFlashcardData(code);
+    window.storyReturnToLive(lesson);
+    return;
+  }
   storyCurrentSentence[code][lesson]++;
   storyRenderSentence(lesson);
   document.getElementById('story-translation-input').disabled = false;
@@ -3713,6 +3786,31 @@ document.getElementById('next-month-btn').addEventListener('click',()=>{calMonth
 
 document.getElementById('modal').addEventListener('click',closeModal);
 document.getElementById('modal-close-btn').addEventListener('click',e=>{e.stopPropagation();closeModal();});
+async function markHomeworkCheckin() {
+const code = activeStudentCode();
+const today = todayKey();
+const existing = submissions[code]?.[today] || {};
+if (existing.images?.length > 0 || existing.text || existing.checkedIn) return;
+const dayData = { images: existing.images || [], text: existing.text || '', reviewed: existing.reviewed || false, checkedIn: true };
+if (!submissions[code]) submissions[code] = {};
+submissions[code][today] = dayData;
+try {
+await saveDay(code, today, dayData);
+didMakeProgress = true;
+showToast('Homework marked done ✓');
+renderRevisionBanner();
+if (typeof buildSidebar === 'function') buildSidebar();
+} catch (e) {
+delete submissions[code][today];
+document.getElementById('homework-checkin-box').checked = false;
+showToast('Error — try again');
+console.error(e);
+}
+}
+document.getElementById('homework-checkin-box').addEventListener('change', (e) => {
+if (e.target.checked) markHomeworkCheckin();
+});
+
 document.getElementById('streak-info-btn').addEventListener('click', (e) => {
 e.stopPropagation();
 const popup = document.getElementById('streak-info-popup');
@@ -3753,6 +3851,7 @@ popup.style.display = 'none';
 
 // ── EXERCISE ENGINE ──
 let exMode = null, exQuestions = [], exCurrent = 0, exAnswered = 0;
+let exHistory = [], exReviewPos = null, exLiveQuestions = null, exLiveCurrent = null;
 let ch1Index = 0, ch1Answers = [];
 let ch2Index = 0, ch2Answers = [];
 let exChallengeDraft = {};
@@ -4118,14 +4217,14 @@ let html = `
 <div style="margin-bottom:18px">
 <div style="font-family:'Scheherazade New', serif;font-size:1.4em;direction:rtl;text-align:right;color:#8b2035;font-weight:700">${w.ar}</div>
 <div style="font-size:12px;color:#6b7280;margin-bottom:6px">${w.en}</div>
-<textarea id="ch1-input" placeholder="Write your sentence..." style="width:100%;padding:10px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:1.1em;direction:rtl;text-align:right;font-family:inherit;min-height:50px;outline:none;box-sizing:border-box"></textarea>
+<textarea id="ch1-input" placeholder="Write your sentence..." style="width:100%;padding:10px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:1.1em;direction:rtl;text-align:right;font-family:inherit;min-height:50px;outline:none;box-sizing:border-box">${(ch1Answers[ch1Index] && ch1Answers[ch1Index].answer) || ''}</textarea>
 </div>
 <button id="ch1-next-btn" style="width:100%;margin-top:8px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">${isLast ? 'Submit Challenge' : 'Next'}</button>
 <button id="ch1-back-btn" style="width:100%;margin-top:8px;padding:10px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">← Back</button>
 </div>`;
 document.getElementById('challenges-root').innerHTML = html;
 document.getElementById('ch1-next-btn').onclick = () => window.exAdvanceChallenge1(mode);
-document.getElementById('ch1-back-btn').onclick = exShowChallengesPicker;
+document.getElementById('ch1-back-btn').onclick = () => window.exGoBackChallenge1(mode);
 }
 
 const COMPREHENSION_QUESTIONS_BY_MODE = {
@@ -4149,21 +4248,25 @@ let html = `
 <div style="margin-bottom:18px">
 <div style="font-family:'Scheherazade New', serif;font-size:1.3em;direction:rtl;text-align:right;color:#8b2035;font-weight:700">${q.ar}</div>
 <div style="font-size:12px;color:#6b7280;margin-bottom:6px">${q.en}</div>
-<textarea id="comp-input" placeholder="Write your answer..." style="width:100%;padding:10px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:1.1em;direction:rtl;text-align:right;font-family:inherit;min-height:50px;outline:none;box-sizing:border-box"></textarea>
+<textarea id="comp-input" placeholder="Write your answer..." style="width:100%;padding:10px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:1.1em;direction:rtl;text-align:right;font-family:inherit;min-height:50px;outline:none;box-sizing:border-box">${(compAnswers[compIndex] && compAnswers[compIndex].answer) || ''}</textarea>
 </div>
 <button id="comp-next-btn" style="width:100%;margin-top:8px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">${isLast ? 'Submit Comprehension' : 'Next'}</button>
 <button id="comp-back-btn" style="width:100%;margin-top:8px;padding:10px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">← Back</button>
 </div>`;
 document.getElementById('challenges-root').innerHTML = html;
 document.getElementById('comp-next-btn').onclick = () => window.exAdvanceComprehension(mode);
-document.getElementById('comp-back-btn').onclick = exShowChallengesPicker;
+document.getElementById('comp-back-btn').onclick = () => window.exGoBackComprehension(mode);
 }
+
+window.exGoBackComprehension = function(mode) {
+if (compIndex > 0) { compIndex--; exShowComprehension(mode); } else { exShowChallengesPicker(); }
+};
 
 window.exAdvanceComprehension = function(mode) {
 const questions = (COMPREHENSION_QUESTIONS_BY_MODE[mode] && COMPREHENSION_QUESTIONS_BY_MODE[mode]()) || [];
 const q = questions[compIndex];
 const el = document.getElementById('comp-input');
-compAnswers.push({ ar: q.ar, en: q.en, answer: el ? el.value.trim() : '' });
+compAnswers[compIndex] = { ar: q.ar, en: q.en, answer: el ? el.value.trim() : '' };
 window.didMakeProgress = true;
 if (compIndex < questions.length - 1) {
 compIndex++;
@@ -4237,14 +4340,14 @@ let html = `
 <div style="font-size:14px;color:#6b7280;margin-bottom:20px;line-height:1.6">Translate the English sentence into Arabic. Don't worry about getting it perfect — we'll go over these together in your next lesson.</div>
 <div style="margin-bottom:18px">
 <div style="font-size:1em;direction:ltr;text-align:left;color:#1a1a2e;margin-bottom:6px">${s.en}</div>
-<textarea id="ch2-input" placeholder="Write the Arabic translation..." style="width:100%;padding:10px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:1.2em;direction:rtl;text-align:right;font-family:'Scheherazade New', serif;min-height:50px;outline:none;box-sizing:border-box"></textarea>
+<textarea id="ch2-input" placeholder="Write the Arabic translation..." style="width:100%;padding:10px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:1.2em;direction:rtl;text-align:right;font-family:'Scheherazade New', serif;min-height:50px;outline:none;box-sizing:border-box">${(ch2Answers[ch2Index] && ch2Answers[ch2Index].answer) || ''}</textarea>
 </div>
 <button id="ch2-next-btn" style="width:100%;margin-top:8px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">${isLast ? 'Submit Challenge' : 'Next'}</button>
 <button id="ch2-back-btn" style="width:100%;margin-top:8px;padding:10px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">← Back</button>
 </div>`;
 document.getElementById('challenges-root').innerHTML = html;
 document.getElementById('ch2-next-btn').onclick = () => window.exAdvanceChallenge2(mode);
-document.getElementById('ch2-back-btn').onclick = exShowChallengesPicker;
+document.getElementById('ch2-back-btn').onclick = () => window.exGoBackChallenge2(mode);
 }
 
 function exShowSetup(mode) {
@@ -4345,6 +4448,8 @@ function exLaunch() {
 exAnswered = 0;
 exCurrent = 0;
 exDotEarned = false;
+exHistory = [];
+exReviewPos = null;
 
 exQuestions = buildExerciseQueue(exMode, exBuildTaggedPool(exMode));
 if (exMode === 'pluraltype') exQuestions = exFixAdjacency(exQuestions);
@@ -4376,12 +4481,18 @@ exRender(`
     </div>
     <div id="ex-reveal" style="display:none;background:#f3f4f6;border:2px solid #d1d5db;border-radius:10px;padding:16px;margin-top:16px;font-size:1.2em;text-align:center;direction:rtl"></div>
   </div>
+  <div id="ex-nav-row" style="display:flex;gap:10px;margin-bottom:16px">
+    <button id="ex-back-btn" style="display:none;padding:8px 16px;background:#f3f4f6;color:#6b7280;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">‹ Back</button>
+    <button id="ex-resume-btn" style="display:none;padding:8px 16px;background:#eef2ff;color:#4338ca;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">Return to current question ›</button>
+  </div>
   <div id="ex-rating-area" style="display:none;gap:10px;margin-bottom:16px">
     <button id="ex-rate-hard" style="flex:1;padding:12px;background:#fee2e2;color:#b91c1c;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">No idea</button>
     <button id="ex-rate-med" style="flex:1;padding:12px;background:#fff7ed;color:#c2410c;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">Nearly got it</button>
     <button id="ex-rate-easy" style="flex:1;padding:12px;background:#f0fdf4;color:#15803d;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">Got it right!</button>
   </div>
 `);
+document.getElementById('ex-back-btn').onclick = exGoBack;
+document.getElementById('ex-resume-btn').onclick = exReturnToLive;
 }
 
 
@@ -4398,6 +4509,7 @@ if (ratingEl) ratingEl.style.display = 'none';
 const exRemaining = window.getExerciseRemainingCount(exMode, exGetQuestionCount(exMode));
 document.getElementById('ex-progress').textContent = exRemaining+' question'+(exRemaining!==1?'s':'')+' until mastery';
 const __q = exQuestions[exCurrent];
+updateExBackUI();
 const __prevRating = window.getExerciseQuestionRating(exMode, __q.__idx);
 const __diffBanner = document.getElementById('ex-diff-banner');
 if (__diffBanner) {
@@ -4870,9 +4982,51 @@ ratingEl.style.display = 'flex';
 wireRatingButtons();
 }
 
+function exGoBack() {
+if (exReviewPos === null) {
+if (!exHistory.length) return;
+exLiveQuestions = exQuestions;
+exLiveCurrent = exCurrent;
+exReviewPos = exHistory.length - 1;
+} else if (exReviewPos > 0) {
+exReviewPos--;
+} else {
+return;
+}
+exQuestions = [exHistory[exReviewPos]];
+exCurrent = 0;
+exShowQuestion();
+}
+
+function exReturnToLive() {
+if (exReviewPos === null) return;
+exQuestions = exLiveQuestions;
+exCurrent = exLiveCurrent;
+exReviewPos = null;
+exShowQuestion();
+}
+
+function updateExBackUI() {
+const backBtn = document.getElementById('ex-back-btn');
+const resumeBtn = document.getElementById('ex-resume-btn');
+if (!backBtn || !resumeBtn) return;
+const canGoBack = exReviewPos === null ? exHistory.length > 0 : exReviewPos > 0;
+backBtn.style.display = canGoBack ? 'inline-block' : 'none';
+resumeBtn.style.display = exReviewPos !== null ? 'inline-block' : 'none';
+}
+
+function exRateReviewed(rating) {
+const q = exQuestions[exCurrent];
+if (window.recordExerciseRating) window.recordExerciseRating(exMode, q.__idx, rating);
+showToast('Answer updated ✓');
+exReturnToLive();
+}
+
 function exRate(rating) {
+if (exReviewPos !== null) { exRateReviewed(rating); return; }
 window.didMakeProgress = true;
 const q = exQuestions[exCurrent];
+exHistory.push(q);
 const lessonNum = EX_LESSON_MAP[exMode];
 const oldMastery = window.getExerciseMasteryPercent(exMode, exGetQuestionCount(exMode));
 const oldFrac = window.getLessonProgressSum(lessonNum);
