@@ -270,6 +270,8 @@
 .fc-card { background: var(--grey-light); border-radius: var(--card-radius); padding: 48px 28px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.08); min-height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.15s; position: relative; }
 .fc-card:active { transform: scale(0.98); }
 .fc-arabic { font-size: 42px; font-weight: 700; color: var(--ink); line-height: 1.3; direction: rtl; margin-bottom: 8px; }
+.fc-speak-btn { background: none; border: none; font-size: 22px; cursor: pointer; margin-bottom: 8px; padding: 4px 10px; }
+.fc-report-btn { background: none; border: none; font-size: 18px; cursor: pointer; padding: 4px 10px; position: absolute; bottom: 10px; right: 10px; }
 .fc-tap-hint { font-size: 13px; color: var(--grey); margin-top: 16px; }
 .fc-diff-banner { position: absolute; top: 10px; right: 10px; padding: 3px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; opacity: 0.6; }
 .fc-diff-hard { background: #fee2e2; color: #b91c1c; }
@@ -729,10 +731,10 @@ const db = getFirestore(firebaseApp);
 
 
 // ── FLASHCARD DATA (now loaded from GitHub) ──
-let DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, CHANGE_WORD_QUESTIONS_L2, CHANGE_WORD_QUESTIONS_L3, CHANGE_WORD_QUESTIONS_L4, CHANGE_WORD_QUESTIONS_L5, CHANGE_WORD_QUESTIONS_L6, TRUE_FALSE_QUESTIONS, TRUE_FALSE_QUESTIONS_L2, TRUE_FALSE_QUESTIONS_L3, TRUE_FALSE_QUESTIONS_L4, TRUE_FALSE_QUESTIONS_L5, TRUE_FALSE_QUESTIONS_L6, COMPREHENSION_QUESTIONS_L1, COMPREHENSION_QUESTIONS_L2, COMPREHENSION_QUESTIONS_L3, COMPREHENSION_QUESTIONS_L4, COMPREHENSION_QUESTIONS_L5, COMPREHENSION_QUESTIONS_L6, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS, PLURAL_QUESTIONS, FEMININE_QUESTIONS, SUFFIX_TRANSLATION_QUESTIONS, DEMO_TRANSLATION_QUESTIONS, ADJECTIVE_AGREEMENT_TRANSLATION_QUESTIONS, PLURAL_TYPE_QUESTIONS, CHALLENGE_1_WORDS, CHALLENGE_1_WORDS_L2, CHALLENGE_1_WORDS_L3, CHALLENGE_1_WORDS_L4, CHALLENGE_1_WORDS_L5, CHALLENGE_1_WORDS_L6, TRANSLATION_1_QUESTIONS, CHALLENGE_2_SENTENCES, LESSON_STORIES;
+let DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, CHANGE_WORD_QUESTIONS_L2, CHANGE_WORD_QUESTIONS_L3, CHANGE_WORD_QUESTIONS_L4, CHANGE_WORD_QUESTIONS_L5, CHANGE_WORD_QUESTIONS_L6, TRUE_FALSE_QUESTIONS, TRUE_FALSE_QUESTIONS_L2, TRUE_FALSE_QUESTIONS_L3, TRUE_FALSE_QUESTIONS_L4, TRUE_FALSE_QUESTIONS_L5, TRUE_FALSE_QUESTIONS_L6, COMPREHENSION_QUESTIONS_L1, COMPREHENSION_QUESTIONS_L2, COMPREHENSION_QUESTIONS_L3, COMPREHENSION_QUESTIONS_L4, COMPREHENSION_QUESTIONS_L5, COMPREHENSION_QUESTIONS_L6, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS, PLURAL_QUESTIONS, FEMININE_QUESTIONS, SUFFIX_TRANSLATION_QUESTIONS, DEMO_TRANSLATION_QUESTIONS, ADJECTIVE_AGREEMENT_TRANSLATION_QUESTIONS, PLURAL_TYPE_QUESTIONS, CHALLENGE_1_WORDS, CHALLENGE_1_WORDS_L2, CHALLENGE_1_WORDS_L3, CHALLENGE_1_WORDS_L4, CHALLENGE_1_WORDS_L5, CHALLENGE_1_WORDS_L6, TRANSLATION_1_QUESTIONS, CHALLENGE_2_SENTENCES, CHALLENGE_2_SENTENCES_L2, CHALLENGE_2_SENTENCES_L3, CHALLENGE_2_SENTENCES_L4, CHALLENGE_2_SENTENCES_L5, CHALLENGE_2_SENTENCES_L6, LESSON_STORIES;
 async function loadVocabData() {
 
-const url = 'https://cdn.jsdelivr.net/gh/ryangwstanley-ship-it/database@main/website%20data%20base?t=' + Date.now();
+const url = 'https://raw.githubusercontent.com/ryangwstanley-ship-it/database/main/website%20data%20base?t=' + Date.now();
 const res = await fetch(url);
 if (!res.ok) {
   alert('Could not load the app data right now. Please refresh the page in a moment.');
@@ -741,7 +743,7 @@ if (!res.ok) {
 const code = await res.text();
 const runner = new Function(
 code.replaceAll('export const', 'const') +
-'; return { DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, CHANGE_WORD_QUESTIONS_L2, CHANGE_WORD_QUESTIONS_L3, CHANGE_WORD_QUESTIONS_L4, CHANGE_WORD_QUESTIONS_L5, CHANGE_WORD_QUESTIONS_L6, TRUE_FALSE_QUESTIONS, TRUE_FALSE_QUESTIONS_L2, TRUE_FALSE_QUESTIONS_L3, TRUE_FALSE_QUESTIONS_L4, TRUE_FALSE_QUESTIONS_L5, TRUE_FALSE_QUESTIONS_L6, COMPREHENSION_QUESTIONS_L1, COMPREHENSION_QUESTIONS_L2, COMPREHENSION_QUESTIONS_L3, COMPREHENSION_QUESTIONS_L4, COMPREHENSION_QUESTIONS_L5, COMPREHENSION_QUESTIONS_L6, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS, PLURAL_QUESTIONS, FEMININE_QUESTIONS, SUFFIX_TRANSLATION_QUESTIONS, DEMO_TRANSLATION_QUESTIONS, ADJECTIVE_AGREEMENT_TRANSLATION_QUESTIONS, PLURAL_TYPE_QUESTIONS, CHALLENGE_1_WORDS, CHALLENGE_1_WORDS_L2, CHALLENGE_1_WORDS_L3, CHALLENGE_1_WORDS_L4, CHALLENGE_1_WORDS_L5, CHALLENGE_1_WORDS_L6, TRANSLATION_1_QUESTIONS, CHALLENGE_2_SENTENCES, LESSON_STORIES };'
+'; return { DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, CHANGE_WORD_QUESTIONS_L2, CHANGE_WORD_QUESTIONS_L3, CHANGE_WORD_QUESTIONS_L4, CHANGE_WORD_QUESTIONS_L5, CHANGE_WORD_QUESTIONS_L6, TRUE_FALSE_QUESTIONS, TRUE_FALSE_QUESTIONS_L2, TRUE_FALSE_QUESTIONS_L3, TRUE_FALSE_QUESTIONS_L4, TRUE_FALSE_QUESTIONS_L5, TRUE_FALSE_QUESTIONS_L6, COMPREHENSION_QUESTIONS_L1, COMPREHENSION_QUESTIONS_L2, COMPREHENSION_QUESTIONS_L3, COMPREHENSION_QUESTIONS_L4, COMPREHENSION_QUESTIONS_L5, COMPREHENSION_QUESTIONS_L6, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS, PLURAL_QUESTIONS, FEMININE_QUESTIONS, SUFFIX_TRANSLATION_QUESTIONS, DEMO_TRANSLATION_QUESTIONS, ADJECTIVE_AGREEMENT_TRANSLATION_QUESTIONS, PLURAL_TYPE_QUESTIONS, CHALLENGE_1_WORDS, CHALLENGE_1_WORDS_L2, CHALLENGE_1_WORDS_L3, CHALLENGE_1_WORDS_L4, CHALLENGE_1_WORDS_L5, CHALLENGE_1_WORDS_L6, TRANSLATION_1_QUESTIONS, CHALLENGE_2_SENTENCES, CHALLENGE_2_SENTENCES_L2, CHALLENGE_2_SENTENCES_L3, CHALLENGE_2_SENTENCES_L4, CHALLENGE_2_SENTENCES_L5, CHALLENGE_2_SENTENCES_L6, LESSON_STORIES };'
 );
 const data = runner();
 DEFAULT_LESSONS = data.DEFAULT_LESSONS;
@@ -782,6 +784,11 @@ CHALLENGE_1_WORDS_L5 = data.CHALLENGE_1_WORDS_L5;
 CHALLENGE_1_WORDS_L6 = data.CHALLENGE_1_WORDS_L6;
 TRANSLATION_1_QUESTIONS = data.TRANSLATION_1_QUESTIONS;
 CHALLENGE_2_SENTENCES = data.CHALLENGE_2_SENTENCES;
+CHALLENGE_2_SENTENCES_L2 = data.CHALLENGE_2_SENTENCES_L2;
+CHALLENGE_2_SENTENCES_L3 = data.CHALLENGE_2_SENTENCES_L3;
+CHALLENGE_2_SENTENCES_L4 = data.CHALLENGE_2_SENTENCES_L4;
+CHALLENGE_2_SENTENCES_L5 = data.CHALLENGE_2_SENTENCES_L5;
+CHALLENGE_2_SENTENCES_L6 = data.CHALLENGE_2_SENTENCES_L6;
 LESSON_STORIES = data.LESSON_STORIES;
 
 window.FILL_GAP_QUESTIONS = FILL_GAP_QUESTIONS;
@@ -810,6 +817,11 @@ window.CHALLENGE_1_WORDS_L5 = CHALLENGE_1_WORDS_L5;
 window.CHALLENGE_1_WORDS_L6 = CHALLENGE_1_WORDS_L6;
 window.TRANSLATION_1_QUESTIONS = TRANSLATION_1_QUESTIONS;
 window.CHALLENGE_2_SENTENCES = CHALLENGE_2_SENTENCES;
+window.CHALLENGE_2_SENTENCES_L2 = CHALLENGE_2_SENTENCES_L2;
+window.CHALLENGE_2_SENTENCES_L3 = CHALLENGE_2_SENTENCES_L3;
+window.CHALLENGE_2_SENTENCES_L4 = CHALLENGE_2_SENTENCES_L4;
+window.CHALLENGE_2_SENTENCES_L5 = CHALLENGE_2_SENTENCES_L5;
+window.CHALLENGE_2_SENTENCES_L6 = CHALLENGE_2_SENTENCES_L6;
 window.LESSON_STORIES = LESSON_STORIES;
 }
 
@@ -902,6 +914,7 @@ Object.defineProperty(window, 'didMakeProgress', {
       const badge = document.getElementById('progress-saved-text');
       if (banner) banner.style.background = '#4a6fa5';
       if (badge) badge.style.display = 'block';
+      if (typeof renderRevisionBanner === 'function') renderRevisionBanner();
     }
   }
 });
@@ -919,8 +932,9 @@ let fcCurrentIdx = 0;
 let fcRevealed = false;
 let fcDeletedCards = {}; // fcDeletedCards[lessonNum] = Set of card indices deleted
 let guestActiveWordCount = 5; // Guests start with 5 words; +5 each time the active batch is all "Easy"
-
+let studentCardLimits = {}; // Track card limits for each student
 // Revision activity, per student: allFcActivity[code][dateKey] = minutes
+
 let allFcActivity = {};
 // Card/question completion count, per student: allCardActivity[code][dateKey] = number of flashcards + exercise questions done that day
 let allCardActivity = {};
@@ -942,6 +956,30 @@ let grammarDone = {};
 
 // ── UTILS ──
 function dateKey(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+window.addToReadLater = async function(type, ar, en, lesson) {
+const code = activeStudentCode();
+try {
+await setDoc(doc(db, 'reports', Date.now() + '_' + code), {
+studentCode: code,
+type: type,
+arabic: ar,
+english: en,
+lesson: lesson,
+timestamp: Date.now(),
+status: 'read-later'
+});
+showToast('Added to read later');
+} catch(e) { console.error('Read later error', e); showToast('Error saving'); }
+};
+
+window.speakArabic = function(text) {
+if (!('speechSynthesis' in window)) return;
+window.speechSynthesis.cancel();
+const utterance = new SpeechSynthesisUtterance(text);
+utterance.lang = 'ar-SA';
+utterance.rate = 0.85;
+window.speechSynthesis.speak(utterance);
+};
 function todayKey() { return dateKey(new Date()); }
 function formatDateLong(key) { const [y,m,d]=key.split('-').map(Number); return new Date(y,m-1,d).toLocaleDateString('en-GB',{weekday:'long',year:'numeric',month:'long',day:'numeric'}); }
 function activeStudentCode() { return isInstructor && !isStudentView ? viewingStudent : currentUser; }
@@ -1331,10 +1369,11 @@ const box = isDynamic ? dynContainer : document.getElementById('story-lesson-' +
 const storyText = box ? box.querySelector('[style*="font-size:28px"]') : null;
 const checkRow = document.querySelector('[onclick*="storySubmitTranslation"]').parentElement;
 if (box && storyText) {
-  box.insertBefore(document.getElementById('story-translation-input'), storyText);
-  box.insertBefore(checkRow, storyText);
-  box.insertBefore(document.getElementById('story-reveal'), storyText);
-  box.insertBefore(document.getElementById('story-ratings'), storyText);
+  const afterStoryText = storyText.nextSibling;
+  box.insertBefore(document.getElementById('story-translation-input'), afterStoryText);
+  box.insertBefore(checkRow, afterStoryText);
+  box.insertBefore(document.getElementById('story-reveal'), afterStoryText);
+  box.insertBefore(document.getElementById('story-ratings'), afterStoryText);
   box.appendChild(document.getElementById('student-reading-done-btn'));
   box.appendChild(document.getElementById('guest-flashcards-btn'));
 }
@@ -1758,12 +1797,15 @@ const s = snapshots[i];
 const streak = getStreak(g.code);
 const status = getStudentStatus(g.code);
 const guestProgress = hasMadeProgressToday(g.code);
+const todayCount = (allCardActivity[g.code]||{})[todayKey()] || 0;
 return `<div class="guest-card">
 <div class="guest-card-top">
 <div class="guest-card-name">${g.name || 'Guest'}</div>
 <div class="guest-card-code">${g.code}</div>
+<button class="guest-delete-btn" style="background:none;border:none;cursor:pointer;font-size:14px;color:#9ca3af;padding:0" data-code="${g.code}">🗑️</button>
 </div>
-<div class="guest-card-meta">Lesson ${s.lesson} · ${(storyProgress[g.code] && storyProgress[g.code][s.lesson]) ? '📖 ✓' : ''} · 🔥 ${streak} day streak${guestProgress ? ' · <span class="status-dot blue" title="Made progress today"></span>' : ''} · <span class="status-dot ${status}"></span></div>
+<div class="guest-card-meta">Lesson ${s.lesson} · ${(storyProgress[g.code] && storyProgress[g.code][s.lesson]) ? '📖 ✓' : ''} · 🔥 ${streak} day streak · 📇 ${todayCount}/20 today${guestProgress ? ' · <span class="status-dot blue" title="Made progress today"></span>' : ''} · <span class="status-dot ${status}"></span></div>
+</div>
 <div class="guest-card-rings">
 ${miniRing(s.flashcardsPct, '🃏')}
 ${miniRing(s.exercisesPct, '✏️')}
@@ -1771,9 +1813,49 @@ ${miniRing(s.challengesPct, '🏆')}
 </div>
 </div>`;
 }).join('');
+document.querySelectorAll('.guest-delete-btn').forEach(btn => {
+btn.onclick = () => exDeleteGuest(btn.dataset.code);
+});
 }
 
 // ── LEADERBOARD ──
+window.exDeleteStudent = async function(code) {
+if (!confirm(`Delete all data for ${STUDENTS[code]?.name}? This cannot be undone.`)) return;
+if (!confirm('Are you sure? This will delete all submissions, progress, and settings.')) return;
+try {
+await deleteDoc(doc(db, 'instructors', currentUser, 'students', code));
+delete STUDENTS[code];
+delete submissions[code];
+delete allCardActivity[code];
+delete studentLesson[code];
+delete storyProgress[code];
+await saveFlashcardData(code);
+buildSidebar();
+render();
+showToast(`Deleted ${STUDENTS[code]?.name || 'student'}`);
+} catch(e) { console.error('Delete error', e); showToast('Error deleting student'); }
+};
+
+window.exDeleteGuest = async function(code) {
+if (!confirm('Delete this guest account? This cannot be undone.')) return;
+try {
+await deleteDoc(doc(db, 'guests', code));
+await renderGuestsTab();
+showToast('Guest deleted');
+} catch(e) { console.error('Guest delete error', e); showToast('Error deleting guest'); }
+};
+
+window.exResetDailyProgress = async function(code) {
+const today = todayKey();
+if (allCardActivity[code]) {
+allCardActivity[code][today] = 0;
+await saveFlashcardData(code);
+buildSidebar();
+renderRevisionBanner();
+showToast(`Reset daily progress for ${STUDENTS[code]?.name || code}`);
+}
+};
+
 async function loadLeaderboard() {
   try {
     const snap = await getDoc(doc(db, 'leaderboard', 'main'));
@@ -2301,30 +2383,32 @@ render();
 if (typeof exShowChallengesPicker === 'function') exShowChallengesPicker();
 };
 
-window.exAdvanceChallenge2 = function() {
-const sentences = window.CHALLENGE_2_SENTENCES || [];
+window.exAdvanceChallenge2 = function(mode) {
+mode = mode || 'challenge2';
+const sentences = (CHALLENGE2_SENTENCES_BY_MODE[mode] && CHALLENGE2_SENTENCES_BY_MODE[mode]()) || [];
 const s = sentences[ch2Index];
 const el = document.getElementById('ch2-input');
 ch2Answers.push({ en: s.en, answer: el ? el.value.trim() : '' });
 window.didMakeProgress = true;
 if (ch2Index < sentences.length - 1) {
 ch2Index++;
-exChallengeDraft['challenge2'] = { index: ch2Index, answers: ch2Answers.slice() };
+exChallengeDraft[mode] = { index: ch2Index, answers: ch2Answers.slice() };
 incrementCardActivity(activeStudentCode());
 saveFlashcardData(activeStudentCode());
-window.saveChallenge2Progress();
-exShowChallenge2();
+window.saveChallenge2Progress(mode);
+exShowChallenge2(mode);
 } else {
-window.exSubmitChallenge2();
+window.exSubmitChallenge2(mode);
 }
 };
 
-window.saveChallenge2Progress = async function() {
+window.saveChallenge2Progress = async function(mode) {
+mode = mode || 'challenge2';
 const code = activeStudentCode();
 const today = todayKey();
 const filled = ch2Answers.filter(a => a.answer);
 if (!filled.length) return;
-const header = '📋 Challenge 2 — Lesson 1 (English → Arabic translation)';
+const header = '📋 Challenge 2 — Lesson ' + EX_LESSON_MAP[mode] + ' (English → Arabic translation)';
 let block = header;
 filled.forEach((a, i) => { block += `\n${i+1}. ${a.en}\n   ${a.answer}`; });
 const existing = submissions[code]?.[today] || {};
@@ -2335,14 +2419,15 @@ submissions[code][today] = dayData;
 await saveDay(code, today, dayData);
 };
 
-window.exSubmitChallenge2 = async function() {
+window.exSubmitChallenge2 = async function(mode) {
+mode = mode || 'challenge2';
 const code = activeStudentCode();
 const today = todayKey();
 const answers = ch2Answers;
 const filled = answers.filter(a => a.answer);
 if (!filled.length) { showToast('Translate at least one sentence first'); return; }
 
-const header = '📋 Challenge 2 — Lesson 1 (English → Arabic translation)';
+const header = '📋 Challenge 2 — Lesson ' + EX_LESSON_MAP[mode] + ' (English → Arabic translation)';
 let block = header;
 answers.filter(a => a.answer).forEach((a, i) => {
 block += `\n${i+1}. ${a.en}\n   ${a.answer}`;
@@ -2355,10 +2440,10 @@ if (!submissions[code]) submissions[code] = {};
 submissions[code][today] = dayData;
 await saveDay(code, today, dayData);
 
-const oldFrac = window.getLessonProgressSum(EX_LESSON_MAP['challenge2']);
-exProgress['challenge2'] = true;
-delete exChallengeDraft['challenge2'];
-window.triggerMilestoneWalk(EX_LESSON_MAP['challenge2'], oldFrac, window.getLessonProgressSum(EX_LESSON_MAP['challenge2']), 'challenges');
+const oldFrac = window.getLessonProgressSum(EX_LESSON_MAP[mode]);
+exProgress[mode] = true;
+delete exChallengeDraft[mode];
+window.triggerMilestoneWalk(EX_LESSON_MAP[mode], oldFrac, window.getLessonProgressSum(EX_LESSON_MAP[mode]), 'challenges');
 for (let i = 0; i < filled.length; i++) incrementCardActivity(code);
 await saveFlashcardData(code);
 
@@ -2391,6 +2476,7 @@ await Promise.all(Object.keys(STUDENTS).map(c=>loadStudentMeta(c)));
 startApp();
 } else if (STUDENTS[code]) {
 currentUser=code; isInstructor=false;
+if (!studentCardLimits[code]) studentCardLimits[code] = 5;
 await loadStudentData(code);
 await loadStudentMeta(code);
 await loadFlashcardProgress(code);
@@ -2625,8 +2711,15 @@ const progressDotClass = streakDoneToday ? 'green' : (todayCount>0 ? 'blue' : 'g
 const hasReport = (window.reportsCache||[]).some(r => r.studentCode === code);
 const el = document.createElement('div');
 el.className='sidebar-student'+(code===viewingStudent?' active':'');
-el.innerHTML=`<div class="sidebar-avatar">${idx+1}</div><div class="sidebar-info"><div class="sidebar-name">${s.name}</div><div class="sidebar-streak">🔥 ${streak} day streak · 📇 ${todayCount}/20 today</div></div><div class="status-dot ${progressDotClass}" title="Today's progress"></div><div class="status-dot ${hasReport?'yellow':'grey'}" title="${hasReport?'Has an open report':'No open reports'}"></div>`;
-el.onclick=async()=>{ viewingStudent=code; switchTab('homework'); updateHeaderForInstructor(); buildSidebar(); render(); };
+el.innerHTML=`<div class="sidebar-info"><div class="sidebar-name">${s.name}</div><div class="sidebar-streak">🔥 ${streak} day streak · 📇 ${todayCount}/20 today</div></div><div class="status-dot ${progressDotClass}" title="Today's progress"></div><div class="status-dot ${hasReport?'yellow':'grey'}" title="${hasReport?'Has an open report':'No open reports'}"></div><button class="sidebar-delete-btn" style="background:none;border:none;cursor:pointer;font-size:14px;padding:4px;color:#9ca3af">🗑️</button>`;
+el.onclick=async(e)=>{ if(e.target.className!=='sidebar-delete-btn') { viewingStudent=code; switchTab('homework'); updateHeaderForInstructor(); buildSidebar(); render(); } };
+el.querySelector('.sidebar-delete-btn').onclick=(e)=>{ e.stopPropagation(); exDeleteStudent(code); };
+const resetBtn = document.createElement('button');
+resetBtn.textContent = '↺';
+resetBtn.style.cssText = 'background:none;border:none;cursor:pointer;font-size:14px;padding:4px;color:#9ca3af;margin-left:4px';
+resetBtn.title = 'Reset daily progress';
+resetBtn.onclick = (e) => { e.stopPropagation(); exResetDailyProgress(code); };
+el.appendChild(resetBtn);
 wrap.appendChild(el);
 });
 }
@@ -2882,17 +2975,35 @@ fcProgress[key] = data;
 }
 
 function getDueCards(lessonNum) {
-const now = Date.now();
 const lesson = LESSONS[lessonNum];
 if (!lesson) return [];
 return lesson.cards
 .map((c,i) => ({...c, idx: i}))
-.filter(c => !isCardDeleted(lessonNum, c.idx) && getCardProgress(lessonNum, c.idx).nextReview <= now);
+.filter(c => !isCardDeleted(lessonNum, c.idx));
 }
 
 function buildFcQueue() {
-fcQueue = getDueCards(fcCurrentLesson);
-for(let i=fcQueue.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[fcQueue[i],fcQueue[j]]=[fcQueue[j],fcQueue[i]];}
+const lesson = LESSONS[fcCurrentLesson];
+if (!lesson) { fcQueue = []; fcCurrentIdx = 0; fcRevealed = false; return; }
+const allIdxs = lesson.cards.map((_,i)=>i).filter(i => !isCardDeleted(fcCurrentLesson, i));
+const normalIdxs = fcShuffleArr(allIdxs.filter(i => getCardProgress(fcCurrentLesson, i).lastRating !== 3));
+const easyIdxs = fcShuffleArr(allIdxs.filter(i => getCardProgress(fcCurrentLesson, i).lastRating === 3));
+
+const queue = [];
+let easyPtr = 0;
+normalIdxs.forEach((idx, i) => {
+queue.push({ ...lesson.cards[idx], idx });
+if ((i + 1) % 5 === 0 && easyIdxs.length) {
+const eIdx = easyIdxs[easyPtr % easyIdxs.length];
+queue.push({ ...lesson.cards[eIdx], idx: eIdx });
+easyPtr++;
+}
+});
+if (!normalIdxs.length) {
+easyIdxs.forEach(idx => queue.push({ ...lesson.cards[idx], idx }));
+}
+
+fcQueue = queue;
 fcCurrentIdx = 0;
 fcRevealed = false;
 }
@@ -2909,7 +3020,9 @@ function getGuestActiveCardIdxs(lessonNum) {
 const lesson = LESSONS[lessonNum];
 if (!lesson) return [];
 const nonDeleted = lesson.cards.map((_,i)=>i).filter(i => !isCardDeleted(lessonNum, i));
-return nonDeleted.slice(0, guestActiveWordCount);
+const code = activeStudentCode();
+const limit = isGuestMode ? guestActiveWordCount : (studentCardLimits[code] || 5);
+return nonDeleted.slice(0, limit);
 }
 
 // Builds a guest's card list: not-yet-"Easy" cards shuffled and cycling, with one already-"Easy" card slotted in after every 5
@@ -2992,11 +3105,7 @@ btn.innerHTML = `<div class="fc-lesson-top">${miniRing(pct, '🃏')}<div class="
 btn.onclick=()=>{
 fcCurrentLesson=num;
 fcShowLessonPicker = false;
-if (pct === 100) {
-window.showMasteredMilestone('flashcards', num, () => { window.switchTab('flashcards'); });
-} else {
 buildFcQueue(); renderFlashcards();
-}
 };
 picker.appendChild(btn);
 });
@@ -3004,7 +3113,7 @@ picker.appendChild(btn);
 
 
 
-if (!fcQueue.length) { if (isGuestMode) buildGuestFcQueue(); else buildFcQueue(); }
+if (!fcQueue.length) { buildGuestFcQueue(); }
 
 const area = document.getElementById('fc-area');
 area.innerHTML='';
@@ -3023,7 +3132,14 @@ if (activeIdxs.length > 0) {
 const allEasy = activeIdxs.every(i => getCardProgress(fcCurrentLesson, i).lastRating === 3);
 const moreToUnlock = guestActiveWordCount < totalNonDeleted;
 if (!allEasy || moreToUnlock) {
-if (allEasy && moreToUnlock) guestActiveWordCount = Math.min(guestActiveWordCount + 5, totalNonDeleted);
+if (allEasy && moreToUnlock) {
+if (isGuestMode) {
+guestActiveWordCount = Math.min(guestActiveWordCount + 5, totalNonDeleted);
+} else {
+const code = activeStudentCode();
+studentCardLimits[code] = Math.min((studentCardLimits[code] || 5) + 5, totalNonDeleted);
+}
+}
 buildGuestFcQueue();
 renderFlashcards();
 return;
@@ -3063,15 +3179,24 @@ cardEl.className='fc-card-wrap';
 cardEl.innerHTML=`
   <div class="fc-card" id="fc-card">
     ${diffBanner}
-    <button class="report-btn" id="fc-report-btn">⚠️ Report</button>
     <div class="fc-arabic">${card.ar}</div>
+    <button class="fc-speak-btn" id="fc-speak-btn" type="button">🔊</button>
+    <button class="fc-report-btn" id="fc-report-btn" type="button">📍</button>
     <div class="fc-english">${card.en}</div>
     <div class="fc-tap-hint">Tap to reveal</div>
   </div>`;
 area.appendChild(cardEl);
 document.getElementById('fc-report-btn').addEventListener('click', (e) => {
 e.stopPropagation();
-window.openReportPopup('Flashcard: Lesson ' + fcCurrentLesson + ' — ' + card.ar);
+window.addToReadLater('flashcard', card.ar, card.en, fcCurrentLesson);
+});
+document.getElementById('fc-speak-btn').addEventListener('click', (e) => {
+e.stopPropagation();
+window.speakArabic(card.ar);
+});
+document.getElementById('fc-report-btn').addEventListener('click', (e) => {
+e.stopPropagation();
+window.addToReadLater('flashcard', card.ar, card.en, fcCurrentLesson);
 });
 
 const ratingWrap = document.createElement('div');
@@ -3135,7 +3260,12 @@ let storyCurrentSentence = {};
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),5000);}
 window.showToast = showToast;
 function showMasteryGain(diff){const el=document.createElement('div');el.className='mastery-gain-popup';el.textContent=`+${diff}%`;document.body.appendChild(el);setTimeout(()=>el.remove(),1400);}
-function showWordMeaning(el) { showToast(el.textContent + ' = ' + el.dataset.en); }
+function showWordMeaning(el) { 
+const arText = el.textContent;
+const enText = el.dataset.en;
+const msg = arText + ' = ' + enText + ' <button onclick="window.speakArabic(\'' + arText.replace(/'/g, "\\'") + '\')" style="margin-left:8px;background:none;border:none;cursor:pointer;font-size:16px">🔊</button>';
+showToast(msg);
+}
 function toggleStoryEnglish() {
 const lines = document.querySelectorAll('.story-en-line');
 const isHidden = lines[0].style.display === 'none';
@@ -3201,7 +3331,8 @@ function storyRenderSentence(lesson) {
       const cls = w.isNew ? 'story-word new-reading' : 'story-word';
       return '<span class="' + cls + '" data-en="' + w.en + '" onclick="showWordMeaning(this)">' + w.ar + '</span>';
     }).join(' ');
-    wordsContainer.innerHTML = '<p><span class="story-line-num">' + badge + '</span> ' + wordsHtml + '</p>';
+    const sentenceArText = sentence.words.map(w => w.ar).join(' ');
+    wordsContainer.innerHTML = '<p><span class="story-line-num">' + badge + '</span> <button onclick="window.speakArabic(\'' + sentenceArText.replace(/'/g, "\\'") + '\')" style="background:none;border:none;cursor:pointer;font-size:18px;margin-left:8px">🔊</button> ' + wordsHtml + '</p>';
   } else {
     const arabicLines = document.querySelectorAll('#story-lesson-' + lesson + ' p:not(.story-en-line)');
     arabicLines.forEach((p, i) => { p.style.display = (i === sentenceIdx) ? '' : 'none'; });
@@ -3219,6 +3350,14 @@ function storyRenderSentence(lesson) {
 window.storyRenderSentence = storyRenderSentence;
 
 function storySubmitTranslation(lesson) {
+  const input = document.getElementById('story-translation-input');
+  if (!input.value.trim()) {
+    const code = currentUser || viewingStudent;
+    storyCurrentSentence[code][lesson]++;
+    storyRenderSentence(lesson);
+    saveFlashcardData(code);
+    return;
+  }
   document.getElementById('story-reveal').style.display = 'block';
   document.getElementById('story-ratings').style.display = 'flex';
   document.getElementById('story-translation-input').disabled = true;
@@ -3383,7 +3522,8 @@ if (storyData) {
       const cls = w.isNew ? 'story-word new-reading' : 'story-word';
       return '<span class="' + cls + '" data-en="' + w.en + '" onclick="showWordMeaning(this)">' + w.ar + '</span>';
     }).join(' ');
-    return '<p><span class="story-line-num">' + badge + '</span> ' + wordsHtml + '</p>'
+    const sentenceArText = sentence.words.map(w => w.ar).join(' ');
+    return '<p><span class="story-line-num">' + badge + '</span> <button onclick="window.speakArabic(\'' + sentenceArText.replace(/'/g, "\\'") + '\')" style="background:none;border:none;cursor:pointer;font-size:18px;margin-left:8px">🔊</button> ' + wordsHtml + '</p>'
       + '<p class="story-full-en-line" style="display:none;font-family:-apple-system,sans-serif;font-size:15px;line-height:1.7;color:#374151;background:#f9fafb;border-radius:8px;padding:10px 14px;margin:0 0 16px 0;direction:ltr;text-align:left">' + sentence.en + '</p>';
   }).join('') : '';
    
@@ -3732,6 +3872,7 @@ adjectiveagreement: 2, adjectiveagreementtrans: 2,
 demonstrative: 2, demotrans: 2, feminine: 2,
 vocabtrans1: 1, vocabtrans2: 2, vocabtrans3: 3, vocabtrans4: 4, vocabtrans5: 5, vocabtrans6: 6,
 challenge1l2: 2, challenge1l3: 3, challenge1l4: 4, challenge1l5: 5, challenge1l6: 6,
+challenge2l2: 2, challenge2l3: 3, challenge2l4: 4, challenge2l5: 5, challenge2l6: 6,
 changeword2: 2, changeword3: 3, changeword4: 4, changeword5: 5, changeword6: 6,
 truefalse2: 2, truefalse3: 3, truefalse4: 4, truefalse5: 5, truefalse6: 6,
 comprehension1: 1, comprehension2: 2, comprehension3: 3, comprehension4: 4, comprehension5: 5, comprehension6: 6
@@ -3768,6 +3909,11 @@ const EX_CARDS = [
 { mode:'challenge1l4', icon:'🏆', title:'Challenge 1', desc:"Write your own sentence using each of 15 key words. We'll go over these together in lesson." },
 { mode:'challenge1l5', icon:'🏆', title:'Challenge 1', desc:"Write your own sentence using each of 15 key words. We'll go over these together in lesson." },
 { mode:'challenge1l6', icon:'🏆', title:'Challenge 1', desc:"Write your own sentence using each of 15 key words. We'll go over these together in lesson." },
+{ mode:'challenge2l2', icon:'🏆', title:'Challenge 2', desc:"Translate each English sentence into Arabic. We'll go over these together in lesson." },
+{ mode:'challenge2l3', icon:'🏆', title:'Challenge 2', desc:"Translate each English sentence into Arabic. We'll go over these together in lesson." },
+{ mode:'challenge2l4', icon:'🏆', title:'Challenge 2', desc:"Translate each English sentence into Arabic. We'll go over these together in lesson." },
+{ mode:'challenge2l5', icon:'🏆', title:'Challenge 2', desc:"Translate each English sentence into Arabic. We'll go over these together in lesson." },
+{ mode:'challenge2l6', icon:'🏆', title:'Challenge 2', desc:"Translate each English sentence into Arabic. We'll go over these together in lesson." },
 { mode:'comprehension1', icon:'💬', title:'Comprehension', desc:"Answer 15 questions about the story in a full Arabic sentence. We'll go over these together in lesson." },
 { mode:'comprehension2', icon:'💬', title:'Comprehension', desc:"Answer 15 questions about the story in a full Arabic sentence. We'll go over these together in lesson." },
 { mode:'comprehension3', icon:'💬', title:'Comprehension', desc:"Answer 15 questions about the story in a full Arabic sentence. We'll go over these together in lesson." },
@@ -3869,12 +4015,7 @@ document.getElementById('btn-' + c.mode).onclick = () => {
 const lessonNum = EX_LESSON_MAP[c.mode];
 if (c.mode === 'challenge1' || c.mode === 'challenge2') {
 const open = () => c.mode === 'challenge1' ? exShowChallenge1() : exShowChallenge2();
-if (window.hasSubmittedChallenge(c.mode)) { window.showMasteredMilestone('challenges', lessonNum, open); return; }
 open();
-return;
-}
-if (window.getExerciseMasteryPercent(c.mode, exGetQuestionCount(c.mode)) === 100) {
-window.showMasteredMilestone('exercises', lessonNum, () => exShowSetup(c.mode));
 return;
 }
 exShowSetup(c.mode);
@@ -3912,11 +4053,11 @@ document.getElementById('chbtn-' + c.mode).onclick = () => {
 const lessonNum = EX_LESSON_MAP[c.mode];
 const open = () => {
 if (c.mode.indexOf('comprehension') === 0) { compIndex = 0; compAnswers = []; exShowComprehension(c.mode); return; }
-if (c.mode === 'challenge2') {
-const draft2 = exChallengeDraft['challenge2'];
+if (c.mode.indexOf('challenge2') === 0) {
+const draft2 = exChallengeDraft[c.mode];
 ch2Index = draft2 ? draft2.index : 0;
 ch2Answers = draft2 ? draft2.answers.slice() : [];
-exShowChallenge2();
+exShowChallenge2(c.mode);
 return;
 }
 const draft1 = exChallengeDraft[c.mode];
@@ -3924,7 +4065,6 @@ ch1Index = draft1 ? draft1.index : 0;
 ch1Answers = draft1 ? draft1.answers.slice() : [];
 exShowChallenge1(c.mode);
 };
-if (window.hasSubmittedChallenge(c.mode)) { window.showMasteredMilestone('challenges', lessonNum, open); return; }
 open();
 };
 });
@@ -3954,6 +4094,15 @@ challenge1l3: () => window.CHALLENGE_1_WORDS_L3,
 challenge1l4: () => window.CHALLENGE_1_WORDS_L4,
 challenge1l5: () => window.CHALLENGE_1_WORDS_L5,
 challenge1l6: () => window.CHALLENGE_1_WORDS_L6
+};
+
+const CHALLENGE2_SENTENCES_BY_MODE = {
+challenge2: () => window.CHALLENGE_2_SENTENCES,
+challenge2l2: () => window.CHALLENGE_2_SENTENCES_L2,
+challenge2l3: () => window.CHALLENGE_2_SENTENCES_L3,
+challenge2l4: () => window.CHALLENGE_2_SENTENCES_L4,
+challenge2l5: () => window.CHALLENGE_2_SENTENCES_L5,
+challenge2l6: () => window.CHALLENGE_2_SENTENCES_L6
 };
 
 function exShowChallenge1(mode) {
@@ -4076,8 +4225,9 @@ render();
 if (typeof exShowChallengesPicker === 'function') exShowChallengesPicker();
 };
 
-function exShowChallenge2() {
-const sentences = window.CHALLENGE_2_SENTENCES || [];
+function exShowChallenge2(mode) {
+mode = mode || 'challenge2';
+const sentences = (CHALLENGE2_SENTENCES_BY_MODE[mode] && CHALLENGE2_SENTENCES_BY_MODE[mode]()) || [];
 const s = sentences[ch2Index];
 const isLast = ch2Index === sentences.length - 1;
 let html = `
@@ -4093,7 +4243,7 @@ let html = `
 <button id="ch2-back-btn" style="width:100%;margin-top:8px;padding:10px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">← Back</button>
 </div>`;
 document.getElementById('challenges-root').innerHTML = html;
-document.getElementById('ch2-next-btn').onclick = () => window.exAdvanceChallenge2();
+document.getElementById('ch2-next-btn').onclick = () => window.exAdvanceChallenge2(mode);
 document.getElementById('ch2-back-btn').onclick = exShowChallengesPicker;
 }
 
@@ -4209,7 +4359,7 @@ exRender(`
   </div>
    <div id="ex-card" style="position:relative;background:var(--grey-light);border-radius:16px;padding:28px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
     <div id="ex-diff-banner"></div>
-    <div id="ex-instruction" style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6b7280;margin-bottom:16px"></div>
+<div id="ex-instruction" style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6b7280;margin-bottom:16px;position:relative"><button id="ex-report-btn" style="position:absolute;top:0;right:0;background:none;border:none;cursor:pointer;font-size:16px;padding:4px;color:#9ca3af">📍</button></div>
     <div id="ex-sentence" style="font-size:1.6em;line-height:2;text-align:center;direction:rtl;margin-bottom:20px"></div>
     <div id="ex-fill-input" style="display:none;flex-direction:column;align-items:center;gap:10px">
       <input id="ex-answer-input" type="text" placeholder="Type the missing word..." style="font-size:1.2em;padding:12px 16px;border:2px solid #e5e7eb;border-radius:10px;width:100%;max-width:320px;text-align:center;direction:rtl;outline:none">
@@ -4258,8 +4408,15 @@ __diffBanner.innerHTML = __prevRating === 1 ? '<div class="fc-diff-banner fc-dif
 }
 if (exMode === 'fillgap') {
 const q = exQuestions[exCurrent];
-document.getElementById('ex-instruction').textContent = 'Fill in the missing word';
-document.getElementById('ex-sentence').innerHTML = q.sentence.replace('________',
+const instEl = document.getElementById('ex-instruction');
+instEl.textContent = 'Fill in the missing word';
+const reportBtn = document.createElement('button');
+reportBtn.textContent = '📍';
+reportBtn.style.cssText = 'background:none;border:none;cursor:pointer;font-size:16px;padding:4px;margin-left:auto';
+reportBtn.onclick = () => window.addToReadLater('exercise', document.getElementById('ex-sentence').textContent, (exQuestions[exCurrent]?.en || ''), EX_LESSON_MAP[exMode]);
+instEl.appendChild(reportBtn);
+const arText = q.sentence.replace(/<[^>]*>/g, '').replace('________', '').trim();
+document.getElementById('ex-sentence').innerHTML = '<button onclick="window.speakArabic(\'' + arText.replace(/'/g, "\\'") + '\')" style="background:none;border:none;cursor:pointer;font-size:20px;margin-right:8px">🔊</button><button onclick="window.addToReadLater(\'exercise\', \'' + arText.replace(/'/g, "\\'") + '\', \'' + (q.en||'').replace(/'/g, "\\'") + '\', ' + EX_LESSON_MAP[exMode] + ')" style="background:none;border:none;cursor:pointer;font-size:18px;margin-right:8px">📍</button>' + q.sentence.replace('________',
 '<span style="display:inline-block;border-bottom:3px solid #2563eb;min-width:100px;text-align:center">________</span>');
 const fillDiv = document.getElementById('ex-fill-input');
 fillDiv.style.display = 'flex';
@@ -4272,7 +4429,8 @@ inp.onkeydown = e => { if (e.key === 'Enter') exSubmitFill(); };
 } else if (exMode === 'truefalse' || exMode === 'truefalse2' || exMode === 'truefalse3' || exMode === 'truefalse4' || exMode === 'truefalse5' || exMode === 'truefalse6' || exMode === 'demonstrative' || exMode === 'suffixpronoun' || exMode === 'adjectiveagreement') {
 const q = exQuestions[exCurrent];
 document.getElementById('ex-instruction').textContent = 'Is this sentence correct?';
-document.getElementById('ex-sentence').innerHTML = q.sentence;
+const arText = q.sentence.replace(/<[^>]*>/g, '').trim();
+document.getElementById('ex-sentence').innerHTML = '<button onclick="window.speakArabic(\'' + arText.replace(/'/g, "\\'") + '\')" style="background:none;border:none;cursor:pointer;font-size:20px;margin-right:8px">🔊</button><button onclick="window.addToReadLater(\'exercise\', \'' + arText.replace(/'/g, "\\'") + '\', \'' + (q.en||'').replace(/'/g, "\\'") + '\', ' + EX_LESSON_MAP[exMode] + ')" style="background:none;border:none;cursor:pointer;font-size:18px;margin-right:8px">📍</button>' + q.sentence;
 document.getElementById('ex-sentence').style.fontSize = '1.4em';
 document.getElementById('ex-fill-input').style.display = 'none';
 document.getElementById('ex-word-order').style.display = 'none';
@@ -4291,7 +4449,8 @@ document.getElementById('ex-tf-false').onclick = () => exSubmitTrueFalse(false);
 } else if (exMode === 'changeword' || exMode === 'changeword2' || exMode === 'changeword3' || exMode === 'changeword4' || exMode === 'changeword5' || exMode === 'changeword6') {
 const q = exQuestions[exCurrent];
 document.getElementById('ex-instruction').textContent = 'One word is wrong — type the correct word';
-document.getElementById('ex-sentence').innerHTML = q.sentence;
+const arText = q.sentence.replace(/<[^>]*>/g, '').trim();
+document.getElementById('ex-sentence').innerHTML = '<button onclick="window.speakArabic(\'' + arText.replace(/'/g, "\\'") + '\')" style="background:none;border:none;cursor:pointer;font-size:20px;margin-right:8px">🔊</button><button onclick="window.addToReadLater(\'exercise\', \'' + arText.replace(/'/g, "\\'") + '\', \'' + (q.en||'').replace(/'/g, "\\'") + '\', ' + EX_LESSON_MAP[exMode] + ')" style="background:none;border:none;cursor:pointer;font-size:18px;margin-right:8px">📍</button>' + q.sentence;
 document.getElementById('ex-sentence').style.fontSize = '1.4em';
 const fillDiv = document.getElementById('ex-fill-input');
 fillDiv.style.display = 'flex';
@@ -4367,7 +4526,7 @@ const q = exQuestions[exCurrent];
 const existingType = document.getElementById('ex-tf-btns');
 if (existingType) existingType.remove();
 document.getElementById('ex-instruction').textContent = 'Read the English, write the Arabic, then reveal';
-document.getElementById('ex-sentence').textContent = q.en;
+document.getElementById('ex-sentence').style.display = 'none';
 document.getElementById('ex-sentence').style.direction = 'ltr';
 const fillDiv = document.getElementById('ex-fill-input');
 fillDiv.style.display = 'flex';
@@ -4389,6 +4548,7 @@ const existingType = document.getElementById('ex-tf-btns');
 if (existingType) existingType.remove();
 document.getElementById('ex-instruction').textContent = 'Read the English, write the Arabic, then reveal';
 document.getElementById('ex-sentence').textContent = q.en;
+document.getElementById('ex-sentence').style.display = 'block';
 document.getElementById('ex-sentence').style.direction = 'ltr';
 const fillDiv = document.getElementById('ex-fill-input');
 fillDiv.style.display = 'flex';
@@ -4411,6 +4571,7 @@ const existingType = document.getElementById('ex-tf-btns');
 if (existingType) existingType.remove();
 document.getElementById('ex-instruction').textContent = 'Read the English, write the Arabic, then reveal';
 document.getElementById('ex-sentence').textContent = q.en;
+document.getElementById('ex-sentence').style.display = 'block';
 document.getElementById('ex-sentence').style.direction = 'ltr';
 const fillDiv = document.getElementById('ex-fill-input');
 fillDiv.style.display = 'flex';
@@ -4474,7 +4635,7 @@ inp.onkeydown = e => { if (e.key === 'Enter') exSubmitAeTrans(); };
 const q = exQuestions[exCurrent];
 const isRegularity = q.cardType === 'regularity';
 document.getElementById('ex-instruction').textContent = isRegularity ? 'Is this plural regular or irregular?' : 'Is this plural human or non-human?';
-document.getElementById('ex-sentence').innerHTML = isRegularity ? q.ar : (q.ar + '<br><span style="font-size:0.5em;color:#6b7280;direction:ltr;display:block;margin-top:8px">' + q.en + '</span>');
+document.getElementById('ex-sentence').innerHTML = q.ar;
 document.getElementById('ex-sentence').style.fontSize = '1.4em';
 document.getElementById('ex-fill-input').style.display = 'none';
 document.getElementById('ex-word-order').style.display = 'none';
@@ -4503,6 +4664,8 @@ exRenderTiles();
 document.getElementById('ex-wo-check-btn').onclick = exSubmitWordOrder;
 document.getElementById('ex-wo-clear-btn').onclick = () => { exWordSelected = []; exRenderTiles(); };
 }
+
+
 }
 
 function exRenderTiles() {
@@ -4577,6 +4740,7 @@ const q = exQuestions[exCurrent];
 const reveal = document.getElementById('ex-reveal');
 reveal.innerHTML = `✕ Wrong word: <strong>${q.wrong}</strong><br>✓ Correct word: <strong>${q.correct}</strong>`;
 reveal.style.display = 'block';
+
 document.getElementById('ex-fill-input').style.display = 'none';
 const ratingEl = document.getElementById('ex-rating-area');
 ratingEl.style.display = 'flex';
