@@ -169,8 +169,6 @@
 .cal-day.selected .day-num { color: var(--ink); font-weight: 700; }
 .cal-day.selected.sel-green { background: #dcfce7; }
 .cal-day.selected.sel-green .day-num { color: var(--green); }
-.cal-day.selected.sel-yellow { background: #fef9c3; }
-.cal-day.selected.sel-yellow .day-num { color: #854d0e; }
 .cal-day.selected.sel-blue { background: var(--blue-light); }
 .cal-day.selected.sel-blue .day-num { color: var(--blue); }
 .day-num { font-size: 14px; color: var(--ink); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
@@ -207,7 +205,6 @@
 .submission-badge { position: absolute; top: 8px; left: 8px; color: white; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px; }
 .submission-badge.reviewed-badge { background: var(--blue); }
 .submission-badge.uploaded-badge { background: var(--green); }
-.submission-badge.makeup-badge { background: var(--dot-yellow); color: #1a1a2e; }
 
 /* TEXT SUBMISSION */
 .text-submission { background: var(--grey-light); border-radius: 12px; padding: 16px; margin-bottom: 16px; border: 1.5px solid var(--border); }
@@ -573,6 +570,11 @@ I did my homework today
 <!-- REPORTS TAB (instructor only) -->
 <div id="tab-content-reports" class="content" style="display:none">
 <div class="section-label">Student Reports</div>
+<div style="background:#fffbeb;border:1.5px solid #fcd34d;border-radius:10px;padding:12px 14px;margin-bottom:14px">
+<div style="font-size:13px;color:#92400e;margin-bottom:8px">One-time cleanup: moves old homework photos out of the fast-loading data so ryan01 logs in quicker. Safe to click more than once — it skips anything already cleaned up.</div>
+<button id="migrate-photos-btn" style="padding:10px 18px;background:#92400e;color:white;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">🧹 Clean up old homework photos</button>
+<div id="migrate-photos-status" style="font-size:12px;color:#92400e;margin-top:8px"></div>
+</div>
 <div id="reports-root" style="margin-top:8px">
 <div style="padding:20px;text-align:center;color:#8a7f6e">
 <p>📋 Reports from students will appear here</p>
@@ -722,7 +724,7 @@ I did my homework today
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, deleteField, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 const firebaseConfig = {
 apiKey: "AIzaSyBmeQwuWPeuQtdC-7w3SyBb2K5ljvvqBGY",
@@ -2230,7 +2232,40 @@ document.getElementById('lb-invite-btn').onclick = () => {
 };
 }
 
+// One-time cleanup: moves old inline photos out of each day's lightweight record
+// and into their own spot, so future logins for ryan01 stay fast. Safe to re-run —
+// it only touches days that still have the old-style images field.
+window.migrateOldHomeworkPhotos = async function() {
+const btn = document.getElementById('migrate-photos-btn');
+const statusEl = document.getElementById('migrate-photos-status');
+if (btn) { btn.disabled = true; btn.textContent = 'Cleaning up…'; }
+let studentsChecked = 0, daysMoved = 0, errors = 0;
+const codes = Object.keys(STUDENTS);
+for (const code of codes) {
+studentsChecked++;
+if (statusEl) statusEl.textContent = `Checking ${STUDENTS[code]?.name || code}… (${studentsChecked}/${codes.length}, moved ${daysMoved} so far)`;
+try {
+const snap = await getDocs(collection(db,'submissions',code,'days'));
+for (const d of snap.docs) {
+const data = d.data();
+if (data.images && data.images.length > 0) {
+try {
+await setDoc(doc(db,'submissions',code,'dayImages',d.id), { images: data.images });
+await updateDoc(doc(db,'submissions',code,'days',d.id), { images: deleteField(), imageCount: data.images.length });
+daysMoved++;
+} catch(e) { console.error('Migrate day error', code, d.id, e); errors++; }
+}
+}
+} catch(e) { console.error('Migrate student error', code, e); errors++; }
+}
+if (btn) { btn.disabled = false; btn.textContent = '🧹 Clean up old homework photos'; }
+if (statusEl) statusEl.textContent = `Done — moved ${daysMoved} day${daysMoved!==1?'s':''} of photos across ${studentsChecked} students` + (errors ? `, ${errors} error(s) — check the browser console` : '') + '. Safe to run again anytime.';
+showToast('Photo cleanup finished ✓');
+};
+
 async function renderReportsTab() {
+const migrateBtn = document.getElementById('migrate-photos-btn');
+if (migrateBtn) migrateBtn.onclick = window.migrateOldHomeworkPhotos;
 const root = document.getElementById('reports-root');
 root.innerHTML = '<div style="text-align:center;color:var(--grey);padding:20px">Loading reports…</div>';
 let reportDocs = [];
@@ -2246,13 +2281,18 @@ reportDocs.sort((a,b) => (b.timestamp||0) - (a.timestamp||0));
 root.innerHTML = reportDocs.map(r => {
 const studentName = STUDENTS[r.studentCode]?.name || r.studentCode;
 const date = new Date(r.timestamp).toLocaleDateString();
+const isCardReport = !!r.arabic;
+const bodyHtml = isCardReport
+? `<div style="font-family:'Scheherazade New', serif;font-size:1.2em;direction:rtl;text-align:right;color:#1a1a2e;margin-bottom:6px">${r.arabic}</div>
+<div style="font-size:13px;color:#6b7280">${r.english || ''}</div>`
+: `<div style="font-size:13px;color:var(--grey);margin-bottom:8px">${r.context}</div>
+<div style="font-size:14px;color:var(--ink)">${r.note || '(no message)'}</div>`;
 return `<div style="background:white;border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px">
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
 <div style="font-weight:600;color:var(--ink)">${studentName}</div>
 <button onclick="window.deleteReport('${r.id}')" style="background:none;border:none;color:var(--grey);font-size:13px;cursor:pointer;padding:2px 6px">✕ Delete</button>
 </div>
-<div style="font-size:13px;color:var(--grey);margin-bottom:8px">${r.context}</div>
-<div style="font-size:14px;color:var(--ink);padding:10px;background:#f9fafb;border-radius:8px;margin-bottom:8px">${r.note || '(no message)'}</div>
+<div style="padding:10px;background:#f9fafb;border-radius:8px;margin-bottom:8px">${bodyHtml}</div>
 <div style="font-size:12px;color:var(--grey)">${date}</div>
 </div>`;
 }).join('');
@@ -2272,13 +2312,19 @@ const [y,m,d] = dateStr.split('-').map(Number);
 return new Date() > new Date(y, m-1, d+1, 0, 0, 0);
 }
 
+// A day "has photos" if either the full photos are loaded in memory, or we
+// just know the count from the lightweight day record (photos not opened yet).
+function dayHasImages(sub) {
+return !!(sub && ((sub.images && sub.images.length > 0) || (sub.imageCount || 0) > 0));
+}
+
 // A day counts toward the streak if the student did 20+ flashcards/exercise
 // questions OR uploaded homework that day — either one is enough.
 function dayQualifiesForStreak(code, key) {
 const cardCount = (allCardActivity[code] || {})[key] || 0;
 if (cardCount >= 20) return true;
 const sub = submissions[code]?.[key];
-return !!(sub && (sub.images?.length > 0 || sub.text || sub.checkedIn));
+return !!(sub && (dayHasImages(sub) || sub.text || sub.checkedIn));
 }
 
 // Whether the student has ever had a single qualifying day, via either route —
@@ -2287,24 +2333,9 @@ function hasEverQualified(code) {
 const activity = allCardActivity[code] || {};
 if (Object.keys(activity).some(k => activity[k] >= 20)) return true;
 const subs = submissions[code] || {};
-return Object.values(subs).some(s => s && (s.images?.length > 0 || s.text || s.checkedIn));
+return Object.values(subs).some(s => s && (dayHasImages(s) || s.text || s.checkedIn));
 }
   
-function getMissedDays(code) {
-const subs = submissions[code] || {};
-const missed = [], now = new Date();
-const allKeys = Object.keys(subs).sort();
-if (!allKeys.length) return [];
-const firstSubmission = allKeys[0];
-for (let i = 1; i <= 60; i++) {
-const d = new Date(now); d.setDate(now.getDate() - i);
-const key = dateKey(d);
-if (key < firstSubmission) break;
-if (isMidnightPast(key) && (!subs[key] || (!subs[key].images?.length && !subs[key].text && !subs[key].checkedIn))) missed.push(key);
-}
-return missed.sort();
-}
-
 function getStreak(code) {
 let streak = 0;
 const now = new Date();
@@ -2344,7 +2375,7 @@ function hasMadeProgressToday(code) {
 const today = todayKey();
 const lesson = studentLesson[code] || 1;
 const didCards = ((allCardActivity[code] || {})[today] || 0) > 0;
-const didHomework = !!(submissions[code]?.[today] && (submissions[code][today].images?.length || submissions[code][today].text || submissions[code][today].checkedIn));
+const didHomework = !!(submissions[code]?.[today] && (dayHasImages(submissions[code][today]) || submissions[code][today].text || submissions[code][today].checkedIn));
 const didReading = !!readingDone[lesson];
 const didGrammar = !!grammarDone[lesson];
 return didCards || didHomework || didReading || didGrammar;
@@ -2362,7 +2393,7 @@ const missed = [], now = new Date();
 const activity = allCardActivity[code] || {};
 const subs = submissions[code] || {};
 const activityKeys = Object.keys(activity);
-const qualifyingSubKeys = Object.keys(subs).filter(k => { const s = subs[k]; return s && (s.images?.length > 0 || s.text || s.checkedIn); });
+const qualifyingSubKeys = Object.keys(subs).filter(k => { const s = subs[k]; return s && (dayHasImages(s) || s.text || s.checkedIn); });
 const allKeys = [...activityKeys, ...qualifyingSubKeys].sort();
 if (!allKeys.length) return [];
 const firstDay = allKeys[0];
@@ -2547,9 +2578,9 @@ let block = header;
 filled.forEach((a, i) => { block += `\n${i+1}. ${a.ar} (${a.en}): ${a.answer}`; });
 const existing = submissions[code]?.[today] || {};
 const newText = upsertChallengeBlock(existing.text, header, block);
-const dayData = { images: existing.images || [], text: newText, reviewed: false };
+const dayData = { text: newText, reviewed: false };
 if (!submissions[code]) submissions[code] = {};
-submissions[code][today] = dayData;
+submissions[code][today] = { ...existing, ...dayData };
 await saveDay(code, today, dayData);
 };
 
@@ -2561,6 +2592,9 @@ const answers = ch1Answers;
 const filled = answers.filter(a => a.answer);
 if (!filled.length) { showToast('Write at least one sentence first'); return; }
 
+const btn = document.getElementById('ch1-next-btn');
+if (btn) { btn.disabled = true; btn.textContent = 'Submitting…'; }
+try {
 const lessonNum = EX_LESSON_MAP[mode];
 const header = '📋 Challenge 1 — Lesson ' + lessonNum + ' (a sentence with each word)';
 let block = header;
@@ -2570,9 +2604,9 @@ block += `\n${i+1}. ${a.ar} (${a.en}): ${a.answer}`;
 
 const existing = submissions[code]?.[today] || {};
 const newText = upsertChallengeBlock(existing.text, header, block);
-const dayData = { images: existing.images || [], text: newText, reviewed: false };
+const dayData = { text: newText, reviewed: false };
 if (!submissions[code]) submissions[code] = {};
-submissions[code][today] = dayData;
+submissions[code][today] = { ...existing, ...dayData };
 await saveDay(code, today, dayData);
 
 const oldFrac = window.getLessonProgressSum(lessonNum);
@@ -2585,6 +2619,11 @@ await saveFlashcardData(code);
 showToast('Submitted! Your teacher will go over this with you in your next lesson.');
 render();
 if (typeof exShowChallengesPicker === 'function') exShowChallengesPicker();
+} catch(e) {
+console.error('Challenge 1 submit error', e);
+showToast("Couldn't submit — check your connection and try again");
+if (btn) { btn.disabled = false; btn.textContent = 'Submit Challenge'; }
+}
 };
 
 window.exGoBackChallenge2 = function(mode) {
@@ -2622,9 +2661,9 @@ let block = header;
 filled.forEach((a, i) => { block += `\n${i+1}. ${a.en}\n   ${a.answer}`; });
 const existing = submissions[code]?.[today] || {};
 const newText = upsertChallengeBlock(existing.text, header, block);
-const dayData = { images: existing.images || [], text: newText, reviewed: false };
+const dayData = { text: newText, reviewed: false };
 if (!submissions[code]) submissions[code] = {};
-submissions[code][today] = dayData;
+submissions[code][today] = { ...existing, ...dayData };
 await saveDay(code, today, dayData);
 };
 
@@ -2636,6 +2675,9 @@ const answers = ch2Answers;
 const filled = answers.filter(a => a.answer);
 if (!filled.length) { showToast('Translate at least one sentence first'); return; }
 
+const btn = document.getElementById('ch2-next-btn');
+if (btn) { btn.disabled = true; btn.textContent = 'Submitting…'; }
+try {
 const header = '📋 Challenge 2 — Lesson ' + EX_LESSON_MAP[mode] + ' (English → Arabic translation)';
 let block = header;
 answers.filter(a => a.answer).forEach((a, i) => {
@@ -2644,9 +2686,9 @@ block += `\n${i+1}. ${a.en}\n   ${a.answer}`;
 
 const existing = submissions[code]?.[today] || {};
 const newText = upsertChallengeBlock(existing.text, header, block);
-const dayData = { images: existing.images || [], text: newText, reviewed: false };
+const dayData = { text: newText, reviewed: false };
 if (!submissions[code]) submissions[code] = {};
-submissions[code][today] = dayData;
+submissions[code][today] = { ...existing, ...dayData };
 await saveDay(code, today, dayData);
 
 const oldFrac = window.getLessonProgressSum(EX_LESSON_MAP[mode]);
@@ -2659,6 +2701,11 @@ await saveFlashcardData(code);
 window.showToast('Submitted! Your teacher will go over this with you in your next lesson.');
 render();
 if (typeof exShowChallengesPicker === 'function') exShowChallengesPicker();
+} catch(e) {
+console.error('Challenge 2 submit error', e);
+window.showToast("Couldn't submit — check your connection and try again");
+if (btn) { btn.disabled = false; btn.textContent = 'Submit Challenge'; }
+}
 };
 
 // Finds an existing challenge block by its header and updates it in place;
@@ -2670,8 +2717,31 @@ if (idx >= 0) blocks[idx] = block; else blocks.push(block);
 return blocks.join('\n\n');
 }
 
-async function saveDay(code, dateStr, data) { if (isImpersonating) return; await setDoc(doc(db,'submissions',code,'days',dateStr), data); }
+async function saveDay(code, dateStr, data) {
+if (isImpersonating) return;
+const { images, ...lightData } = data;
+if (images !== undefined) {
+lightData.imageCount = images.length;
+try { await setDoc(doc(db,'submissions',code,'dayImages',dateStr), { images }); }
+catch(e) { console.error('Day images save error', e); }
+}
+await setDoc(doc(db,'submissions',code,'days',dateStr), lightData, { merge: true });
+}
 window.saveDay = saveDay;
+
+// Fetches one day's photos on demand (only called when that day is actually opened),
+// instead of every day's photos loading up front for every student.
+async function loadDayImages(code, date) {
+if (!submissions[code]) submissions[code] = {};
+if (!submissions[code][date]) submissions[code][date] = {};
+if (submissions[code][date].images) return submissions[code][date].images;
+try {
+const snap = await getDoc(doc(db,'submissions',code,'dayImages',date));
+submissions[code][date].images = snap.exists() ? (snap.data().images || []) : [];
+} catch(e) { console.error('Day images load error', e); submissions[code][date].images = []; }
+return submissions[code][date].images;
+}
+window.loadDayImages = loadDayImages;
 
 
 // ── LOGIN ──
@@ -3036,8 +3106,7 @@ if(key===today)cell.classList.add('today');
 if(key===selectedDate){
 const selSub=subs[key]; cell.classList.add('selected');
 if(selSub?.reviewed)cell.classList.add('sel-blue');
-else if(selSub?.makeupFor)cell.classList.add('sel-yellow');
-else if(selSub?.images?.length>0||selSub?.text)cell.classList.add('sel-green');
+else if(dayHasImages(selSub)||selSub?.text)cell.classList.add('sel-green');
 }
 const n=document.createElement('div');n.className='day-num';n.textContent=d;cell.appendChild(n);
 if(dayQualifiesForStreak(code, key))cell.classList.add('day-green');
@@ -3049,22 +3118,29 @@ for(let d=1;d<=remaining;d++){const cell=document.createElement('div');cell.clas
 }
 
 // ── DAY PANEL ──
-function renderDayPanel() {
+async function renderDayPanel() {
 if(!selectedDate){document.getElementById('day-card').style.display='none';return;}
-const code=activeStudentCode(); const subs=submissions[code]||{}; const sub=subs[selectedDate];
-const hasImages=sub?.images?.length>0; const hasText=!!sub?.text; const hasContent=hasImages||hasText||!!sub?.makeupFor;
-const isMakeup=!!sub?.makeupFor;
+const code=activeStudentCode();
+const openedDate=selectedDate;
+if (!submissions[code]) submissions[code] = {};
+const preSub = submissions[code][selectedDate];
+if (preSub && (preSub.imageCount||0) > 0 && !preSub.images) {
+await loadDayImages(code, selectedDate);
+if (selectedDate !== openedDate || activeStudentCode() !== code) return; // user moved on while photos were loading
+}
+const subs=submissions[code]||{}; const sub=subs[selectedDate];
+const hasImages=dayHasImages(sub); const hasText=!!sub?.text; const hasContent=hasImages||hasText;
 const cardCount=(allCardActivity[code]||{})[selectedDate]||0;
 const streakDone=dayQualifiesForStreak(code, selectedDate);
 const anyProgress=cardCount>0||hasContent;
-const allKeys=Object.keys(subs).filter(k=>{const s=subs[k];return s&&(s.images?.length>0||s.text||s.makeupFor);}).sort();
+const allKeys=Object.keys(subs).filter(k=>{const s=subs[k];return s&&(dayHasImages(s)||s.text);}).sort();
 const dayNum=allKeys.indexOf(selectedDate)+1||null;
 const dayCardEl=document.getElementById('day-card');
 dayCardEl.style.display='block'; dayCardEl.className='day-card';
 if(streakDone)dayCardEl.classList.add('card-green');
 else if(anyProgress)dayCardEl.classList.add('card-blue');
 else dayCardEl.classList.add('card-gray');
-document.getElementById('day-badge').textContent=dayNum?`Day ${dayNum}`:(hasContent?'Make-up':'No submission');
+document.getElementById('day-badge').textContent=dayNum?`Day ${dayNum}`:(hasContent?'Submission':'No submission');
 document.getElementById('day-date').textContent=formatDateLong(selectedDate);
 document.getElementById('day-status').textContent=streakDone?'✓ Streak complete':(anyProgress?'• Some progress':'No activity');
 // Show flashcard/exercise activity if any
@@ -3088,8 +3164,8 @@ sub.images.forEach(src=>{
 const wrap=document.createElement('div');wrap.className='submission-thumb';
 const img=document.createElement('img');img.src=src;img.onclick=()=>openModal(src);wrap.appendChild(img);
 const badge=document.createElement('div');
-badge.className='submission-badge '+(isMakeup?'makeup-badge':'uploaded-badge');
-badge.textContent=isMakeup?'Made up':'Uploaded';
+badge.className='submission-badge uploaded-badge';
+badge.textContent='Uploaded';
 wrap.appendChild(badge);grid.appendChild(wrap);
 });
 area.appendChild(grid);
@@ -3105,10 +3181,8 @@ if(isMidnightPast(selectedDate)&&!isToday&&(!isInstructor||isStudentView)){
 const lk=document.createElement('div');lk.className='locked-msg';lk.textContent='⛔ This day is locked — midnight has passed.';uploadWrap.appendChild(lk);uploadWrap.style.display='block';return;
 }
 if((!isInstructor||isStudentView)&&isToday){
-const missed=getMissedDays(code);
 const section=document.createElement('div');section.className='upload-section';
-let title=hasContent?'Add another submission':'Submit today\'s homework';
-if(missed.length>0&&hasContent)title=`Make up a missed day (${missed.length} remaining)`;
+const title=hasContent?'Add another submission':'Submit today\'s homework';
 section.innerHTML=`<div class="upload-section-title">${title}</div>
     <div class="upload-area" id="upload-trigger"><div class="upload-icon">📸</div><div class="upload-title">Upload a photo</div><div class="upload-sub">Tap to choose</div></div>
     <input type="file" id="file-input" accept="image/*" multiple>
@@ -3134,26 +3208,20 @@ if(!files.length&&!text){showToast('Add a photo or write something first');retur
 const btn=document.getElementById('submit-btn');
 btn.textContent='Uploading…';btn.disabled=true; showToast('Uploading…');
 try {
-const missed=getMissedDays(code);
 const imgs=[];
 for(const f of files){imgs.push(await fileToBase64(f));}
+if (!submissions[code]) submissions[code] = {};
 const subs=submissions[code]||{};
 const todaySub=subs[selectedDate];
-const hasExisting=todaySub&&(todaySub.images?.length>0||todaySub.text);
-if(hasExisting&&missed.length>0){
-const missedDay=missed[0];
-const makeupData={images:imgs,text,reviewed:false,makeupFor:selectedDate};
-submissions[code][missedDay]=makeupData;
-await saveDay(code,missedDay,makeupData);
-showToast('Made up '+formatDateLong(missedDay)+' ✓');
-} else {
+if (todaySub && (todaySub.imageCount||0) > 0 && !todaySub.images) {
+await loadDayImages(code, selectedDate);
+}
 const existing=subs[selectedDate]||{};
 const dayData={images:[...(existing.images||[]),...imgs],text:text||(existing.text||''),reviewed:false};
 submissions[code][selectedDate]=dayData;
 await saveDay(code,selectedDate,dayData);
 didMakeProgress = true;
 showToast('Homework submitted ✓');
-}
 render();
 } catch(e){showToast('Upload failed — try again');console.error(e);btn.textContent='Submit';btn.disabled=false;}
 }
@@ -4021,10 +4089,10 @@ async function markHomeworkCheckin() {
 const code = activeStudentCode();
 const today = todayKey();
 const existing = submissions[code]?.[today] || {};
-if (existing.images?.length > 0 || existing.text || existing.checkedIn) return;
-const dayData = { images: existing.images || [], text: existing.text || '', reviewed: existing.reviewed || false, checkedIn: true };
+if (dayHasImages(existing) || existing.text || existing.checkedIn) return;
+const dayData = { text: existing.text || '', reviewed: existing.reviewed || false, checkedIn: true };
 if (!submissions[code]) submissions[code] = {};
-submissions[code][today] = dayData;
+submissions[code][today] = { ...existing, ...dayData };
 try {
 await saveDay(code, today, dayData);
 didMakeProgress = true;
@@ -4198,12 +4266,9 @@ changeword: 1, truefalse: 1,
 plural: 1, pluraltype: 1,
 typeharakat: 1, typeenglish: 1,
 suffixpronoun: 1, suffixtrans: 1, aetrans: 1, challenge1: 1, challenge2: 1,
-aetrans2: 2, aetrans3: 3, aetrans4: 4, aetrans5: 5, aetrans6: 6, aetrans7: 7, aetrans8: 8, aetrans9: 9, aetrans10: 10, aetrans11: 11, aetrans12: 12, aetrans13: 13, aetrans14: 14, aetrans15: 15, aetrans16: 16,
-aetranslisten: 1, aetrans2listen: 2, aetrans3listen: 3, aetrans4listen: 4, aetrans5listen: 5, aetrans6listen: 6, aetrans7listen: 7, aetrans8listen: 8, aetrans9listen: 9, aetrans10listen: 10, aetrans11listen: 11, aetrans12listen: 12, aetrans13listen: 13, aetrans14listen: 14, aetrans15listen: 15, aetrans16listen: 16,
 adjectiveagreement: 2, adjectiveagreementtrans: 2,
 demonstrative: 2, demotrans: 2, feminine: 2,
 vocabtrans1: 1, vocabtrans2: 2, vocabtrans3: 3, vocabtrans4: 4, vocabtrans5: 5, vocabtrans6: 6,
-vocabtrans7: 7, vocabtrans8: 8, vocabtrans9: 9, vocabtrans10: 10, vocabtrans11: 11, vocabtrans12: 12, vocabtrans13: 13, vocabtrans14: 14, vocabtrans15: 15, vocabtrans16: 16,
 challenge1l2: 2, challenge1l3: 3, challenge1l4: 4, challenge1l5: 5, challenge1l6: 6,
 challenge1l7: 7, challenge1l8: 8, challenge1l9: 9, challenge1l10: 10, challenge1l11: 11, challenge1l12: 12, challenge1l13: 13, challenge1l14: 14, challenge1l15: 15, challenge1l16: 16,
 challenge2l2: 2, challenge2l3: 3, challenge2l4: 4, challenge2l5: 5, challenge2l6: 6,
@@ -4300,37 +4365,6 @@ const EX_CARDS = [
 { mode:'truefalse15listen', icon:'🎧', title:'True or False — Listening', desc:'Listen to the sentence. Is it correct or does it contain an error?' },
 { mode:'truefalse16listen', icon:'🎧', title:'True or False — Listening', desc:'Listen to the sentence. Is it correct or does it contain an error?' },
 { mode:'aetrans', icon:'🔁', title:'Arabic → English', desc:'Read the Arabic sentence, translate it in your head, then reveal and grade yourself.' },
-{ mode:'aetrans2', icon:'🔁', title:'Arabic → English', desc:'Read the Arabic sentence, translate it in your head, then reveal and grade yourself.' },
-{ mode:'aetrans3', icon:'🔁', title:'Arabic → English', desc:'Read the Arabic sentence, translate it in your head, then reveal and grade yourself.' },
-{ mode:'aetrans4', icon:'🔁', title:'Arabic → English', desc:'Read the Arabic sentence, translate it in your head, then reveal and grade yourself.' },
-{ mode:'aetrans5', icon:'🔁', title:'Arabic → English', desc:'Read the Arabic sentence, translate it in your head, then reveal and grade yourself.' },
-{ mode:'aetrans6', icon:'🔁', title:'Arabic → English', desc:'Read the Arabic sentence, translate it in your head, then reveal and grade yourself.' },
-{ mode:'aetrans7', icon:'🔁', title:'Arabic → English', desc:'Read the Arabic sentence, translate it in your head, then reveal and grade yourself.' },
-{ mode:'aetrans8', icon:'🔁', title:'Arabic → English', desc:'Read the Arabic sentence, translate it in your head, then reveal and grade yourself.' },
-{ mode:'aetrans9', icon:'🔁', title:'Arabic → English', desc:'Read the Arabic sentence, translate it in your head, then reveal and grade yourself.' },
-{ mode:'aetrans10', icon:'🔁', title:'Arabic → English', desc:'Read the Arabic sentence, translate it in your head, then reveal and grade yourself.' },
-{ mode:'aetrans11', icon:'🔁', title:'Arabic → English', desc:'Read the Arabic sentence, translate it in your head, then reveal and grade yourself.' },
-{ mode:'aetrans12', icon:'🔁', title:'Arabic → English', desc:'Read the Arabic sentence, translate it in your head, then reveal and grade yourself.' },
-{ mode:'aetrans13', icon:'🔁', title:'Arabic → English', desc:'Read the Arabic sentence, translate it in your head, then reveal and grade yourself.' },
-{ mode:'aetrans14', icon:'🔁', title:'Arabic → English', desc:'Read the Arabic sentence, translate it in your head, then reveal and grade yourself.' },
-{ mode:'aetrans15', icon:'🔁', title:'Arabic → English', desc:'Read the Arabic sentence, translate it in your head, then reveal and grade yourself.' },
-{ mode:'aetrans16', icon:'🔁', title:'Arabic → English', desc:'Read the Arabic sentence, translate it in your head, then reveal and grade yourself.' },
-{ mode:'aetranslisten', icon:'🎧', title:'Arabic → English — Listening', desc:'Listen to the Arabic sentence, write the English translation, then reveal and grade yourself.' },
-{ mode:'aetrans2listen', icon:'🎧', title:'Arabic → English — Listening', desc:'Listen to the Arabic sentence, write the English translation, then reveal and grade yourself.' },
-{ mode:'aetrans3listen', icon:'🎧', title:'Arabic → English — Listening', desc:'Listen to the Arabic sentence, write the English translation, then reveal and grade yourself.' },
-{ mode:'aetrans4listen', icon:'🎧', title:'Arabic → English — Listening', desc:'Listen to the Arabic sentence, write the English translation, then reveal and grade yourself.' },
-{ mode:'aetrans5listen', icon:'🎧', title:'Arabic → English — Listening', desc:'Listen to the Arabic sentence, write the English translation, then reveal and grade yourself.' },
-{ mode:'aetrans6listen', icon:'🎧', title:'Arabic → English — Listening', desc:'Listen to the Arabic sentence, write the English translation, then reveal and grade yourself.' },
-{ mode:'aetrans7listen', icon:'🎧', title:'Arabic → English — Listening', desc:'Listen to the Arabic sentence, write the English translation, then reveal and grade yourself.' },
-{ mode:'aetrans8listen', icon:'🎧', title:'Arabic → English — Listening', desc:'Listen to the Arabic sentence, write the English translation, then reveal and grade yourself.' },
-{ mode:'aetrans9listen', icon:'🎧', title:'Arabic → English — Listening', desc:'Listen to the Arabic sentence, write the English translation, then reveal and grade yourself.' },
-{ mode:'aetrans10listen', icon:'🎧', title:'Arabic → English — Listening', desc:'Listen to the Arabic sentence, write the English translation, then reveal and grade yourself.' },
-{ mode:'aetrans11listen', icon:'🎧', title:'Arabic → English — Listening', desc:'Listen to the Arabic sentence, write the English translation, then reveal and grade yourself.' },
-{ mode:'aetrans12listen', icon:'🎧', title:'Arabic → English — Listening', desc:'Listen to the Arabic sentence, write the English translation, then reveal and grade yourself.' },
-{ mode:'aetrans13listen', icon:'🎧', title:'Arabic → English — Listening', desc:'Listen to the Arabic sentence, write the English translation, then reveal and grade yourself.' },
-{ mode:'aetrans14listen', icon:'🎧', title:'Arabic → English — Listening', desc:'Listen to the Arabic sentence, write the English translation, then reveal and grade yourself.' },
-{ mode:'aetrans15listen', icon:'🎧', title:'Arabic → English — Listening', desc:'Listen to the Arabic sentence, write the English translation, then reveal and grade yourself.' },
-{ mode:'aetrans16listen', icon:'🎧', title:'Arabic → English — Listening', desc:'Listen to the Arabic sentence, write the English translation, then reveal and grade yourself.' },
 { mode:'challenge1', icon:'🏆', title:'Challenge 1', desc:"Write your own sentence using each of 15 key words. We'll go over these together in lesson." },
 { mode:'challenge2', icon:'🏆', title:'Challenge 2', desc:"Translate each English sentence into Arabic. We'll go over these together in lesson." },
 { mode:'challenge1l2', icon:'🏆', title:'Challenge 1', desc:"Write your own sentence using each of 15 key words. We'll go over these together in lesson." },
@@ -4421,17 +4455,7 @@ const EX_CARDS = [
 { mode:'vocabtrans3', icon:'📖', title:'Vocab — Translate', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' },
 { mode:'vocabtrans4', icon:'📖', title:'Vocab — Translate', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' },
 { mode:'vocabtrans5', icon:'📖', title:'Vocab — Translate', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' },
-{ mode:'vocabtrans6', icon:'📖', title:'Vocab — Translate', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' },
-{ mode:'vocabtrans7', icon:'📖', title:'Vocab — Translate', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' },
-{ mode:'vocabtrans8', icon:'📖', title:'Vocab — Translate', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' },
-{ mode:'vocabtrans9', icon:'📖', title:'Vocab — Translate', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' },
-{ mode:'vocabtrans10', icon:'📖', title:'Vocab — Translate', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' },
-{ mode:'vocabtrans11', icon:'📖', title:'Vocab — Translate', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' },
-{ mode:'vocabtrans12', icon:'📖', title:'Vocab — Translate', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' },
-{ mode:'vocabtrans13', icon:'📖', title:'Vocab — Translate', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' },
-{ mode:'vocabtrans14', icon:'📖', title:'Vocab — Translate', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' },
-{ mode:'vocabtrans15', icon:'📖', title:'Vocab — Translate', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' },
-{ mode:'vocabtrans16', icon:'📖', title:'Vocab — Translate', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' }
+{ mode:'vocabtrans6', icon:'📖', title:'Vocab — Translate', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' }
 ];
 function exGetQuestionCount(mode) {
 mode = mode.replace(/listen$/, '');
@@ -4481,37 +4505,12 @@ return mode==='fillgap' ? FILL_GAP_QUESTIONS.length
 : mode==='vocabtrans4' ? exBuildVocabTransPool(4).length
 : mode==='vocabtrans5' ? exBuildVocabTransPool(5).length
 : mode==='vocabtrans6' ? exBuildVocabTransPool(6).length
-: mode==='vocabtrans7' ? exBuildVocabTransPool(7).length
-: mode==='vocabtrans8' ? exBuildVocabTransPool(8).length
-: mode==='vocabtrans9' ? exBuildVocabTransPool(9).length
-: mode==='vocabtrans10' ? exBuildVocabTransPool(10).length
-: mode==='vocabtrans11' ? exBuildVocabTransPool(11).length
-: mode==='vocabtrans12' ? exBuildVocabTransPool(12).length
-: mode==='vocabtrans13' ? exBuildVocabTransPool(13).length
-: mode==='vocabtrans14' ? exBuildVocabTransPool(14).length
-: mode==='vocabtrans15' ? exBuildVocabTransPool(15).length
-: mode==='vocabtrans16' ? exBuildVocabTransPool(16).length
 : mode==='plural' ? PLURAL_QUESTIONS.length
 : mode==='feminine' ? FEMININE_QUESTIONS.length
 : mode==='pluraltype' ? PLURAL_TYPE_QUESTIONS.length * 2
 : mode==='typeharakat' ? exBuildLesson1Pool().length
 : mode==='typeenglish' ? exBuildLesson1Pool().length
 : mode==='aetrans' ? TRANSLATION_1_QUESTIONS.length
-: mode==='aetrans2' ? CHALLENGE_2_SENTENCES_L2.length
-: mode==='aetrans3' ? CHALLENGE_2_SENTENCES_L3.length
-: mode==='aetrans4' ? CHALLENGE_2_SENTENCES_L4.length
-: mode==='aetrans5' ? CHALLENGE_2_SENTENCES_L5.length
-: mode==='aetrans6' ? CHALLENGE_2_SENTENCES_L6.length
-: mode==='aetrans7' ? CHALLENGE_2_SENTENCES_L7.length
-: mode==='aetrans8' ? CHALLENGE_2_SENTENCES_L8.length
-: mode==='aetrans9' ? CHALLENGE_2_SENTENCES_L9.length
-: mode==='aetrans10' ? CHALLENGE_2_SENTENCES_L10.length
-: mode==='aetrans11' ? CHALLENGE_2_SENTENCES_L11.length
-: mode==='aetrans12' ? CHALLENGE_2_SENTENCES_L12.length
-: mode==='aetrans13' ? CHALLENGE_2_SENTENCES_L13.length
-: mode==='aetrans14' ? CHALLENGE_2_SENTENCES_L14.length
-: mode==='aetrans15' ? CHALLENGE_2_SENTENCES_L15.length
-: mode==='aetrans16' ? CHALLENGE_2_SENTENCES_L16.length
 : 0;
 }
 window.exGetQuestionCount = exGetQuestionCount;
@@ -4702,6 +4701,7 @@ let html = `
 <div style="margin-bottom:18px">
 <div style="font-family:'Scheherazade New', serif;font-size:1.4em;direction:rtl;text-align:right;color:#8b2035;font-weight:700">${w.ar}</div>
 <div style="font-size:12px;color:#6b7280;margin-bottom:6px">${w.en}</div>
+<button id="ch1-report-btn" style="background:none;border:none;cursor:pointer;font-size:16px;padding:4px 0;margin-bottom:4px">📍</button>
 <textarea id="ch1-input" placeholder="Write your sentence..." style="width:100%;padding:10px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:1.1em;direction:rtl;text-align:right;font-family:inherit;min-height:50px;outline:none;box-sizing:border-box">${(ch1Answers[ch1Index] && ch1Answers[ch1Index].answer) || ''}</textarea>
 </div>
 <button id="ch1-next-btn" style="width:100%;margin-top:8px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">${isLast ? 'Submit Challenge' : 'Next'}</button>
@@ -4710,6 +4710,7 @@ let html = `
 document.getElementById('challenges-root').innerHTML = html;
 document.getElementById('ch1-next-btn').onclick = () => window.exAdvanceChallenge1(mode);
 document.getElementById('ch1-back-btn').onclick = () => window.exGoBackChallenge1(mode);
+document.getElementById('ch1-report-btn').onclick = () => window.addToReadLater('challenge', w.ar, w.en, EX_LESSON_MAP[mode]);
 }
 
 const COMPREHENSION_QUESTIONS_BY_MODE = {
@@ -4763,6 +4764,7 @@ let html = `
 <div style="background:var(--grey-light);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
 <div style="font-size:13px;color:#6b7280;margin-bottom:14px;font-weight:600">Question ${compIndex+1} of ${questions.length}</div>
 <div style="font-size:14px;color:#6b7280;margin-bottom:20px;line-height:1.6">${instructionsText}</div>
+<button id="comp-report-btn" style="background:none;border:none;cursor:pointer;font-size:16px;padding:4px 0;margin-bottom:8px">📍</button>
 <div style="margin-bottom:18px">
 ${questionAreaHtml}
 <textarea id="comp-input" placeholder="Write your answer..." style="width:100%;padding:10px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:1.1em;direction:rtl;text-align:right;font-family:inherit;min-height:50px;outline:none;box-sizing:border-box">${(compAnswers[compIndex] && compAnswers[compIndex].answer) || ''}</textarea>
@@ -4773,6 +4775,7 @@ ${questionAreaHtml}
 document.getElementById('challenges-root').innerHTML = html;
 document.getElementById('comp-next-btn').onclick = () => window.exAdvanceComprehension(mode);
 document.getElementById('comp-back-btn').onclick = () => window.exGoBackComprehension(mode);
+document.getElementById('comp-report-btn').onclick = () => window.addToReadLater('challenge', q.ar, q.en, EX_LESSON_MAP[mode]);
 }
 
 window.exGoBackComprehension = function(mode) {
@@ -4807,9 +4810,9 @@ let block = header;
 filled.forEach((a, i) => { block += `\n${i+1}. ${a.ar} (${a.en})\n   ${a.answer}`; });
 const existing = submissions[code]?.[today] || {};
 const newText = upsertChallengeBlock(existing.text, header, block);
-const dayData = { images: existing.images || [], text: newText, reviewed: false };
+const dayData = { text: newText, reviewed: false };
 if (!submissions[code]) submissions[code] = {};
-submissions[code][today] = dayData;
+submissions[code][today] = { ...existing, ...dayData };
 await saveDay(code, today, dayData);
 };
 
@@ -4820,6 +4823,9 @@ const answers = compAnswers;
 const filled = answers.filter(a => a.answer);
 if (!filled.length) { window.showToast('Answer at least one question first'); return; }
 
+const btn = document.getElementById('comp-next-btn');
+if (btn) { btn.disabled = true; btn.textContent = 'Submitting…'; }
+try {
 const lessonNum = EX_LESSON_MAP[mode];
 const header = '📋 Comprehension — Lesson ' + lessonNum + ' (story questions)';
 let block = header;
@@ -4829,9 +4835,9 @@ block += `\n${i+1}. ${a.ar} (${a.en})\n   ${a.answer}`;
 
 const existing = submissions[code]?.[today] || {};
 const newText = upsertChallengeBlock(existing.text, header, block);
-const dayData = { images: existing.images || [], text: newText, reviewed: false };
+const dayData = { text: newText, reviewed: false };
 if (!submissions[code]) submissions[code] = {};
-submissions[code][today] = dayData;
+submissions[code][today] = { ...existing, ...dayData };
 await saveDay(code, today, dayData);
 
 const oldFrac = window.getLessonProgressSum(lessonNum);
@@ -4843,6 +4849,11 @@ await saveFlashcardData(code);
 showToast('Submitted! Your teacher will go over this with you in your next lesson.');
 render();
 if (typeof exShowChallengesPicker === 'function') exShowChallengesPicker();
+} catch(e) {
+console.error('Comprehension submit error', e);
+showToast("Couldn't submit — check your connection and try again");
+if (btn) { btn.disabled = false; btn.textContent = 'Submit Comprehension'; }
+}
 };
 
 function exShowChallenge2(mode) {
@@ -4861,6 +4872,7 @@ let html = `
 <div style="background:var(--grey-light);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
 <div style="font-size:13px;color:#6b7280;margin-bottom:14px;font-weight:600">Question ${ch2Index+1} of ${sentences.length}</div>
 <div style="font-size:14px;color:#6b7280;margin-bottom:20px;line-height:1.6">${instructionsText}</div>
+<button id="ch2-report-btn" style="background:none;border:none;cursor:pointer;font-size:16px;padding:4px 0;margin-bottom:8px">📍</button>
 <div style="margin-bottom:18px">
 <div style="font-size:1em;direction:${promptDirection};text-align:${promptAlign};color:#1a1a2e;margin-bottom:6px">${promptText}</div>
 <textarea id="ch2-input" placeholder="Write the Arabic translation..." style="width:100%;padding:10px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:1.2em;direction:rtl;text-align:right;font-family:'Scheherazade New', serif;min-height:50px;outline:none;box-sizing:border-box">${(ch2Answers[ch2Index] && ch2Answers[ch2Index].answer) || ''}</textarea>
@@ -4871,6 +4883,7 @@ let html = `
 document.getElementById('challenges-root').innerHTML = html;
 document.getElementById('ch2-next-btn').onclick = () => window.exAdvanceChallenge2(mode);
 document.getElementById('ch2-back-btn').onclick = () => window.exGoBackChallenge2(mode);
+document.getElementById('ch2-report-btn').onclick = () => window.addToReadLater('challenge', s.ar, s.en, EX_LESSON_MAP[mode]);
 }
 
 function exShowSetup(mode) {
@@ -4887,9 +4900,9 @@ const title = mode === 'fillgap' ? '📝 Fill the Gap'
 : mode === 'suffixtrans' ? '✍️ Suffix Pronouns — Translate'
 : mode === 'demotrans' ? '👉 Demonstrative Pronouns — Translate'
 : mode === 'adjectiveagreementtrans' ? '✨ Adjective Agreement — Translate'
-: mode === 'vocabtrans1' || mode === 'vocabtrans2' || mode === 'vocabtrans3' || mode === 'vocabtrans4' || mode === 'vocabtrans5' || mode === 'vocabtrans6' || mode === 'vocabtrans7' || mode === 'vocabtrans8' || mode === 'vocabtrans9' || mode === 'vocabtrans10' || mode === 'vocabtrans11' || mode === 'vocabtrans12' || mode === 'vocabtrans13' || mode === 'vocabtrans14' || mode === 'vocabtrans15' || mode === 'vocabtrans16' ? '📖 Vocab — Translate'
+: mode === 'vocabtrans1' || mode === 'vocabtrans2' || mode === 'vocabtrans3' || mode === 'vocabtrans4' || mode === 'vocabtrans5' || mode === 'vocabtrans6' ? '📖 Vocab — Translate'
 : mode === 'pluraltype' ? '🧩 Spot the Pattern'
-: mode.indexOf('aetrans') === 0 ? '🔁 Arabic → English'
+: mode === 'aetrans' ? '🔁 Arabic → English'
 : '✅ True or False';
 const isGrammarDrill = mode === 'demonstrative';
 exRender(`
@@ -4942,33 +4955,8 @@ return mode === 'fillgap' ? FILL_GAP_QUESTIONS.map((q,i) => ({ ...q, __idx: i })
 : mode === 'vocabtrans4' ? exBuildVocabTransPool(4).map((q,i) => ({ ...q, __idx: i }))
 : mode === 'vocabtrans5' ? exBuildVocabTransPool(5).map((q,i) => ({ ...q, __idx: i }))
 : mode === 'vocabtrans6' ? exBuildVocabTransPool(6).map((q,i) => ({ ...q, __idx: i }))
-: mode === 'vocabtrans7' ? exBuildVocabTransPool(7).map((q,i) => ({ ...q, __idx: i }))
-: mode === 'vocabtrans8' ? exBuildVocabTransPool(8).map((q,i) => ({ ...q, __idx: i }))
-: mode === 'vocabtrans9' ? exBuildVocabTransPool(9).map((q,i) => ({ ...q, __idx: i }))
-: mode === 'vocabtrans10' ? exBuildVocabTransPool(10).map((q,i) => ({ ...q, __idx: i }))
-: mode === 'vocabtrans11' ? exBuildVocabTransPool(11).map((q,i) => ({ ...q, __idx: i }))
-: mode === 'vocabtrans12' ? exBuildVocabTransPool(12).map((q,i) => ({ ...q, __idx: i }))
-: mode === 'vocabtrans13' ? exBuildVocabTransPool(13).map((q,i) => ({ ...q, __idx: i }))
-: mode === 'vocabtrans14' ? exBuildVocabTransPool(14).map((q,i) => ({ ...q, __idx: i }))
-: mode === 'vocabtrans15' ? exBuildVocabTransPool(15).map((q,i) => ({ ...q, __idx: i }))
-: mode === 'vocabtrans16' ? exBuildVocabTransPool(16).map((q,i) => ({ ...q, __idx: i }))
 : mode === 'pluraltype' ? exBuildPluralTypeDeck().map((q,i) => ({ ...q, __idx: i }))
 : mode === 'aetrans' ? TRANSLATION_1_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
-: mode === 'aetrans2' ? CHALLENGE_2_SENTENCES_L2.map((q,i) => ({ ...q, __idx: i }))
-: mode === 'aetrans3' ? CHALLENGE_2_SENTENCES_L3.map((q,i) => ({ ...q, __idx: i }))
-: mode === 'aetrans4' ? CHALLENGE_2_SENTENCES_L4.map((q,i) => ({ ...q, __idx: i }))
-: mode === 'aetrans5' ? CHALLENGE_2_SENTENCES_L5.map((q,i) => ({ ...q, __idx: i }))
-: mode === 'aetrans6' ? CHALLENGE_2_SENTENCES_L6.map((q,i) => ({ ...q, __idx: i }))
-: mode === 'aetrans7' ? CHALLENGE_2_SENTENCES_L7.map((q,i) => ({ ...q, __idx: i }))
-: mode === 'aetrans8' ? CHALLENGE_2_SENTENCES_L8.map((q,i) => ({ ...q, __idx: i }))
-: mode === 'aetrans9' ? CHALLENGE_2_SENTENCES_L9.map((q,i) => ({ ...q, __idx: i }))
-: mode === 'aetrans10' ? CHALLENGE_2_SENTENCES_L10.map((q,i) => ({ ...q, __idx: i }))
-: mode === 'aetrans11' ? CHALLENGE_2_SENTENCES_L11.map((q,i) => ({ ...q, __idx: i }))
-: mode === 'aetrans12' ? CHALLENGE_2_SENTENCES_L12.map((q,i) => ({ ...q, __idx: i }))
-: mode === 'aetrans13' ? CHALLENGE_2_SENTENCES_L13.map((q,i) => ({ ...q, __idx: i }))
-: mode === 'aetrans14' ? CHALLENGE_2_SENTENCES_L14.map((q,i) => ({ ...q, __idx: i }))
-: mode === 'aetrans15' ? CHALLENGE_2_SENTENCES_L15.map((q,i) => ({ ...q, __idx: i }))
-: mode === 'aetrans16' ? CHALLENGE_2_SENTENCES_L16.map((q,i) => ({ ...q, __idx: i }))
 : mode === 'truefalse2' ? TRUE_FALSE_QUESTIONS_L2.map((q,i) => ({ ...q, __idx: i }))
 : mode === 'truefalse3' ? TRUE_FALSE_QUESTIONS_L3.map((q,i) => ({ ...q, __idx: i }))
 : mode === 'truefalse4' ? TRUE_FALSE_QUESTIONS_L4.map((q,i) => ({ ...q, __idx: i }))
@@ -5064,6 +5052,15 @@ document.getElementById('ex-back-btn').onclick = exGoBack;
 document.getElementById('ex-resume-btn').onclick = exReturnToLive;
 }
 
+// Pulls a reportable Arabic/English pair out of any exercise question shape, so one Report button works for every exercise type.
+function exGetReportPair(q) {
+if (!q) return { ar: '', en: '' };
+if (q.words && Array.isArray(q.words)) return { ar: q.words.map(w => w.text).join(' '), en: '' };
+if (q.singular !== undefined && q.plural !== undefined) return { ar: q.singular + ' / ' + q.plural, en: '' };
+if (q.sentence) return { ar: q.sentence.replace(/<[^>]*>/g, '').replace(/________/g, '').trim(), en: q.en || '' };
+if (q.ar) return { ar: q.ar.replace(/<[^>]*>/g, ''), en: q.en || '' };
+return { ar: '', en: q.en || '' };
+}
 
 function exShowQuestion() {
 if (exCurrent >= exQuestions.length) {
@@ -5078,6 +5075,14 @@ if (ratingEl) ratingEl.style.display = 'none';
 const exRemaining = window.getExerciseRemainingCount(exMode, exGetQuestionCount(exMode));
 document.getElementById('ex-progress').textContent = exRemaining+' question'+(exRemaining!==1?'s':'')+' until mastery';
 const __q = exQuestions[exCurrent];
+const __reportBtn = document.getElementById('ex-report-btn');
+if (__reportBtn) {
+__reportBtn.textContent = '📍';
+__reportBtn.onclick = () => {
+const pair = exGetReportPair(__q);
+window.addToReadLater('exercise', pair.ar, pair.en, EX_LESSON_MAP[exMode]);
+};
+}
 updateExBackUI();
 const __prevRating = window.getExerciseQuestionRating(exMode, __q.__idx);
 const __diffBanner = document.getElementById('ex-diff-banner');
@@ -5250,7 +5255,7 @@ freshBtn.textContent = 'Reveal ←';
 freshBtn.onclick = exSubmitDemoTrans;
 inp.onkeydown = e => { if (e.key === 'Enter') exSubmitDemoTrans(); };
 }
-else if (exMode === 'adjectiveagreementtrans' || exMode === 'vocabtrans1' || exMode === 'vocabtrans2' || exMode === 'vocabtrans3' || exMode === 'vocabtrans4' || exMode === 'vocabtrans5' || exMode === 'vocabtrans6' || exMode === 'vocabtrans7' || exMode === 'vocabtrans8' || exMode === 'vocabtrans9' || exMode === 'vocabtrans10' || exMode === 'vocabtrans11' || exMode === 'vocabtrans12' || exMode === 'vocabtrans13' || exMode === 'vocabtrans14' || exMode === 'vocabtrans15' || exMode === 'vocabtrans16') {
+else if (exMode === 'adjectiveagreementtrans' || exMode === 'vocabtrans1' || exMode === 'vocabtrans2' || exMode === 'vocabtrans3' || exMode === 'vocabtrans4' || exMode === 'vocabtrans5' || exMode === 'vocabtrans6') {
 const q = exQuestions[exCurrent];
 const existingType = document.getElementById('ex-tf-btns');
 if (existingType) existingType.remove();
@@ -5296,15 +5301,12 @@ checkBtn.replaceWith(checkBtn.cloneNode(true));
 const freshBtn = document.getElementById('ex-check-btn');
 freshBtn.onclick = exSubmitTyping;
 inp.onkeydown = e => { if (e.key === 'Enter') exSubmitTyping(); };
-
-} else if (exMode.indexOf('aetrans') === 0) {
+} else if (exMode === 'aetrans') {
 const q = exQuestions[exCurrent];
 const existingType = document.getElementById('ex-tf-btns');
 if (existingType) existingType.remove();
-const isListeningEx = exMode.slice(-6) === 'listen';
-const arText = q.ar.replace(/<[^>]*>/g, '').trim();
-document.getElementById('ex-instruction').textContent = isListeningEx ? 'Tap play to listen, write the English translation, then reveal' : 'Read the Arabic, write the English translation, then reveal';
-document.getElementById('ex-sentence').innerHTML = isListeningEx ? '<button onclick="window.speakArabic(\'' + arText.replace(/'/g, "\\'") + '\')" style="background:#8b2035;color:white;border:none;border-radius:50%;width:56px;height:56px;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin:0 auto">🔊</button>' : q.ar;
+document.getElementById('ex-instruction').textContent = 'Read the Arabic, write the English translation, then reveal';
+document.getElementById('ex-sentence').innerHTML = q.ar;
 const fillDiv = document.getElementById('ex-fill-input');
 fillDiv.style.display = 'flex';
 document.getElementById('ex-word-order').style.display = 'none';
@@ -5319,8 +5321,7 @@ const freshBtn = document.getElementById('ex-check-btn');
 freshBtn.textContent = 'Reveal ←';
 freshBtn.onclick = exSubmitAeTrans;
 inp.onkeydown = e => { if (e.key === 'Enter') exSubmitAeTrans(); };
-}
- else if (exMode === 'pluraltype') {
+} else if (exMode === 'pluraltype') {
 const q = exQuestions[exCurrent];
 const isRegularity = q.cardType === 'regularity';
 document.getElementById('ex-instruction').textContent = isRegularity ? 'Is this plural regular or irregular?' : 'Is this plural human or non-human?';
