@@ -169,8 +169,6 @@
 .cal-day.selected .day-num { color: var(--ink); font-weight: 700; }
 .cal-day.selected.sel-green { background: #dcfce7; }
 .cal-day.selected.sel-green .day-num { color: var(--green); }
-.cal-day.selected.sel-yellow { background: #fef9c3; }
-.cal-day.selected.sel-yellow .day-num { color: #854d0e; }
 .cal-day.selected.sel-blue { background: var(--blue-light); }
 .cal-day.selected.sel-blue .day-num { color: var(--blue); }
 .day-num { font-size: 14px; color: var(--ink); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
@@ -207,7 +205,6 @@
 .submission-badge { position: absolute; top: 8px; left: 8px; color: white; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px; }
 .submission-badge.reviewed-badge { background: var(--blue); }
 .submission-badge.uploaded-badge { background: var(--green); }
-.submission-badge.makeup-badge { background: var(--dot-yellow); color: #1a1a2e; }
 
 /* TEXT SUBMISSION */
 .text-submission { background: var(--grey-light); border-radius: 12px; padding: 16px; margin-bottom: 16px; border: 1.5px solid var(--border); }
@@ -573,6 +570,11 @@ I did my homework today
 <!-- REPORTS TAB (instructor only) -->
 <div id="tab-content-reports" class="content" style="display:none">
 <div class="section-label">Student Reports</div>
+<div style="background:#fffbeb;border:1.5px solid #fcd34d;border-radius:10px;padding:12px 14px;margin-bottom:14px">
+<div style="font-size:13px;color:#92400e;margin-bottom:8px">One-time cleanup: moves old homework photos out of the fast-loading data so ryan01 logs in quicker. Safe to click more than once — it skips anything already cleaned up.</div>
+<button id="migrate-photos-btn" style="padding:10px 18px;background:#92400e;color:white;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">🧹 Clean up old homework photos</button>
+<div id="migrate-photos-status" style="font-size:12px;color:#92400e;margin-top:8px"></div>
+</div>
 <div id="reports-root" style="margin-top:8px">
 <div style="padding:20px;text-align:center;color:#8a7f6e">
 <p>📋 Reports from students will appear here</p>
@@ -722,7 +724,7 @@ I did my homework today
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, deleteField, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 const firebaseConfig = {
 apiKey: "AIzaSyBmeQwuWPeuQtdC-7w3SyBb2K5ljvvqBGY",
@@ -737,7 +739,7 @@ const db = getFirestore(firebaseApp);
 
 
 // ── FLASHCARD DATA (now loaded from GitHub) ──
-let DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, CHANGE_WORD_QUESTIONS_L2, CHANGE_WORD_QUESTIONS_L3, CHANGE_WORD_QUESTIONS_L4, CHANGE_WORD_QUESTIONS_L5, CHANGE_WORD_QUESTIONS_L6, CHANGE_WORD_QUESTIONS_L7, CHANGE_WORD_QUESTIONS_L8, CHANGE_WORD_QUESTIONS_L9, CHANGE_WORD_QUESTIONS_L10, CHANGE_WORD_QUESTIONS_L11, CHANGE_WORD_QUESTIONS_L12, CHANGE_WORD_QUESTIONS_L13, CHANGE_WORD_QUESTIONS_L14, CHANGE_WORD_QUESTIONS_L15, CHANGE_WORD_QUESTIONS_L16, TRUE_FALSE_QUESTIONS, TRUE_FALSE_QUESTIONS_L2, TRUE_FALSE_QUESTIONS_L3, TRUE_FALSE_QUESTIONS_L4, TRUE_FALSE_QUESTIONS_L5, TRUE_FALSE_QUESTIONS_L6, TRUE_FALSE_QUESTIONS_L7, TRUE_FALSE_QUESTIONS_L8, TRUE_FALSE_QUESTIONS_L9, TRUE_FALSE_QUESTIONS_L10, TRUE_FALSE_QUESTIONS_L11, TRUE_FALSE_QUESTIONS_L12, TRUE_FALSE_QUESTIONS_L13, TRUE_FALSE_QUESTIONS_L14, TRUE_FALSE_QUESTIONS_L15, TRUE_FALSE_QUESTIONS_L16, COMPREHENSION_QUESTIONS_L1, COMPREHENSION_QUESTIONS_L2, COMPREHENSION_QUESTIONS_L3, COMPREHENSION_QUESTIONS_L4, COMPREHENSION_QUESTIONS_L5, COMPREHENSION_QUESTIONS_L6, COMPREHENSION_QUESTIONS_L7, COMPREHENSION_QUESTIONS_L8, COMPREHENSION_QUESTIONS_L9, COMPREHENSION_QUESTIONS_L10, COMPREHENSION_QUESTIONS_L11, COMPREHENSION_QUESTIONS_L12, COMPREHENSION_QUESTIONS_L13, COMPREHENSION_QUESTIONS_L14, COMPREHENSION_QUESTIONS_L15, COMPREHENSION_QUESTIONS_L16, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS, PLURAL_QUESTIONS, FEMININE_QUESTIONS, SUFFIX_TRANSLATION_QUESTIONS, DEMO_TRANSLATION_QUESTIONS, ADJECTIVE_AGREEMENT_TRANSLATION_QUESTIONS, PLURAL_TYPE_QUESTIONS, CHALLENGE_1_WORDS, CHALLENGE_1_WORDS_L2, CHALLENGE_1_WORDS_L3, CHALLENGE_1_WORDS_L4, CHALLENGE_1_WORDS_L5, CHALLENGE_1_WORDS_L6, CHALLENGE_1_WORDS_L7, CHALLENGE_1_WORDS_L8, CHALLENGE_1_WORDS_L9, CHALLENGE_1_WORDS_L10, CHALLENGE_1_WORDS_L11, CHALLENGE_1_WORDS_L12, CHALLENGE_1_WORDS_L13, CHALLENGE_1_WORDS_L14, CHALLENGE_1_WORDS_L15, CHALLENGE_1_WORDS_L16, TRANSLATION_1_QUESTIONS, CHALLENGE_2_SENTENCES, CHALLENGE_2_SENTENCES_L2, CHALLENGE_2_SENTENCES_L3, CHALLENGE_2_SENTENCES_L4, CHALLENGE_2_SENTENCES_L5, CHALLENGE_2_SENTENCES_L6, CHALLENGE_2_SENTENCES_L7, CHALLENGE_2_SENTENCES_L8, CHALLENGE_2_SENTENCES_L9, CHALLENGE_2_SENTENCES_L10, CHALLENGE_2_SENTENCES_L11, CHALLENGE_2_SENTENCES_L12, CHALLENGE_2_SENTENCES_L13, CHALLENGE_2_SENTENCES_L14, CHALLENGE_2_SENTENCES_L15, CHALLENGE_2_SENTENCES_L16, NEGATE_AFFIRM_SENTENCES_L16, LESSON_STORIES;
+let DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, CHANGE_WORD_QUESTIONS_L2, CHANGE_WORD_QUESTIONS_L3, CHANGE_WORD_QUESTIONS_L4, CHANGE_WORD_QUESTIONS_L5, CHANGE_WORD_QUESTIONS_L6, CHANGE_WORD_QUESTIONS_L7, CHANGE_WORD_QUESTIONS_L8, CHANGE_WORD_QUESTIONS_L9, CHANGE_WORD_QUESTIONS_L10, CHANGE_WORD_QUESTIONS_L11, CHANGE_WORD_QUESTIONS_L12, CHANGE_WORD_QUESTIONS_L13, CHANGE_WORD_QUESTIONS_L14, CHANGE_WORD_QUESTIONS_L15, CHANGE_WORD_QUESTIONS_L16, TRUE_FALSE_QUESTIONS, TRUE_FALSE_QUESTIONS_L2, TRUE_FALSE_QUESTIONS_L3, TRUE_FALSE_QUESTIONS_L4, TRUE_FALSE_QUESTIONS_L5, TRUE_FALSE_QUESTIONS_L6, TRUE_FALSE_QUESTIONS_L7, TRUE_FALSE_QUESTIONS_L8, TRUE_FALSE_QUESTIONS_L9, TRUE_FALSE_QUESTIONS_L10, TRUE_FALSE_QUESTIONS_L11, TRUE_FALSE_QUESTIONS_L12, TRUE_FALSE_QUESTIONS_L13, TRUE_FALSE_QUESTIONS_L14, TRUE_FALSE_QUESTIONS_L15, TRUE_FALSE_QUESTIONS_L16, COMPREHENSION_QUESTIONS_L1, COMPREHENSION_QUESTIONS_L2, COMPREHENSION_QUESTIONS_L3, COMPREHENSION_QUESTIONS_L4, COMPREHENSION_QUESTIONS_L5, COMPREHENSION_QUESTIONS_L6, COMPREHENSION_QUESTIONS_L7, COMPREHENSION_QUESTIONS_L8, COMPREHENSION_QUESTIONS_L9, COMPREHENSION_QUESTIONS_L10, COMPREHENSION_QUESTIONS_L11, COMPREHENSION_QUESTIONS_L12, COMPREHENSION_QUESTIONS_L13, COMPREHENSION_QUESTIONS_L14, COMPREHENSION_QUESTIONS_L15, COMPREHENSION_QUESTIONS_L16, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS, PLURAL_QUESTIONS, FEMININE_QUESTIONS, SUFFIX_TRANSLATION_QUESTIONS, DEMO_TRANSLATION_QUESTIONS, ADJECTIVE_AGREEMENT_TRANSLATION_QUESTIONS, PLURAL_TYPE_QUESTIONS, CHALLENGE_1_WORDS, CHALLENGE_1_WORDS_L2, CHALLENGE_1_WORDS_L3, CHALLENGE_1_WORDS_L4, CHALLENGE_1_WORDS_L5, CHALLENGE_1_WORDS_L6, CHALLENGE_1_WORDS_L7, CHALLENGE_1_WORDS_L8, CHALLENGE_1_WORDS_L9, CHALLENGE_1_WORDS_L10, CHALLENGE_1_WORDS_L11, CHALLENGE_1_WORDS_L12, CHALLENGE_1_WORDS_L13, CHALLENGE_1_WORDS_L14, CHALLENGE_1_WORDS_L15, CHALLENGE_1_WORDS_L16, TRANSLATION_1_QUESTIONS, CHALLENGE_2_SENTENCES, CHALLENGE_2_SENTENCES_L2, CHALLENGE_2_SENTENCES_L3, CHALLENGE_2_SENTENCES_L4, CHALLENGE_2_SENTENCES_L5, CHALLENGE_2_SENTENCES_L6, CHALLENGE_2_SENTENCES_L7, CHALLENGE_2_SENTENCES_L8, CHALLENGE_2_SENTENCES_L9, CHALLENGE_2_SENTENCES_L10, CHALLENGE_2_SENTENCES_L11, CHALLENGE_2_SENTENCES_L12, CHALLENGE_2_SENTENCES_L13, CHALLENGE_2_SENTENCES_L14, CHALLENGE_2_SENTENCES_L15, CHALLENGE_2_SENTENCES_L16, NEGATE_AFFIRM_SENTENCES_L1, NEGATE_AFFIRM_SENTENCES_L2, NEGATE_AFFIRM_SENTENCES_L3, NEGATE_AFFIRM_SENTENCES_L4, NEGATE_AFFIRM_SENTENCES_L5, NEGATE_AFFIRM_SENTENCES_L6, NEGATE_AFFIRM_SENTENCES_L7, NEGATE_AFFIRM_SENTENCES_L8, NEGATE_AFFIRM_SENTENCES_L9, NEGATE_AFFIRM_SENTENCES_L10, NEGATE_AFFIRM_SENTENCES_L11, NEGATE_AFFIRM_SENTENCES_L12, NEGATE_AFFIRM_SENTENCES_L13, NEGATE_AFFIRM_SENTENCES_L14, NEGATE_AFFIRM_SENTENCES_L15, NEGATE_AFFIRM_SENTENCES_L16, LESSON_STORIES;
 async function loadVocabData() {
 
 const url = 'https://raw.githubusercontent.com/ryangwstanley-ship-it/database/main/website%20data%20base?t=' + Date.now();
@@ -749,7 +751,7 @@ if (!res.ok) {
 const code = await res.text();
 const runner = new Function(
 code.replaceAll('export const', 'const') +
-'; return { DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, CHANGE_WORD_QUESTIONS_L2, CHANGE_WORD_QUESTIONS_L3, CHANGE_WORD_QUESTIONS_L4, CHANGE_WORD_QUESTIONS_L5, CHANGE_WORD_QUESTIONS_L6, CHANGE_WORD_QUESTIONS_L7, CHANGE_WORD_QUESTIONS_L8, CHANGE_WORD_QUESTIONS_L9, CHANGE_WORD_QUESTIONS_L10, CHANGE_WORD_QUESTIONS_L11, CHANGE_WORD_QUESTIONS_L12, CHANGE_WORD_QUESTIONS_L13, CHANGE_WORD_QUESTIONS_L14, CHANGE_WORD_QUESTIONS_L15, CHANGE_WORD_QUESTIONS_L16, TRUE_FALSE_QUESTIONS, TRUE_FALSE_QUESTIONS_L2, TRUE_FALSE_QUESTIONS_L3, TRUE_FALSE_QUESTIONS_L4, TRUE_FALSE_QUESTIONS_L5, TRUE_FALSE_QUESTIONS_L6, TRUE_FALSE_QUESTIONS_L7, TRUE_FALSE_QUESTIONS_L8, TRUE_FALSE_QUESTIONS_L9, TRUE_FALSE_QUESTIONS_L10, TRUE_FALSE_QUESTIONS_L11, TRUE_FALSE_QUESTIONS_L12, TRUE_FALSE_QUESTIONS_L13, TRUE_FALSE_QUESTIONS_L14, TRUE_FALSE_QUESTIONS_L15, TRUE_FALSE_QUESTIONS_L16, COMPREHENSION_QUESTIONS_L1, COMPREHENSION_QUESTIONS_L2, COMPREHENSION_QUESTIONS_L3, COMPREHENSION_QUESTIONS_L4, COMPREHENSION_QUESTIONS_L5, COMPREHENSION_QUESTIONS_L6, COMPREHENSION_QUESTIONS_L7, COMPREHENSION_QUESTIONS_L8, COMPREHENSION_QUESTIONS_L9, COMPREHENSION_QUESTIONS_L10, COMPREHENSION_QUESTIONS_L11, COMPREHENSION_QUESTIONS_L12, COMPREHENSION_QUESTIONS_L13, COMPREHENSION_QUESTIONS_L14, COMPREHENSION_QUESTIONS_L15, COMPREHENSION_QUESTIONS_L16, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS, PLURAL_QUESTIONS, FEMININE_QUESTIONS, SUFFIX_TRANSLATION_QUESTIONS, DEMO_TRANSLATION_QUESTIONS, ADJECTIVE_AGREEMENT_TRANSLATION_QUESTIONS, PLURAL_TYPE_QUESTIONS, CHALLENGE_1_WORDS, CHALLENGE_1_WORDS_L2, CHALLENGE_1_WORDS_L3, CHALLENGE_1_WORDS_L4, CHALLENGE_1_WORDS_L5, CHALLENGE_1_WORDS_L6, CHALLENGE_1_WORDS_L7, CHALLENGE_1_WORDS_L8, CHALLENGE_1_WORDS_L9, CHALLENGE_1_WORDS_L10, CHALLENGE_1_WORDS_L11, CHALLENGE_1_WORDS_L12, CHALLENGE_1_WORDS_L13, CHALLENGE_1_WORDS_L14, CHALLENGE_1_WORDS_L15, CHALLENGE_1_WORDS_L16, TRANSLATION_1_QUESTIONS, CHALLENGE_2_SENTENCES, CHALLENGE_2_SENTENCES_L2, CHALLENGE_2_SENTENCES_L3, CHALLENGE_2_SENTENCES_L4, CHALLENGE_2_SENTENCES_L5, CHALLENGE_2_SENTENCES_L6, CHALLENGE_2_SENTENCES_L7, CHALLENGE_2_SENTENCES_L8, CHALLENGE_2_SENTENCES_L9, CHALLENGE_2_SENTENCES_L10, CHALLENGE_2_SENTENCES_L11, CHALLENGE_2_SENTENCES_L12, CHALLENGE_2_SENTENCES_L13, CHALLENGE_2_SENTENCES_L14, CHALLENGE_2_SENTENCES_L15, CHALLENGE_2_SENTENCES_L16, NEGATE_AFFIRM_SENTENCES_L16, LESSON_STORIES };'
+'; return { DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, CHANGE_WORD_QUESTIONS_L2, CHANGE_WORD_QUESTIONS_L3, CHANGE_WORD_QUESTIONS_L4, CHANGE_WORD_QUESTIONS_L5, CHANGE_WORD_QUESTIONS_L6, CHANGE_WORD_QUESTIONS_L7, CHANGE_WORD_QUESTIONS_L8, CHANGE_WORD_QUESTIONS_L9, CHANGE_WORD_QUESTIONS_L10, CHANGE_WORD_QUESTIONS_L11, CHANGE_WORD_QUESTIONS_L12, CHANGE_WORD_QUESTIONS_L13, CHANGE_WORD_QUESTIONS_L14, CHANGE_WORD_QUESTIONS_L15, CHANGE_WORD_QUESTIONS_L16, TRUE_FALSE_QUESTIONS, TRUE_FALSE_QUESTIONS_L2, TRUE_FALSE_QUESTIONS_L3, TRUE_FALSE_QUESTIONS_L4, TRUE_FALSE_QUESTIONS_L5, TRUE_FALSE_QUESTIONS_L6, TRUE_FALSE_QUESTIONS_L7, TRUE_FALSE_QUESTIONS_L8, TRUE_FALSE_QUESTIONS_L9, TRUE_FALSE_QUESTIONS_L10, TRUE_FALSE_QUESTIONS_L11, TRUE_FALSE_QUESTIONS_L12, TRUE_FALSE_QUESTIONS_L13, TRUE_FALSE_QUESTIONS_L14, TRUE_FALSE_QUESTIONS_L15, TRUE_FALSE_QUESTIONS_L16, COMPREHENSION_QUESTIONS_L1, COMPREHENSION_QUESTIONS_L2, COMPREHENSION_QUESTIONS_L3, COMPREHENSION_QUESTIONS_L4, COMPREHENSION_QUESTIONS_L5, COMPREHENSION_QUESTIONS_L6, COMPREHENSION_QUESTIONS_L7, COMPREHENSION_QUESTIONS_L8, COMPREHENSION_QUESTIONS_L9, COMPREHENSION_QUESTIONS_L10, COMPREHENSION_QUESTIONS_L11, COMPREHENSION_QUESTIONS_L12, COMPREHENSION_QUESTIONS_L13, COMPREHENSION_QUESTIONS_L14, COMPREHENSION_QUESTIONS_L15, COMPREHENSION_QUESTIONS_L16, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS, PLURAL_QUESTIONS, FEMININE_QUESTIONS, SUFFIX_TRANSLATION_QUESTIONS, DEMO_TRANSLATION_QUESTIONS, ADJECTIVE_AGREEMENT_TRANSLATION_QUESTIONS, PLURAL_TYPE_QUESTIONS, CHALLENGE_1_WORDS, CHALLENGE_1_WORDS_L2, CHALLENGE_1_WORDS_L3, CHALLENGE_1_WORDS_L4, CHALLENGE_1_WORDS_L5, CHALLENGE_1_WORDS_L6, CHALLENGE_1_WORDS_L7, CHALLENGE_1_WORDS_L8, CHALLENGE_1_WORDS_L9, CHALLENGE_1_WORDS_L10, CHALLENGE_1_WORDS_L11, CHALLENGE_1_WORDS_L12, CHALLENGE_1_WORDS_L13, CHALLENGE_1_WORDS_L14, CHALLENGE_1_WORDS_L15, CHALLENGE_1_WORDS_L16, TRANSLATION_1_QUESTIONS, CHALLENGE_2_SENTENCES, CHALLENGE_2_SENTENCES_L2, CHALLENGE_2_SENTENCES_L3, CHALLENGE_2_SENTENCES_L4, CHALLENGE_2_SENTENCES_L5, CHALLENGE_2_SENTENCES_L6, CHALLENGE_2_SENTENCES_L7, CHALLENGE_2_SENTENCES_L8, CHALLENGE_2_SENTENCES_L9, CHALLENGE_2_SENTENCES_L10, CHALLENGE_2_SENTENCES_L11, CHALLENGE_2_SENTENCES_L12, CHALLENGE_2_SENTENCES_L13, CHALLENGE_2_SENTENCES_L14, CHALLENGE_2_SENTENCES_L15, CHALLENGE_2_SENTENCES_L16, NEGATE_AFFIRM_SENTENCES_L1, NEGATE_AFFIRM_SENTENCES_L2, NEGATE_AFFIRM_SENTENCES_L3, NEGATE_AFFIRM_SENTENCES_L4, NEGATE_AFFIRM_SENTENCES_L5, NEGATE_AFFIRM_SENTENCES_L6, NEGATE_AFFIRM_SENTENCES_L7, NEGATE_AFFIRM_SENTENCES_L8, NEGATE_AFFIRM_SENTENCES_L9, NEGATE_AFFIRM_SENTENCES_L10, NEGATE_AFFIRM_SENTENCES_L11, NEGATE_AFFIRM_SENTENCES_L12, NEGATE_AFFIRM_SENTENCES_L13, NEGATE_AFFIRM_SENTENCES_L14, NEGATE_AFFIRM_SENTENCES_L15, NEGATE_AFFIRM_SENTENCES_L16, LESSON_STORIES };'
 );
 const data = runner();
 DEFAULT_LESSONS = data.DEFAULT_LESSONS;
@@ -845,6 +847,21 @@ CHALLENGE_2_SENTENCES_L13 = data.CHALLENGE_2_SENTENCES_L13;
 CHALLENGE_2_SENTENCES_L14 = data.CHALLENGE_2_SENTENCES_L14;
 CHALLENGE_2_SENTENCES_L15 = data.CHALLENGE_2_SENTENCES_L15;
 CHALLENGE_2_SENTENCES_L16 = data.CHALLENGE_2_SENTENCES_L16;
+NEGATE_AFFIRM_SENTENCES_L1 = data.NEGATE_AFFIRM_SENTENCES_L1;
+NEGATE_AFFIRM_SENTENCES_L2 = data.NEGATE_AFFIRM_SENTENCES_L2;
+NEGATE_AFFIRM_SENTENCES_L3 = data.NEGATE_AFFIRM_SENTENCES_L3;
+NEGATE_AFFIRM_SENTENCES_L4 = data.NEGATE_AFFIRM_SENTENCES_L4;
+NEGATE_AFFIRM_SENTENCES_L5 = data.NEGATE_AFFIRM_SENTENCES_L5;
+NEGATE_AFFIRM_SENTENCES_L6 = data.NEGATE_AFFIRM_SENTENCES_L6;
+NEGATE_AFFIRM_SENTENCES_L7 = data.NEGATE_AFFIRM_SENTENCES_L7;
+NEGATE_AFFIRM_SENTENCES_L8 = data.NEGATE_AFFIRM_SENTENCES_L8;
+NEGATE_AFFIRM_SENTENCES_L9 = data.NEGATE_AFFIRM_SENTENCES_L9;
+NEGATE_AFFIRM_SENTENCES_L10 = data.NEGATE_AFFIRM_SENTENCES_L10;
+NEGATE_AFFIRM_SENTENCES_L11 = data.NEGATE_AFFIRM_SENTENCES_L11;
+NEGATE_AFFIRM_SENTENCES_L12 = data.NEGATE_AFFIRM_SENTENCES_L12;
+NEGATE_AFFIRM_SENTENCES_L13 = data.NEGATE_AFFIRM_SENTENCES_L13;
+NEGATE_AFFIRM_SENTENCES_L14 = data.NEGATE_AFFIRM_SENTENCES_L14;
+NEGATE_AFFIRM_SENTENCES_L15 = data.NEGATE_AFFIRM_SENTENCES_L15;
 NEGATE_AFFIRM_SENTENCES_L16 = data.NEGATE_AFFIRM_SENTENCES_L16;
 LESSON_STORIES = data.LESSON_STORIES;
 
@@ -909,6 +926,21 @@ window.CHALLENGE_2_SENTENCES_L13 = CHALLENGE_2_SENTENCES_L13;
 window.CHALLENGE_2_SENTENCES_L14 = CHALLENGE_2_SENTENCES_L14;
 window.CHALLENGE_2_SENTENCES_L15 = CHALLENGE_2_SENTENCES_L15;
 window.CHALLENGE_2_SENTENCES_L16 = CHALLENGE_2_SENTENCES_L16;
+window.NEGATE_AFFIRM_SENTENCES_L1 = NEGATE_AFFIRM_SENTENCES_L1;
+window.NEGATE_AFFIRM_SENTENCES_L2 = NEGATE_AFFIRM_SENTENCES_L2;
+window.NEGATE_AFFIRM_SENTENCES_L3 = NEGATE_AFFIRM_SENTENCES_L3;
+window.NEGATE_AFFIRM_SENTENCES_L4 = NEGATE_AFFIRM_SENTENCES_L4;
+window.NEGATE_AFFIRM_SENTENCES_L5 = NEGATE_AFFIRM_SENTENCES_L5;
+window.NEGATE_AFFIRM_SENTENCES_L6 = NEGATE_AFFIRM_SENTENCES_L6;
+window.NEGATE_AFFIRM_SENTENCES_L7 = NEGATE_AFFIRM_SENTENCES_L7;
+window.NEGATE_AFFIRM_SENTENCES_L8 = NEGATE_AFFIRM_SENTENCES_L8;
+window.NEGATE_AFFIRM_SENTENCES_L9 = NEGATE_AFFIRM_SENTENCES_L9;
+window.NEGATE_AFFIRM_SENTENCES_L10 = NEGATE_AFFIRM_SENTENCES_L10;
+window.NEGATE_AFFIRM_SENTENCES_L11 = NEGATE_AFFIRM_SENTENCES_L11;
+window.NEGATE_AFFIRM_SENTENCES_L12 = NEGATE_AFFIRM_SENTENCES_L12;
+window.NEGATE_AFFIRM_SENTENCES_L13 = NEGATE_AFFIRM_SENTENCES_L13;
+window.NEGATE_AFFIRM_SENTENCES_L14 = NEGATE_AFFIRM_SENTENCES_L14;
+window.NEGATE_AFFIRM_SENTENCES_L15 = NEGATE_AFFIRM_SENTENCES_L15;
 window.NEGATE_AFFIRM_SENTENCES_L16 = NEGATE_AFFIRM_SENTENCES_L16;
 window.LESSON_STORIES = LESSON_STORIES;
 }
@@ -2200,7 +2232,40 @@ document.getElementById('lb-invite-btn').onclick = () => {
 };
 }
 
+// One-time cleanup: moves old inline photos out of each day's lightweight record
+// and into their own spot, so future logins for ryan01 stay fast. Safe to re-run —
+// it only touches days that still have the old-style images field.
+window.migrateOldHomeworkPhotos = async function() {
+const btn = document.getElementById('migrate-photos-btn');
+const statusEl = document.getElementById('migrate-photos-status');
+if (btn) { btn.disabled = true; btn.textContent = 'Cleaning up…'; }
+let studentsChecked = 0, daysMoved = 0, errors = 0;
+const codes = Object.keys(STUDENTS);
+for (const code of codes) {
+studentsChecked++;
+if (statusEl) statusEl.textContent = `Checking ${STUDENTS[code]?.name || code}… (${studentsChecked}/${codes.length}, moved ${daysMoved} so far)`;
+try {
+const snap = await getDocs(collection(db,'submissions',code,'days'));
+for (const d of snap.docs) {
+const data = d.data();
+if (data.images && data.images.length > 0) {
+try {
+await setDoc(doc(db,'submissions',code,'dayImages',d.id), { images: data.images });
+await updateDoc(doc(db,'submissions',code,'days',d.id), { images: deleteField(), imageCount: data.images.length });
+daysMoved++;
+} catch(e) { console.error('Migrate day error', code, d.id, e); errors++; }
+}
+}
+} catch(e) { console.error('Migrate student error', code, e); errors++; }
+}
+if (btn) { btn.disabled = false; btn.textContent = '🧹 Clean up old homework photos'; }
+if (statusEl) statusEl.textContent = `Done — moved ${daysMoved} day${daysMoved!==1?'s':''} of photos across ${studentsChecked} students` + (errors ? `, ${errors} error(s) — check the browser console` : '') + '. Safe to run again anytime.';
+showToast('Photo cleanup finished ✓');
+};
+
 async function renderReportsTab() {
+const migrateBtn = document.getElementById('migrate-photos-btn');
+if (migrateBtn) migrateBtn.onclick = window.migrateOldHomeworkPhotos;
 const root = document.getElementById('reports-root');
 root.innerHTML = '<div style="text-align:center;color:var(--grey);padding:20px">Loading reports…</div>';
 let reportDocs = [];
@@ -2216,13 +2281,18 @@ reportDocs.sort((a,b) => (b.timestamp||0) - (a.timestamp||0));
 root.innerHTML = reportDocs.map(r => {
 const studentName = STUDENTS[r.studentCode]?.name || r.studentCode;
 const date = new Date(r.timestamp).toLocaleDateString();
+const isCardReport = !!r.arabic;
+const bodyHtml = isCardReport
+? `<div style="font-family:'Scheherazade New', serif;font-size:1.2em;direction:rtl;text-align:right;color:#1a1a2e;margin-bottom:6px">${r.arabic}</div>
+<div style="font-size:13px;color:#6b7280">${r.english || ''}</div>`
+: `<div style="font-size:13px;color:var(--grey);margin-bottom:8px">${r.context}</div>
+<div style="font-size:14px;color:var(--ink)">${r.note || '(no message)'}</div>`;
 return `<div style="background:white;border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px">
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
 <div style="font-weight:600;color:var(--ink)">${studentName}</div>
 <button onclick="window.deleteReport('${r.id}')" style="background:none;border:none;color:var(--grey);font-size:13px;cursor:pointer;padding:2px 6px">✕ Delete</button>
 </div>
-<div style="font-size:13px;color:var(--grey);margin-bottom:8px">${r.context}</div>
-<div style="font-size:14px;color:var(--ink);padding:10px;background:#f9fafb;border-radius:8px;margin-bottom:8px">${r.note || '(no message)'}</div>
+<div style="padding:10px;background:#f9fafb;border-radius:8px;margin-bottom:8px">${bodyHtml}</div>
 <div style="font-size:12px;color:var(--grey)">${date}</div>
 </div>`;
 }).join('');
@@ -2242,13 +2312,19 @@ const [y,m,d] = dateStr.split('-').map(Number);
 return new Date() > new Date(y, m-1, d+1, 0, 0, 0);
 }
 
+// A day "has photos" if either the full photos are loaded in memory, or we
+// just know the count from the lightweight day record (photos not opened yet).
+function dayHasImages(sub) {
+return !!(sub && ((sub.images && sub.images.length > 0) || (sub.imageCount || 0) > 0));
+}
+
 // A day counts toward the streak if the student did 20+ flashcards/exercise
 // questions OR uploaded homework that day — either one is enough.
 function dayQualifiesForStreak(code, key) {
 const cardCount = (allCardActivity[code] || {})[key] || 0;
 if (cardCount >= 20) return true;
 const sub = submissions[code]?.[key];
-return !!(sub && (sub.images?.length > 0 || sub.text || sub.checkedIn));
+return !!(sub && (dayHasImages(sub) || sub.text || sub.checkedIn));
 }
 
 // Whether the student has ever had a single qualifying day, via either route —
@@ -2257,24 +2333,9 @@ function hasEverQualified(code) {
 const activity = allCardActivity[code] || {};
 if (Object.keys(activity).some(k => activity[k] >= 20)) return true;
 const subs = submissions[code] || {};
-return Object.values(subs).some(s => s && (s.images?.length > 0 || s.text || s.checkedIn));
+return Object.values(subs).some(s => s && (dayHasImages(s) || s.text || s.checkedIn));
 }
   
-function getMissedDays(code) {
-const subs = submissions[code] || {};
-const missed = [], now = new Date();
-const allKeys = Object.keys(subs).sort();
-if (!allKeys.length) return [];
-const firstSubmission = allKeys[0];
-for (let i = 1; i <= 60; i++) {
-const d = new Date(now); d.setDate(now.getDate() - i);
-const key = dateKey(d);
-if (key < firstSubmission) break;
-if (isMidnightPast(key) && (!subs[key] || (!subs[key].images?.length && !subs[key].text && !subs[key].checkedIn))) missed.push(key);
-}
-return missed.sort();
-}
-
 function getStreak(code) {
 let streak = 0;
 const now = new Date();
@@ -2314,7 +2375,7 @@ function hasMadeProgressToday(code) {
 const today = todayKey();
 const lesson = studentLesson[code] || 1;
 const didCards = ((allCardActivity[code] || {})[today] || 0) > 0;
-const didHomework = !!(submissions[code]?.[today] && (submissions[code][today].images?.length || submissions[code][today].text || submissions[code][today].checkedIn));
+const didHomework = !!(submissions[code]?.[today] && (dayHasImages(submissions[code][today]) || submissions[code][today].text || submissions[code][today].checkedIn));
 const didReading = !!readingDone[lesson];
 const didGrammar = !!grammarDone[lesson];
 return didCards || didHomework || didReading || didGrammar;
@@ -2332,7 +2393,7 @@ const missed = [], now = new Date();
 const activity = allCardActivity[code] || {};
 const subs = submissions[code] || {};
 const activityKeys = Object.keys(activity);
-const qualifyingSubKeys = Object.keys(subs).filter(k => { const s = subs[k]; return s && (s.images?.length > 0 || s.text || s.checkedIn); });
+const qualifyingSubKeys = Object.keys(subs).filter(k => { const s = subs[k]; return s && (dayHasImages(s) || s.text || s.checkedIn); });
 const allKeys = [...activityKeys, ...qualifyingSubKeys].sort();
 if (!allKeys.length) return [];
 const firstDay = allKeys[0];
@@ -2517,9 +2578,9 @@ let block = header;
 filled.forEach((a, i) => { block += `\n${i+1}. ${a.ar} (${a.en}): ${a.answer}`; });
 const existing = submissions[code]?.[today] || {};
 const newText = upsertChallengeBlock(existing.text, header, block);
-const dayData = { images: existing.images || [], text: newText, reviewed: false };
+const dayData = { text: newText, reviewed: false };
 if (!submissions[code]) submissions[code] = {};
-submissions[code][today] = dayData;
+submissions[code][today] = { ...existing, ...dayData };
 await saveDay(code, today, dayData);
 };
 
@@ -2531,6 +2592,9 @@ const answers = ch1Answers;
 const filled = answers.filter(a => a.answer);
 if (!filled.length) { showToast('Write at least one sentence first'); return; }
 
+const btn = document.getElementById('ch1-next-btn');
+if (btn) { btn.disabled = true; btn.textContent = 'Submitting…'; }
+try {
 const lessonNum = EX_LESSON_MAP[mode];
 const header = '📋 Challenge 1 — Lesson ' + lessonNum + ' (a sentence with each word)';
 let block = header;
@@ -2540,9 +2604,9 @@ block += `\n${i+1}. ${a.ar} (${a.en}): ${a.answer}`;
 
 const existing = submissions[code]?.[today] || {};
 const newText = upsertChallengeBlock(existing.text, header, block);
-const dayData = { images: existing.images || [], text: newText, reviewed: false };
+const dayData = { text: newText, reviewed: false };
 if (!submissions[code]) submissions[code] = {};
-submissions[code][today] = dayData;
+submissions[code][today] = { ...existing, ...dayData };
 await saveDay(code, today, dayData);
 
 const oldFrac = window.getLessonProgressSum(lessonNum);
@@ -2555,6 +2619,11 @@ await saveFlashcardData(code);
 showToast('Submitted! Your teacher will go over this with you in your next lesson.');
 render();
 if (typeof exShowChallengesPicker === 'function') exShowChallengesPicker();
+} catch(e) {
+console.error('Challenge 1 submit error', e);
+showToast("Couldn't submit — check your connection and try again");
+if (btn) { btn.disabled = false; btn.textContent = 'Submit Challenge'; }
+}
 };
 
 window.exGoBackChallenge2 = function(mode) {
@@ -2592,9 +2661,9 @@ let block = header;
 filled.forEach((a, i) => { block += `\n${i+1}. ${a.en}\n   ${a.answer}`; });
 const existing = submissions[code]?.[today] || {};
 const newText = upsertChallengeBlock(existing.text, header, block);
-const dayData = { images: existing.images || [], text: newText, reviewed: false };
+const dayData = { text: newText, reviewed: false };
 if (!submissions[code]) submissions[code] = {};
-submissions[code][today] = dayData;
+submissions[code][today] = { ...existing, ...dayData };
 await saveDay(code, today, dayData);
 };
 
@@ -2606,6 +2675,9 @@ const answers = ch2Answers;
 const filled = answers.filter(a => a.answer);
 if (!filled.length) { showToast('Translate at least one sentence first'); return; }
 
+const btn = document.getElementById('ch2-next-btn');
+if (btn) { btn.disabled = true; btn.textContent = 'Submitting…'; }
+try {
 const header = '📋 Challenge 2 — Lesson ' + EX_LESSON_MAP[mode] + ' (English → Arabic translation)';
 let block = header;
 answers.filter(a => a.answer).forEach((a, i) => {
@@ -2614,9 +2686,9 @@ block += `\n${i+1}. ${a.en}\n   ${a.answer}`;
 
 const existing = submissions[code]?.[today] || {};
 const newText = upsertChallengeBlock(existing.text, header, block);
-const dayData = { images: existing.images || [], text: newText, reviewed: false };
+const dayData = { text: newText, reviewed: false };
 if (!submissions[code]) submissions[code] = {};
-submissions[code][today] = dayData;
+submissions[code][today] = { ...existing, ...dayData };
 await saveDay(code, today, dayData);
 
 const oldFrac = window.getLessonProgressSum(EX_LESSON_MAP[mode]);
@@ -2629,6 +2701,11 @@ await saveFlashcardData(code);
 window.showToast('Submitted! Your teacher will go over this with you in your next lesson.');
 render();
 if (typeof exShowChallengesPicker === 'function') exShowChallengesPicker();
+} catch(e) {
+console.error('Challenge 2 submit error', e);
+window.showToast("Couldn't submit — check your connection and try again");
+if (btn) { btn.disabled = false; btn.textContent = 'Submit Challenge'; }
+}
 };
 
 // Finds an existing challenge block by its header and updates it in place;
@@ -2640,8 +2717,31 @@ if (idx >= 0) blocks[idx] = block; else blocks.push(block);
 return blocks.join('\n\n');
 }
 
-async function saveDay(code, dateStr, data) { if (isImpersonating) return; await setDoc(doc(db,'submissions',code,'days',dateStr), data); }
+async function saveDay(code, dateStr, data) {
+if (isImpersonating) return;
+const { images, ...lightData } = data;
+if (images !== undefined) {
+lightData.imageCount = images.length;
+try { await setDoc(doc(db,'submissions',code,'dayImages',dateStr), { images }); }
+catch(e) { console.error('Day images save error', e); }
+}
+await setDoc(doc(db,'submissions',code,'days',dateStr), lightData, { merge: true });
+}
 window.saveDay = saveDay;
+
+// Fetches one day's photos on demand (only called when that day is actually opened),
+// instead of every day's photos loading up front for every student.
+async function loadDayImages(code, date) {
+if (!submissions[code]) submissions[code] = {};
+if (!submissions[code][date]) submissions[code][date] = {};
+if (submissions[code][date].images) return submissions[code][date].images;
+try {
+const snap = await getDoc(doc(db,'submissions',code,'dayImages',date));
+submissions[code][date].images = snap.exists() ? (snap.data().images || []) : [];
+} catch(e) { console.error('Day images load error', e); submissions[code][date].images = []; }
+return submissions[code][date].images;
+}
+window.loadDayImages = loadDayImages;
 
 
 // ── LOGIN ──
@@ -3006,8 +3106,7 @@ if(key===today)cell.classList.add('today');
 if(key===selectedDate){
 const selSub=subs[key]; cell.classList.add('selected');
 if(selSub?.reviewed)cell.classList.add('sel-blue');
-else if(selSub?.makeupFor)cell.classList.add('sel-yellow');
-else if(selSub?.images?.length>0||selSub?.text)cell.classList.add('sel-green');
+else if(dayHasImages(selSub)||selSub?.text)cell.classList.add('sel-green');
 }
 const n=document.createElement('div');n.className='day-num';n.textContent=d;cell.appendChild(n);
 if(dayQualifiesForStreak(code, key))cell.classList.add('day-green');
@@ -3019,22 +3118,29 @@ for(let d=1;d<=remaining;d++){const cell=document.createElement('div');cell.clas
 }
 
 // ── DAY PANEL ──
-function renderDayPanel() {
+async function renderDayPanel() {
 if(!selectedDate){document.getElementById('day-card').style.display='none';return;}
-const code=activeStudentCode(); const subs=submissions[code]||{}; const sub=subs[selectedDate];
-const hasImages=sub?.images?.length>0; const hasText=!!sub?.text; const hasContent=hasImages||hasText||!!sub?.makeupFor;
-const isMakeup=!!sub?.makeupFor;
+const code=activeStudentCode();
+const openedDate=selectedDate;
+if (!submissions[code]) submissions[code] = {};
+const preSub = submissions[code][selectedDate];
+if (preSub && (preSub.imageCount||0) > 0 && !preSub.images) {
+await loadDayImages(code, selectedDate);
+if (selectedDate !== openedDate || activeStudentCode() !== code) return; // user moved on while photos were loading
+}
+const subs=submissions[code]||{}; const sub=subs[selectedDate];
+const hasImages=dayHasImages(sub); const hasText=!!sub?.text; const hasContent=hasImages||hasText;
 const cardCount=(allCardActivity[code]||{})[selectedDate]||0;
 const streakDone=dayQualifiesForStreak(code, selectedDate);
 const anyProgress=cardCount>0||hasContent;
-const allKeys=Object.keys(subs).filter(k=>{const s=subs[k];return s&&(s.images?.length>0||s.text||s.makeupFor);}).sort();
+const allKeys=Object.keys(subs).filter(k=>{const s=subs[k];return s&&(dayHasImages(s)||s.text);}).sort();
 const dayNum=allKeys.indexOf(selectedDate)+1||null;
 const dayCardEl=document.getElementById('day-card');
 dayCardEl.style.display='block'; dayCardEl.className='day-card';
 if(streakDone)dayCardEl.classList.add('card-green');
 else if(anyProgress)dayCardEl.classList.add('card-blue');
 else dayCardEl.classList.add('card-gray');
-document.getElementById('day-badge').textContent=dayNum?`Day ${dayNum}`:(hasContent?'Make-up':'No submission');
+document.getElementById('day-badge').textContent=dayNum?`Day ${dayNum}`:(hasContent?'Submission':'No submission');
 document.getElementById('day-date').textContent=formatDateLong(selectedDate);
 document.getElementById('day-status').textContent=streakDone?'✓ Streak complete':(anyProgress?'• Some progress':'No activity');
 // Show flashcard/exercise activity if any
@@ -3058,8 +3164,8 @@ sub.images.forEach(src=>{
 const wrap=document.createElement('div');wrap.className='submission-thumb';
 const img=document.createElement('img');img.src=src;img.onclick=()=>openModal(src);wrap.appendChild(img);
 const badge=document.createElement('div');
-badge.className='submission-badge '+(isMakeup?'makeup-badge':'uploaded-badge');
-badge.textContent=isMakeup?'Made up':'Uploaded';
+badge.className='submission-badge uploaded-badge';
+badge.textContent='Uploaded';
 wrap.appendChild(badge);grid.appendChild(wrap);
 });
 area.appendChild(grid);
@@ -3075,10 +3181,8 @@ if(isMidnightPast(selectedDate)&&!isToday&&(!isInstructor||isStudentView)){
 const lk=document.createElement('div');lk.className='locked-msg';lk.textContent='⛔ This day is locked — midnight has passed.';uploadWrap.appendChild(lk);uploadWrap.style.display='block';return;
 }
 if((!isInstructor||isStudentView)&&isToday){
-const missed=getMissedDays(code);
 const section=document.createElement('div');section.className='upload-section';
-let title=hasContent?'Add another submission':'Submit today\'s homework';
-if(missed.length>0&&hasContent)title=`Make up a missed day (${missed.length} remaining)`;
+const title=hasContent?'Add another submission':'Submit today\'s homework';
 section.innerHTML=`<div class="upload-section-title">${title}</div>
     <div class="upload-area" id="upload-trigger"><div class="upload-icon">📸</div><div class="upload-title">Upload a photo</div><div class="upload-sub">Tap to choose</div></div>
     <input type="file" id="file-input" accept="image/*" multiple>
@@ -3104,26 +3208,20 @@ if(!files.length&&!text){showToast('Add a photo or write something first');retur
 const btn=document.getElementById('submit-btn');
 btn.textContent='Uploading…';btn.disabled=true; showToast('Uploading…');
 try {
-const missed=getMissedDays(code);
 const imgs=[];
 for(const f of files){imgs.push(await fileToBase64(f));}
+if (!submissions[code]) submissions[code] = {};
 const subs=submissions[code]||{};
 const todaySub=subs[selectedDate];
-const hasExisting=todaySub&&(todaySub.images?.length>0||todaySub.text);
-if(hasExisting&&missed.length>0){
-const missedDay=missed[0];
-const makeupData={images:imgs,text,reviewed:false,makeupFor:selectedDate};
-submissions[code][missedDay]=makeupData;
-await saveDay(code,missedDay,makeupData);
-showToast('Made up '+formatDateLong(missedDay)+' ✓');
-} else {
+if (todaySub && (todaySub.imageCount||0) > 0 && !todaySub.images) {
+await loadDayImages(code, selectedDate);
+}
 const existing=subs[selectedDate]||{};
 const dayData={images:[...(existing.images||[]),...imgs],text:text||(existing.text||''),reviewed:false};
 submissions[code][selectedDate]=dayData;
 await saveDay(code,selectedDate,dayData);
 didMakeProgress = true;
 showToast('Homework submitted ✓');
-}
 render();
 } catch(e){showToast('Upload failed — try again');console.error(e);btn.textContent='Submit';btn.disabled=false;}
 }
@@ -3991,10 +4089,10 @@ async function markHomeworkCheckin() {
 const code = activeStudentCode();
 const today = todayKey();
 const existing = submissions[code]?.[today] || {};
-if (existing.images?.length > 0 || existing.text || existing.checkedIn) return;
-const dayData = { images: existing.images || [], text: existing.text || '', reviewed: existing.reviewed || false, checkedIn: true };
+if (dayHasImages(existing) || existing.text || existing.checkedIn) return;
+const dayData = { text: existing.text || '', reviewed: existing.reviewed || false, checkedIn: true };
 if (!submissions[code]) submissions[code] = {};
-submissions[code][today] = dayData;
+submissions[code][today] = { ...existing, ...dayData };
 try {
 await saveDay(code, today, dayData);
 didMakeProgress = true;
@@ -4175,13 +4273,20 @@ challenge1l2: 2, challenge1l3: 3, challenge1l4: 4, challenge1l5: 5, challenge1l6
 challenge1l7: 7, challenge1l8: 8, challenge1l9: 9, challenge1l10: 10, challenge1l11: 11, challenge1l12: 12, challenge1l13: 13, challenge1l14: 14, challenge1l15: 15, challenge1l16: 16,
 challenge2l2: 2, challenge2l3: 3, challenge2l4: 4, challenge2l5: 5, challenge2l6: 6,
 challenge2l7: 7, challenge2l8: 8, challenge2l9: 9, challenge2l10: 10, challenge2l11: 11, challenge2l12: 12, challenge2l13: 13, challenge2l14: 14, challenge2l15: 15, challenge2l16: 16,
-challenge3l16: 16,
+challenge3: 1, challenge3l2: 2, challenge3l3: 3, challenge3l4: 4, challenge3l5: 5, challenge3l6: 6,
+challenge3l7: 7, challenge3l8: 8, challenge3l9: 9, challenge3l10: 10, challenge3l11: 11, challenge3l12: 12, challenge3l13: 13, challenge3l14: 14, challenge3l15: 15, challenge3l16: 16,
 changeword2: 2, changeword3: 3, changeword4: 4, changeword5: 5, changeword6: 6,
 changeword7: 7, changeword8: 8, changeword9: 9, changeword10: 10, changeword11: 11, changeword12: 12, changeword13: 13, changeword14: 14, changeword15: 15, changeword16: 16,
+changewordlisten: 1, changeword2listen: 2, changeword3listen: 3, changeword4listen: 4, changeword5listen: 5, changeword6listen: 6,
+changeword7listen: 7, changeword8listen: 8, changeword9listen: 9, changeword10listen: 10, changeword11listen: 11, changeword12listen: 12, changeword13listen: 13, changeword14listen: 14, changeword15listen: 15, changeword16listen: 16,
 truefalse2: 2, truefalse3: 3, truefalse4: 4, truefalse5: 5, truefalse6: 6,
 truefalse7: 7, truefalse8: 8, truefalse9: 9, truefalse10: 10, truefalse11: 11, truefalse12: 12, truefalse13: 13, truefalse14: 14, truefalse15: 15, truefalse16: 16,
+truefalselisten: 1, truefalse2listen: 2, truefalse3listen: 3, truefalse4listen: 4, truefalse5listen: 5, truefalse6listen: 6,
+truefalse7listen: 7, truefalse8listen: 8, truefalse9listen: 9, truefalse10listen: 10, truefalse11listen: 11, truefalse12listen: 12, truefalse13listen: 13, truefalse14listen: 14, truefalse15listen: 15, truefalse16listen: 16,
 comprehension1: 1, comprehension2: 2, comprehension3: 3, comprehension4: 4, comprehension5: 5, comprehension6: 6,
-comprehension7: 7, comprehension8: 8, comprehension9: 9, comprehension10: 10, comprehension11: 11, comprehension12: 12, comprehension13: 13, comprehension14: 14, comprehension15: 15, comprehension16: 16
+comprehension7: 7, comprehension8: 8, comprehension9: 9, comprehension10: 10, comprehension11: 11, comprehension12: 12, comprehension13: 13, comprehension14: 14, comprehension15: 15, comprehension16: 16,
+comprehension1listen: 1, comprehension2listen: 2, comprehension3listen: 3, comprehension4listen: 4, comprehension5listen: 5, comprehension6listen: 6,
+comprehension7listen: 7, comprehension8listen: 8, comprehension9listen: 9, comprehension10listen: 10, comprehension11listen: 11, comprehension12listen: 12, comprehension13listen: 13, comprehension14listen: 14, comprehension15listen: 15, comprehension16listen: 16
 };
 const EX_MAX_LESSON = 16;
 let exPickerLesson = null;
@@ -4211,6 +4316,22 @@ const EX_CARDS = [
 { mode:'changeword14', icon:'✏️', title:'Change One Word', desc:'A sentence has one wrong word. Type the correct replacement.' },
 { mode:'changeword15', icon:'✏️', title:'Change One Word', desc:'A sentence has one wrong word. Type the correct replacement.' },
 { mode:'changeword16', icon:'✏️', title:'Change One Word', desc:'A sentence has one wrong word. Type the correct replacement.' },
+{ mode:'changewordlisten', icon:'🎧', title:'Change One Word — Listening', desc:'Listen to the sentence. One word is wrong — type the correct word.' },
+{ mode:'changeword2listen', icon:'🎧', title:'Change One Word — Listening', desc:'Listen to the sentence. One word is wrong — type the correct word.' },
+{ mode:'changeword3listen', icon:'🎧', title:'Change One Word — Listening', desc:'Listen to the sentence. One word is wrong — type the correct word.' },
+{ mode:'changeword4listen', icon:'🎧', title:'Change One Word — Listening', desc:'Listen to the sentence. One word is wrong — type the correct word.' },
+{ mode:'changeword5listen', icon:'🎧', title:'Change One Word — Listening', desc:'Listen to the sentence. One word is wrong — type the correct word.' },
+{ mode:'changeword6listen', icon:'🎧', title:'Change One Word — Listening', desc:'Listen to the sentence. One word is wrong — type the correct word.' },
+{ mode:'changeword7listen', icon:'🎧', title:'Change One Word — Listening', desc:'Listen to the sentence. One word is wrong — type the correct word.' },
+{ mode:'changeword8listen', icon:'🎧', title:'Change One Word — Listening', desc:'Listen to the sentence. One word is wrong — type the correct word.' },
+{ mode:'changeword9listen', icon:'🎧', title:'Change One Word — Listening', desc:'Listen to the sentence. One word is wrong — type the correct word.' },
+{ mode:'changeword10listen', icon:'🎧', title:'Change One Word — Listening', desc:'Listen to the sentence. One word is wrong — type the correct word.' },
+{ mode:'changeword11listen', icon:'🎧', title:'Change One Word — Listening', desc:'Listen to the sentence. One word is wrong — type the correct word.' },
+{ mode:'changeword12listen', icon:'🎧', title:'Change One Word — Listening', desc:'Listen to the sentence. One word is wrong — type the correct word.' },
+{ mode:'changeword13listen', icon:'🎧', title:'Change One Word — Listening', desc:'Listen to the sentence. One word is wrong — type the correct word.' },
+{ mode:'changeword14listen', icon:'🎧', title:'Change One Word — Listening', desc:'Listen to the sentence. One word is wrong — type the correct word.' },
+{ mode:'changeword15listen', icon:'🎧', title:'Change One Word — Listening', desc:'Listen to the sentence. One word is wrong — type the correct word.' },
+{ mode:'changeword16listen', icon:'🎧', title:'Change One Word — Listening', desc:'Listen to the sentence. One word is wrong — type the correct word.' },
 { mode:'truefalse', icon:'✅', title:'True or False', desc:'Is the sentence correct or does it contain an error?' },
 { mode:'truefalse2', icon:'✅', title:'True or False', desc:'Is the sentence correct or does it contain an error?' },
 { mode:'truefalse3', icon:'✅', title:'True or False', desc:'Is the sentence correct or does it contain an error?' },
@@ -4227,6 +4348,22 @@ const EX_CARDS = [
 { mode:'truefalse14', icon:'✅', title:'True or False', desc:'Is the sentence correct or does it contain an error?' },
 { mode:'truefalse15', icon:'✅', title:'True or False', desc:'Is the sentence correct or does it contain an error?' },
 { mode:'truefalse16', icon:'✅', title:'True or False', desc:'Is the sentence correct or does it contain an error?' },
+{ mode:'truefalselisten', icon:'🎧', title:'True or False — Listening', desc:'Listen to the sentence. Is it correct or does it contain an error?' },
+{ mode:'truefalse2listen', icon:'🎧', title:'True or False — Listening', desc:'Listen to the sentence. Is it correct or does it contain an error?' },
+{ mode:'truefalse3listen', icon:'🎧', title:'True or False — Listening', desc:'Listen to the sentence. Is it correct or does it contain an error?' },
+{ mode:'truefalse4listen', icon:'🎧', title:'True or False — Listening', desc:'Listen to the sentence. Is it correct or does it contain an error?' },
+{ mode:'truefalse5listen', icon:'🎧', title:'True or False — Listening', desc:'Listen to the sentence. Is it correct or does it contain an error?' },
+{ mode:'truefalse6listen', icon:'🎧', title:'True or False — Listening', desc:'Listen to the sentence. Is it correct or does it contain an error?' },
+{ mode:'truefalse7listen', icon:'🎧', title:'True or False — Listening', desc:'Listen to the sentence. Is it correct or does it contain an error?' },
+{ mode:'truefalse8listen', icon:'🎧', title:'True or False — Listening', desc:'Listen to the sentence. Is it correct or does it contain an error?' },
+{ mode:'truefalse9listen', icon:'🎧', title:'True or False — Listening', desc:'Listen to the sentence. Is it correct or does it contain an error?' },
+{ mode:'truefalse10listen', icon:'🎧', title:'True or False — Listening', desc:'Listen to the sentence. Is it correct or does it contain an error?' },
+{ mode:'truefalse11listen', icon:'🎧', title:'True or False — Listening', desc:'Listen to the sentence. Is it correct or does it contain an error?' },
+{ mode:'truefalse12listen', icon:'🎧', title:'True or False — Listening', desc:'Listen to the sentence. Is it correct or does it contain an error?' },
+{ mode:'truefalse13listen', icon:'🎧', title:'True or False — Listening', desc:'Listen to the sentence. Is it correct or does it contain an error?' },
+{ mode:'truefalse14listen', icon:'🎧', title:'True or False — Listening', desc:'Listen to the sentence. Is it correct or does it contain an error?' },
+{ mode:'truefalse15listen', icon:'🎧', title:'True or False — Listening', desc:'Listen to the sentence. Is it correct or does it contain an error?' },
+{ mode:'truefalse16listen', icon:'🎧', title:'True or False — Listening', desc:'Listen to the sentence. Is it correct or does it contain an error?' },
 { mode:'aetrans', icon:'🔁', title:'Arabic → English', desc:'Read the Arabic sentence, translate it in your head, then reveal and grade yourself.' },
 { mode:'challenge1', icon:'🏆', title:'Challenge 1', desc:"Write your own sentence using each of 15 key words. We'll go over these together in lesson." },
 { mode:'challenge2', icon:'🏆', title:'Challenge 2', desc:"Translate each English sentence into Arabic. We'll go over these together in lesson." },
@@ -4260,7 +4397,23 @@ const EX_CARDS = [
 { mode:'challenge2l14', icon:'🏆', title:'Challenge 2', desc:"Translate each English sentence into Arabic. We'll go over these together in lesson." },
 { mode:'challenge2l15', icon:'🏆', title:'Challenge 2', desc:"Translate each English sentence into Arabic. We'll go over these together in lesson." },
 { mode:'challenge2l16', icon:'🏆', title:'Challenge 2', desc:"Translate each English sentence into Arabic. We'll go over these together in lesson." },
+{ mode:'challenge3', icon:'🚫', title:'Negate and Affirm', desc:"Each sentence is false. Say 'No, rather...' and give the correct sentence using the same grammar. We'll go over these together in lesson." },
+{ mode:'challenge3l2', icon:'🚫', title:'Negate and Affirm', desc:"Each sentence is false. Say 'No, rather...' and give the correct sentence using the same grammar. We'll go over these together in lesson." },
+{ mode:'challenge3l3', icon:'🚫', title:'Negate and Affirm', desc:"Each sentence is false. Say 'No, rather...' and give the correct sentence using the same grammar. We'll go over these together in lesson." },
+{ mode:'challenge3l4', icon:'🚫', title:'Negate and Affirm', desc:"Each sentence is false. Say 'No, rather...' and give the correct sentence using the same grammar. We'll go over these together in lesson." },
+{ mode:'challenge3l5', icon:'🚫', title:'Negate and Affirm', desc:"Each sentence is false. Say 'No, rather...' and give the correct sentence using the same grammar. We'll go over these together in lesson." },
+{ mode:'challenge3l6', icon:'🚫', title:'Negate and Affirm', desc:"Each sentence is false. Say 'No, rather...' and give the correct sentence using the same grammar. We'll go over these together in lesson." },
+{ mode:'challenge3l7', icon:'🚫', title:'Negate and Affirm', desc:"Each sentence is false. Say 'No, rather...' and give the correct sentence using the same grammar. We'll go over these together in lesson." },
+{ mode:'challenge3l8', icon:'🚫', title:'Negate and Affirm', desc:"Each sentence is false. Say 'No, rather...' and give the correct sentence using the same grammar. We'll go over these together in lesson." },
+{ mode:'challenge3l9', icon:'🚫', title:'Negate and Affirm', desc:"Each sentence is false. Say 'No, rather...' and give the correct sentence using the same grammar. We'll go over these together in lesson." },
+{ mode:'challenge3l10', icon:'🚫', title:'Negate and Affirm', desc:"Each sentence is false. Say 'No, rather...' and give the correct sentence using the same grammar. We'll go over these together in lesson." },
+{ mode:'challenge3l11', icon:'🚫', title:'Negate and Affirm', desc:"Each sentence is false. Say 'No, rather...' and give the correct sentence using the same grammar. We'll go over these together in lesson." },
+{ mode:'challenge3l12', icon:'🚫', title:'Negate and Affirm', desc:"Each sentence is false. Say 'No, rather...' and give the correct sentence using the same grammar. We'll go over these together in lesson." },
+{ mode:'challenge3l13', icon:'🚫', title:'Negate and Affirm', desc:"Each sentence is false. Say 'No, rather...' and give the correct sentence using the same grammar. We'll go over these together in lesson." },
+{ mode:'challenge3l14', icon:'🚫', title:'Negate and Affirm', desc:"Each sentence is false. Say 'No, rather...' and give the correct sentence using the same grammar. We'll go over these together in lesson." },
+{ mode:'challenge3l15', icon:'🚫', title:'Negate and Affirm', desc:"Each sentence is false. Say 'No, rather...' and give the correct sentence using the same grammar. We'll go over these together in lesson." },
 { mode:'challenge3l16', icon:'🚫', title:'Negate and Affirm', desc:"Each sentence is false. Say 'No, rather...' and give the correct sentence using the same grammar. We'll go over these together in lesson." },
+
 { mode:'comprehension1', icon:'💬', title:'Comprehension', desc:"Answer 15 questions about the story in a full Arabic sentence. We'll go over these together in lesson." },
 { mode:'comprehension2', icon:'💬', title:'Comprehension', desc:"Answer 15 questions about the story in a full Arabic sentence. We'll go over these together in lesson." },
 { mode:'comprehension3', icon:'💬', title:'Comprehension', desc:"Answer 15 questions about the story in a full Arabic sentence. We'll go over these together in lesson." },
@@ -4277,6 +4430,22 @@ const EX_CARDS = [
 { mode:'comprehension14', icon:'💬', title:'Comprehension', desc:"Answer 15 questions about the story in a full Arabic sentence. We'll go over these together in lesson." },
 { mode:'comprehension15', icon:'💬', title:'Comprehension', desc:"Answer 15 questions about the story in a full Arabic sentence. We'll go over these together in lesson." },
 { mode:'comprehension16', icon:'💬', title:'Comprehension', desc:"Answer 15 questions about the story in a full Arabic sentence. We'll go over these together in lesson." },
+{ mode:'comprehension1listen', icon:'🎧', title:'Comprehension — Listening', desc:"Listen to each question and write your answer as a full Arabic sentence. We'll go over these together in lesson." },
+{ mode:'comprehension2listen', icon:'🎧', title:'Comprehension — Listening', desc:"Listen to each question and write your answer as a full Arabic sentence. We'll go over these together in lesson." },
+{ mode:'comprehension3listen', icon:'🎧', title:'Comprehension — Listening', desc:"Listen to each question and write your answer as a full Arabic sentence. We'll go over these together in lesson." },
+{ mode:'comprehension4listen', icon:'🎧', title:'Comprehension — Listening', desc:"Listen to each question and write your answer as a full Arabic sentence. We'll go over these together in lesson." },
+{ mode:'comprehension5listen', icon:'🎧', title:'Comprehension — Listening', desc:"Listen to each question and write your answer as a full Arabic sentence. We'll go over these together in lesson." },
+{ mode:'comprehension6listen', icon:'🎧', title:'Comprehension — Listening', desc:"Listen to each question and write your answer as a full Arabic sentence. We'll go over these together in lesson." },
+{ mode:'comprehension7listen', icon:'🎧', title:'Comprehension — Listening', desc:"Listen to each question and write your answer as a full Arabic sentence. We'll go over these together in lesson." },
+{ mode:'comprehension8listen', icon:'🎧', title:'Comprehension — Listening', desc:"Listen to each question and write your answer as a full Arabic sentence. We'll go over these together in lesson." },
+{ mode:'comprehension9listen', icon:'🎧', title:'Comprehension — Listening', desc:"Listen to each question and write your answer as a full Arabic sentence. We'll go over these together in lesson." },
+{ mode:'comprehension10listen', icon:'🎧', title:'Comprehension — Listening', desc:"Listen to each question and write your answer as a full Arabic sentence. We'll go over these together in lesson." },
+{ mode:'comprehension11listen', icon:'🎧', title:'Comprehension — Listening', desc:"Listen to each question and write your answer as a full Arabic sentence. We'll go over these together in lesson." },
+{ mode:'comprehension12listen', icon:'🎧', title:'Comprehension — Listening', desc:"Listen to each question and write your answer as a full Arabic sentence. We'll go over these together in lesson." },
+{ mode:'comprehension13listen', icon:'🎧', title:'Comprehension — Listening', desc:"Listen to each question and write your answer as a full Arabic sentence. We'll go over these together in lesson." },
+{ mode:'comprehension14listen', icon:'🎧', title:'Comprehension — Listening', desc:"Listen to each question and write your answer as a full Arabic sentence. We'll go over these together in lesson." },
+{ mode:'comprehension15listen', icon:'🎧', title:'Comprehension — Listening', desc:"Listen to each question and write your answer as a full Arabic sentence. We'll go over these together in lesson." },
+{ mode:'comprehension16listen', icon:'🎧', title:'Comprehension — Listening', desc:"Listen to each question and write your answer as a full Arabic sentence. We'll go over these together in lesson." },
 { mode:'demonstrative', icon:'👉', title:'Demonstrative Pronouns', desc:'Practise هذا / هذه / هؤلاء agreement with true/false and correction questions.' },
 { mode:'demotrans', icon:'👉', title:'Demonstrative Pronouns — Translate', desc:'Read the English, write the Arabic demonstrative phrase, then reveal and grade yourself.' },
 { mode:'adjectiveagreement', icon:'✨', title:'Adjective Agreement', desc:'Noun-adjective agreement: is the adjective correctly matched to the noun?' },
@@ -4289,6 +4458,7 @@ const EX_CARDS = [
 { mode:'vocabtrans6', icon:'📖', title:'Vocab — Translate', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' }
 ];
 function exGetQuestionCount(mode) {
+mode = mode.replace(/listen$/, '');
 return mode==='fillgap' ? FILL_GAP_QUESTIONS.length
 : mode==='wordorder' ? WORD_ORDER_QUESTIONS.length
 : mode==='truefalse' ? TRUE_FALSE_QUESTIONS.length
@@ -4500,7 +4670,22 @@ challenge2l13: () => window.CHALLENGE_2_SENTENCES_L13,
 challenge2l14: () => window.CHALLENGE_2_SENTENCES_L14,
 challenge2l15: () => window.CHALLENGE_2_SENTENCES_L15,
 challenge2l16: () => window.CHALLENGE_2_SENTENCES_L16,
-challenge3l16: () => window.NEGATE_AFFIRM_SENTENCES_L16
+challenge3: () => window.NEGATE_AFFIRM_SENTENCES_L1,
+challenge3l2: () => window.NEGATE_AFFIRM_SENTENCES_L2,
+challenge3l3: () => window.NEGATE_AFFIRM_SENTENCES_L3,
+challenge3l4: () => window.NEGATE_AFFIRM_SENTENCES_L4,
+challenge3l5: () => window.NEGATE_AFFIRM_SENTENCES_L5,
+challenge3l6: () => window.NEGATE_AFFIRM_SENTENCES_L6,
+challenge3l7: () => window.NEGATE_AFFIRM_SENTENCES_L7,
+challenge3l8: () => window.NEGATE_AFFIRM_SENTENCES_L8,
+challenge3l9: () => window.NEGATE_AFFIRM_SENTENCES_L9,
+challenge3l10: () => window.NEGATE_AFFIRM_SENTENCES_L10,
+challenge3l11: () => window.NEGATE_AFFIRM_SENTENCES_L11,
+challenge3l12: () => window.NEGATE_AFFIRM_SENTENCES_L12,
+challenge3l13: () => window.NEGATE_AFFIRM_SENTENCES_L13,
+challenge3l14: () => window.NEGATE_AFFIRM_SENTENCES_L14,
+challenge3l15: () => window.NEGATE_AFFIRM_SENTENCES_L15,
+challenge3l16: () => window.NEGATE_AFFIRM_SENTENCES_L16,
 };
 
 function exShowChallenge1(mode) {
@@ -4516,6 +4701,7 @@ let html = `
 <div style="margin-bottom:18px">
 <div style="font-family:'Scheherazade New', serif;font-size:1.4em;direction:rtl;text-align:right;color:#8b2035;font-weight:700">${w.ar}</div>
 <div style="font-size:12px;color:#6b7280;margin-bottom:6px">${w.en}</div>
+<button id="ch1-report-btn" style="background:none;border:none;cursor:pointer;font-size:16px;padding:4px 0;margin-bottom:4px">📍</button>
 <textarea id="ch1-input" placeholder="Write your sentence..." style="width:100%;padding:10px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:1.1em;direction:rtl;text-align:right;font-family:inherit;min-height:50px;outline:none;box-sizing:border-box">${(ch1Answers[ch1Index] && ch1Answers[ch1Index].answer) || ''}</textarea>
 </div>
 <button id="ch1-next-btn" style="width:100%;margin-top:8px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">${isLast ? 'Submit Challenge' : 'Next'}</button>
@@ -4524,6 +4710,7 @@ let html = `
 document.getElementById('challenges-root').innerHTML = html;
 document.getElementById('ch1-next-btn').onclick = () => window.exAdvanceChallenge1(mode);
 document.getElementById('ch1-back-btn').onclick = () => window.exGoBackChallenge1(mode);
+document.getElementById('ch1-report-btn').onclick = () => window.addToReadLater('challenge', w.ar, w.en, EX_LESSON_MAP[mode]);
 }
 
 const COMPREHENSION_QUESTIONS_BY_MODE = {
@@ -4542,21 +4729,44 @@ comprehension12: () => window.COMPREHENSION_QUESTIONS_L12,
 comprehension13: () => window.COMPREHENSION_QUESTIONS_L13,
 comprehension14: () => window.COMPREHENSION_QUESTIONS_L14,
 comprehension15: () => window.COMPREHENSION_QUESTIONS_L15,
-comprehension16: () => window.COMPREHENSION_QUESTIONS_L16
+comprehension16: () => window.COMPREHENSION_QUESTIONS_L16,
+comprehension1listen: () => window.COMPREHENSION_QUESTIONS_L1,
+comprehension2listen: () => window.COMPREHENSION_QUESTIONS_L2,
+comprehension3listen: () => window.COMPREHENSION_QUESTIONS_L3,
+comprehension4listen: () => window.COMPREHENSION_QUESTIONS_L4,
+comprehension5listen: () => window.COMPREHENSION_QUESTIONS_L5,
+comprehension6listen: () => window.COMPREHENSION_QUESTIONS_L6,
+comprehension7listen: () => window.COMPREHENSION_QUESTIONS_L7,
+comprehension8listen: () => window.COMPREHENSION_QUESTIONS_L8,
+comprehension9listen: () => window.COMPREHENSION_QUESTIONS_L9,
+comprehension10listen: () => window.COMPREHENSION_QUESTIONS_L10,
+comprehension11listen: () => window.COMPREHENSION_QUESTIONS_L11,
+comprehension12listen: () => window.COMPREHENSION_QUESTIONS_L12,
+comprehension13listen: () => window.COMPREHENSION_QUESTIONS_L13,
+comprehension14listen: () => window.COMPREHENSION_QUESTIONS_L14,
+comprehension15listen: () => window.COMPREHENSION_QUESTIONS_L15,
+comprehension16listen: () => window.COMPREHENSION_QUESTIONS_L16
 };
 
 function exShowComprehension(mode) {
+const isListening = mode.indexOf('listen') !== -1;
 const questions = (COMPREHENSION_QUESTIONS_BY_MODE[mode] && COMPREHENSION_QUESTIONS_BY_MODE[mode]()) || [];
 const q = questions[compIndex];
 const isLast = compIndex === questions.length - 1;
+const headerLabel = isListening ? '🎧 Comprehension — Listening' : '💬 Comprehension — Answer in Arabic';
+const instructionsText = isListening ? "Tap the play button to listen to the question, then write your answer as a full Arabic sentence. Don't worry about getting it perfect — we'll go over these together in your next lesson." : "Read the question about the story and write your answer as a full Arabic sentence. Don't worry about getting it perfect — we'll go over these together in your next lesson.";
+const questionAreaHtml = isListening
+? `<button onclick="window.speakArabic('${q.ar.replace(/'/g, "\\'")}')" style="background:#8b2035;color:white;border:none;border-radius:50%;width:56px;height:56px;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-bottom:14px">🔊</button>`
+: `<div style="font-family:'Scheherazade New', serif;font-size:1.3em;direction:rtl;text-align:right;color:#8b2035;font-weight:700">${q.ar}</div>
+<div style="font-size:12px;color:#6b7280;margin-bottom:6px">${q.en}</div>`;
 let html = `
-<div class="section-label">💬 Comprehension — Answer in Arabic</div>
+<div class="section-label">${headerLabel}</div>
 <div style="background:var(--grey-light);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
 <div style="font-size:13px;color:#6b7280;margin-bottom:14px;font-weight:600">Question ${compIndex+1} of ${questions.length}</div>
-<div style="font-size:14px;color:#6b7280;margin-bottom:20px;line-height:1.6">Read the question about the story and write your answer as a full Arabic sentence. Don't worry about getting it perfect — we'll go over these together in your next lesson.</div>
+<div style="font-size:14px;color:#6b7280;margin-bottom:20px;line-height:1.6">${instructionsText}</div>
+<button id="comp-report-btn" style="background:none;border:none;cursor:pointer;font-size:16px;padding:4px 0;margin-bottom:8px">📍</button>
 <div style="margin-bottom:18px">
-<div style="font-family:'Scheherazade New', serif;font-size:1.3em;direction:rtl;text-align:right;color:#8b2035;font-weight:700">${q.ar}</div>
-<div style="font-size:12px;color:#6b7280;margin-bottom:6px">${q.en}</div>
+${questionAreaHtml}
 <textarea id="comp-input" placeholder="Write your answer..." style="width:100%;padding:10px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:1.1em;direction:rtl;text-align:right;font-family:inherit;min-height:50px;outline:none;box-sizing:border-box">${(compAnswers[compIndex] && compAnswers[compIndex].answer) || ''}</textarea>
 </div>
 <button id="comp-next-btn" style="width:100%;margin-top:8px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">${isLast ? 'Submit Comprehension' : 'Next'}</button>
@@ -4565,6 +4775,7 @@ let html = `
 document.getElementById('challenges-root').innerHTML = html;
 document.getElementById('comp-next-btn').onclick = () => window.exAdvanceComprehension(mode);
 document.getElementById('comp-back-btn').onclick = () => window.exGoBackComprehension(mode);
+document.getElementById('comp-report-btn').onclick = () => window.addToReadLater('challenge', q.ar, q.en, EX_LESSON_MAP[mode]);
 }
 
 window.exGoBackComprehension = function(mode) {
@@ -4599,9 +4810,9 @@ let block = header;
 filled.forEach((a, i) => { block += `\n${i+1}. ${a.ar} (${a.en})\n   ${a.answer}`; });
 const existing = submissions[code]?.[today] || {};
 const newText = upsertChallengeBlock(existing.text, header, block);
-const dayData = { images: existing.images || [], text: newText, reviewed: false };
+const dayData = { text: newText, reviewed: false };
 if (!submissions[code]) submissions[code] = {};
-submissions[code][today] = dayData;
+submissions[code][today] = { ...existing, ...dayData };
 await saveDay(code, today, dayData);
 };
 
@@ -4612,6 +4823,9 @@ const answers = compAnswers;
 const filled = answers.filter(a => a.answer);
 if (!filled.length) { window.showToast('Answer at least one question first'); return; }
 
+const btn = document.getElementById('comp-next-btn');
+if (btn) { btn.disabled = true; btn.textContent = 'Submitting…'; }
+try {
 const lessonNum = EX_LESSON_MAP[mode];
 const header = '📋 Comprehension — Lesson ' + lessonNum + ' (story questions)';
 let block = header;
@@ -4621,9 +4835,9 @@ block += `\n${i+1}. ${a.ar} (${a.en})\n   ${a.answer}`;
 
 const existing = submissions[code]?.[today] || {};
 const newText = upsertChallengeBlock(existing.text, header, block);
-const dayData = { images: existing.images || [], text: newText, reviewed: false };
+const dayData = { text: newText, reviewed: false };
 if (!submissions[code]) submissions[code] = {};
-submissions[code][today] = dayData;
+submissions[code][today] = { ...existing, ...dayData };
 await saveDay(code, today, dayData);
 
 const oldFrac = window.getLessonProgressSum(lessonNum);
@@ -4635,6 +4849,11 @@ await saveFlashcardData(code);
 showToast('Submitted! Your teacher will go over this with you in your next lesson.');
 render();
 if (typeof exShowChallengesPicker === 'function') exShowChallengesPicker();
+} catch(e) {
+console.error('Comprehension submit error', e);
+showToast("Couldn't submit — check your connection and try again");
+if (btn) { btn.disabled = false; btn.textContent = 'Submit Comprehension'; }
+}
 };
 
 function exShowChallenge2(mode) {
@@ -4653,6 +4872,7 @@ let html = `
 <div style="background:var(--grey-light);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
 <div style="font-size:13px;color:#6b7280;margin-bottom:14px;font-weight:600">Question ${ch2Index+1} of ${sentences.length}</div>
 <div style="font-size:14px;color:#6b7280;margin-bottom:20px;line-height:1.6">${instructionsText}</div>
+<button id="ch2-report-btn" style="background:none;border:none;cursor:pointer;font-size:16px;padding:4px 0;margin-bottom:8px">📍</button>
 <div style="margin-bottom:18px">
 <div style="font-size:1em;direction:${promptDirection};text-align:${promptAlign};color:#1a1a2e;margin-bottom:6px">${promptText}</div>
 <textarea id="ch2-input" placeholder="Write the Arabic translation..." style="width:100%;padding:10px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:1.2em;direction:rtl;text-align:right;font-family:'Scheherazade New', serif;min-height:50px;outline:none;box-sizing:border-box">${(ch2Answers[ch2Index] && ch2Answers[ch2Index].answer) || ''}</textarea>
@@ -4663,6 +4883,7 @@ let html = `
 document.getElementById('challenges-root').innerHTML = html;
 document.getElementById('ch2-next-btn').onclick = () => window.exAdvanceChallenge2(mode);
 document.getElementById('ch2-back-btn').onclick = () => window.exGoBackChallenge2(mode);
+document.getElementById('ch2-report-btn').onclick = () => window.addToReadLater('challenge', s.ar, s.en, EX_LESSON_MAP[mode]);
 }
 
 function exShowSetup(mode) {
@@ -4699,6 +4920,7 @@ document.getElementById('ex-back-btn').onclick = exShowPicker;
 
 // Full tagged pool for a mode, before any shuffling/filtering.
 function exBuildTaggedPool(mode) {
+mode = mode.replace(/listen$/, '');
 return mode === 'fillgap' ? FILL_GAP_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
 : mode === 'wordorder' ? WORD_ORDER_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
 : mode === 'changeword' ? CHANGE_WORD_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
@@ -4830,6 +5052,15 @@ document.getElementById('ex-back-btn').onclick = exGoBack;
 document.getElementById('ex-resume-btn').onclick = exReturnToLive;
 }
 
+// Pulls a reportable Arabic/English pair out of any exercise question shape, so one Report button works for every exercise type.
+function exGetReportPair(q) {
+if (!q) return { ar: '', en: '' };
+if (q.words && Array.isArray(q.words)) return { ar: q.words.map(w => w.text).join(' '), en: '' };
+if (q.singular !== undefined && q.plural !== undefined) return { ar: q.singular + ' / ' + q.plural, en: '' };
+if (q.sentence) return { ar: q.sentence.replace(/<[^>]*>/g, '').replace(/________/g, '').trim(), en: q.en || '' };
+if (q.ar) return { ar: q.ar.replace(/<[^>]*>/g, ''), en: q.en || '' };
+return { ar: '', en: q.en || '' };
+}
 
 function exShowQuestion() {
 if (exCurrent >= exQuestions.length) {
@@ -4844,6 +5075,14 @@ if (ratingEl) ratingEl.style.display = 'none';
 const exRemaining = window.getExerciseRemainingCount(exMode, exGetQuestionCount(exMode));
 document.getElementById('ex-progress').textContent = exRemaining+' question'+(exRemaining!==1?'s':'')+' until mastery';
 const __q = exQuestions[exCurrent];
+const __reportBtn = document.getElementById('ex-report-btn');
+if (__reportBtn) {
+__reportBtn.textContent = '📍';
+__reportBtn.onclick = () => {
+const pair = exGetReportPair(__q);
+window.addToReadLater('exercise', pair.ar, pair.en, EX_LESSON_MAP[exMode]);
+};
+}
 updateExBackUI();
 const __prevRating = window.getExerciseQuestionRating(exMode, __q.__idx);
 const __diffBanner = document.getElementById('ex-diff-banner');
@@ -4875,9 +5114,11 @@ document.getElementById('ex-check-btn').onclick = exSubmitFill;
 inp.onkeydown = e => { if (e.key === 'Enter') exSubmitFill(); };
 } else if (exMode.indexOf('truefalse') === 0 || exMode === 'demonstrative' || exMode === 'suffixpronoun' || exMode === 'adjectiveagreement') {
 const q = exQuestions[exCurrent];
+const isListeningEx = exMode.slice(-6) === 'listen';
 document.getElementById('ex-instruction').textContent = 'Is this sentence correct?';
 const arText = q.sentence.replace(/<[^>]*>/g, '').trim();
-document.getElementById('ex-sentence').innerHTML = '<button onclick="window.speakArabic(\'' + arText.replace(/'/g, "\\'") + '\')" style="background:none;border:none;cursor:pointer;font-size:20px;margin-right:8px">🔊</button><button onclick="window.addToReadLater(\'exercise\', \'' + arText.replace(/'/g, "\\'") + '\', \'' + (q.en||'').replace(/'/g, "\\'") + '\', ' + EX_LESSON_MAP[exMode] + ')" style="background:none;border:none;cursor:pointer;font-size:18px;margin-right:8px">📍</button>' + q.sentence;
+const sentenceDisplay = isListeningEx ? '<button onclick="window.speakArabic(\'' + arText.replace(/'/g, "\\'") + '\')" style="background:#8b2035;color:white;border:none;border-radius:50%;width:56px;height:56px;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin:0 auto">🔊</button>' : '<button onclick="window.speakArabic(\'' + arText.replace(/'/g, "\\'") + '\')" style="background:none;border:none;cursor:pointer;font-size:20px;margin-right:8px">🔊</button><button onclick="window.addToReadLater(\'exercise\', \'' + arText.replace(/'/g, "\\'") + '\', \'' + (q.en||'').replace(/'/g, "\\'") + '\', ' + EX_LESSON_MAP[exMode] + ')" style="background:none;border:none;cursor:pointer;font-size:18px;margin-right:8px">📍</button>' + q.sentence;
+document.getElementById('ex-sentence').innerHTML = sentenceDisplay;
 document.getElementById('ex-sentence').style.fontSize = '1.4em';
 document.getElementById('ex-fill-input').style.display = 'none';
 document.getElementById('ex-word-order').style.display = 'none';
@@ -4895,9 +5136,11 @@ document.getElementById('ex-tf-true').onclick = () => exSubmitTrueFalse(true);
 document.getElementById('ex-tf-false').onclick = () => exSubmitTrueFalse(false);
 } else if (exMode.indexOf('changeword') === 0) {
 const q = exQuestions[exCurrent];
+const isListeningEx = exMode.slice(-6) === 'listen';
 document.getElementById('ex-instruction').textContent = 'One word is wrong — type the correct word';
 const arText = q.sentence.replace(/<[^>]*>/g, '').trim();
-document.getElementById('ex-sentence').innerHTML = '<button onclick="window.speakArabic(\'' + arText.replace(/'/g, "\\'") + '\')" style="background:none;border:none;cursor:pointer;font-size:20px;margin-right:8px">🔊</button><button onclick="window.addToReadLater(\'exercise\', \'' + arText.replace(/'/g, "\\'") + '\', \'' + (q.en||'').replace(/'/g, "\\'") + '\', ' + EX_LESSON_MAP[exMode] + ')" style="background:none;border:none;cursor:pointer;font-size:18px;margin-right:8px">📍</button>' + q.sentence;
+const sentenceDisplay = isListeningEx ? '<button onclick="window.speakArabic(\'' + arText.replace(/'/g, "\\'") + '\')" style="background:#8b2035;color:white;border:none;border-radius:50%;width:56px;height:56px;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin:0 auto">🔊</button>' : '<button onclick="window.speakArabic(\'' + arText.replace(/'/g, "\\'") + '\')" style="background:none;border:none;cursor:pointer;font-size:20px;margin-right:8px">🔊</button><button onclick="window.addToReadLater(\'exercise\', \'' + arText.replace(/'/g, "\\'") + '\', \'' + (q.en||'').replace(/'/g, "\\'") + '\', ' + EX_LESSON_MAP[exMode] + ')" style="background:none;border:none;cursor:pointer;font-size:18px;margin-right:8px">📍</button>' + q.sentence;
+document.getElementById('ex-sentence').innerHTML = sentenceDisplay;
 document.getElementById('ex-sentence').style.fontSize = '1.4em';
 const fillDiv = document.getElementById('ex-fill-input');
 fillDiv.style.display = 'flex';
