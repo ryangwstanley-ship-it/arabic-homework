@@ -14,7 +14,7 @@
 --green: #16a34a; --dot-green: #22c55e; --dot-blue: #3b82f6;
 --dot-red: #ef4444; --dot-yellow: #eab308; --grey: #8a7f6e;
 --grey-light: #ffffff; --border: rgba(139,32,53,0.14); --card-radius: 16px;
---sidebar-w: 220px;
+--sidebar-w: 260px;
 }
 { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f7f3ec; color: var(--ink); min-height: 100vh; }
 
@@ -55,7 +55,7 @@
 .sidebar-student.active { background: rgba(255,255,255,0.15); }
 .sidebar-avatar { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: white; flex-shrink: 0; }
 .sidebar-info { flex: 1; overflow: hidden; }
-.sidebar-name { color: white; font-size: 13px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; }
+.sidebar-name { color: white; font-size: 13px; font-weight: 500; white-space: normal; word-break: break-word; }
 .sidebar-streak { color: rgba(255,255,255,0.5); font-size: 11px; }
 .status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 .status-dot.green { background: var(--dot-green); }
@@ -406,13 +406,15 @@ console.log("THE FILE IS LOADING!");
 </div>
 
 <div id="app">
+<button id="contact-tutor-btn" style="display:none;position:fixed;top:70px;right:16px;z-index:150;background:#2563eb;color:white;border:none;border-radius:24px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 2px 10px rgba(37,99,235,0.4)">📞 Contact Tutor</button>
 <div id="sidebar" style="display:none">
 <div class="sidebar-logo">
 <div class="sidebar-logo-icon">YA</div>
 <div class="sidebar-logo-text">Arabic Daily</div>
 </div>
-<button class="sidebar-nav-btn" id="sidebar-guests-btn" onclick="switchTab('guests')">👤 Guests</button>
-<button class="sidebar-nav-btn" id="sidebar-reports-btn" onclick="switchTab('reports')">📋 Reports</button>
+<button class="sidebar-nav-btn" id="sidebar-guests-btn" onclick="switchTab('guests')">👤 Guests <span id="guests-unread-badge" style="display:none;background:#dc2626;color:white;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700;margin-left:4px">0</span></button>
+<button class="sidebar-nav-btn" id="sidebar-inbox-btn" onclick="switchTab('inbox')">📥 Inbox <span id="inbox-unread-badge" style="display:none;background:#dc2626;color:white;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700;margin-left:4px">0</span></button>
+<button class="sidebar-nav-btn" id="sidebar-reports-btn" onclick="switchTab('reports')">📋 Reports <span id="reports-unread-badge" style="display:none;background:#dc2626;color:white;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700;margin-left:4px">0</span></button>
 <button class="sidebar-nav-btn" id="sidebar-leaderboard-btn" onclick="switchTab('leaderboard-admin')">🏆 Leaderboard</button>
 <div class="sidebar-label">Students</div>
 <div class="sidebar-students" id="sidebar-students"></div>
@@ -517,6 +519,16 @@ I did my homework today
 
 </div>
 
+<!-- SAVED FOR LATER TAB -->
+<div id="tab-content-saved" class="content" style="display:none">
+<div class="section-label">Saved for Later</div>
+<div id="saved-root" style="margin-top:8px">
+<div style="padding:20px;text-align:center;color:#8a7f6e">
+<p>⚠️ Anything you flag with the ⚠️ button will show up here</p>
+</div>
+</div>
+</div>
+
 <!-- HOMEWORK TAB -->
 <div id="tab-content-homework" class="content" style="display:none">
 <div class="back-row" onclick="switchTab('milestones')"><span class="back-btn">‹</span><span class="screen-title">Upload Homework</span></div>
@@ -564,12 +576,31 @@ I did my homework today
 <!-- GUESTS TAB (instructor only) -->
 <div id="tab-content-guests" class="content" style="display:none">
 <div class="section-label">Guest students</div>
+<div style="display:flex;justify-content:flex-end;margin-bottom:8px">
+<button id="guests-mark-all-read-btn" style="background:none;border:none;color:var(--blue);font-size:13px;font-weight:600;cursor:pointer;padding:4px 8px">Mark all as read</button>
+</div>
 <div id="guests-root" style="margin-top:8px"></div>
+</div>
+
+<!-- INBOX TAB (instructor only) -->
+<div id="tab-content-inbox" class="content" style="display:none">
+<div class="section-label">Inbox</div>
+<div style="display:flex;justify-content:flex-end;margin-bottom:8px">
+<button id="inbox-mark-all-read-btn" style="background:none;border:none;color:var(--blue);font-size:13px;font-weight:600;cursor:pointer;padding:4px 8px">Mark all as read</button>
+</div>
+<div id="inbox-root" style="margin-top:8px">
+<div style="padding:20px;text-align:center;color:#8a7f6e">
+<p>📥 Contact requests, new reports, and new homework will appear here</p>
+</div>
+</div>
 </div>
 
 <!-- REPORTS TAB (instructor only) -->
 <div id="tab-content-reports" class="content" style="display:none">
 <div class="section-label">Student Reports</div>
+<div style="display:flex;justify-content:flex-end;margin-bottom:8px">
+<button id="reports-mark-all-read-btn" style="background:none;border:none;color:var(--blue);font-size:13px;font-weight:600;cursor:pointer;padding:4px 8px">Mark all as read</button>
+</div>
 <div style="background:#fffbeb;border:1.5px solid #fcd34d;border-radius:10px;padding:12px 14px;margin-bottom:14px">
 <div style="font-size:13px;color:#92400e;margin-bottom:8px">One-time cleanup: moves old homework photos out of the fast-loading data so ryan01 logs in quicker. Safe to click more than once — it skips anything already cleaned up.</div>
 <button id="migrate-photos-btn" style="padding:10px 18px;background:#92400e;color:white;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">🧹 Clean up old homework photos</button>
@@ -634,7 +665,7 @@ I did my homework today
 <div class="library-pane" data-pane="lessons" style="display:none" id="lessons-pane"></div>
 </div>
 </div>
-<!-- STORY TAB -->
+
 <!-- STORY TAB -->
 <div id="tab-content-story" class="content" style="display:none">
 <div class="back-row" id="story-back-row" onclick="switchTab('milestones')"><span class="back-btn">‹</span><span class="screen-title">Save and Return Home</span></div>
@@ -724,7 +755,7 @@ I did my homework today
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, deleteField, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, deleteField, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 const firebaseConfig = {
 apiKey: "AIzaSyBmeQwuWPeuQtdC-7w3SyBb2K5ljvvqBGY",
@@ -1029,6 +1060,12 @@ window.LESSONS = LESSONS;
 let currentUser = null, isInstructor = false, viewingStudent = null;
 let isStudentView = false, calYear, calMonth, selectedDate = null;
 let isImpersonating = false;
+// Codes ryan01 personally logs into directly to test the app (not through
+// 'Enter their account') — reports made from these count as his own too.
+const INSTRUCTOR_TEST_CODES = ['MRJ030'];
+function isInstructorReport(code) {
+return isImpersonating || INSTRUCTOR_TEST_CODES.includes(code);
+}
 let submissions = {}, sidebarCollapsed = false;
 let currentTab = 'homework';
 let isGuestMode = false;
@@ -1094,6 +1131,10 @@ let exProgress = {};
 // Whether the Reading (Story) and Grammar (Principles) milestone has been marked done for a lesson: readingDone[lessonNum] / grammarDone[lessonNum] = true
 let readingDone = {};
 let grammarDone = {};
+// Separate from the lifetime flags above: the date (YYYY-MM-DD) each was last completed on,
+// so "made progress today" can tell a fresh completion from one that happened days ago.
+let readingDoneDates = {};
+let grammarDoneDates = {};
 
 // ── UTILS ──
 function dateKey(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
@@ -1108,9 +1149,12 @@ arabic: ar,
 english: en,
 lesson: lesson,
 timestamp: Date.now(),
-status: 'read-later'
+status: 'read-later',
+read: false,
+madeByInstructor: isInstructorReport(code)
 });
 showToast('Added to read later');
+addInboxEntry('report', code, (STUDENTS[code]?.name || code) + ' reported: ' + (activity || type), { activity, lesson, arabic: ar, english: en, reportType: type });
 } catch(e) { console.error('Read later error', e); showToast('Error saving'); }
 };
 
@@ -1470,6 +1514,7 @@ if (sentenceIdx < totalSentences && isGuestMode) {
 const oldFrac = window.getLessonProgressSum(lessonNum);
 const already = !!readingDone[lessonNum];
 readingDone[lessonNum] = true;
+readingDoneDates[lessonNum] = todayKey();
 if (!storyProgress[code]) storyProgress[code] = {};
 storyProgress[code][lessonNum] = true;
 await saveFlashcardData(code);
@@ -1483,6 +1528,7 @@ window.markGrammarDone = async function(lessonNum) {
 const oldFrac = window.getLessonProgressSum(lessonNum);
 const already = !!grammarDone[lessonNum];
 grammarDone[lessonNum] = true;
+grammarDoneDates[lessonNum] = todayKey();
 const code = currentUser || viewingStudent;
 await saveFlashcardData(code);
 const newFrac = window.getLessonProgressSum(lessonNum);
@@ -1628,6 +1674,12 @@ overlay.innerHTML = `<div class="milestone-celebrate-card" style="text-align:lef
 <div class="home-card-text"><div class="home-card-title">View Library</div><div class="home-card-desc">Browse resources</div></div>
 <div class="home-card-arrow">›</div>
 </div>
+<div class="home-card" id="tent-menu-saved">
+<div class="home-card-icon" style="font-size:22px">⚠️</div>
+<div class="home-card-divider"></div>
+<div class="home-card-text"><div class="home-card-title">Saved for Later</div><div class="home-card-desc">Words and questions you flagged</div></div>
+<div class="home-card-arrow">›</div>
+</div>
 <button class="milestone-review-btn" id="tent-menu-close" style="width:100%;margin-top:16px;background:var(--grey-light);color:var(--grey);border:1.5px solid var(--border)">Close</button>
 </div>`;
 document.body.appendChild(overlay);
@@ -1642,6 +1694,7 @@ setTimeout(() => showGuestCoachmark(document.getElementById('guest-flashcards-bt
 };
 document.getElementById('tent-menu-homework').onclick = () => { overlay.remove(); switchTab('homework'); };
 document.getElementById('tent-menu-library').onclick = () => { overlay.remove(); switchTab('library'); };
+document.getElementById('tent-menu-saved').onclick = () => { overlay.remove(); switchTab('saved'); };
 document.getElementById('tent-menu-close').onclick = () => overlay.remove();
 overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
 };
@@ -1834,15 +1887,18 @@ overlay.innerHTML = `<div class="milestone-celebrate-card" style="text-align:lef
 document.body.appendChild(overlay);
 document.getElementById('report-submit-btn').onclick = async () => {
 const note = document.getElementById('report-note-input').value.trim();
-const code = currentUser || viewingStudent;
+const code = activeStudentCode();
 try {
 await setDoc(doc(db,'reports', Date.now() + '_' + code), {
 studentCode: code,
 context,
 note,
-timestamp: Date.now()
+timestamp: Date.now(),
+read: false,
+madeByInstructor: isInstructorReport(code)
 });
 showToast('Report sent ✓');
+addInboxEntry('report', code, (STUDENTS[code]?.name || guestName || code) + ' reported an issue: ' + context, { context, note, reportType: 'issue' });
 } catch(e) { console.error('Report save error', e); showToast('Report failed — try again'); }
 overlay.remove();
 };
@@ -1863,15 +1919,18 @@ overlay.innerHTML = `<div class="milestone-celebrate-card" style="text-align:lef
 document.body.appendChild(overlay);
 document.getElementById('report-submit-btn').onclick = async () => {
 const note = document.getElementById('report-note-input').value.trim();
-const code = currentUser || viewingStudent;
+const code = activeStudentCode();
 try {
 await setDoc(doc(db,'reports', Date.now() + '_' + code), {
 studentCode: code,
 context,
 note,
-timestamp: Date.now()
+timestamp: Date.now(),
+read: false,
+madeByInstructor: isInstructorReport(code)
 });
 showToast('Report sent ✓');
+addInboxEntry('report', code, (STUDENTS[code]?.name || guestName || code) + ' reported an issue: ' + context, { context, note, reportType: 'issue' });
 } catch(e) { console.error('Report save error', e); showToast('Report failed — try again'); }
 overlay.remove();
 };
@@ -1931,13 +1990,12 @@ return { lesson, flashcardsPct, exercisesPct, challengesPct };
 // Instructor-only: lists every self-registered guest with their streak,
 // status, and mastery breakdown.
 async function renderGuestsTab() {
+const markAllBtn = document.getElementById('guests-mark-all-read-btn');
+if (markAllBtn) markAllBtn.onclick = window.markAllGuestsRead;
 const root = document.getElementById('guests-root');
 root.innerHTML = '<div style="text-align:center;color:var(--grey);padding:20px">Loading guests…</div>';
-let guestDocs = [];
-try {
-const snap = await getDocs(collection(db,'guests'));
-snap.forEach(d => guestDocs.push({ code: d.id, ...d.data() }));
-} catch(e) { console.error('Guests load error', e); }
+await window.loadGuestsCache();
+const guestDocs = window.guestsCache || [];
 if (!guestDocs.length) {
 root.innerHTML = '<div class="no-submission-msg">No guests yet.</div>';
 return;
@@ -1950,10 +2008,9 @@ const streak = getStreak(g.code);
 const status = getStudentStatus(g.code);
 const guestProgress = hasMadeProgressToday(g.code);
 const todayCount = (allCardActivity[g.code]||{})[todayKey()] || 0;
-return `<div class="guest-card">
+return `<div class="guest-card" style="${g.read ? '' : 'border:1.5px solid #fcd34d;background:#fffbeb'}">
 <div class="guest-card-top">
-<div class="guest-card-name">${g.name || 'Guest'}</div>
-<div class="guest-card-code">${g.code}</div>
+<div class="guest-card-name">${g.read ? '' : '<span style="background:#dc2626;color:white;border-radius:6px;padding:1px 6px;font-size:10px;font-weight:700;margin-right:6px;vertical-align:middle">NEW</span>'}${g.name || 'Guest'} <span style="font-weight:400;color:#9ca3af;font-size:12px">(${g.code})</span></div>
 <button class="guest-enter-btn" style="background:none;border:none;cursor:pointer;font-size:14px;color:#9ca3af;padding:0;margin-right:8px" data-code="${g.code}" title="Enter their account">👤</button>
 <button class="guest-delete-btn" style="background:none;border:none;cursor:pointer;font-size:14px;color:#9ca3af;padding:0" data-code="${g.code}">🗑️</button>
 </div>
@@ -1973,6 +2030,17 @@ document.querySelectorAll('.guest-enter-btn').forEach(btn => {
 btn.onclick = () => window.enterStudentAccount(btn.dataset.code);
 });
 }
+
+window.markAllGuestsRead = async function() {
+const unread = (window.guestsCache || []).filter(g => !g.read);
+if (!unread.length) return;
+try {
+await Promise.all(unread.map(g => updateDoc(doc(db, 'guests', g.code), { read: true })));
+unread.forEach(g => g.read = true);
+window.updateGuestsBadge();
+renderGuestsTab();
+} catch(err) { console.error('Mark all guests read error', err); showToast('Error updating'); }
+};
 
 // ── LEADERBOARD ──
 window.exDeleteStudent = async function(code) {
@@ -2002,6 +2070,7 @@ showToast('Guest deleted');
 };
 
 window.enterStudentAccount = async function(code) {
+window.didMakeProgress = false;
 viewingStudent = code;
 isImpersonating = true;
 const app = document.getElementById('app');
@@ -2264,16 +2333,155 @@ if (statusEl) statusEl.textContent = `Done — moved ${daysMoved} day${daysMoved
 showToast('Photo cleanup finished ✓');
 };
 
+// One place to see everything that's happened recently: contact requests,
+// new reports, and new homework — newest first, unread ones highlighted.
+async function renderInboxTab() {
+const markAllBtn = document.getElementById('inbox-mark-all-read-btn');
+if (markAllBtn) markAllBtn.onclick = window.markAllInboxRead;
+const root = document.getElementById('inbox-root');
+root.innerHTML = '<div style="text-align:center;color:var(--grey);padding:20px">Loading inbox…</div>';
+await window.loadInboxCache();
+const entries = window.inboxCache || [];
+if (!entries.length) {
+root.innerHTML = '<div class="no-submission-msg">Nothing in the inbox yet.</div>';
+return;
+}
+entries.sort((a,b) => (b.timestamp||0) - (a.timestamp||0));
+const typeIcon = { contact: '📞', report: '⚠️', homework: '📸' };
+root.innerHTML = entries.map((e, i) => {
+const studentName = STUDENTS[e.code]?.name || e.name || e.code;
+const date = new Date(e.timestamp).toLocaleString();
+const contactLine = e.type === 'contact'
+? `<div style="margin-top:8px;padding:10px;background:#eff6ff;border-radius:8px;font-size:13px;color:#1a1a2e"><b>Contact:</b> ${e.contact || '—'}${e.message ? `<br><b>Message:</b> ${e.message}` : ''}</div>`
+: '';
+const cardLine = (e.type === 'report' && e.arabic)
+? `<div style="margin-top:8px;padding:10px;background:#f9fafb;border-radius:8px">
+${e.activity ? `<div style="font-size:11px;color:#92400e;font-weight:700;margin-bottom:6px">${e.activity}${e.lesson ? ' · Lesson ' + e.lesson : ''}</div>` : ''}
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+<div style="font-family:'Scheherazade New', serif;font-size:1.2em;direction:rtl;text-align:right;color:#1a1a2e;flex:1">${e.arabic}</div>
+<button id="inbox-speak-${i}" style="background:none;border:none;cursor:pointer;font-size:18px;padding:4px;flex-shrink:0">🔊</button>
+</div>
+<div style="font-size:13px;color:#6b7280">${e.english || '<span style="color:#9ca3af;font-style:italic">(this exercise has no English side)</span>'}</div>
+</div>`
+: '';
+const issueLine = (e.type === 'report' && e.context)
+? `<div style="margin-top:8px;padding:10px;background:#f9fafb;border-radius:8px">
+<div style="font-size:11px;color:#92400e;font-weight:700;margin-bottom:4px">${e.context}</div>
+<div style="font-size:13px;color:var(--ink)">${e.note || '(no message)'}</div>
+</div>`
+: '';
+return `<div style="background:${e.read ? 'white' : '#fffbeb'};border:1px solid ${e.read ? 'var(--border)' : '#fcd34d'};border-radius:12px;padding:16px;margin-bottom:12px">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+<div style="font-weight:600;color:var(--ink)">${typeIcon[e.type] || '📥'} ${studentName}</div>
+<div style="display:flex;gap:6px;align-items:center">
+${e.read ? '' : `<button onclick="window.markInboxRead('${e.id}')" style="background:none;border:none;color:var(--blue);font-size:12px;font-weight:600;cursor:pointer;padding:2px 6px">Mark read</button>`}
+<button onclick="window.deleteInboxEntry('${e.id}')" style="background:none;border:none;color:var(--grey);font-size:13px;cursor:pointer;padding:2px 6px">✕ Delete</button>
+</div>
+</div>
+<div style="font-size:14px;color:var(--ink)">${e.summary || ''}</div>
+${contactLine}
+${cardLine}
+${issueLine}
+<div style="font-size:12px;color:var(--grey);margin-top:8px">${date}</div>
+</div>`;
+}).join('');
+entries.forEach((e, i) => {
+if (!e.arabic) return;
+const btn = document.getElementById('inbox-speak-' + i);
+if (btn) btn.onclick = () => window.speakArabic(e.arabic);
+});
+}
+
+window.markInboxRead = async function(id) {
+try {
+await updateDoc(doc(db, 'inbox', id), { read: true });
+const e = (window.inboxCache || []).find(x => x.id === id);
+if (e) e.read = true;
+window.updateInboxBadge();
+renderInboxTab();
+} catch(err) { console.error('Mark inbox read error', err); showToast('Error updating'); }
+};
+
+window.deleteInboxEntry = async function(id) {
+try {
+await deleteDoc(doc(db, 'inbox', id));
+window.inboxCache = (window.inboxCache || []).filter(x => x.id !== id);
+window.updateInboxBadge();
+renderInboxTab();
+} catch(err) { console.error('Delete inbox entry error', err); showToast('Error deleting'); }
+};
+
+window.markAllInboxRead = async function() {
+const unread = (window.inboxCache || []).filter(e => !e.read);
+if (!unread.length) return;
+try {
+await Promise.all(unread.map(e => updateDoc(doc(db, 'inbox', e.id), { read: true })));
+unread.forEach(e => e.read = true);
+window.updateInboxBadge();
+renderInboxTab();
+} catch(err) { console.error('Mark all inbox read error', err); showToast('Error updating'); }
+};
+
+// The student/guest-facing view of their own ⚠️-flagged cards. Independent of
+// ryan01's Reports tab — if ryan01 dismisses one, it stays here (grayed out,
+// marked as reviewed) until the student themselves chooses to delete it.
+async function renderSavedTab() {
+const root = document.getElementById('saved-root');
+root.innerHTML = '<div style="text-align:center;color:var(--grey);padding:20px">Loading…</div>';
+const code = activeStudentCode();
+let items = [];
+try {
+const q = query(collection(db,'reports'), where('studentCode','==',code));
+const snap = await getDocs(q);
+snap.forEach(d => { const data = d.data(); if (data.status === 'read-later') items.push({ id: d.id, ...data }); });
+} catch(e) { console.error('Saved items load error', e); }
+if (!items.length) {
+root.innerHTML = '<div style="padding:20px;text-align:center;color:#8a7f6e"><p>⚠️ Anything you flag with the ⚠️ button will show up here</p></div>';
+return;
+}
+items.sort((a,b) => (b.timestamp||0) - (a.timestamp||0));
+const typeIcon = { flashcard: '🃏', exercise: '📝', challenge: '🏆' };
+const typeName = { flashcard: 'Flashcard', exercise: 'Exercise', challenge: 'Challenge' };
+root.innerHTML = items.map((r, i) => {
+const sourceLabel = (r.activity || typeName[r.type] || 'Saved card') + (r.lesson ? ' · Lesson ' + r.lesson : '');
+const dismissed = !!r.read;
+return `<div style="background:${dismissed ? '#f3f4f6' : 'white'};border:1px solid ${dismissed ? '#d1d5db' : 'var(--border)'};border-radius:12px;padding:16px;margin-bottom:12px;opacity:${dismissed ? 0.65 : 1}">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+<div style="font-size:12px;color:${dismissed ? '#6b7280' : '#92400e'};font-weight:700">${typeIcon[r.type] || '⚠️'} ${sourceLabel}</div>
+<button onclick="window.deleteSavedReport('${r.id}')" style="background:none;border:none;color:var(--grey);font-size:13px;cursor:pointer;padding:2px 6px">✕</button>
+</div>
+${dismissed ? `<div style="font-size:11px;color:#6b7280;font-style:italic;margin-bottom:6px">✓ Reviewed by your tutor</div>` : ''}
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+<div style="font-family:'Scheherazade New', serif;font-size:1.2em;direction:rtl;text-align:right;color:${dismissed ? '#6b7280' : '#1a1a2e'};flex:1">${r.arabic || ''}</div>
+<button id="saved-speak-${i}" style="background:none;border:none;cursor:pointer;font-size:18px;padding:4px;flex-shrink:0">🔊</button>
+</div>
+<div style="font-size:13px;color:#6b7280">${r.english || ''}</div>
+</div>`;
+}).join('');
+items.forEach((r, i) => {
+if (!r.arabic) return;
+const btn = document.getElementById('saved-speak-' + i);
+if (btn) btn.onclick = () => window.speakArabic(r.arabic);
+});
+}
+window.renderSavedTab = renderSavedTab;
+
+window.deleteSavedReport = async function(id) {
+try {
+await deleteDoc(doc(db, 'reports', id));
+renderSavedTab();
+} catch(e) { console.error('Delete saved item error', e); showToast('Delete failed — try again'); }
+};
+
 async function renderReportsTab() {
 const migrateBtn = document.getElementById('migrate-photos-btn');
 if (migrateBtn) migrateBtn.onclick = window.migrateOldHomeworkPhotos;
+const markAllBtn = document.getElementById('reports-mark-all-read-btn');
+if (markAllBtn) markAllBtn.onclick = window.markAllReportsRead;
 const root = document.getElementById('reports-root');
 root.innerHTML = '<div style="text-align:center;color:var(--grey);padding:20px">Loading reports…</div>';
-let reportDocs = [];
-try {
-const snap = await getDocs(collection(db,'reports'));
-snap.forEach(d => reportDocs.push({ id: d.id, ...d.data() }));
-} catch(e) { console.error('Reports load error', e); }
+await window.loadReportsCache();
+const reportDocs = (window.reportsCache || []).filter(r => !r.dismissedByInstructor);
 if (!reportDocs.length) {
 root.innerHTML = '<div class="no-submission-msg">No reports yet.</div>';
 return;
@@ -2295,11 +2503,18 @@ const bodyHtml = isCardReport
 <div style="font-size:13px;color:#6b7280">${r.english || '<span style="color:#9ca3af;font-style:italic">(this exercise has no English side)</span>'}</div>`
 : `<div style="font-size:13px;color:var(--grey);margin-bottom:8px">${r.context}</div>
 <div style="font-size:14px;color:var(--ink)">${r.note || '(no message)'}</div>`;
-return `<div style="background:white;border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px">
+const bg = r.madeByInstructor ? '#eff6ff' : (r.read ? 'white' : '#fffbeb');
+const border = r.madeByInstructor ? '#2563eb' : (r.read ? 'var(--border)' : '#fcd34d');
+const madeByLabel = r.madeByInstructor ? `<div style="font-size:11px;color:#1d4ed8;font-weight:700;margin-bottom:6px">🎓 You made this report while viewing ${studentName}'s account</div>` : '';
+return `<div style="background:${bg};border:1px solid ${border};border-radius:12px;padding:16px;margin-bottom:12px">
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
 <div style="font-weight:600;color:var(--ink)">${studentName}</div>
+<div style="display:flex;gap:6px;align-items:center">
+${r.read ? '' : `<button onclick="window.markReportRead('${r.id}')" style="background:none;border:none;color:var(--blue);font-size:12px;font-weight:600;cursor:pointer;padding:2px 6px">Mark read</button>`}
 <button onclick="window.deleteReport('${r.id}')" style="background:none;border:none;color:var(--grey);font-size:13px;cursor:pointer;padding:2px 6px">✕ Delete</button>
 </div>
+</div>
+${madeByLabel}
 <div style="padding:10px;background:#f9fafb;border-radius:8px;margin-bottom:8px">${bodyHtml}</div>
 <div style="font-size:12px;color:var(--grey)">${date}</div>
 </div>`;
@@ -2311,12 +2526,33 @@ if (btn) btn.onclick = () => window.speakArabic(r.arabic);
 });
 }
 
+window.markReportRead = async function(id) {
+try {
+await updateDoc(doc(db, 'reports', id), { read: true });
+const r = (window.reportsCache || []).find(x => x.id === id);
+if (r) r.read = true;
+window.updateReportsBadge();
+renderReportsTab();
+} catch(err) { console.error('Mark report read error', err); showToast('Error updating'); }
+};
+
+window.markAllReportsRead = async function() {
+const unread = (window.reportsCache || []).filter(r => !r.read);
+if (!unread.length) return;
+try {
+await Promise.all(unread.map(r => updateDoc(doc(db, 'reports', r.id), { read: true })));
+unread.forEach(r => r.read = true);
+window.updateReportsBadge();
+renderReportsTab();
+} catch(err) { console.error('Mark all reports read error', err); showToast('Error updating'); }
+};
+
 window.deleteReport = async function(id) {
 try {
-await deleteDoc(doc(db,'reports', id));
-} catch(e) { console.error('Report delete error', e); showToast('Delete failed — try again'); return; }
-renderReportsTab();
+await updateDoc(doc(db,'reports', id), { read: true, dismissedByInstructor: true });
+} catch(e) { console.error('Report dismiss error', e); showToast('Delete failed — try again'); return; }
 await window.loadReportsCache();
+renderReportsTab();
 buildSidebar();
 };
 
@@ -2389,8 +2625,8 @@ const today = todayKey();
 const lesson = studentLesson[code] || 1;
 const didCards = ((allCardActivity[code] || {})[today] || 0) > 0;
 const didHomework = !!(submissions[code]?.[today] && (dayHasImages(submissions[code][today]) || submissions[code][today].text || submissions[code][today].checkedIn));
-const didReading = !!readingDone[lesson];
-const didGrammar = !!grammarDone[lesson];
+const didReading = readingDoneDates[lesson] === today;
+const didGrammar = grammarDoneDates[lesson] === today;
 return didCards || didHomework || didReading || didGrammar;
 }
 
@@ -2464,6 +2700,8 @@ exProgress = data.exProgress || {};
 exChallengeDraft = data.exChallengeDraft || {};
 readingDone = data.readingDone || {};
 grammarDone = data.grammarDone || {};
+readingDoneDates = data.readingDoneDates || {};
+grammarDoneDates = data.grammarDoneDates || {};
 if (data.customCards) {
 Object.entries(data.customCards).forEach(([lessonNum, cards]) => {
 const num = parseInt(lessonNum);
@@ -2473,7 +2711,7 @@ LESSONS[num].cards = [...DEFAULT_LESSONS[num]?.cards || [], ...cards];
 });
 }
 } else {
-fcProgress = {}; allFcActivity[code] = {}; allCardActivity[code] = {}; fcDeletedCards = {}; studentLesson[code] = 1; exProgress = {}; exChallengeDraft = {}; readingDone = {}; grammarDone = {};
+fcProgress = {}; allFcActivity[code] = {}; allCardActivity[code] = {}; fcDeletedCards = {}; studentLesson[code] = 1; exProgress = {}; exChallengeDraft = {}; readingDone = {}; grammarDone = {}; readingDoneDates = {}; grammarDoneDates = {};
 }
 } catch(e) { console.error('FC load error',e); }
 }
@@ -2508,6 +2746,8 @@ exProgress,
 exChallengeDraft,
 readingDone,
 grammarDone,
+readingDoneDates,
+grammarDoneDates,
 customCards
 });
 } catch(e) { console.error('FC save error',e); }
@@ -2775,6 +3015,7 @@ window.loadDayImages = loadDayImages;
 
 // ── LOGIN ──
 async function handleLogin() {
+window.didMakeProgress = false;
 const code = document.getElementById('code-input').value.trim().toUpperCase();
 const err = document.getElementById('login-error');
 const btn = document.getElementById('login-btn');
@@ -2855,6 +3096,7 @@ return snap.exists();
 }
 
 function enterAsGuest(code) {
+window.didMakeProgress = false;
 isGuestMode = true;
 guestActiveWordCount = 5;
 currentUser = code;
@@ -2862,6 +3104,55 @@ isInstructor = false;
 document.getElementById('home-btn-upload').style.display = 'none';
 document.getElementById('principles-wrap').style.display = 'none';
 }
+
+// Writes one entry into ryan01's Inbox — used for contact requests, new
+// reports, and new homework uploads, so there's a single place to see
+// what's happened recently across every student and guest.
+async function addInboxEntry(type, code, summary, extra) {
+try {
+await setDoc(doc(db, 'inbox', Date.now() + '_' + code), {
+type, code, summary, ...(extra || {}), timestamp: Date.now(), read: false
+});
+} catch(e) { console.error('Inbox save error', e); }
+}
+window.addInboxEntry = addInboxEntry;
+
+// Popup guests see when they tap "Contact Tutor" — collects a way to reach
+// them and drops it straight into ryan01's Inbox.
+window.openContactTutorPopup = function() {
+const overlay = document.createElement('div');
+overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:2000;padding:20px';
+overlay.innerHTML = `
+  <div style="background:white;border-radius:16px;padding:28px 24px;max-width:340px;width:100%;box-shadow:0 8px 24px rgba(0,0,0,0.2)">
+    <div style="font-size:18px;font-weight:800;color:#1a1a2e;margin-bottom:6px">📞 Contact the tutor</div>
+    <div style="font-size:13px;color:#6b7280;margin-bottom:16px;line-height:1.5">Want to join the full program? Leave your WhatsApp number or another way to reach you, and the tutor will get back to you.</div>
+    <label style="font-size:12px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px">WhatsApp number or contact</label>
+    <input type="text" id="contact-tutor-input" placeholder="e.g. +1 555 123 4567" style="width:100%;margin-top:6px;margin-bottom:12px;padding:10px 12px;border:2px solid #e5e7eb;border-radius:10px;font-size:14px;box-sizing:border-box">
+    <label style="font-size:12px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px">Message (optional)</label>
+    <textarea id="contact-tutor-message" placeholder="Anything you'd like to add..." style="width:100%;margin-top:6px;margin-bottom:16px;padding:10px 12px;border:2px solid #e5e7eb;border-radius:10px;font-size:14px;min-height:60px;box-sizing:border-box;font-family:inherit"></textarea>
+    <div id="contact-tutor-error" style="display:none;color:#b91c1c;font-size:12px;margin-bottom:10px">Please enter a WhatsApp number or contact so the tutor can reach you.</div>
+    <button id="contact-tutor-submit" style="width:100%;padding:14px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:8px">Send</button>
+    <button id="contact-tutor-cancel" style="width:100%;padding:12px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">Cancel</button>
+  </div>`;
+document.body.appendChild(overlay);
+document.getElementById('contact-tutor-cancel').onclick = () => overlay.remove();
+document.getElementById('contact-tutor-submit').onclick = async () => {
+const contact = document.getElementById('contact-tutor-input').value.trim();
+const message = document.getElementById('contact-tutor-message').value.trim();
+if (!contact) { document.getElementById('contact-tutor-error').style.display = 'block'; return; }
+const btn = document.getElementById('contact-tutor-submit');
+btn.disabled = true; btn.textContent = 'Sending…';
+try {
+await addInboxEntry('contact', currentUser, (guestName || 'A guest') + ' wants to be contacted', { contact, message, name: guestName || '' });
+overlay.remove();
+showToast('Sent! The tutor will reach out soon.');
+} catch(e) {
+console.error('Contact tutor error', e);
+btn.disabled = false; btn.textContent = 'Send';
+showToast("Couldn't send — check your connection and try again");
+}
+};
+};
 
 window.startGuestJourney = async function() {
 const nameInput = document.getElementById('guest-name-input');
@@ -2876,7 +3167,7 @@ let attempts = 0;
 while (await isGuestCodeTaken(code) && attempts < 5) { code = suggestGuestCode(name); attempts++; }
 codeInput.value = code;
 errEl.style.display = 'none';
-try { await setDoc(doc(db,'guests',code), { name, code, createdAt: Date.now() }); } catch(e) { console.error('Guest create error', e); }
+try { await setDoc(doc(db,'guests',code), { name, code, createdAt: Date.now(), read: false }); } catch(e) { console.error('Guest create error', e); }
 guestName = name;
 pendingMilestoneIntro = true;
 guestTourActive = true;
@@ -2923,7 +3214,7 @@ sidebar.style.display='flex'; sidebar.style.flexDirection='column';
 document.getElementById('sidebar-toggle').style.display='flex';
 if (window.innerWidth < 600) { sidebarCollapsed=true; sidebar.classList.add('collapsed'); }
 document.getElementById('tab-content-homework').style.display='block';
-window.loadReportsCache().then(buildSidebar); updateHeaderForInstructor();
+window.loadReportsCache().then(buildSidebar); window.loadInboxCache(); window.loadGuestsCache(); updateHeaderForInstructor();
 } else {
 app.style.display='block'; app.style.maxWidth='480px'; app.style.margin='0 auto';
 document.getElementById('header-title').textContent='My Homework';
@@ -2931,6 +3222,8 @@ document.getElementById('header-sub').textContent = isGuestMode ? guestName : (S
 updateProgressBanner();
 switchTab('milestones');
 }
+const contactBtn = document.getElementById('contact-tutor-btn');
+if (contactBtn) contactBtn.style.display = isGuestMode ? 'block' : 'none';
 render();
 }
 
@@ -2947,19 +3240,12 @@ document.getElementById('tab-content-exercises').style.display = tab==='exercise
 document.getElementById('tab-content-challenges').style.display = tab==='challenges' ? 'block' : 'none';
 document.getElementById('tab-content-library').style.display = tab==='library' ? 'block' : 'none';
 if (tab==='library' && typeof renderLibrary === 'function') renderLibrary();
-if (tab === 'story') {
-  const lesson = studentLesson[activeStudentCode()] || 1;
-  initializeStory(lesson);
-  storyRenderSentence(lesson);
-}
-if (tab === 'story') {
-  const lesson = studentLesson[activeStudentCode()] || 1;
-  initializeStory(lesson);
-  storyRenderSentence(lesson);
-}
+document.getElementById('tab-content-saved').style.display = tab==='saved' ? 'block' : 'none';
+if (tab==='saved' && typeof renderSavedTab === 'function') renderSavedTab();
 document.getElementById('tab-content-story').style.display = tab==='story' ? 'block' : 'none';
 document.getElementById('tab-content-milestones').style.display = tab==='milestones' ? 'block' : 'none';
 document.getElementById('tab-content-guests').style.display = tab==='guests' ? 'block' : 'none';
+document.getElementById('tab-content-inbox').style.display = tab==='inbox' ? 'block' : 'none';
 document.getElementById('tab-home').classList.toggle('active', tab==='home');
 document.getElementById('tab-homework').classList.toggle('active', tab==='homework');
 document.getElementById('tab-story').classList.toggle('active', tab==='story');
@@ -2969,7 +3255,10 @@ if (tab==='flashcards') { fcCurrentLesson = studentLesson[activeStudentCode()] |
 if (tab==='exercises' && typeof exShowPicker === 'function') { exPickerLesson = null; exShowPicker(); }
 if (tab==='challenges' && typeof exShowChallengesPicker === 'function') { exPickerLesson = null; exShowChallengesPicker(); }
 if (tab==='story') {
-setStoryLesson(studentLesson[activeStudentCode()] || 1);
+const lesson = studentLesson[activeStudentCode()] || 1;
+setStoryLesson(lesson);
+initializeStory(lesson);
+storyRenderSentence(lesson);
 if (typeof setStoryViewMode === 'function') setStoryViewMode('sentence');
 const gramBtn = document.getElementById('student-grammar-done-btn');
 if (gramBtn) gramBtn.style.display = isGuestMode ? 'none' : 'block';
@@ -2989,6 +3278,7 @@ pendingMilestoneIntro = false;
 }
 }
 if (tab==='guests') renderGuestsTab();
+if (tab==='inbox') renderInboxTab();
 document.getElementById('tab-content-reports').style.display = tab==='reports' ? 'block' : 'none';
 document.getElementById('tab-content-leaderboard').style.display = tab==='leaderboard' ? 'block' : 'none';
 document.getElementById('tab-content-leaderboard-admin').style.display = tab==='leaderboard-admin' ? 'block' : 'none';
@@ -3006,6 +3296,49 @@ try {
 const snap = await getDocs(collection(db,'reports'));
 snap.forEach(d => window.reportsCache.push({ id: d.id, ...d.data() }));
 } catch(e) { console.error('Reports load error', e); }
+window.updateReportsBadge();
+};
+
+window.updateReportsBadge = function() {
+const badge = document.getElementById('reports-unread-badge');
+if (!badge) return;
+const count = (window.reportsCache || []).filter(r => !r.read).length;
+badge.style.display = count > 0 ? 'inline-block' : 'none';
+badge.textContent = count;
+};
+
+window.loadGuestsCache = async function() {
+window.guestsCache = [];
+try {
+const snap = await getDocs(collection(db,'guests'));
+snap.forEach(d => window.guestsCache.push({ code: d.id, ...d.data() }));
+} catch(e) { console.error('Guests load error', e); }
+window.updateGuestsBadge();
+};
+
+window.updateGuestsBadge = function() {
+const badge = document.getElementById('guests-unread-badge');
+if (!badge) return;
+const count = (window.guestsCache || []).filter(g => !g.read).length;
+badge.style.display = count > 0 ? 'inline-block' : 'none';
+badge.textContent = count;
+};
+
+window.loadInboxCache = async function() {
+window.inboxCache = [];
+try {
+const snap = await getDocs(collection(db,'inbox'));
+snap.forEach(d => window.inboxCache.push({ id: d.id, ...d.data() }));
+} catch(e) { console.error('Inbox load error', e); }
+window.updateInboxBadge();
+};
+
+window.updateInboxBadge = function() {
+const badge = document.getElementById('inbox-unread-badge');
+if (!badge) return;
+const count = (window.inboxCache || []).filter(e => !e.read).length;
+badge.style.display = count > 0 ? 'inline-block' : 'none';
+badge.textContent = count;
 };
 
 function buildSidebar() {
@@ -3022,15 +3355,8 @@ const progressDotClass = streakDoneToday ? 'green' : (todayCount>0 ? 'blue' : 'g
 const hasReport = (window.reportsCache||[]).some(r => r.studentCode === code);
 const el = document.createElement('div');
 el.className='sidebar-student'+(code===viewingStudent?' active':'');
-el.innerHTML=`<div class="sidebar-info"><div class="sidebar-name">${s.name}</div><div class="sidebar-streak">🔥 ${streak} day streak · 📇 ${todayCount}/20 today</div></div><div class="status-dot ${progressDotClass}" title="Today's progress"></div><div class="status-dot ${hasReport?'yellow':'grey'}" title="${hasReport?'Has an open report':'No open reports'}"></div><button class="sidebar-delete-btn" style="background:none;border:none;cursor:pointer;font-size:14px;padding:4px;color:#9ca3af">🗑️</button>`;
-el.onclick=async(e)=>{ if(e.target.className!=='sidebar-delete-btn') { viewingStudent=code; switchTab('homework'); updateHeaderForInstructor(); buildSidebar(); render(); } };
-el.querySelector('.sidebar-delete-btn').onclick=(e)=>{ e.stopPropagation(); exDeleteStudent(code); };
-const resetBtn = document.createElement('button');
-resetBtn.textContent = '↺';
-resetBtn.style.cssText = 'background:none;border:none;cursor:pointer;font-size:14px;padding:4px;color:#9ca3af;margin-left:4px';
-resetBtn.title = 'Reset daily progress';
-resetBtn.onclick = (e) => { e.stopPropagation(); exResetDailyProgress(code); };
-el.appendChild(resetBtn);
+el.innerHTML=`<div class="sidebar-info"><div class="sidebar-name">${s.name} <span style="font-weight:400;color:#9ca3af;font-size:12px">(${code})</span></div><div class="sidebar-streak">🔥 ${streak} day streak · 📇 ${todayCount}/20 today</div></div><div class="status-dot ${progressDotClass}" title="Today's progress"></div><div class="status-dot ${hasReport?'yellow':'grey'}" title="${hasReport?'Has an open report':'No open reports'}"></div>`;
+el.onclick=async()=>{ viewingStudent=code; switchTab('homework'); updateHeaderForInstructor(); buildSidebar(); render(); };
 const enterBtn = document.createElement('button');
 enterBtn.textContent = '👤';
 enterBtn.style.cssText = 'background:none;border:none;cursor:pointer;font-size:14px;padding:4px;color:#9ca3af;margin-left:4px';
@@ -3251,6 +3577,7 @@ submissions[code][selectedDate]=dayData;
 await saveDay(code,selectedDate,dayData);
 didMakeProgress = true;
 showToast('Homework submitted ✓');
+addInboxEntry('homework', code, (STUDENTS[code]?.name || guestName || code) + ' submitted homework for ' + formatDateLong(selectedDate), { date: selectedDate });
 render();
 } catch(e){showToast('Upload failed — try again');console.error(e);btn.textContent='Submit';btn.disabled=false;}
 }
@@ -3947,10 +4274,16 @@ if (storyData) {
     if (ratingsEl) wordsAnchor.parentElement.insertBefore(ratingsEl, wordsAnchor);
   }
 } else {
-  // Fallback to hardcoded HTML only if no database data
-  dynContainer.style.display = 'none';
+  // No story data found for this lesson — show why, instead of leaving a blank screen.
+  dynContainer.style.display = 'block';
+  const totalStories = window.LESSON_STORIES ? window.LESSON_STORIES.length : 0;
+  dynContainer.innerHTML = `<div style="text-align:center;padding:30px 16px;color:#92400e;background:#fffbeb;border:1.5px solid #fcd34d;border-radius:12px">
+    <div style="font-size:32px;margin-bottom:10px">⚠️</div>
+    <div style="font-weight:700;margin-bottom:8px">Couldn't load the story for Lesson ${lesson}</div>
+    <div style="font-size:13px;line-height:1.6">${totalStories === 0 ? 'The story data has not loaded at all — try refreshing the page.' : 'Story data loaded (' + totalStories + ' lesson' + (totalStories !== 1 ? 's' : '') + ' found), but none of them is Lesson ' + lesson + '.'}</div>
+  </div>`;
   const fallback = document.getElementById('story-lesson-' + lesson);
-  if (fallback) fallback.style.display = 'block';
+  if (fallback) fallback.style.display = 'none';
 }
 
 const newPrinciples = (storyData && storyData.principles) ? storyData.principles : (lesson === 3 ? PRINCIPLES_L3 : lesson === 2 ? PRINCIPLES_L2 : PRINCIPLES);
@@ -4094,6 +4427,7 @@ document.getElementById('next-month-btn').addEventListener('click',()=>{calMonth
 
 document.getElementById('modal').addEventListener('click',closeModal);
 document.getElementById('modal-close-btn').addEventListener('click',e=>{e.stopPropagation();closeModal();});
+document.getElementById('contact-tutor-btn').addEventListener('click', window.openContactTutorPopup);
 async function markHomeworkCheckin() {
 const code = activeStudentCode();
 const today = todayKey();
@@ -4277,7 +4611,8 @@ typeharakat: 1, typeenglish: 1,
 suffixpronoun: 1, suffixtrans: 1, aetrans: 1, challenge1: 1, challenge2: 1,
 adjectiveagreement: 2, adjectiveagreementtrans: 2,
 demonstrative: 2, demotrans: 2, feminine: 2,
-vocabtrans1: 1, vocabtrans2: 2, vocabtrans3: 3, vocabtrans4: 4, vocabtrans5: 5, vocabtrans6: 6,
+typeenglish2: 2, typeenglish3: 3, typeenglish4: 4, typeenglish5: 5, typeenglish6: 6,
+typeenglish7: 7, typeenglish8: 8, typeenglish9: 9, typeenglish10: 10, typeenglish11: 11, typeenglish12: 12, typeenglish13: 13, typeenglish14: 14, typeenglish15: 15, typeenglish16: 16,
 challenge1l2: 2, challenge1l3: 3, challenge1l4: 4, challenge1l5: 5, challenge1l6: 6,
 challenge1l7: 7, challenge1l8: 8, challenge1l9: 9, challenge1l10: 10, challenge1l11: 11, challenge1l12: 12, challenge1l13: 13, challenge1l14: 14, challenge1l15: 15, challenge1l16: 16,
 challenge2l2: 2, challenge2l3: 3, challenge2l4: 4, challenge2l5: 5, challenge2l6: 6,
@@ -4303,7 +4638,22 @@ let exPickerLesson = null;
 const EX_CARDS = [
 
 { mode:'typeharakat', icon:'⌨️', title:'Type Without Harakat', desc:'See the word with harakat — type it using bare letters only.' },
-{ mode:'typeenglish', icon:'🔤', title:'English → Arabic', desc:'See the English — type the Arabic word from memory.' },
+{ mode:'typeenglish', icon:'🔤', title:'English → Arabic', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' },
+{ mode:'typeenglish2', icon:'🔤', title:'English → Arabic', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' },
+{ mode:'typeenglish3', icon:'🔤', title:'English → Arabic', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' },
+{ mode:'typeenglish4', icon:'🔤', title:'English → Arabic', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' },
+{ mode:'typeenglish5', icon:'🔤', title:'English → Arabic', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' },
+{ mode:'typeenglish6', icon:'🔤', title:'English → Arabic', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' },
+{ mode:'typeenglish7', icon:'🔤', title:'English → Arabic', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' },
+{ mode:'typeenglish8', icon:'🔤', title:'English → Arabic', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' },
+{ mode:'typeenglish9', icon:'🔤', title:'English → Arabic', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' },
+{ mode:'typeenglish10', icon:'🔤', title:'English → Arabic', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' },
+{ mode:'typeenglish11', icon:'🔤', title:'English → Arabic', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' },
+{ mode:'typeenglish12', icon:'🔤', title:'English → Arabic', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' },
+{ mode:'typeenglish13', icon:'🔤', title:'English → Arabic', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' },
+{ mode:'typeenglish14', icon:'🔤', title:'English → Arabic', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' },
+{ mode:'typeenglish15', icon:'🔤', title:'English → Arabic', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' },
+{ mode:'typeenglish16', icon:'🔤', title:'English → Arabic', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' },
 { mode:'plural', icon:'👥', title:'Spot the Plural', desc:'Two words appear — tap the one that is plural.' },
 { mode:'pluraltype', icon:'🧩', title:'Spot the Pattern', desc:'A plural shows up — is it regular or irregular? Human or non-human?' },
 { mode:'feminine', icon:'♀️', title:'Spot the Feminine', desc:'Four words appear — tap the two that are feminine, then Check.' },
@@ -4458,13 +4808,7 @@ const EX_CARDS = [
 { mode:'demonstrative', icon:'👉', title:'Demonstrative Pronouns', desc:'Practise هذا / هذه / هؤلاء agreement with true/false and correction questions.' },
 { mode:'demotrans', icon:'👉', title:'Demonstrative Pronouns — Translate', desc:'Read the English, write the Arabic demonstrative phrase, then reveal and grade yourself.' },
 { mode:'adjectiveagreement', icon:'✨', title:'Adjective Agreement', desc:'Noun-adjective agreement: is the adjective correctly matched to the noun?' },
-{ mode:'adjectiveagreementtrans', icon:'✨', title:'Adjective Agreement — Translate', desc:'Read the English, write the Arabic noun + adjective, then reveal and grade yourself.' },
-{ mode:'vocabtrans1', icon:'📖', title:'Vocab — Translate', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' },
-{ mode:'vocabtrans2', icon:'📖', title:'Vocab — Translate', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' },
-{ mode:'vocabtrans3', icon:'📖', title:'Vocab — Translate', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' },
-{ mode:'vocabtrans4', icon:'📖', title:'Vocab — Translate', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' },
-{ mode:'vocabtrans5', icon:'📖', title:'Vocab — Translate', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' },
-{ mode:'vocabtrans6', icon:'📖', title:'Vocab — Translate', desc:'Read the English word, write the Arabic with harakat, then reveal and grade yourself.' }
+{ mode:'adjectiveagreementtrans', icon:'✨', title:'Adjective Agreement — Translate', desc:'Read the English, write the Arabic noun + adjective, then reveal and grade yourself.' }
 ];
 function exGetQuestionCount(mode) {
 mode = mode.replace(/listen$/, '');
@@ -4508,17 +4852,26 @@ return mode==='fillgap' ? FILL_GAP_QUESTIONS.length
 : mode==='suffixtrans' ? SUFFIX_TRANSLATION_QUESTIONS.length
 : mode==='adjectiveagreement' ? ADJECTIVE_AGREEMENT_QUESTIONS.length
 : mode==='adjectiveagreementtrans' ? ADJECTIVE_AGREEMENT_TRANSLATION_QUESTIONS.length
-: mode==='vocabtrans1' ? exBuildVocabTransPool(1).length
-: mode==='vocabtrans2' ? exBuildVocabTransPool(2).length
-: mode==='vocabtrans3' ? exBuildVocabTransPool(3).length
-: mode==='vocabtrans4' ? exBuildVocabTransPool(4).length
-: mode==='vocabtrans5' ? exBuildVocabTransPool(5).length
-: mode==='vocabtrans6' ? exBuildVocabTransPool(6).length
 : mode==='plural' ? PLURAL_QUESTIONS.length
 : mode==='feminine' ? FEMININE_QUESTIONS.length
 : mode==='pluraltype' ? PLURAL_TYPE_QUESTIONS.length * 2
 : mode==='typeharakat' ? exBuildLesson1Pool().length
-: mode==='typeenglish' ? exBuildLesson1Pool().length
+: mode==='typeenglish' ? exBuildVocabTransPool(1).length
+: mode==='typeenglish2' ? exBuildVocabTransPool(2).length
+: mode==='typeenglish3' ? exBuildVocabTransPool(3).length
+: mode==='typeenglish4' ? exBuildVocabTransPool(4).length
+: mode==='typeenglish5' ? exBuildVocabTransPool(5).length
+: mode==='typeenglish6' ? exBuildVocabTransPool(6).length
+: mode==='typeenglish7' ? exBuildVocabTransPool(7).length
+: mode==='typeenglish8' ? exBuildVocabTransPool(8).length
+: mode==='typeenglish9' ? exBuildVocabTransPool(9).length
+: mode==='typeenglish10' ? exBuildVocabTransPool(10).length
+: mode==='typeenglish11' ? exBuildVocabTransPool(11).length
+: mode==='typeenglish12' ? exBuildVocabTransPool(12).length
+: mode==='typeenglish13' ? exBuildVocabTransPool(13).length
+: mode==='typeenglish14' ? exBuildVocabTransPool(14).length
+: mode==='typeenglish15' ? exBuildVocabTransPool(15).length
+: mode==='typeenglish16' ? exBuildVocabTransPool(16).length
 : mode==='aetrans' ? TRANSLATION_1_QUESTIONS.length
 : 0;
 }
@@ -4906,11 +5259,10 @@ const title = mode === 'fillgap' ? '📝 Fill the Gap'
 : mode === 'plural' ? '👥 Spot the Plural'
 : mode === 'feminine' ? '♀️ Spot the Feminine'
 : mode === 'typeharakat' ? '⌨️ Type Without Harakat'
-: mode === 'typeenglish' ? '🔤 English → Arabic'
+: mode.indexOf('typeenglish') === 0 ? '🔤 English → Arabic'
 : mode === 'suffixtrans' ? '✍️ Suffix Pronouns — Translate'
 : mode === 'demotrans' ? '👉 Demonstrative Pronouns — Translate'
 : mode === 'adjectiveagreementtrans' ? '✨ Adjective Agreement — Translate'
-: mode === 'vocabtrans1' || mode === 'vocabtrans2' || mode === 'vocabtrans3' || mode === 'vocabtrans4' || mode === 'vocabtrans5' || mode === 'vocabtrans6' ? '📖 Vocab — Translate'
 : mode === 'pluraltype' ? '🧩 Spot the Pattern'
 : mode === 'aetrans' ? '🔁 Arabic → English'
 : '✅ True or False';
@@ -4956,16 +5308,25 @@ return mode === 'fillgap' ? FILL_GAP_QUESTIONS.map((q,i) => ({ ...q, __idx: i })
 : mode === 'plural' ? PLURAL_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
 : mode === 'feminine' ? FEMININE_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
 : mode === 'typeharakat' ? exBuildLesson1Pool().map((q,i) => ({ ...q, __idx: i }))
-: mode === 'typeenglish' ? exBuildLesson1Pool().map((q,i) => ({ ...q, __idx: i }))
+: mode === 'typeenglish' ? exBuildVocabTransPool(1).map((q,i) => ({ ...q, __idx: i }))
+: mode === 'typeenglish2' ? exBuildVocabTransPool(2).map((q,i) => ({ ...q, __idx: i }))
+: mode === 'typeenglish3' ? exBuildVocabTransPool(3).map((q,i) => ({ ...q, __idx: i }))
+: mode === 'typeenglish4' ? exBuildVocabTransPool(4).map((q,i) => ({ ...q, __idx: i }))
+: mode === 'typeenglish5' ? exBuildVocabTransPool(5).map((q,i) => ({ ...q, __idx: i }))
+: mode === 'typeenglish6' ? exBuildVocabTransPool(6).map((q,i) => ({ ...q, __idx: i }))
+: mode === 'typeenglish7' ? exBuildVocabTransPool(7).map((q,i) => ({ ...q, __idx: i }))
+: mode === 'typeenglish8' ? exBuildVocabTransPool(8).map((q,i) => ({ ...q, __idx: i }))
+: mode === 'typeenglish9' ? exBuildVocabTransPool(9).map((q,i) => ({ ...q, __idx: i }))
+: mode === 'typeenglish10' ? exBuildVocabTransPool(10).map((q,i) => ({ ...q, __idx: i }))
+: mode === 'typeenglish11' ? exBuildVocabTransPool(11).map((q,i) => ({ ...q, __idx: i }))
+: mode === 'typeenglish12' ? exBuildVocabTransPool(12).map((q,i) => ({ ...q, __idx: i }))
+: mode === 'typeenglish13' ? exBuildVocabTransPool(13).map((q,i) => ({ ...q, __idx: i }))
+: mode === 'typeenglish14' ? exBuildVocabTransPool(14).map((q,i) => ({ ...q, __idx: i }))
+: mode === 'typeenglish15' ? exBuildVocabTransPool(15).map((q,i) => ({ ...q, __idx: i }))
+: mode === 'typeenglish16' ? exBuildVocabTransPool(16).map((q,i) => ({ ...q, __idx: i }))
 : mode === 'suffixtrans' ? SUFFIX_TRANSLATION_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
 : mode === 'demotrans' ? DEMO_TRANSLATION_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
 : mode === 'adjectiveagreementtrans' ? ADJECTIVE_AGREEMENT_TRANSLATION_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
-: mode === 'vocabtrans1' ? exBuildVocabTransPool(1).map((q,i) => ({ ...q, __idx: i }))
-: mode === 'vocabtrans2' ? exBuildVocabTransPool(2).map((q,i) => ({ ...q, __idx: i }))
-: mode === 'vocabtrans3' ? exBuildVocabTransPool(3).map((q,i) => ({ ...q, __idx: i }))
-: mode === 'vocabtrans4' ? exBuildVocabTransPool(4).map((q,i) => ({ ...q, __idx: i }))
-: mode === 'vocabtrans5' ? exBuildVocabTransPool(5).map((q,i) => ({ ...q, __idx: i }))
-: mode === 'vocabtrans6' ? exBuildVocabTransPool(6).map((q,i) => ({ ...q, __idx: i }))
 : mode === 'pluraltype' ? exBuildPluralTypeDeck().map((q,i) => ({ ...q, __idx: i }))
 : mode === 'aetrans' ? TRANSLATION_1_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
 : mode === 'truefalse2' ? TRUE_FALSE_QUESTIONS_L2.map((q,i) => ({ ...q, __idx: i }))
@@ -5272,7 +5633,7 @@ freshBtn.textContent = 'Reveal ←';
 freshBtn.onclick = exSubmitDemoTrans;
 inp.onkeydown = e => { if (e.key === 'Enter') exSubmitDemoTrans(); };
 }
-else if (exMode === 'adjectiveagreementtrans' || exMode === 'vocabtrans1' || exMode === 'vocabtrans2' || exMode === 'vocabtrans3' || exMode === 'vocabtrans4' || exMode === 'vocabtrans5' || exMode === 'vocabtrans6') {
+else if (exMode === 'adjectiveagreementtrans' || exMode.indexOf('typeenglish') === 0) {
 const q = exQuestions[exCurrent];
 const existingType = document.getElementById('ex-tf-btns');
 if (existingType) existingType.remove();
@@ -5294,18 +5655,12 @@ freshBtn.textContent = 'Reveal ←';
 freshBtn.onclick = exSubmitAdjAgreementTrans;
 inp.onkeydown = e => { if (e.key === 'Enter') exSubmitAdjAgreementTrans(); };
 }
-else if (exMode === 'typeharakat' || exMode === 'typeenglish') {
+else if (exMode === 'typeharakat') {
 const q = exQuestions[exCurrent];
 const existingType = document.getElementById('ex-tf-btns');
 if (existingType) existingType.remove();
-if (exMode === 'typeharakat') {
 document.getElementById('ex-instruction').textContent = 'Type this word using bare letters only (no harakat)';
 document.getElementById('ex-sentence').textContent = q.ar;
-} else {
-document.getElementById('ex-instruction').textContent = 'Type the Arabic word';
-document.getElementById('ex-sentence').textContent = q.en;
-document.getElementById('ex-sentence').style.direction = 'ltr';
-}
 const fillDiv = document.getElementById('ex-fill-input');
 fillDiv.style.display = 'flex';
 document.getElementById('ex-word-order').style.display = 'none';
