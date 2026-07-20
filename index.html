@@ -1097,12 +1097,13 @@ let grammarDone = {};
 
 // ── UTILS ──
 function dateKey(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
-window.addToReadLater = async function(type, ar, en, lesson) {
+window.addToReadLater = async function(type, ar, en, lesson, activity) {
 const code = activeStudentCode();
 try {
 await setDoc(doc(db, 'reports', Date.now() + '_' + code), {
 studentCode: code,
 type: type,
+activity: activity || '',
 arabic: ar,
 english: en,
 lesson: lesson,
@@ -2278,13 +2279,20 @@ root.innerHTML = '<div class="no-submission-msg">No reports yet.</div>';
 return;
 }
 reportDocs.sort((a,b) => (b.timestamp||0) - (a.timestamp||0));
-root.innerHTML = reportDocs.map(r => {
+const typeIcon = { flashcard: '🃏', exercise: '📝', challenge: '🏆' };
+const typeName = { flashcard: 'Flashcard', exercise: 'Exercise', challenge: 'Challenge' };
+root.innerHTML = reportDocs.map((r, i) => {
 const studentName = STUDENTS[r.studentCode]?.name || r.studentCode;
 const date = new Date(r.timestamp).toLocaleDateString();
 const isCardReport = !!r.arabic;
+const sourceLabel = (r.activity || typeName[r.type] || 'Reported card') + (r.lesson ? ' · Lesson ' + r.lesson : '');
 const bodyHtml = isCardReport
-? `<div style="font-family:'Scheherazade New', serif;font-size:1.2em;direction:rtl;text-align:right;color:#1a1a2e;margin-bottom:6px">${r.arabic}</div>
-<div style="font-size:13px;color:#6b7280">${r.english || ''}</div>`
+? `<div style="font-size:12px;color:#92400e;font-weight:700;margin-bottom:8px">${typeIcon[r.type] || '⚠️'} ${sourceLabel}</div>
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+<div style="font-family:'Scheherazade New', serif;font-size:1.2em;direction:rtl;text-align:right;color:#1a1a2e;flex:1">${r.arabic}</div>
+<button id="report-speak-${i}" title="Play this text as audio — the same voice the student heard" style="background:none;border:none;cursor:pointer;font-size:18px;padding:4px;flex-shrink:0">🔊</button>
+</div>
+<div style="font-size:13px;color:#6b7280">${r.english || '<span style="color:#9ca3af;font-style:italic">(this exercise has no English side)</span>'}</div>`
 : `<div style="font-size:13px;color:var(--grey);margin-bottom:8px">${r.context}</div>
 <div style="font-size:14px;color:var(--ink)">${r.note || '(no message)'}</div>`;
 return `<div style="background:white;border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px">
@@ -2296,6 +2304,11 @@ return `<div style="background:white;border:1px solid var(--border);border-radiu
 <div style="font-size:12px;color:var(--grey)">${date}</div>
 </div>`;
 }).join('');
+reportDocs.forEach((r, i) => {
+if (!r.arabic) return;
+const btn = document.getElementById('report-speak-' + i);
+if (btn) btn.onclick = () => window.speakArabic(r.arabic);
+});
 }
 
 window.deleteReport = async function(id) {
@@ -2519,7 +2532,22 @@ incrementCardActivity(code);
 await saveFlashcardData(code);
 };
 
+// Marks an exercise as done because it was too easy to bother finishing —
+// shows as 100% with a "Too Easy" label instead of the normal completed badge.
+window.markExerciseTooEasy = async function(mode) {
+if (!exProgress[mode]) exProgress[mode] = {};
+exProgress[mode].__tooEasy = true;
+const code = currentUser || viewingStudent;
+incrementCardActivity(code);
+await saveFlashcardData(code);
+};
+
+window.isExerciseTooEasy = function(mode) {
+return !!(exProgress[mode] && exProgress[mode].__tooEasy);
+};
+
 window.getExerciseMasteryPercent = function(mode, poolLength) {
+if (window.isExerciseTooEasy(mode)) return 100;
 const prog = exProgress[mode] || {};
 if (!poolLength) return 0;
 let easyCount = 0;
@@ -2528,6 +2556,7 @@ return Math.round((easyCount / poolLength) * 100);
 };
 
 window.getExerciseRemainingCount = function(mode, poolLength) {
+if (window.isExerciseTooEasy(mode)) return 0;
 const prog = exProgress[mode] || {};
 let easyCount = 0;
 for (let i = 0; i < poolLength; i++) { if (prog[i] === 3) easyCount++; }
@@ -3502,31 +3531,11 @@ area.appendChild(fcBackBtn);
 }
 document.getElementById('fc-report-btn').addEventListener('click', (e) => {
 e.stopPropagation();
-window.addToReadLater('flashcard', card.ar, card.en, fcCurrentLesson);
+window.addToReadLater('flashcard', card.ar, card.en, card.deckKey, 'Flashcard');
 });
 document.getElementById('fc-speak-btn').addEventListener('click', (e) => {
 e.stopPropagation();
 window.speakArabic(card.ar);
-});
-document.getElementById('fc-report-btn').addEventListener('click', (e) => {
-e.stopPropagation();
-window.addToReadLater('flashcard', card.ar, card.en, card.deckKey);
-});
-document.getElementById('fc-speak-btn').addEventListener('click', (e) => {
-e.stopPropagation();
-window.speakArabic(card.ar);
-});
-document.getElementById('fc-report-btn').addEventListener('click', (e) => {
-e.stopPropagation();
-window.addToReadLater('flashcard', card.ar, card.en, card.deckKey);
-});
-document.getElementById('fc-speak-btn').addEventListener('click', (e) => {
-e.stopPropagation();
-window.speakArabic(card.ar);
-});
-document.getElementById('fc-report-btn').addEventListener('click', (e) => {
-e.stopPropagation();
-window.addToReadLater('flashcard', card.ar, card.en, card.deckKey);
 });
 
 const ratingWrap = document.createElement('div');
@@ -4149,7 +4158,7 @@ popup.style.display = 'none';
 
 
 // ── EXERCISE ENGINE ──
-let exMode = null, exQuestions = [], exCurrent = 0, exAnswered = 0;
+let exMode = null, exQuestions = [], exCurrent = 0, exAnswered = 0, exNewEasyStreak = 0;
 let exHistory = [], exReviewPos = null, exLiveQuestions = null, exLiveCurrent = null;
 let ch1Index = 0, ch1Answers = [];
 let ch2Index = 0, ch2Answers = [];
@@ -4533,14 +4542,15 @@ const pct = window.getExerciseMasteryPercent(c.mode, exGetQuestionCount(c.mode))
 const total = exGetQuestionCount(c.mode);
 const remaining = window.getExerciseRemainingCount(c.mode, total);
 const completed = total - remaining;
+const isTooEasy = window.isExerciseTooEasy(c.mode);
 const state = pct === 100 ? 'state-complete' : pct === 0 ? 'state-untouched' : 'state-progress';
-const badge = pct === 100 ? 'COMPLETED 100%' : `PROGRESS: ${pct}%`;
+const badge = isTooEasy ? '⚡ TOO EASY — 100%' : pct === 100 ? 'COMPLETED 100%' : `PROGRESS: ${pct}%`;
 return `<div class="ex-card ${state}" id="btn-${c.mode}">
 <div class="ex-card-top">
 ${window.miniRing(pct, c.icon)}
 <div class="ex-card-info">
 <div class="ex-card-badge">${badge}</div>
-<div class="ex-card-count">${remaining} question${remaining!==1?'s':''} until mastery</div>
+<div class="ex-card-count">${isTooEasy ? 'Skipped — this exercise was too easy' : remaining + ' question' + (remaining!==1?'s':'') + ' until mastery'}</div>
 </div>
 </div>
 <div class="ex-card-title">${c.title}</div>
@@ -4701,7 +4711,7 @@ let html = `
 <div style="margin-bottom:18px">
 <div style="font-family:'Scheherazade New', serif;font-size:1.4em;direction:rtl;text-align:right;color:#8b2035;font-weight:700">${w.ar}</div>
 <div style="font-size:12px;color:#6b7280;margin-bottom:6px">${w.en}</div>
-<button id="ch1-report-btn" style="background:none;border:none;cursor:pointer;font-size:16px;padding:4px 0;margin-bottom:4px">📍</button>
+<button id="ch1-report-btn" style="background:none;border:none;cursor:pointer;font-size:16px;padding:4px 0;margin-bottom:4px">⚠️</button>
 <textarea id="ch1-input" placeholder="Write your sentence..." style="width:100%;padding:10px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:1.1em;direction:rtl;text-align:right;font-family:inherit;min-height:50px;outline:none;box-sizing:border-box">${(ch1Answers[ch1Index] && ch1Answers[ch1Index].answer) || ''}</textarea>
 </div>
 <button id="ch1-next-btn" style="width:100%;margin-top:8px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">${isLast ? 'Submit Challenge' : 'Next'}</button>
@@ -4710,7 +4720,7 @@ let html = `
 document.getElementById('challenges-root').innerHTML = html;
 document.getElementById('ch1-next-btn').onclick = () => window.exAdvanceChallenge1(mode);
 document.getElementById('ch1-back-btn').onclick = () => window.exGoBackChallenge1(mode);
-document.getElementById('ch1-report-btn').onclick = () => window.addToReadLater('challenge', w.ar, w.en, EX_LESSON_MAP[mode]);
+document.getElementById('ch1-report-btn').onclick = () => window.addToReadLater('challenge', w.ar, w.en, EX_LESSON_MAP[mode], 'Challenge 1 — Make a sentence');
 }
 
 const COMPREHENSION_QUESTIONS_BY_MODE = {
@@ -4764,7 +4774,7 @@ let html = `
 <div style="background:var(--grey-light);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
 <div style="font-size:13px;color:#6b7280;margin-bottom:14px;font-weight:600">Question ${compIndex+1} of ${questions.length}</div>
 <div style="font-size:14px;color:#6b7280;margin-bottom:20px;line-height:1.6">${instructionsText}</div>
-<button id="comp-report-btn" style="background:none;border:none;cursor:pointer;font-size:16px;padding:4px 0;margin-bottom:8px">📍</button>
+<button id="comp-report-btn" style="background:none;border:none;cursor:pointer;font-size:16px;padding:4px 0;margin-bottom:8px">⚠️</button>
 <div style="margin-bottom:18px">
 ${questionAreaHtml}
 <textarea id="comp-input" placeholder="Write your answer..." style="width:100%;padding:10px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:1.1em;direction:rtl;text-align:right;font-family:inherit;min-height:50px;outline:none;box-sizing:border-box">${(compAnswers[compIndex] && compAnswers[compIndex].answer) || ''}</textarea>
@@ -4775,7 +4785,7 @@ ${questionAreaHtml}
 document.getElementById('challenges-root').innerHTML = html;
 document.getElementById('comp-next-btn').onclick = () => window.exAdvanceComprehension(mode);
 document.getElementById('comp-back-btn').onclick = () => window.exGoBackComprehension(mode);
-document.getElementById('comp-report-btn').onclick = () => window.addToReadLater('challenge', q.ar, q.en, EX_LESSON_MAP[mode]);
+document.getElementById('comp-report-btn').onclick = () => window.addToReadLater('challenge', q.ar, q.en, EX_LESSON_MAP[mode], isListening ? 'Comprehension — Listening' : 'Comprehension');
 }
 
 window.exGoBackComprehension = function(mode) {
@@ -4872,7 +4882,7 @@ let html = `
 <div style="background:var(--grey-light);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
 <div style="font-size:13px;color:#6b7280;margin-bottom:14px;font-weight:600">Question ${ch2Index+1} of ${sentences.length}</div>
 <div style="font-size:14px;color:#6b7280;margin-bottom:20px;line-height:1.6">${instructionsText}</div>
-<button id="ch2-report-btn" style="background:none;border:none;cursor:pointer;font-size:16px;padding:4px 0;margin-bottom:8px">📍</button>
+<button id="ch2-report-btn" style="background:none;border:none;cursor:pointer;font-size:16px;padding:4px 0;margin-bottom:8px">⚠️</button>
 <div style="margin-bottom:18px">
 <div style="font-size:1em;direction:${promptDirection};text-align:${promptAlign};color:#1a1a2e;margin-bottom:6px">${promptText}</div>
 <textarea id="ch2-input" placeholder="Write the Arabic translation..." style="width:100%;padding:10px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:1.2em;direction:rtl;text-align:right;font-family:'Scheherazade New', serif;min-height:50px;outline:none;box-sizing:border-box">${(ch2Answers[ch2Index] && ch2Answers[ch2Index].answer) || ''}</textarea>
@@ -4883,7 +4893,7 @@ let html = `
 document.getElementById('challenges-root').innerHTML = html;
 document.getElementById('ch2-next-btn').onclick = () => window.exAdvanceChallenge2(mode);
 document.getElementById('ch2-back-btn').onclick = () => window.exGoBackChallenge2(mode);
-document.getElementById('ch2-report-btn').onclick = () => window.addToReadLater('challenge', s.ar, s.en, EX_LESSON_MAP[mode]);
+document.getElementById('ch2-report-btn').onclick = () => window.addToReadLater('challenge', s.ar, s.en, EX_LESSON_MAP[mode], isNegateAffirm ? 'Negate and Affirm' : 'Challenge 2 — Translate to Arabic');
 }
 
 function exShowSetup(mode) {
@@ -4905,11 +4915,12 @@ const title = mode === 'fillgap' ? '📝 Fill the Gap'
 : mode === 'aetrans' ? '🔁 Arabic → English'
 : '✅ True or False';
 const isGrammarDrill = mode === 'demonstrative';
+const questionCount = exGetQuestionCount(mode);
 exRender(`
   <div class="section-label">${title}</div>
   <div style="background:var(--grey-light);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
     ${isGrammarDrill ? `<div style="background:#fffbeb;border:1.5px solid #fcd34d;border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:13px;color:#92400e;line-height:1.5">⚠️ These sentences are computer-generated, and the meanings are deliberately nonsensical so you can't guess the answer from context. Focus only on the grammar rule being tested — not what the sentence means.</div>` : ''}
- <div style="font-size:14px;color:#6b7280;margin-bottom:12px;text-align:center">This session: 20 questions</div>
+ <div style="font-size:14px;color:#6b7280;margin-bottom:12px;text-align:center">This session: ${questionCount} question${questionCount !== 1 ? 's' : ''}</div>
     <button id="ex-start-btn" style="width:100%;margin-top:14px;padding:14px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer">Start</button>
     <button id="ex-back-btn" style="width:100%;margin-top:8px;padding:10px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">← Back</button>
   </div>
@@ -4975,8 +4986,9 @@ return mode === 'fillgap' ? FILL_GAP_QUESTIONS.map((q,i) => ({ ...q, __idx: i })
 : TRUE_FALSE_QUESTIONS.map((q,i) => ({ ...q, __idx: i }));
 }
 
-// Not-yet-Easy questions shuffled and cycling, with one already-Easy question
-// slotted in after every 5 — same pattern as the guest flashcard queue.
+// Questions stay in their original, fixed order (no shuffling) so they load
+// the same way every time — an already-mastered ("Easy") question is still
+// slotted in after every 5, just without randomizing the order first.
 function buildExerciseQueue(mode, pool) {
 const notEasy = [];
 const easy = [];
@@ -4984,19 +4996,17 @@ pool.forEach(q => {
 const rating = window.getExerciseQuestionRating(mode, q.__idx);
 (rating === 3 ? easy : notEasy).push(q);
 });
-const shuffledNotEasy = exShuffle(notEasy);
-const shuffledEasy = exShuffle(easy);
 const queue = [];
 let easyPtr = 0;
-shuffledNotEasy.forEach((q, i) => {
+notEasy.forEach((q, i) => {
 queue.push(q);
-if ((i + 1) % 5 === 0 && shuffledEasy.length) {
-queue.push(shuffledEasy[easyPtr % shuffledEasy.length]);
+if ((i + 1) % 5 === 0 && easy.length) {
+queue.push(easy[easyPtr % easy.length]);
 easyPtr++;
 }
 });
-if (!shuffledNotEasy.length) {
-shuffledEasy.forEach(q => queue.push(q));
+if (!notEasy.length) {
+easy.forEach(q => queue.push(q));
 }
 return queue;
 }
@@ -5007,6 +5017,7 @@ exCurrent = 0;
 exDotEarned = false;
 exHistory = [];
 exReviewPos = null;
+exNewEasyStreak = 0;
 
 exQuestions = buildExerciseQueue(exMode, exBuildTaggedPool(exMode));
 if (exMode === 'pluraltype') exQuestions = exFixAdjacency(exQuestions);
@@ -5017,11 +5028,12 @@ exShowQuestion();
 function exRenderActive() {
 exRender(`
   <div style="display:flex;justify-content:center;align-items:center;background:var(--grey-light);padding:12px 20px;border-radius:12px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,0.06)">
-    <div id="ex-progress" style="color:#6b7280;font-size:14px;font-weight:600">Question 1 / 20</div>
+    <div id="ex-progress" style="color:#6b7280;font-size:14px;font-weight:600">Loading…</div>
   </div>
    <div id="ex-card" style="position:relative;background:var(--grey-light);border-radius:16px;padding:28px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
+    <button id="ex-report-btn" style="position:absolute;top:16px;right:16px;background:none;border:none;cursor:pointer;font-size:16px;padding:4px;color:#9ca3af;z-index:2">⚠️</button>
     <div id="ex-diff-banner"></div>
-<div id="ex-instruction" style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6b7280;margin-bottom:16px;position:relative"><button id="ex-report-btn" style="position:absolute;top:0;right:0;background:none;border:none;cursor:pointer;font-size:16px;padding:4px;color:#9ca3af">⚠️</button></div>
+<div id="ex-instruction" style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6b7280;margin-bottom:16px;padding-right:24px"></div>
     <div id="ex-sentence" style="font-size:1.6em;line-height:2;text-align:center;direction:rtl;margin-bottom:20px"></div>
     <div id="ex-fill-input" style="display:none;flex-direction:column;align-items:center;gap:10px">
       <input id="ex-answer-input" type="text" placeholder="Type the missing word..." style="font-size:1.2em;padding:12px 16px;border:2px solid #e5e7eb;border-radius:10px;width:100%;max-width:320px;text-align:center;direction:rtl;outline:none">
@@ -5055,12 +5067,22 @@ document.getElementById('ex-resume-btn').onclick = exReturnToLive;
 // Pulls a reportable Arabic/English pair out of any exercise question shape, so one Report button works for every exercise type.
 function exGetReportPair(q) {
 if (!q) return { ar: '', en: '' };
-if (q.words && Array.isArray(q.words)) return { ar: q.words.map(w => w.text).join(' '), en: '' };
+if (q.words && Array.isArray(q.words) && q.words.length && typeof q.words[0] === 'object') return { ar: q.words.map(w => w.text).join(' '), en: '' };
+if (q.words && Array.isArray(q.words) && q.answer) return { ar: q.answer, en: '' };
 if (q.singular !== undefined && q.plural !== undefined) return { ar: q.singular + ' / ' + q.plural, en: '' };
 if (q.sentence) return { ar: q.sentence.replace(/<[^>]*>/g, '').replace(/________/g, '').trim(), en: q.en || '' };
 if (q.ar) return { ar: q.ar.replace(/<[^>]*>/g, ''), en: q.en || '' };
 return { ar: '', en: q.en || '' };
 }
+
+// Turns an exercise's internal mode name (e.g. "changeword7listen") into the
+// friendly title shown on its card (e.g. "Change One Word — Listening"), so
+// reports can say plainly which exercise they came from.
+function exLabelForMode(mode) {
+const card = EX_CARDS.find(c => c.mode === mode);
+return card ? card.title : (mode || 'Exercise');
+}
+window.exLabelForMode = exLabelForMode;
 
 function exShowQuestion() {
 if (exCurrent >= exQuestions.length) {
@@ -5077,10 +5099,10 @@ document.getElementById('ex-progress').textContent = exRemaining+' question'+(ex
 const __q = exQuestions[exCurrent];
 const __reportBtn = document.getElementById('ex-report-btn');
 if (__reportBtn) {
-__reportBtn.textContent = '📍';
+__reportBtn.textContent = '⚠️';
 __reportBtn.onclick = () => {
 const pair = exGetReportPair(__q);
-window.addToReadLater('exercise', pair.ar, pair.en, EX_LESSON_MAP[exMode]);
+window.addToReadLater('exercise', pair.ar, pair.en, EX_LESSON_MAP[exMode], exLabelForMode(exMode));
 };
 }
 updateExBackUI();
@@ -5096,13 +5118,8 @@ if (exMode === 'fillgap') {
 const q = exQuestions[exCurrent];
 const instEl = document.getElementById('ex-instruction');
 instEl.textContent = 'Fill in the missing word';
-const reportBtn = document.createElement('button');
-reportBtn.textContent = '📍';
-reportBtn.style.cssText = 'background:none;border:none;cursor:pointer;font-size:16px;padding:4px;margin-left:auto';
-reportBtn.onclick = () => window.addToReadLater('exercise', document.getElementById('ex-sentence').textContent, (exQuestions[exCurrent]?.en || ''), EX_LESSON_MAP[exMode]);
-instEl.appendChild(reportBtn);
 const arText = q.sentence.replace(/<[^>]*>/g, '').replace('________', '').trim();
-document.getElementById('ex-sentence').innerHTML = '<button onclick="window.speakArabic(\'' + arText.replace(/'/g, "\\'") + '\')" style="background:none;border:none;cursor:pointer;font-size:20px;margin-right:8px">🔊</button><button onclick="window.addToReadLater(\'exercise\', \'' + arText.replace(/'/g, "\\'") + '\', \'' + (q.en||'').replace(/'/g, "\\'") + '\', ' + EX_LESSON_MAP[exMode] + ')" style="background:none;border:none;cursor:pointer;font-size:18px;margin-right:8px">📍</button>' + q.sentence.replace('________',
+document.getElementById('ex-sentence').innerHTML = '<button onclick="window.speakArabic(\'' + arText.replace(/'/g, "\\'") + '\')" style="background:none;border:none;cursor:pointer;font-size:20px;margin-right:8px">🔊</button>' + q.sentence.replace('________',
 '<span style="display:inline-block;border-bottom:3px solid #2563eb;min-width:100px;text-align:center">________</span>');
 const fillDiv = document.getElementById('ex-fill-input');
 fillDiv.style.display = 'flex';
@@ -5117,7 +5134,7 @@ const q = exQuestions[exCurrent];
 const isListeningEx = exMode.slice(-6) === 'listen';
 document.getElementById('ex-instruction').textContent = 'Is this sentence correct?';
 const arText = q.sentence.replace(/<[^>]*>/g, '').trim();
-const sentenceDisplay = isListeningEx ? '<button onclick="window.speakArabic(\'' + arText.replace(/'/g, "\\'") + '\')" style="background:#8b2035;color:white;border:none;border-radius:50%;width:56px;height:56px;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin:0 auto">🔊</button>' : '<button onclick="window.speakArabic(\'' + arText.replace(/'/g, "\\'") + '\')" style="background:none;border:none;cursor:pointer;font-size:20px;margin-right:8px">🔊</button><button onclick="window.addToReadLater(\'exercise\', \'' + arText.replace(/'/g, "\\'") + '\', \'' + (q.en||'').replace(/'/g, "\\'") + '\', ' + EX_LESSON_MAP[exMode] + ')" style="background:none;border:none;cursor:pointer;font-size:18px;margin-right:8px">📍</button>' + q.sentence;
+const sentenceDisplay = isListeningEx ? '<button onclick="window.speakArabic(\'' + arText.replace(/'/g, "\\'") + '\')" style="background:#8b2035;color:white;border:none;border-radius:50%;width:56px;height:56px;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin:0 auto">🔊</button>' : '<button onclick="window.speakArabic(\'' + arText.replace(/'/g, "\\'") + '\')" style="background:none;border:none;cursor:pointer;font-size:20px;margin-right:8px">🔊</button>' + q.sentence;
 document.getElementById('ex-sentence').innerHTML = sentenceDisplay;
 document.getElementById('ex-sentence').style.fontSize = '1.4em';
 document.getElementById('ex-fill-input').style.display = 'none';
@@ -5139,7 +5156,7 @@ const q = exQuestions[exCurrent];
 const isListeningEx = exMode.slice(-6) === 'listen';
 document.getElementById('ex-instruction').textContent = 'One word is wrong — type the correct word';
 const arText = q.sentence.replace(/<[^>]*>/g, '').trim();
-const sentenceDisplay = isListeningEx ? '<button onclick="window.speakArabic(\'' + arText.replace(/'/g, "\\'") + '\')" style="background:#8b2035;color:white;border:none;border-radius:50%;width:56px;height:56px;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin:0 auto">🔊</button>' : '<button onclick="window.speakArabic(\'' + arText.replace(/'/g, "\\'") + '\')" style="background:none;border:none;cursor:pointer;font-size:20px;margin-right:8px">🔊</button><button onclick="window.addToReadLater(\'exercise\', \'' + arText.replace(/'/g, "\\'") + '\', \'' + (q.en||'').replace(/'/g, "\\'") + '\', ' + EX_LESSON_MAP[exMode] + ')" style="background:none;border:none;cursor:pointer;font-size:18px;margin-right:8px">📍</button>' + q.sentence;
+const sentenceDisplay = isListeningEx ? '<button onclick="window.speakArabic(\'' + arText.replace(/'/g, "\\'") + '\')" style="background:#8b2035;color:white;border:none;border-radius:50%;width:56px;height:56px;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin:0 auto">🔊</button>' : '<button onclick="window.speakArabic(\'' + arText.replace(/'/g, "\\'") + '\')" style="background:none;border:none;cursor:pointer;font-size:20px;margin-right:8px">🔊</button>' + q.sentence;
 document.getElementById('ex-sentence').innerHTML = sentenceDisplay;
 document.getElementById('ex-sentence').style.fontSize = '1.4em';
 const fillDiv = document.getElementById('ex-fill-input');
@@ -5604,6 +5621,7 @@ function exRate(rating) {
 if (exReviewPos !== null) { exRateReviewed(rating); return; }
 window.didMakeProgress = true;
 const q = exQuestions[exCurrent];
+const wasNew = window.getExerciseQuestionRating(exMode, q.__idx) == null;
 exHistory.push(q);
 const lessonNum = EX_LESSON_MAP[exMode];
 const oldMastery = window.getExerciseMasteryPercent(exMode, exGetQuestionCount(exMode));
@@ -5613,10 +5631,45 @@ const newMastery = window.getExerciseMasteryPercent(exMode, exGetQuestionCount(e
 if (oldMastery < 100 && newMastery === 100) {
 window.triggerMilestoneWalk(lessonNum, oldFrac, window.getLessonProgressSum(lessonNum), 'exercises');
 }
+if (wasNew) {
+exNewEasyStreak = (rating === 3) ? exNewEasyStreak + 1 : 0;
+}
 exAnswered++;
-if (exAnswered >= 20) { exEndSession(); return; }
+if (exNewEasyStreak >= 5) {
+exNewEasyStreak = 0;
+exShowSkipOffer();
+return;
+}
+if (exAnswered >= exGetQuestionCount(exMode)) { exEndSession(); return; }
 exCurrent++;
 exShowQuestion();
+}
+
+// Shown when a student breezes through 5 brand-new questions in a row —
+// offers to skip the rest of this exercise instead of grinding through it.
+function exShowSkipOffer() {
+const overlay = document.createElement('div');
+overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:2000;padding:20px';
+overlay.innerHTML = `
+  <div style="background:white;border-radius:16px;padding:28px 24px;max-width:340px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,0.2)">
+    <div style="font-size:40px;margin-bottom:12px">⚡</div>
+    <div style="font-size:18px;font-weight:800;color:#1a1a2e;margin-bottom:8px">5 easy in a row!</div>
+    <div style="font-size:14px;color:#6b7280;margin-bottom:20px;line-height:1.5">You can skip this exercise.</div>
+    <button id="skip-offer-skip" style="width:100%;padding:14px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:8px">Skip this exercise</button>
+    <button id="skip-offer-continue" style="width:100%;padding:12px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">Keep going</button>
+  </div>`;
+document.body.appendChild(overlay);
+document.getElementById('skip-offer-skip').onclick = async () => {
+overlay.remove();
+await window.markExerciseTooEasy(exMode);
+exEndSession(true);
+};
+document.getElementById('skip-offer-continue').onclick = () => {
+overlay.remove();
+if (exAnswered >= exGetQuestionCount(exMode)) { exEndSession(); return; }
+exCurrent++;
+exShowQuestion();
+};
 }
 
 function wireRatingButtons() {
@@ -5627,12 +5680,12 @@ document.getElementById('ex-rate-easy').onclick = () => exRate(3);
 
 
   
-async function exEndSession() {
+async function exEndSession(tooEasy) {
 exRender(`
   <div style="text-align:center;padding:40px 20px">
-    <div style="font-size:48px;margin-bottom:16px">🎉</div>
-    <div style="font-size:22px;font-weight:800;color:#1a1a2e;margin-bottom:8px">Session complete!</div>
-    <div style="font-size:15px;color:#6b7280;margin-bottom:24px">You answered ${exAnswered} question${exAnswered!==1?'s':''}.</div>
+    <div style="font-size:48px;margin-bottom:16px">${tooEasy ? '⚡' : '🎉'}</div>
+    <div style="font-size:22px;font-weight:800;color:#1a1a2e;margin-bottom:8px">${tooEasy ? 'Marked as 100% — too easy!' : 'Session complete!'}</div>
+    <div style="font-size:15px;color:#6b7280;margin-bottom:24px">${tooEasy ? `You got ${exAnswered} in a row right, so this exercise is done.` : `You answered ${exAnswered} question${exAnswered!==1?'s':''}.`}</div>
     <button id="ex-again-btn" style="padding:14px 32px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Choose another exercise</button>
   </div>
 `);
