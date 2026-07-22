@@ -6444,7 +6444,7 @@ ansRow.innerHTML = '<span style="color:#9ca3af;font-size:14px">Your answer will 
 function exSubmitFill() {
 const q = exQuestions[exCurrent];
 const reveal = document.getElementById('ex-reveal');
-reveal.textContent = '✓ Answer: ' + q.answer;
+reveal.innerHTML = '✓ Answer:<br><span style="direction:rtl;display:block;margin-top:6px">' + q.answer + '</span>';
 reveal.style.display = 'block';
 document.getElementById('ex-fill-input').style.display = 'none';
 const ratingEl = document.getElementById('ex-rating-area');
@@ -6486,7 +6486,7 @@ function exSubmitChangeWord() {
 console.log('changeword fired');
 const q = exQuestions[exCurrent];
 const reveal = document.getElementById('ex-reveal');
-reveal.innerHTML = `✕ Wrong word: <strong>${q.wrong}</strong><br>✓ Correct word: <strong>${q.correct}</strong>`;
+reveal.innerHTML = `✕ Wrong word:<br><span style="direction:rtl;display:block;margin-top:4px"><strong>${q.wrong}</strong></span><br>✓ Correct word:<br><span style="direction:rtl;display:block;margin-top:4px"><strong>${q.correct}</strong></span>`;
 reveal.style.display = 'block';
 
 document.getElementById('ex-fill-input').style.display = 'none';
@@ -6499,9 +6499,9 @@ function exSubmitPlural(chosenIsPlural) {
 const q = exQuestions[exCurrent];
 const reveal = document.getElementById('ex-reveal');
 if (chosenIsPlural) {
-reveal.innerHTML = '✓ Correct! <strong>' + q.plural + '</strong> is the plural of <strong>' + q.singular + '</strong>.';
+reveal.innerHTML = '✓ Correct!<br><span style="direction:rtl;display:block;margin-top:6px"><strong>' + q.plural + '</strong> is the plural of <strong>' + q.singular + '</strong></span>';
 } else {
-reveal.innerHTML = '✕ Not quite. The plural is <strong>' + q.plural + '</strong> (singular: <strong>' + q.singular + '</strong>).';
+reveal.innerHTML = '✕ Not quite. The plural is:<br><span style="direction:rtl;display:block;margin-top:6px"><strong>' + q.plural + '</strong> (singular: <strong>' + q.singular + '</strong>)</span>';
 }
 reveal.style.background = '#f3f4f6';
 reveal.style.borderColor = '#d1d5db';
@@ -6527,7 +6527,7 @@ else if (isFem && !picked) { tile.style.borderColor = '#16a34a'; allCorrect = fa
 else if (!isFem && picked) { tile.style.background = '#fee2e2', tile.style.color = '#b91c1c', tile.style.borderColor = '#fca5a5'; allCorrect = false; }
 tile.onclick = null;
 });
-reveal.innerHTML = (allCorrect ? '✓ Correct! ' : '✕ Not quite. ') + 'The feminine words are <strong>' + femWords.join('</strong> and <strong>') + '</strong>.';
+reveal.innerHTML = (allCorrect ? '✓ Correct! ' : '✕ Not quite. ') + 'The feminine words are:<br><span style="direction:rtl;display:block;margin-top:6px"><strong>' + femWords.join('</strong> and <strong>') + '</strong></span>';
 reveal.style.background = '#f3f4f6';
 reveal.style.borderColor = '#d1d5db';
 reveal.style.display = 'block';
@@ -6544,9 +6544,9 @@ const typed = document.getElementById('ex-answer-input').value;
 const correct = typed === q.target;
 const reveal = document.getElementById('ex-reveal');
 if (correct) {
-reveal.innerHTML = '✓ Correct! <strong>' + q.target + '</strong>';
+reveal.innerHTML = '✓ Correct!<br><span style="direction:rtl;display:block;margin-top:6px"><strong>' + q.target + '</strong></span>';
 } else {
-reveal.innerHTML = '✕ Not quite.<br>You typed: <strong>' + (typed || '(nothing)') + '</strong><br>Correct answer: <strong>' + q.target + '</strong>';
+reveal.innerHTML = '✕ Not quite.<br>You typed:<br><span style="direction:rtl;display:block;margin-top:4px"><strong>' + (typed || '(nothing)') + '</strong></span><br>Correct answer:<br><span style="direction:rtl;display:block;margin-top:4px"><strong>' + q.target + '</strong></span>';
 }
 reveal.style.background = '#f3f4f6';
 reveal.style.borderColor = '#d1d5db';
@@ -6561,7 +6561,7 @@ function exSubmitSuffixTrans() {
 const q = exQuestions[exCurrent];
 const typed = document.getElementById('ex-answer-input').value;
 const reveal = document.getElementById('ex-reveal');
-reveal.innerHTML = 'Correct answer: <strong>' + q.ar + '</strong>' + (typed ? '<br><span style="font-size:0.85em;color:#6b7280">You wrote: ' + typed + '</span>' : '') + '<br><span style="font-size:0.8em;color:#6b7280">Were you close enough? Grade yourself below.</span>';
+reveal.innerHTML = 'Correct answer:<br><span style="direction:rtl;display:block;margin-top:6px"><strong>' + q.ar + '</strong></span>' + (typed ? '<br><span style="font-size:0.85em;color:#6b7280">You wrote:<br><span style="direction:rtl;display:block">' + typed + '</span></span>' : '') + '<br><span style="font-size:0.8em;color:#6b7280">Were you close enough? Grade yourself below.</span>';
 reveal.style.display = 'block';
 document.getElementById('ex-fill-input').style.display = 'none';
 const ratingEl = document.getElementById('ex-rating-area');
@@ -6587,7 +6587,7 @@ function exSubmitDemoTrans() {
 const q = exQuestions[exCurrent];
 const typed = document.getElementById('ex-answer-input').value;
 const reveal = document.getElementById('ex-reveal');
-reveal.innerHTML = 'Correct answer: <strong>' + q.ar + '</strong>' + (typed ? '<br><span style="font-size:0.85em;color:#6b7280">You wrote: ' + typed + '</span>' : '') + '<br><span style="font-size:0.8em;color:#6b7280">Were you close enough? Grade yourself below.</span>';
+reveal.innerHTML = 'Correct answer:<br><span style="direction:rtl;display:block;margin-top:6px"><strong>' + q.ar + '</strong></span>' + (typed ? '<br><span style="font-size:0.85em;color:#6b7280">You wrote:<br><span style="direction:rtl;display:block">' + typed + '</span></span>' : '') + '<br><span style="font-size:0.8em;color:#6b7280">Were you close enough? Grade yourself below.</span>';
 reveal.style.display = 'block';
 document.getElementById('ex-fill-input').style.display = 'none';
 const ratingEl = document.getElementById('ex-rating-area');
@@ -6599,7 +6599,7 @@ function exSubmitAdjAgreementTrans() {
 const q = exQuestions[exCurrent];
 const typed = document.getElementById('ex-answer-input').value;
 const reveal = document.getElementById('ex-reveal');
-reveal.innerHTML = 'Correct answer: <strong>' + q.ar + '</strong>' + (typed ? '<br><span style="font-size:0.85em;color:#6b7280">You wrote: ' + typed + '</span>' : '') + '<br><span style="font-size:0.8em;color:#6b7280">Were you close enough? Grade yourself below.</span>';
+reveal.innerHTML = 'Correct answer:<br><span style="direction:rtl;display:block;margin-top:6px"><strong>' + q.ar + '</strong></span>' + (typed ? '<br><span style="font-size:0.85em;color:#6b7280">You wrote:<br><span style="direction:rtl;display:block">' + typed + '</span></span>' : '') + '<br><span style="font-size:0.8em;color:#6b7280">Were you close enough? Grade yourself below.</span>';
 reveal.style.display = 'block';
 document.getElementById('ex-fill-input').style.display = 'none';
 const ratingEl = document.getElementById('ex-rating-area');
