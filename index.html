@@ -388,7 +388,6 @@ console.log("THE FILE IS LOADING!");
 <div id="login-screen">
 <div class="login-logo">Yusr Arabic</div>
 <button class="guest-btn" id="guest-start-btn">Start Your Journey</button>
-<button class="guest-btn" id="leaderboard-btn" style="background:#2563eb">Leaderboard</button>
 <div class="login-divider">Already with us? Enter your code</div>
 <div class="login-card login-card-small">
 <label>Your code</label>
@@ -422,11 +421,11 @@ console.log("THE FILE IS LOADING!");
 <div class="sidebar-logo-text">Arabic Daily</div>
 </div>
 <button class="sidebar-nav-btn" id="sidebar-guests-btn" onclick="switchTab('guests')">👤 Guests <span id="guests-unread-badge" style="display:none;background:#dc2626;color:white;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700;margin-left:4px">0</span></button>
+<button class="sidebar-nav-btn" id="sidebar-inbox-btn" onclick="switchTab('inbox')">📥 Inbox <span id="inbox-unread-badge" style="display:none;background:#dc2626;color:white;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700;margin-left:4px">0</span></button>
 <button class="sidebar-nav-btn" id="sidebar-messages-btn" onclick="switchTab('messages-admin')">💬 Messages <span id="messages-unread-badge" style="display:none;background:#dc2626;color:white;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700;margin-left:4px">0</span></button>
 <button class="sidebar-nav-btn" id="sidebar-voicenotes-btn" onclick="switchTab('voicenotes')">🎙️ Voice Notes <span id="voicenotes-unread-badge" style="display:none;background:#dc2626;color:white;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700;margin-left:4px">0</span></button>
 <button class="sidebar-nav-btn" id="sidebar-reports-btn" onclick="switchTab('reports')">📋 Reports <span id="reports-unread-badge" style="display:none;background:#dc2626;color:white;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700;margin-left:4px">0</span></button>
 <button class="sidebar-nav-btn" id="sidebar-notepad-btn" onclick="switchTab('notepad')">📝 Notepad</button>
-<button class="sidebar-nav-btn" id="sidebar-leaderboard-btn" onclick="switchTab('leaderboard-admin')">🏆 Leaderboard</button>
 <div class="sidebar-label">Students</div>
 <div class="sidebar-students" id="sidebar-students"></div>
 
@@ -459,10 +458,10 @@ console.log("THE FILE IS LOADING!");
 <button class="streak-info-btn" id="streak-info-btn" type="button" aria-label="How streaks work">ⓘ</button>
 <div class="streak-info-popup" id="streak-info-popup">Complete at least 20 flashcards or exercise questions, or upload your homework, today to count toward your streak — the ring above fills up as you go. Miss a day completely and your streak resets to 0.</div>
 </div>
-<div class="revision-lesson" id="revision-lesson-wrap" style="cursor:pointer" onclick="window.openLessonDropdown()">Lesson 1</div>
+<div class="revision-lesson" id="revision-lesson-wrap" style="cursor:pointer" onclick="window.openLessonDropdown()"><span style="background:rgba(255,255,255,0.15);color:white;border-radius:6px;padding:2px 8px;font-size:12px;font-weight:600;display:inline-block">Lesson 1</span></div>
 <div class="lesson-progress-wrap" id="lesson-progress-wrap">
 <div class="lesson-progress-track"><div class="lesson-progress-fill" id="lesson-progress-fill"></div></div>
-<div class="lesson-progress-text" id="lesson-progress-text">0% complete</div>
+<div class="lesson-progress-text" id="lesson-progress-text">0% until lesson complete</div>
 </div>
 <div id="progress-saved-text" style="display:none;font-size:11px;font-weight:700;color:#bfdbfe;margin-top:2px">✓ Progress saved today</div>
 <label id="homework-checkin-wrap" style="display:none;align-items:center;gap:6px;margin-top:6px;font-size:12px;color:rgba(255,255,255,0.85);cursor:pointer">
@@ -470,7 +469,7 @@ console.log("THE FILE IS LOADING!");
 I did my homework today
 </label>
 </div>
-<div class="revision-rank">
+<div class="revision-rank" id="revision-rank-wrap" style="cursor:pointer" onclick="switchTab('streak-leaderboard')">
 <div class="revision-rank-num" id="revision-rank-num">#—</div>
 <div class="revision-rank-label">your rank</div>
 </div>
@@ -545,11 +544,22 @@ I did my homework today
 
 <!-- SAVED FOR LATER TAB -->
 <div id="tab-content-saved" class="content" style="display:none">
+<div class="back-row" onclick="switchTab('milestones')"><span class="back-btn">‹</span><span class="screen-title">Saved for Later</span></div>
 <div class="section-label">Saved for Later</div>
 <div id="saved-root" style="margin-top:8px">
 <div style="padding:20px;text-align:center;color:#8a7f6e">
 <p>⚠️ Anything you flag with the ⚠️ button will show up here</p>
 </div>
+</div>
+</div>
+
+<!-- SUBSCRIPTION TAB -->
+<div id="tab-content-subscription" class="content" style="display:none">
+<div class="back-row" onclick="switchTab('milestones')"><span class="back-btn">‹</span><span class="screen-title">Subscription</span></div>
+<div class="section-label">Subscription</div>
+<div class="login-card" style="max-width:420px;margin-top:8px;text-align:center;padding:32px 24px">
+<div style="font-size:20px;font-weight:700;color:var(--green);margin-bottom:20px">Subscription = Active</div>
+<div id="subscription-details" style="text-align:left;font-size:15px;line-height:2.2"></div>
 </div>
 </div>
 
@@ -599,6 +609,7 @@ I did my homework today
 
 <!-- STATS TAB -->
 <div id="tab-content-stats" class="content" style="display:none">
+<div class="back-row" onclick="switchTab('milestones')"><span class="back-btn">‹</span><span class="screen-title">Your Stats</span></div>
 <div class="section-label">Your Stats</div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px;max-width:420px">
 <div class="stat-box"><div class="stat-box-num" id="stat-vocab-learned">0</div><div class="stat-box-label">Vocab words learned</div></div>
@@ -610,6 +621,7 @@ I did my homework today
 
 <!-- MESSAGES TAB (student) -->
 <div id="tab-content-messages" class="content" style="display:none">
+<div class="back-row" onclick="switchTab('milestones')"><span class="back-btn">‹</span><span class="screen-title">Messages</span></div>
 <div class="section-label">Messages from your teacher</div>
 <div id="student-messages-thread" style="max-width:480px;margin-bottom:12px;max-height:400px;overflow-y:auto"></div>
 <div style="display:flex;gap:8px;max-width:480px">
@@ -625,6 +637,19 @@ I did my homework today
 <button id="guests-mark-all-read-btn" style="background:none;border:none;color:var(--blue);font-size:13px;font-weight:600;cursor:pointer;padding:4px 8px">Mark all as read</button>
 </div>
 <div id="guests-root" style="margin-top:8px"></div>
+</div>
+
+<!-- INBOX TAB (instructor only) -->
+<div id="tab-content-inbox" class="content" style="display:none">
+<div class="section-label">Inbox</div>
+<div style="display:flex;justify-content:flex-end;margin-bottom:8px">
+<button id="inbox-mark-all-read-btn" style="background:none;border:none;color:var(--blue);font-size:13px;font-weight:600;cursor:pointer;padding:4px 8px">Mark all as read</button>
+</div>
+<div id="inbox-root" style="margin-top:8px">
+<div style="padding:20px;text-align:center;color:#8a7f6e">
+<p>📥 Alerts like ended subscriptions will appear here</p>
+</div>
+</div>
 </div>
 
 <!-- MESSAGES TAB (instructor only) -->
@@ -681,12 +706,6 @@ I did my homework today
 </div>
 </div>
 
-<!-- LEADERBOARD ADMIN TAB (instructor only) -->
-<div id="tab-content-leaderboard-admin" class="content" style="display:none">
-<div class="section-label">Leaderboard Editor</div>
-<div id="leaderboard-admin-root" style="margin-top:8px"></div>
-</div>
-
 <!-- FLASHCARDS PAGE -->
 <div id="tab-content-flashcards" class="content" style="display:none">
 <div class="back-row" id="flashcards-back-row" onclick="switchTab('milestones')"><span class="back-btn">‹</span><span class="screen-title">Save and Return Home</span></div>
@@ -706,10 +725,11 @@ I did my homework today
 <div id="ex-root"></div>
 </div>
 
-<!-- LEADERBOARD PAGE -->
-<div id="tab-content-leaderboard" class="content" style="display:none">
-<div class="section-label">Leaderboard</div>
-<div id="leaderboard-root" style="margin-top:8px"></div>
+<!-- STREAK LEADERBOARD PAGE -->
+<div id="tab-content-streak-leaderboard" class="content" style="display:none">
+<div class="back-row" onclick="switchTab('milestones')"><span class="back-btn">‹</span><span class="screen-title">Streak Leaderboard</span></div>
+<div class="section-label">Streak Leaderboard</div>
+<div id="streak-leaderboard-root" style="margin-top:8px"></div>
 </div>
 
 <!<!-- CHALLENGES PAGE -->
@@ -755,7 +775,7 @@ I did my homework today
 .principle-a .pa-ar { font-family:'Scheherazade New', serif; font-size:20px; direction:rtl; display:block; color:#8b2035; font-weight:700; margin:8px 0; text-align:right; }
 .principle-quote { margin-top:14px; padding:10px 14px; border-left:3px solid #8b2035; background:#fdf6f3; }
 .principle-quote-ar { font-family:'Scheherazade New', serif; font-size:18px; direction:rtl; text-align:right; color:#2b2520; line-height:1.9; }
-.principle-hint { display:none; }
+.principle-hint { display:block; font-size:12px; color:#8b2035; margin-top:12px; font-weight:600; }
 .principles-nav { display:flex; justify-content:space-between; align-items:center; margin-top:14px; }
 .principles-nav-btn { padding:9px 16px; border-radius:10px; border:none; background:#f3f4f6; color:#6b7280; font-size:13px; font-weight:600; cursor:pointer; }
 .principles-nav-btn-primary { background:#8b2035; color:#fff; }
@@ -1120,6 +1140,32 @@ const STUDENTS = {
 };
 const INSTRUCTOR_CODE = 'RYAN01';
 
+// Subscription info per student: monthly payment, weekly hours, start date, end date
+const SUBSCRIPTIONS = {
+'FHD001': { monthly: 80,  weeklyHours: 4,   startDate: 'Start of month', endDate: 'Not set' },
+'SAD002': { monthly: 90,  weeklyHours: 4.5, startDate: 'Start of month', endDate: 'Not set' },
+'HMZ003': { monthly: 90,  weeklyHours: 4.5, startDate: 'Start of month', endDate: 'Not set' },
+'AHM004': { monthly: 32,  weeklyHours: 1.6, startDate: '18/06/2026', endDate: '01/08/2026' },
+'AMN005': { monthly: 24,  weeklyHours: 1,   startDate: 'Not set', endDate: '05/09/2026' },
+'ABD007': { monthly: 60,  weeklyHours: 3,   startDate: '26/06/2026', endDate: '24/07/2026' },
+'YSF008': { monthly: 24,  weeklyHours: 1,   startDate: 'Not set', endDate: '08/08/2026' },
+'YNS009': { monthly: 48,  weeklyHours: 2,   startDate: 'Not set', endDate: '13/08/2026' },
+'UBD010': { monthly: 24,  weeklyHours: 1,   startDate: '22/06/2026', endDate: 'Not defined' },
+'SBH011': { monthly: 28,  weeklyHours: 1,   startDate: 'Not set', endDate: '10/08/2026' },
+'IDR014': { monthly: 24,  weeklyHours: 1,   startDate: '19/06/2026', endDate: '10/08/2026' },
+'HSM016': { monthly: 48,  weeklyHours: 2,   startDate: 'Not set', endDate: 'Not defined' },
+'MHM017': { monthly: 24,  weeklyHours: 1,   startDate: '18/06/2026', endDate: 'Not defined' },
+'MHD019': { monthly: 12,  weeklyHours: 0.5, startDate: 'Not set', endDate: 'Not defined' },
+'HDR020': { monthly: 10,  weeklyHours: 0.5, startDate: 'Not set', endDate: '24/07/2026' },
+'NYZ022': { monthly: 48,  weeklyHours: 2,   startDate: '22/06/2026', endDate: '13/08/2026' },
+'ISA024': { monthly: 24,  weeklyHours: 1,   startDate: '18/06/2026', endDate: '11/08/2026' },
+'ABM025': { monthly: 14,  weeklyHours: 0.5, startDate: 'Not set', endDate: 'Not defined' },
+'AMK026': { monthly: 12,  weeklyHours: 0.5, startDate: 'Will start 1st July', endDate: '10/08/2026' },
+'SMR027': { monthly: 50,  weeklyHours: 1.5, startDate: 'Not set', endDate: 'Not defined' },
+'MMR028': { monthly: 32,  weeklyHours: 2,   startDate: 'Not set', endDate: '09/08/2026' },
+'GHM029': { monthly: 32,  weeklyHours: 2,   startDate: 'Not set', endDate: '09/08/2026' },
+};
+
 // Runtime lesson data (can be modified per user)
 let LESSONS = JSON.parse(JSON.stringify(DEFAULT_LESSONS));
 window.LESSONS = LESSONS;
@@ -1262,6 +1308,45 @@ catch(e) { console.error('Speak failed', e); }
 function todayKey() { return dateKey(new Date()); }
 window.todayKey = todayKey;
 function formatDateLong(key) { const [y,m,d]=key.split('-').map(Number); return new Date(y,m-1,d).toLocaleDateString('en-GB',{weekday:'long',year:'numeric',month:'long',day:'numeric'}); }
+
+// WhatsApp-style message timestamp: just the time if sent today, otherwise date + time.
+function formatMessageTime(ts) {
+if (!ts) return '';
+const d = new Date(ts);
+const now = new Date();
+const isToday = d.toDateString() === now.toDateString();
+const time = d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+if (isToday) return time;
+const dateStr = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+return `${dateStr}, ${time}`;
+}
+
+// WhatsApp-style day label for a message-thread divider: "Today", "Yesterday",
+// or the full weekday + date for anything older.
+function formatMessageDayLabel(ts) {
+const d = new Date(ts || Date.now());
+const now = new Date();
+const yesterday = new Date(now); yesterday.setDate(now.getDate() - 1);
+if (d.toDateString() === now.toDateString()) return 'Today';
+if (d.toDateString() === yesterday.toDateString()) return 'Yesterday';
+return d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+}
+
+// Turns a flat, timestamp-sorted list of messages into HTML bubbles with a
+// centered day-divider inserted whenever the calendar day changes.
+function renderMessageBubblesWithDayDividers(thread, bubbleHtmlFn) {
+let html = '';
+let lastDay = null;
+thread.forEach(m => {
+const day = new Date(m.timestamp || Date.now()).toDateString();
+if (day !== lastDay) {
+html += `<div style="display:flex;align-items:center;justify-content:center;margin:14px 0 10px"><div style="background:rgba(0,0,0,0.06);color:var(--grey);font-size:11px;font-weight:700;padding:4px 12px;border-radius:10px">${formatMessageDayLabel(m.timestamp)}</div></div>`;
+lastDay = day;
+}
+html += bubbleHtmlFn(m);
+});
+return html;
+}
 function activeStudentCode() { return isInstructor && !isStudentView ? viewingStudent : currentUser; }
 window.activeStudentCode = activeStudentCode;
 window.getCurrentLesson = function() { return studentLesson[activeStudentCode()] || 1; };
@@ -1365,6 +1450,54 @@ challenges: getChallengesFraction(lessonNum)
 window.getLessonProgressSum = function(lessonNum) {
 const t = getTorchStates(lessonNum);
 return t.reading + t.flashcards + t.grammar + t.exercises + t.challenges;
+};
+
+// Banner "X% complete" progress — separate from the torch/milestone-path system above.
+// Pools every real, individually-completable item across all 5 categories (sentences,
+// flashcards, exercise questions, challenges, +1 lump item for grammar) into one single
+// count, so each item is worth the same share of the lesson regardless of category.
+window.getLessonItemProgress = function(lessonNum) {
+const code = activeStudentCode();
+let total = 0, done = 0;
+
+// Reading: one item per story sentence.
+const storyData = window.LESSON_STORIES ? window.LESSON_STORIES.find(s => s.lesson === lessonNum) : null;
+const sentenceCount = (storyData && storyData.sentences) ? storyData.sentences.length : 0;
+if (sentenceCount) {
+total += sentenceCount;
+const reached = (storyCurrentSentence[code] && storyCurrentSentence[code][lessonNum]) || 0;
+done += readingDone[lessonNum] ? sentenceCount : Math.min(reached, sentenceCount);
+}
+
+// Flashcards: one item per card in the lesson (+ sub-deck if it exists).
+const fcCounts = getLessonMasteryCounts(lessonNum);
+if (fcCounts.total) {
+total += fcCounts.total;
+done += fcCounts.total - fcCounts.remaining;
+}
+
+// Grammar: kept as one lump item until per-card tracking exists.
+total += 1;
+done += getGrammarFraction(lessonNum);
+
+// Exercises: one item per question, across every exercise mode in this lesson.
+const exModes = Object.keys(window.EX_LESSON_MAP || {}).filter(m => window.EX_LESSON_MAP[m] === lessonNum && m.indexOf('challenge') !== 0 && m.indexOf('comprehension') !== 0);
+exModes.forEach(m => {
+const poolLength = window.exGetQuestionCount(m);
+if (!poolLength) return;
+total += poolLength;
+done += poolLength - window.getExerciseRemainingCount(m, poolLength);
+});
+
+// Challenges: one item per challenge submitted in this lesson.
+const challengeModes = Object.keys(window.EX_LESSON_MAP || {}).filter(m => window.EX_LESSON_MAP[m] === lessonNum && (m.indexOf('challenge') === 0 || m.indexOf('comprehension') === 0));
+if (challengeModes.length) {
+total += challengeModes.length;
+done += challengeModes.filter(m => window.hasSubmittedChallenge(m)).length;
+}
+
+if (!total) return 0;
+return Math.round((done / total) * 100);
 };
 
 // Figures out which single torch is the very next thing the student needs to
@@ -1530,7 +1663,7 @@ const tentLabel = isActiveTent
 : `<text x="${x}" y="${y+44}" font-size="14" fill="${open ? '#E8DFC8' : '#C9A8A0'}" text-anchor="middle" style="font-weight:500">${tentLabelText}</text>`;
 const piece = `${desertTentSvg(x, y, open)}${tentLabel}`;
 const unreadMsgCount = isActiveTent && typeof getUnreadMessageCount === 'function' ? getUnreadMessageCount(activeStudentCode()) : 0;
-const msgBadge = unreadMsgCount > 0 ? `<circle cx="${x+45}" cy="${y-90}" r="15" fill="#dc2626"/><text x="${x+45}" y="${y-85}" font-size="14" font-weight="700" fill="white" text-anchor="middle">${unreadMsgCount}</text>` : '';
+const msgBadge = unreadMsgCount > 0 ? `<circle cx="${x+45}" cy="${y-90}" r="22" fill="#dc2626" stroke="white" stroke-width="3" class="ms-next-pulse"/><text x="${x+45}" y="${y-83}" font-size="20" font-weight="800" fill="white" text-anchor="middle">${unreadMsgCount}</text>` : '';
 inner += isActiveTent
 ? `<g id="ms-tent-${stop.lesson}" style="cursor:pointer" onclick="window.openLessonTentMenu(${stop.lesson})"><circle cx="${x}" cy="${y-25}" r="95" fill="transparent"/><circle cx="${x}" cy="${y-25}" r="72" fill="#F4C14E" fill-opacity="0.16" stroke="#F4C14E" stroke-width="2" stroke-opacity="0.7"/>${piece}${msgBadge}</g>`
 : piece;
@@ -1778,7 +1911,13 @@ overlay.innerHTML = `<div class="milestone-celebrate-card" style="text-align:lef
 <div class="home-card" id="tent-menu-messages">
 <div class="home-card-icon" style="font-size:22px">💬</div>
 <div class="home-card-divider"></div>
-<div class="home-card-text"><div class="home-card-title">Inbox${getUnreadMessageCount(activeStudentCode()) > 0 ? ` <span style="background:#dc2626;color:white;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700;margin-left:4px">${getUnreadMessageCount(activeStudentCode())}</span>` : ''}</div><div class="home-card-desc">Messages from your teacher</div></div>
+<div class="home-card-text"><div class="home-card-title">Inbox${getUnreadMessageCount(activeStudentCode()) > 0 ? ` <span style="background:#dc2626;color:white;border-radius:12px;padding:3px 10px;font-size:13px;font-weight:800;margin-left:6px;display:inline-block">${getUnreadMessageCount(activeStudentCode())}</span>` : ''}</div><div class="home-card-desc">Messages from your teacher</div></div>
+<div class="home-card-arrow">›</div>
+</div>
+<div class="home-card" id="tent-menu-subscription">
+<div class="home-card-icon" style="font-size:22px">💳</div>
+<div class="home-card-divider"></div>
+<div class="home-card-text"><div class="home-card-title">Subscription</div><div class="home-card-desc">View your plan</div></div>
 <div class="home-card-arrow">›</div>
 </div>
 <button class="milestone-review-btn" id="tent-menu-close" style="width:100%;margin-top:16px;background:var(--grey-light);color:var(--grey);border:1.5px solid var(--border)">Close</button>
@@ -1788,55 +1927,92 @@ document.getElementById('tent-menu-homework').onclick = () => { overlay.remove()
 document.getElementById('tent-menu-library').onclick = () => { overlay.remove(); switchTab('library'); };
 document.getElementById('tent-menu-saved').onclick = () => { overlay.remove(); switchTab('saved'); };
 document.getElementById('tent-menu-stats').onclick = () => { overlay.remove(); switchTab('stats'); };
+document.getElementById('tent-menu-subscription').onclick = () => { overlay.remove(); switchTab('subscription'); };
 document.getElementById('tent-menu-messages').onclick = () => { overlay.remove(); switchTab('messages'); };
 document.getElementById('tent-menu-close').onclick = () => overlay.remove();
 overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
 };
 
 window.renderLibrary = function() {
-const principlesData = [
-  { lesson: 1, title: 'Plurals: Broken vs Intact', examples: 'رَجُلٌ — رِجَالٌ — صَنَمٌ — أَصْنَامٌ — قَرْيَةٌ — قُرًى — يَوْمٌ — أَيَّامٌ — اسْمٌ — أَسْمَاءٌ', explanation: 'Arabic plurals come in two types. For inanimate objects, the word changes shape entirely and must be memorised — this is called a broken plural. For people, you simply add "oon", "een", or "aat" to the end — this is called an intact plural. Adjectives, verbs and pronouns must match whichever plural type is used.' },
-  { lesson: 1, title: 'Femininity: Ta Marbuta', examples: 'قَرْيَةٌ — عِبَادَةٌ — مَدْرَسَةٌ — أَصْنَامٌ — قُرًى — أَيَّامٌ — رِجَالٌ — أَسْمَاءٌ — سَيَّارَةٌ — كَثِيرَةٌ\nرَجُلٌ كَبِيرٌ — قَرْيَةٌ كَبِيرَةٌ — أَصْنَامٌ كَبِيرَةٌ — مُشْرِكُونَ كَبِيرُونَ — مُشْرِكَاتٌ كَبِيرَاتٌ', explanation: 'A word is feminine if it ends in the letter "ta marbuta". All broken plurals are also feminine, even if they do not end in "ta marbuta". This means adjectives describing them must take the feminine form. As mentioned, broken plurals are used for inanimate objects, so when we use an adjective, we have to put "taa marbuta". As for adjective for people, we just put "uun, een, aat".' },
-  { lesson: 1, title: 'Definiteness: The Al Prefix', examples: 'رَجُلٌ — الرَّجُلُ — صَنَمٌ — الصَّنَمُ — قَرْيَةٌ — الْقَرْيَةُ — مُشْرِكٌ كَبِيرٌ — الْمُشْرِكُ الْكَبِيرُ — أَصْنَامٌ كَثِيرَةٌ — الْأَصْنَامُ الْكَثِيرَةُ', explanation: 'A word is definite when it begins with "al". This usually translates to "the" in English. Adjectives must match their noun — if the noun has "al", the adjective must also have "al". If the noun has no "al", the adjective must also have no "al".' },
-  { lesson: 2, title: 'Present vs Past Tense Recognition', examples: 'يَعْبُدُ — عَبَدَ — يَسْكُنُ — سَكَنَ — يَعْرِفُ — عَرَفَ — يَقُولُ — قَالَ — يَتْرُكُ — تَرَكَ', explanation: 'Present tense verbs begin with a prefix. Past tense verbs have no prefix and usually have many fathas ("a" sounds) running through them. This makes it possible to tell them apart even without knowing the meaning.' },
-  { lesson: 2, title: 'Present Tense Prefixes', examples: 'أَعْبُدُ — تَعْبُدُ — يَعْبُدُ — نَعْبُدُ — تَعْبُدُونَ — يَعْبُدُونَ — أَسْكُنُ — تَسْكُنُ — يَسْكُنُ — نَسْكُنُ', explanation: 'The present tense has 4 main prefixes: "a" means I, "ya" means he, "ta" means she or you, and "na" means we. When the suffix "oon" is added, the verb becomes plural.' },
-  { lesson: 2, title: 'Past Tense Subject Endings', examples: 'خَرَجَ — خَرَجُوا — خَرَجَتْ — سَمِعَ — سَمِعُوا — سَمِعَتْ — كَسَرَ — كَسَرُوا — كَسَرَتْ — فَرِحَتْ\nخَرَجَ — خَرَجُوا — خَرَجَتْ — خَرَجْتُ — خَرَجْتَ — خَرَجْنَا – خرجتم\nسَمِعَ — سَمِعُوا — سَمِعَتْ — سَمِعْتُ — سَمِعْتَ — سَمِعْنَا – سمعتم', explanation: 'The past tense verb changes depending on who did the action. When a group of males did it, add "oo" to the end. When a female or feminine noun did it, add "at" to the end. The base form with no addition refers to a single male. For "I", add "tu". For "you", add "ta". For "we", add "na".' },
-  { lesson: 3, title: 'Commands & Prohibitions', examples: 'اعْبُدْ — لَا تَعْبُدْ — اتْرُكْ — لَا تَتْرُكْ — ادْخُلْ — لَا تَدْخُلْ — قُلْ — لَا تَقُلْ — اخْرُجْ — لَا تَخْرُجْ\nاعْبُدْ — اعْبُدُوا — قُلْ — قُولُوا — اتْرُكْ — اتْرُكُوا — ادْخُلْ — ادْخُلُوا — لَا تَعْبُدْ — لَا تَعْبُدُوا — لَا تَقُلْ — لَا تَقُولُوا — لَا تَتْرُكْ — لَا تَتْرُكُوا', explanation: 'A command is recognised in four ways: the present tense prefix is replaced with an alif at the start, the verb ends with a sukun, a weak letter at the end is deleted, or the nun at the end of a plural verb is deleted. A prohibition keeps the present tense prefix and simply adds "la" before the verb. Both are directed at "you" singular or plural.' },
-  { lesson: 4, title: 'Subject & Object Cases', examples: 'اجْتَمَعَ النَّاسُ — نَصَرَ اللَّهُ إِبْرَاهِيمَ — وَجَدَ النَّاسُ إِبْرَاهِيمَ — أَلْقَوْا إِبْرَاهِيمَ — كَسَرَ إِبْرَاهِيمُ الْأَصْنَامَ — أَرَادَ اللَّهُ شَيْئًا — قَتَلَ النَّاسُ إِبْرَاهِيمَ — سَمِعَ النَّاسُ إِبْرَاهِيمَ — عَبَدَ آزَرُ الْأَصْنَامَ — تَرَكَ إِبْرَاهِيمُ الشِّرْكَ', explanation: 'The subject of a sentence — the one doing the action — takes a damma on its last letter. The object — the one receiving the action — takes a fatha on its last letter. This means you can identify who is doing what even in a long sentence, without relying on word order. This is the nominative case for the subject, and the accusative case for the object.' },
-  { lesson: 5, title: 'Passive Voice', examples: 'خُلِقَ — يُخْلَقُ — ضُرِبَ — يُضْرَبُ — كُسِرَ — يُكْسَرُ — أُلْقِيَ — يُلْقَى — غُلِبَ — يُغْلَبُ', explanation: 'A passive verb is one where the subject receives the action instead of doing it. Instead of "Ibrahim broke the idol", you say "the idol was broken". In Arabic, the past tense passive is formed by changing the vowels of the verb to a damma then a kasra. The present tense passive changes to a damma at the start and a fatha before the last letter. You do not need to mention who did the action — the verb alone tells you something was done to the subject.' },
-  { lesson: 6, title: 'Doer & Done-To Patterns', examples: 'خَالِقٌ — مَخْلُوقٌ — نَاصِرٌ — مَنْصُورٌ — عَالِمٌ — مَعْلُومٌ — مُؤْمِنٌ — مُؤْمَنٌ — كَاسِرٌ — مَكْسُورٌ', explanation: 'The pattern "faa-il" describes the one doing the action — the doer. The pattern "maf-ool" describes the one receiving the action — the done-to. Both are formed from the same root. Recognising these two patterns allows you to identify whether a word is the doer or the receiver without needing to know its meaning.' },
-  { lesson: 7, title: 'Superlatives', examples: 'أَكْبَرُ — أَصْغَرُ — أَكْثَرُ — أَقَلُّ — أَحْسَنُ — أَعْظَمُ — أَقْوَى — أَضْعَفُ — كُبْرَى — صُغْرَى', explanation: 'The superlative is formed by putting the root letters into the pattern "af-al" for masculine and "fu-la" for feminine. It means "the most" or "the -est" — bigger, smaller, greater, and so on. The masculine form is used for comparisons between two things as well as superlatives. The feminine form appears with feminine nouns and in certain fixed expressions.' },
-  { lesson: 8, title: 'Idafa: Possession & Description', examples: 'بَيْتُ اللهِ — دَعْوَةُ التَّوْحِيدِ — طَالِبُ عِلْمٍ — عَمَلُ الشَّيْطَانِ — رَبُّ الْعَالَمِينَ — أَهْلُ الْجَنَّةِ — يَوْمُ الْعِيدِ — كُتُبُ الْأَنْبِيَاءِ — عَذَابُ جَهَنَّمَ — سَبِيلُ اللهِ', explanation: 'When two nouns are placed next to each other, the second takes a kasra. This is called idafa, and the phrase translates to english as "something of something" or "something\'s something". The first noun is the thing being possessed or described, and the second is the owner or descriptor. The first noun never takes ال when it is in an idafa construction. If the second noun is indefinite, the whole phrase is indefinite — like "a student of knowledge". If the second noun has ال, the whole phrase becomes definite — like "the house of Allah". One main way to recognise idafa is that the second word has kasra and the first word has neither "al" nor tanween.' },
-  { lesson: 9, title: 'Verbal Nouns', examples: 'خَلَقَ — خَلْقٌ — عَبَدَ — عِبَادَةٌ — دَعَا — دَعْوَةٌ — نَصَرَ — نَصْرٌ — ذَكَرَ — ذِكْرٌ', explanation: 'A verbal noun is a noun made from a verb. In English, you can say "he runs" or "running is good" — "running" is the verbal noun. In Arabic this is even more important because verbal nouns appear constantly in the Quran and in everyday speech. Instead of saying "he worshipped", you can say "his worship was pure". The verbal noun freezes the action into a thing you can talk about, possess, or describe. In English, the difference is between "he is reading" and "he likes reading". The first is an action that is happening, and the second is a concept you can talk about. Recognising verbal nouns allows you to understand a huge portion of the Quran, since many key Quranic terms are verbal nouns.' },
-  { lesson: 10, title: 'Adverbial Accusative', examples: 'جَاءَ إِبْرَاهِيمُ فَرِحًا — خَرَجَ خَائِفًا — وَجَدَهُ سَالِمًا — دَعَا النَّاسَ حَكِيمًا — رَجَعَ خَاسِرًا — غَضِبَ غَضَبًا شَدِيدًا — زِدْنِي عِلْمًا — كَانَ أَكْثَرَ عِلْمًا — طَابَ قَلْبًا — مَلَأَ الْأَرْضَ نُورًا', explanation: 'Sometimes a word with a fatha appears after a verb or noun to give extra detail about it. It tells you how something happened, in what state, or in what respect. For example: "he arrived happily" — the word "happy" has a fatha and tells you the state he was in when he came. Or "increase me in knowledge" — "knowledge" has a fatha and tells you in what respect the increase is wanted. This word always comes after the thing it is describing and is always indefinite.' },
-  { lesson: 11, title: 'Derived Verb Forms (Part 1)', examples: 'أَفْعَلَ — فَعَّلَ —تَفَعَّلَ— فَاعَلَ —تَفَاعَلَ —اِنْفَعَلَ — اِسْتَفْعَلَ\nأَخْرَجَ — أَنْزَلَ — أَحْيَا\nعَلَّمَ — كَسَّرَ — نَزَّلَ\nتَعَلَّمَ — تَكَسَّرَ — تَنَزَّلَ\nقَاتَلَ — جَادَلَ — عَامَلَ\nتَقَاتَلَ — تَجَادَلَ — تَعَامَلَ\nاِنْكَسَرَ — اِنْفَتَحَ — اِنْغَلَقَ\nاِسْتَغْفَرَ — اِسْتَعَانَ — اِسْتَخَارَ', explanation: 'The form beginning with a hamza causes the action to happen — like "he sent out" from "he went out". The doubled middle letter form makes the action intensive or causes it to happen to someone else — like "he taught" from "he knew". The mutual reflexive form means two parties doing something to each other over time. The form with alif after the first letter means two parties are doing something to each other. The form beginning with "ta" and a doubled middle letter is the reflexive of the doubled form — like "he learned" from "he taught". The form beginning with "in" is intransitive — something happened to the subject. The form beginning with "ista" means to seek or consider something — like "he sought forgiveness".' },
-  { lesson: 12, title: 'Derived Verb Forms (Part 2)', examples: 'Each verbal form has a distinct structure.', explanation: 'As for the original form, then it does not. So if a person memorises these different forms, they no longer have to memorise past/present/command/verbal noun/passive for every verb they learn. This memorisation may take some time in the beginning, but it pays off when you find yourself strong in understanding and strong in grammar, and it just takes a couple of hours of repetition. Just to list the main rules: 1-Past tense verbs should not have a kasra/dumma on any letters, except a kasra below the alif. 2-the present tense pronoun only begins with dumma in the causation/interaction verbs. 3- In present/command verbs, the 2nd to last letter has a kasra, except if it begins with the reflexive "Taa". 4- For passive present, the pronoun has dumma and everything else has fatha. 5-For passive past, the first letter has dumma, the last has fatha, and the 2nd to last has kasra. 6-For passive past, the additional "taa" has dumma also.' },
-  { lesson: 13, title: 'Word Order & Emphasis', examples: 'إِيَّاكَ نَعْبُدُ — لِلَّهِ الْحَمْدُ — إِيَّاكَ نَسْتَعِينُ — لَكَ الْمُلْكُ — لَهُ الْأَمْرُ — عَلَيْهِ تَوَكَّلْتُ — بِيَدِهِ الْخَيْرُ — لَهُ الْحَمْدُ', explanation: 'In Arabic the word order can be changed without changing the basic meaning — unlike English where word order is fixed. However when a word is moved to the front of the sentence, it gains a special emphasis or restriction. For example, "you we worship" in Surah Al-Fatiha is not the same as "we worship you" — it means "you alone we worship, and no one else". To understand these sentences correctly, first put the words back into their natural order, then ask what was moved to the front and why.' }
-];
+// Pulls the REAL, current principle cards for a lesson — same source and same
+// fallback order Grammar itself uses — so anything added there shows up here too.
+function getPrinciplesForLesson(lessonNum) {
+const storyData = window.LESSON_STORIES ? window.LESSON_STORIES.find(s => s.lesson === lessonNum) : null;
+if (storyData && storyData.principles) return storyData.principles;
+if (lessonNum === 3) return PRINCIPLES_L3;
+if (lessonNum === 2) return PRINCIPLES_L2;
+if (lessonNum === 1) return PRINCIPLES;
+return [];
+}
+
+let libPrincipleLesson = 1;
+let libPrincipleIdx = 0;
+let libPrincipleRevealed = false;
+
+function renderLibraryPrincipleCard() {
+const cards = getPrinciplesForLesson(libPrincipleLesson);
+const pane = document.getElementById('principles-pane');
+const lessonPicker = pane.querySelector('#lib-principle-lesson-select');
+if (lessonPicker) lessonPicker.value = String(libPrincipleLesson);
+const cardWrap = pane.querySelector('#lib-principle-card-wrap');
+if (!cards.length) {
+cardWrap.innerHTML = '<div style="text-align:center;color:var(--grey);padding:40px 20px">No principle cards for this lesson yet.</div>';
+return;
+}
+if (libPrincipleIdx >= cards.length) libPrincipleIdx = 0;
+const p = cards[libPrincipleIdx];
+let answerHtml = p.a;
+if (p.quote) answerHtml += `<div class="principle-quote"><div class="principle-quote-ar">${p.quote}</div></div>`;
+cardWrap.innerHTML = `
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+<span style="font-size:12px;color:var(--grey);font-weight:600">${libPrincipleIdx + 1} / ${cards.length}</span>
+</div>
+<div class="principle-card" id="lib-principle-card">
+<div class="principle-q" id="lib-principle-q" style="display:${libPrincipleRevealed ? 'none' : 'block'}"><strong>Question:</strong> ${p.q}</div>
+<div class="principle-a" id="lib-principle-a" style="display:${libPrincipleRevealed ? 'block' : 'none'}">${answerHtml}</div>
+<div class="principle-hint">${libPrincipleRevealed ? 'Click card to see the question again' : 'Click card to see answer'}</div>
+</div>
+<div class="principles-nav">
+<button class="principles-nav-btn" id="lib-principle-back-btn" ${libPrincipleIdx === 0 ? 'style="visibility:hidden"' : ''}>‹ Back</button>
+<div class="principles-dots" id="lib-principle-dots"></div>
+<button class="principles-nav-btn" id="lib-principle-next-btn">${libPrincipleIdx === cards.length - 1 ? 'Done' : 'Next ›'}</button>
+</div>`;
+const dotsEl = document.getElementById('lib-principle-dots');
+cards.forEach((_, i) => {
+const dot = document.createElement('span');
+dot.className = 'principle-dot' + (i === libPrincipleIdx ? ' active' : '');
+dotsEl.appendChild(dot);
+});
+document.getElementById('lib-principle-card').onclick = () => {
+libPrincipleRevealed = !libPrincipleRevealed;
+renderLibraryPrincipleCard();
+};
+document.getElementById('lib-principle-back-btn').onclick = (e) => {
+e.stopPropagation();
+if (libPrincipleIdx > 0) { libPrincipleIdx--; libPrincipleRevealed = false; renderLibraryPrincipleCard(); }
+};
+document.getElementById('lib-principle-next-btn').onclick = (e) => {
+e.stopPropagation();
+if (libPrincipleIdx < cards.length - 1) { libPrincipleIdx++; libPrincipleRevealed = false; renderLibraryPrincipleCard(); }
+};
+}
 
 const principlesPane = document.getElementById('principles-pane');
-principlesPane.innerHTML = principlesData.map((p, idx) => `
-<div class="principle-item" data-idx="${idx}">
-<div class="principle-item-header">
-<span class="principle-item-toggle">›</span>
-<span>Lesson ${p.lesson}: ${p.title}</span>
+const lessonOptions = Array.from({ length: 16 }, (_, i) => i + 1)
+.map(n => `<option value="${n}">Lesson ${n}</option>`).join('');
+principlesPane.innerHTML = `
+<div style="margin-bottom:14px">
+<select id="lib-principle-lesson-select" style="width:100%;padding:10px;border:2px solid var(--border);border-radius:8px;font-size:14px;font-weight:600">${lessonOptions}</select>
 </div>
-<div class="principle-item-content" data-idx="${idx}">
-<div class="principle-item-content-examples">${p.examples}</div>
-<div class="principle-item-content-explanation">${p.explanation}</div>
-</div>
-</div>
-`).join('');
-
-document.querySelectorAll('.principle-item').forEach(item => {
-  item.onclick = () => {
-    const idx = item.dataset.idx;
-    const content = item.querySelector('.principle-item-content');
-    const toggle = item.querySelector('.principle-item-toggle');
-    content.classList.toggle('open');
-    toggle.classList.toggle('open');
-  };
-});
+<div id="lib-principle-card-wrap"></div>
+`;
+document.getElementById('lib-principle-lesson-select').onchange = (e) => {
+libPrincipleLesson = parseInt(e.target.value);
+libPrincipleIdx = 0;
+libPrincipleRevealed = false;
+renderLibraryPrincipleCard();
+};
+renderLibraryPrincipleCard();
 
 const lessonsData = [
   (window.LESSON_STORIES ? window.LESSON_STORIES.find(s => s.lesson === 1) : { lesson: 1, title: 'آزَرُ وَالْأَصْنَامُ', titleEn: 'Azar and the Idols', text: 'قَبْلَ أَيَّامٍ كَثِيرَةٍ جِدًّا، كَانَ هُنَاكَ رَجُلٌ\nوَكَانَ هَذَا الرَّجُلُ يَسْكُنُ فِي قَرْيَةٍ\nوَكَانَ اسْمُ هَذَا الرَّجُلِ آزَرَ\nوَكَانَ آزَرُ مُشْرِكًا\nوَكَانَ مَعَ آزَرَ نَاسٌ كَثِيرُونَ\nوَكَانَ هَؤُلَاءِ النَّاسُ مُشْرِكِينَ أَيْضًا\nوَكَانَ آزَرُ يَسْكُنُ مَعَ الْمُشْرِكِينَ فِي هَذِهِ الْقَرْيَةِ\nوَكَانَ فِي هَذِهِ الْقَرْيَةِ أَصْنَامٌ كَثِيرَةٌ جِدًّا\nوَكَانَ النَّاسُ يَعْبُدُونَ هَذِهِ الْأَصْنَامَ\nوَكَانَ النَّاسُ يَسْجُدُونَ لَهَا\nوَكَانَ آزَرُ يَعْبُدُ الْأَصْنَامَ أَيْضًا وَكَانَ آزَرُ يَسْجُدُ لَهَا أَيْضًا\nصَنَمٌ هُنَا، وَصَنَمٌ هُنَاكَ. أَصْنَامٌ كَثِيرَةٌ جِدًّا\nلِمَاذَا يَعْبُدُونَ الْأَصْنَامَ؟ الْعِبَادَةُ لِلَّهِ فَقَطْ' }),
@@ -2224,183 +2400,25 @@ showToast(`Reset daily progress for ${STUDENTS[code]?.name || code}`);
 }
 };
 
-async function loadLeaderboard() {
-  try {
-    const snap = await getDoc(doc(db, 'leaderboard', 'main'));
-    return snap.exists() ? (snap.data().entries || []) : [];
-  } catch(e) { console.error('Leaderboard load error', e); return []; }
-}
-
-async function saveLeaderboard(entries) {
-  try {
-    await setDoc(doc(db, 'leaderboard', 'main'), { entries: entries.filter(e => e.name && e.name.trim()), updatedAt: Date.now() });
-  } catch(e) { console.error('Leaderboard save error', e); }
-}
-
-function buildLeaderboardHtml(entries, isEditing) {
-  entries.forEach(e => {
-    if (e.days && e.days.length === 7) e.score = e.days.reduce((s, d) => s + (d || 0), 0);
-  });
-  const sorted = [...entries].sort((a, b) => (b.score || 0) - (a.score || 0));
-  let html = '<div style="display:flex;flex-direction:column;gap:6px;max-width:420px">';
-  sorted.forEach((entry, i) => {
-    const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `<span style="display:inline-block;width:24px;text-align:center">${i + 1}</span>`;
-    if (isEditing) {
-      const days = entry.days && entry.days.length === 7 ? entry.days : [0,0,0,0,0,0,0];
-      const total = days.reduce((s, d) => s + (d || 0), 0);
-      let dayBoxes = '';
-      days.forEach((d, di) => {
-        dayBoxes += `<input class="lb-day-input" data-name="${entry.name.replace(/"/g, '&quot;')}" data-day="${di}" value="${d}" type="number" min="0" max="6" style="width:32px;padding:6px 2px;border:2px solid var(--border);border-radius:6px;font-size:12px;text-align:center">`;
-      });
-      html += `<div style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--grey-light);border-radius:10px;flex-wrap:wrap">
-        <div style="font-size:18px">${medal}</div>
-        <div style="flex:1;font-weight:600;min-width:90px;overflow:hidden;text-overflow:ellipsis">${entry.name}</div>
-        <div style="display:flex;gap:3px">${dayBoxes}</div>
-        <div style="width:36px;text-align:center;font-weight:700;color:var(--blue);font-size:14px">${total}</div>
-        <button class="lb-del-btn" data-name="${entry.name.replace(/"/g, '&quot;')}" style="padding:6px 10px;background:#ef4444;color:white;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer">✕</button>
-      </div>`;
-    } else {
-      html += `<div style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--grey-light);border-radius:10px">
-        <div style="font-size:18px">${medal}</div>
-        <div style="flex:1;font-weight:600">${entry.name}</div>
-        <div style="font-weight:700;color:var(--blue)">${entry.score || 0}</div>
-      </div>`;
-    }
-  });
-  html += '</div>';
-  return { html, sorted };
-}
-
-async function renderLeaderboardAdmin() {
-  const root = document.getElementById('leaderboard-admin-root');
-  root.innerHTML = '<div style="text-align:center;color:var(--grey);padding:20px">Loading…</div>';
-  let entries = await loadLeaderboard();
-
-  // Build today's active list (students + guests)
-  const activeToday = [];
-  Object.keys(STUDENTS).forEach(code => {
-    if (hasMadeProgressToday(code)) activeToday.push({ name: STUDENTS[code].name, code, type: 'student' });
-  });
-  try {
-    const guestSnap = await getDocs(collection(db, 'guests'));
-    guestSnap.forEach(d => {
-      const g = { code: d.id, ...d.data() };
-      if (hasMadeProgressToday(g.code)) activeToday.push({ name: g.name || 'Guest', code: g.code, type: 'guest' });
-    });
-  } catch(e) {}
-
-    function redraw() {
-    let fullHtml = '';
-    if (activeToday.length) {
-      fullHtml += '<div style="margin-bottom:20px"><div style="font-size:13px;font-weight:700;color:var(--grey);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px">Today\'s Active (' + activeToday.length + ')</div>';
-      fullHtml += '<div style="display:flex;flex-direction:column;gap:4px;max-width:420px">';
-      activeToday.forEach(p => {
-        const entry = entries.find(e => e.name === p.name);
-        const score = entry ? (entry.score || 0) : 0;
-        fullHtml += `<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#eff6ff;border-radius:8px;border:1px solid #bfdbfe">
-          <div style="font-size:11px;font-weight:700;color:#2563eb;text-transform:uppercase">${p.type}</div>
-          <div style="flex:1;font-weight:600;font-size:14px">${p.name}</div>
-          <div style="font-size:13px;color:var(--grey)">${score} pts</div>
-        </div>`;
-      });
-      fullHtml += '</div></div>';
-    }
-    const { html, sorted } = buildLeaderboardHtml(entries, true);
-    fullHtml += html;
-    fullHtml += '<div style="display:flex;gap:10px;margin-top:16px;max-width:420px;flex-wrap:wrap">';
-    fullHtml += '<div style="display:flex;gap:8px;flex:1;min-width:200px">';
-    fullHtml += '<input id="lb-new-name" placeholder="Student name" style="flex:1;padding:10px;border:2px solid var(--border);border-radius:8px;font-size:14px">';
-    fullHtml += '<input id="lb-new-score" placeholder="0" type="number" style="width:70px;padding:10px;border:2px solid var(--border);border-radius:8px;font-size:14px;text-align:center">';
-    fullHtml += '</div>';
-    fullHtml += '<button id="lb-add-btn" style="padding:10px 16px;background:#f3f4f6;color:var(--ink);border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">+ Add</button>';
-    fullHtml += '<button id="lb-save-btn" style="padding:10px 16px;background:#2563eb;color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">Save</button>';
-    fullHtml += '<button id="lb-reset-btn" style="padding:10px 16px;background:#ef4444;color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">Reset All to 0</button>';
-    fullHtml += '</div>';
-    fullHtml += `<div style="margin-top:10px;font-size:12px;color:var(--grey)">${sorted.length} student${sorted.length !== 1 ? 's' : ''} · Total: ${sorted.reduce((s, e) => s + (e.score || 0), 0)} pts</div>`;
-    root.innerHTML = fullHtml;
-
-    // Day box change → update that day's points, recalc total, auto-reorder
-    root.querySelectorAll('.lb-day-input').forEach(input => {
-      input.onchange = () => {
-        const name = input.dataset.name;
-        const dayIndex = parseInt(input.dataset.day);
-        const newVal = parseInt(input.value) || 0;
-        const idx = entries.findIndex(e => e.name === name);
-        if (idx !== -1) {
-          if (!entries[idx].days || entries[idx].days.length !== 7) entries[idx].days = [0,0,0,0,0,0,0];
-          entries[idx].days[dayIndex] = newVal;
-          entries[idx].score = entries[idx].days.reduce((s, d) => s + (d || 0), 0);
-        }
-        redraw();
-      };
-    });
-
-    // Delete
-    root.querySelectorAll('.lb-del-btn').forEach(btn => {
-      btn.onclick = () => {
-        const name = btn.dataset.name;
-        entries = entries.filter(e => e.name !== name);
-        redraw();
-      };
-    });
-
-    // Add new row
-    document.getElementById('lb-add-btn').onclick = () => {
-      const nameInput = document.getElementById('lb-new-name');
-      const scoreInput = document.getElementById('lb-new-score');
-      const name = nameInput.value.trim();
-      const score = parseInt(scoreInput.value) || 0;
-      if (!name) { showToast('Enter a name first'); return; }
-      if (entries.find(e => e.name === name)) { showToast('Name already exists'); return; }
-      entries.push({ name, days: [0,0,0,0,0,0,0], score: 0 });
-      redraw();
-    };
-
-    // Save to Firebase
-    document.getElementById('lb-reset-btn').onclick = async () => {
-  if (!confirm('Reset ALL scores to 0?')) return;
-  entries.forEach(e => { e.score = 0; e.days = [0,0,0,0,0,0,0]; });
-  await saveLeaderboard(entries);
-  showToast('All scores reset to 0');
-  redraw();
-};
-
-document.getElementById('lb-save-btn').onclick = async () => {
-      await saveLeaderboard(entries);
-      showToast('Leaderboard saved ✓');
-    };
-  }
-
-  redraw();
-}
-
-async function renderLeaderboardPublic() {
-  const root = document.getElementById('leaderboard-root');
-  root.innerHTML = '<div style="text-align:center;color:var(--grey);padding:20px">Loading…</div>';
-  const entries = await loadLeaderboard();
-  if (!entries.length) {
-    root.innerHTML = '<div style="text-align:center;padding:40px;color:var(--grey)">No entries yet.</div>';
-    return;
-  }
-let fullHtml = `<div style="width:100%;max-width:420px;margin-bottom:16px;padding:14px 16px;background:var(--grey-light);border-radius:10px;font-size:13px;line-height:1.7">
-  <div style="font-weight:700;margin-bottom:6px;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;color:var(--grey)">How you earn points (max 6/day)</div>
-  <div>• Participating</div>
-  <div>• Correct answer and grammar</div>
-  <div>• 3-day streak</div>
-  <div>• Correcting another student's mistake</div>
-  <div>• Progressing in the Arabic app</div>
-  <div>• Completing your streak in the Arabic app</div>
+async function renderStreakLeaderboard() {
+const root = document.getElementById('streak-leaderboard-root');
+root.innerHTML = '<div style="text-align:center;color:var(--grey);padding:20px">Loading…</div>';
+await ensureRankingDataLoaded();
+const ranked = getRankedStudents();
+let html = '<div style="display:flex;flex-direction:column;gap:6px;max-width:420px">';
+ranked.forEach((code, i) => {
+const streak = getEffectiveStreak(code);
+const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `<span style="display:inline-block;width:24px;text-align:center">${i + 1}</span>`;
+const name = STUDENTS[code]?.name || code;
+const isYou = code === activeStudentCode();
+html += `<div style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:${isYou ? '#fffbeb' : 'var(--grey-light)'};border:${isYou ? '1px solid #fcd34d' : '1px solid transparent'};border-radius:10px">
+<div style="font-size:18px">${medal}</div>
+<div style="flex:1;font-weight:600">${name}${isYou ? ' (you)' : ''}</div>
+<div style="font-weight:700;color:var(--blue)">🔥 ${streak}</div>
 </div>`;
-fullHtml += `<a href="https://chat.whatsapp.com/CnL9pk0lxbSC6hom5v5ulC" target="_blank" style="display:block;width:100%;max-width:420px;margin-bottom:16px;padding:14px;background:#25D366;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;text-align:center;text-decoration:none;box-sizing:border-box">💬 Join the Arabic Group Chat</a>`;
-fullHtml += `<button id="lb-invite-btn" style="width:100%;max-width:420px;margin-bottom:20px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">For an extra point, make small progress today in the app</button>`;
-const { html } = buildLeaderboardHtml(entries, false);
-fullHtml += html;
-root.innerHTML = fullHtml;
-document.getElementById('lb-invite-btn').onclick = () => {
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('login-screen').style.display = 'flex';
-  document.getElementById('tabs-bar').style.display = 'none';
-};
+});
+html += '</div>';
+root.innerHTML = html;
 }
 
 // One-time cleanup: moves old inline photos out of each day's lightweight record
@@ -2472,7 +2490,9 @@ await updateDoc(doc(db, 'inbox', id), { read: true });
 const e = (window.inboxCache || []).find(x => x.id === id);
 if (e) e.read = true;
 window.updateGuestsBadge();
+window.updateInboxBadge();
 if (typeof renderGuestsTab === 'function') renderGuestsTab();
+if (typeof renderInboxTab === 'function') renderInboxTab();
 } catch(err) { console.error('Mark inbox read error', err); showToast('Error updating'); }
 };
 
@@ -2481,7 +2501,9 @@ try {
 await deleteDoc(doc(db, 'inbox', id));
 window.inboxCache = (window.inboxCache || []).filter(x => x.id !== id);
 window.updateGuestsBadge();
+window.updateInboxBadge();
 if (typeof renderGuestsTab === 'function') renderGuestsTab();
+if (typeof renderInboxTab === 'function') renderInboxTab();
 } catch(err) { console.error('Delete inbox entry error', err); showToast('Error deleting'); }
 };
 
@@ -2492,7 +2514,9 @@ try {
 await Promise.all(unread.map(e => updateDoc(doc(db, 'inbox', e.id), { read: true })));
 unread.forEach(e => e.read = true);
 window.updateGuestsBadge();
+window.updateInboxBadge();
 if (typeof renderGuestsTab === 'function') renderGuestsTab();
+if (typeof renderInboxTab === 'function') renderInboxTab();
 } catch(err) { console.error('Mark all inbox read error', err); showToast('Error updating'); }
 };
 
@@ -2540,12 +2564,85 @@ if (btn) btn.onclick = () => window.speakArabic(r.arabic);
 }
 window.renderSavedTab = renderSavedTab;
 
+window.renderSubscriptionTab = function() {
+const box = document.getElementById('subscription-details');
+if (!box) return;
+const code = activeStudentCode();
+const sub = SUBSCRIPTIONS[code];
+const canEdit = isInstructor;
+if (!sub) {
+box.innerHTML = '<div style="color:var(--grey)">No subscription details on file.</div>';
+return;
+}
+if (!canEdit) {
+box.innerHTML = `
+<div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--border);padding:6px 0"><span style="color:var(--grey)">Monthly payment</span><span style="font-weight:700">£${sub.monthly.toFixed(2)}</span></div>
+<div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--border);padding:6px 0"><span style="color:var(--grey)">Weekly hours</span><span style="font-weight:700">${sub.weeklyHours}</span></div>
+<div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--border);padding:6px 0"><span style="color:var(--grey)">Start date</span><span style="font-weight:700">${sub.startDate}</span></div>
+<div style="display:flex;justify-content:space-between;padding:6px 0"><span style="color:var(--grey)">End date</span><span style="font-weight:700">${sub.endDate}</span></div>
+`;
+return;
+}
+box.innerHTML = `
+<div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);padding:6px 0"><span style="color:var(--grey)">Monthly payment (£)</span><input id="sub-edit-monthly" type="number" step="0.01" value="${sub.monthly}" style="width:100px;text-align:right;border:1px solid var(--border);border-radius:6px;padding:4px 8px"></div>
+<div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);padding:6px 0"><span style="color:var(--grey)">Weekly hours</span><input id="sub-edit-weekly" type="number" step="0.1" value="${sub.weeklyHours}" style="width:100px;text-align:right;border:1px solid var(--border);border-radius:6px;padding:4px 8px"></div>
+<div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);padding:6px 0"><span style="color:var(--grey)">Start date</span><input id="sub-edit-start" type="text" value="${sub.startDate}" style="width:150px;text-align:right;border:1px solid var(--border);border-radius:6px;padding:4px 8px"></div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0"><span style="color:var(--grey)">End date</span><input id="sub-edit-end" type="text" value="${sub.endDate}" style="width:150px;text-align:right;border:1px solid var(--border);border-radius:6px;padding:4px 8px"></div>
+<button id="sub-edit-save" style="margin-top:16px;width:100%;padding:10px;background:var(--blue);color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer">Save Changes</button>
+`;
+document.getElementById('sub-edit-save').onclick = async () => {
+const newEndDate = document.getElementById('sub-edit-end').value.trim();
+if (newEndDate !== sub.endDate) sub.endAlertSent = false;
+sub.monthly = parseFloat(document.getElementById('sub-edit-monthly').value) || 0;
+sub.weeklyHours = parseFloat(document.getElementById('sub-edit-weekly').value) || 0;
+sub.startDate = document.getElementById('sub-edit-start').value.trim();
+sub.endDate = newEndDate;
+try {
+await window.saveSubscription(code, sub);
+showToast('Subscription details saved');
+} catch(e) {
+showToast('Error saving — check connection');
+}
+};
+};
+
 window.deleteSavedReport = async function(id) {
 try {
 await deleteDoc(doc(db, 'reports', id));
 renderSavedTab();
 } catch(e) { console.error('Delete saved item error', e); showToast('Delete failed — try again'); }
 };
+
+async function renderInboxTab() {
+const markAllBtn = document.getElementById('inbox-mark-all-read-btn');
+if (markAllBtn) markAllBtn.onclick = window.markAllInboxRead;
+const root = document.getElementById('inbox-root');
+root.innerHTML = '<div style="text-align:center;color:var(--grey);padding:20px">Loading inbox…</div>';
+await window.loadInboxCache();
+const entries = window.inboxCache || [];
+if (!entries.length) {
+root.innerHTML = '<div style="padding:20px;text-align:center;color:#8a7f6e"><p>📥 Alerts like ended subscriptions will appear here</p></div>';
+return;
+}
+entries.sort((a,b) => (b.timestamp||0) - (a.timestamp||0));
+const typeIconInbox = { contact: '📞', report: '⚠️', homework: '📸', subscription: '💳' };
+root.innerHTML = entries.map((e, i) => {
+const studentName = STUDENTS[e.code]?.name || e.name || e.code;
+const date = new Date(e.timestamp).toLocaleString();
+return `<div style="background:${e.read ? 'white' : '#fffbeb'};border:1px solid ${e.read ? 'var(--border)' : '#fcd34d'};border-radius:12px;padding:16px;margin-bottom:12px">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+<div style="font-weight:600;color:var(--ink)">${typeIconInbox[e.type] || '📥'} ${studentName}</div>
+<div style="display:flex;gap:6px;align-items:center">
+${e.read ? '' : `<button onclick="window.markInboxRead('${e.id}')" style="background:none;border:none;color:var(--blue);font-size:12px;font-weight:600;cursor:pointer;padding:2px 6px">Mark read</button>`}
+<button onclick="window.deleteInboxEntry('${e.id}')" style="background:none;border:none;color:var(--grey);font-size:13px;cursor:pointer;padding:2px 6px">✕ Delete</button>
+</div>
+</div>
+<div style="font-size:14px;color:var(--ink)">${e.summary || ''}</div>
+<div style="font-size:12px;color:var(--grey);margin-top:8px">${date}</div>
+</div>`;
+}).join('');
+}
+window.renderInboxTab = renderInboxTab;
 
 async function renderReportsTab() {
 const migrateBtn = document.getElementById('migrate-photos-btn');
@@ -2778,6 +2875,14 @@ else count++;
 return count;
 }
 
+// The streak actually shown to the student: same raw streak, but zeroed out once
+// they've missed 2+ days in a row, so a long-dead streak doesn't linger visually.
+// Ranking must use this exact number too, or someone's own banner can disagree
+// with their position on the leaderboard.
+function getEffectiveStreak(code) {
+return getConsecutiveMissed(code) >= 2 ? 0 : getStreak(code);
+}
+
 function hasMadeProgressToday(code) {
 const today = todayKey();
 const lesson = studentLesson[code] || 1;
@@ -2812,7 +2917,7 @@ if (isMidnightPast(key) && !dayQualifiesForStreak(code, key)) missed.push(key);
 }
 return missed.sort();
 }
-function getRankedStudents() { return Object.keys(STUDENTS).sort((a,b)=>getConsistency(b)-getConsistency(a)); }
+function getRankedStudents() { return Object.keys(STUDENTS).sort((a,b)=>getEffectiveStreak(b)-getEffectiveStreak(a)); }
 
 function fileToBase64(file) {
 return new Promise((resolve, reject) => {
@@ -2885,6 +2990,58 @@ studentLesson[code] = data.lesson || 1;
 } catch(e) { console.error('Meta load error',e); allFcActivity[code] = {}; allCardActivity[code] = {}; studentLesson[code] = 1; }
 if (!studentLesson[code]) studentLesson[code] = 1;
 }
+
+// Ranking (banner rank + streak leaderboard) needs every student's activity and
+// check-in data, not just the logged-in student's own. A regular student login
+// only ever loads their own data, so without this, every other student silently
+// shows a streak of 0. Runs once per session and caches — safe to call often.
+let rankingDataLoaded = false;
+async function ensureRankingDataLoaded() {
+if (rankingDataLoaded || isInstructor) return;
+rankingDataLoaded = true;
+try {
+await Promise.all(Object.keys(STUDENTS).map(c => Promise.all([loadStudentMeta(c), loadStudentData(c)])));
+} catch(e) { console.error('Ranking data load error', e); rankingDataLoaded = false; }
+}
+async function loadSubscription(code) {
+try {
+const snap = await getDoc(doc(db,'subscriptions',code));
+if (snap.exists()) SUBSCRIPTIONS[code] = snap.data();
+} catch(e) { console.error('Subscription load error',e); }
+}
+window.loadSubscription = loadSubscription;
+async function loadAllSubscriptions() {
+await Promise.all(Object.keys(STUDENTS).map(c=>loadSubscription(c)));
+await checkExpiredSubscriptions();
+}
+window.loadAllSubscriptions = loadAllSubscriptions;
+function parseUkDate(str) {
+if (!str || typeof str !== 'string') return null;
+const m = str.trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+if (!m) return null;
+return new Date(Number(m[3]), Number(m[2]) - 1, Number(m[1]));
+}
+async function checkExpiredSubscriptions() {
+const today = new Date(); today.setHours(0,0,0,0);
+for (const code of Object.keys(SUBSCRIPTIONS)) {
+const sub = SUBSCRIPTIONS[code];
+if (!sub || sub.endAlertSent) continue;
+const end = parseUkDate(sub.endDate);
+if (!end) continue;
+if (end <= today) {
+const name = STUDENTS[code]?.name || code;
+await addInboxEntry('subscription', code, name + '\u2019s subscription has ended (' + sub.endDate + ')', { endDate: sub.endDate });
+sub.endAlertSent = true;
+await saveSubscription(code, sub);
+}
+}
+}
+async function saveSubscription(code, data) {
+try {
+await setDoc(doc(db,'subscriptions',code), data);
+} catch(e) { console.error('Subscription save error',e); throw e; }
+}
+window.saveSubscription = saveSubscription;
 async function saveFlashcardData(code) {
 if (isImpersonating) return;
 try {
@@ -3185,6 +3342,7 @@ currentUser=code; isInstructor=true;
 viewingStudent=Object.keys(STUDENTS)[0];
 await Promise.all(Object.keys(STUDENTS).map(c=>loadStudentData(c)));
 await Promise.all(Object.keys(STUDENTS).map(c=>loadStudentMeta(c)));
+await loadAllSubscriptions();
 startApp();
 } else if (STUDENTS[code]) {
 currentUser=code; isInstructor=false;
@@ -3192,6 +3350,7 @@ if (!studentCardLimits[code]) studentCardLimits[code] = 5;
 await loadStudentData(code);
 await loadStudentMeta(code);
 await loadFlashcardProgress(code);
+await loadSubscription(code);
 startApp();
 } else {
 // Try guest code
@@ -3404,11 +3563,15 @@ document.getElementById('tab-content-library').style.display = tab==='library' ?
 if (tab==='library' && typeof renderLibrary === 'function') renderLibrary();
 document.getElementById('tab-content-saved').style.display = tab==='saved' ? 'block' : 'none';
 if (tab==='saved' && typeof renderSavedTab === 'function') renderSavedTab();
+document.getElementById('tab-content-subscription').style.display = tab==='subscription' ? 'block' : 'none';
+if (tab==='subscription' && typeof renderSubscriptionTab === 'function') renderSubscriptionTab();
 document.getElementById('tab-content-story').style.display = tab==='story' ? 'block' : 'none';
 document.getElementById('tab-content-milestones').style.display = tab==='milestones' ? 'block' : 'none';
 document.getElementById('tab-content-stats').style.display = tab==='stats' ? 'block' : 'none';
 if (tab==='stats' && typeof renderStatsTab === 'function') renderStatsTab();
 document.getElementById('tab-content-guests').style.display = tab==='guests' ? 'block' : 'none';
+document.getElementById('tab-content-inbox').style.display = tab==='inbox' ? 'block' : 'none';
+if (tab==='inbox' && typeof renderInboxTab === 'function') renderInboxTab();
 document.getElementById('tab-content-messages-admin').style.display = tab==='messages-admin' ? 'block' : 'none';
 if (tab==='messages-admin' && typeof renderMessagesAdminTab === 'function') renderMessagesAdminTab();
 document.getElementById('tab-content-messages').style.display = tab==='messages' ? 'block' : 'none';
@@ -3449,12 +3612,10 @@ pendingMilestoneIntro = false;
 if (tab==='guests') renderGuestsTab();
 document.getElementById('tab-content-reports').style.display = tab==='reports' ? 'block' : 'none';
 document.getElementById('tab-content-notepad').style.display = tab==='notepad' ? 'block' : 'none';
-document.getElementById('tab-content-leaderboard').style.display = tab==='leaderboard' ? 'block' : 'none';
-document.getElementById('tab-content-leaderboard-admin').style.display = tab==='leaderboard-admin' ? 'block' : 'none';
+document.getElementById('tab-content-streak-leaderboard').style.display = tab==='streak-leaderboard' ? 'block' : 'none';
+if (tab==='streak-leaderboard' && typeof renderStreakLeaderboard === 'function') renderStreakLeaderboard();
 if (tab==='reports') renderReportsTab();
 if (tab==='notepad') renderNotepadTab();
-if (tab==='leaderboard-admin') renderLeaderboardAdmin();
-if (tab==='leaderboard') renderLeaderboardPublic();
 }
 
 
@@ -3772,13 +3933,13 @@ const thread = code === 'ALL'
 : getMessageThread(code);
 const box = document.getElementById('messages-thread');
 if (!thread.length) { box.innerHTML = '<div class="no-submission-msg">No messages yet.</div>'; return; }
-box.innerHTML = thread.map(m => {
+box.innerHTML = renderMessageBubblesWithDayDividers(thread, m => {
 const fromLabel = m.fromInstructor ? 'You' : (STUDENTS[m.studentCode]?.name || m.studentCode);
 const align = m.fromInstructor ? 'flex-end' : 'flex-start';
 const bg = m.fromInstructor ? '#2563eb' : '#f3f4f6';
 const color = m.fromInstructor ? 'white' : 'var(--ink)';
-return `<div style="display:flex;justify-content:${align};margin-bottom:8px"><div style="max-width:75%;background:${bg};color:${color};padding:8px 12px;border-radius:12px;font-size:14px"><div style="font-size:11px;opacity:0.75;margin-bottom:2px">${fromLabel}</div>${m.text}</div></div>`;
-}).join('');
+return `<div style="display:flex;justify-content:${align};margin-bottom:8px"><div style="max-width:75%;background:${bg};color:${color};padding:8px 12px;border-radius:12px;font-size:14px"><div style="font-size:11px;opacity:0.75;margin-bottom:2px">${fromLabel}</div>${m.text}<div style="font-size:10px;opacity:0.65;margin-top:4px;text-align:right">${formatMessageTime(m.timestamp)}</div></div></div>`;
+});
 box.scrollTop = box.scrollHeight;
 }
 
@@ -3791,13 +3952,13 @@ const box = document.getElementById('student-messages-thread');
 if (!thread.length) {
 box.innerHTML = '<div class="no-submission-msg">No messages yet.</div>';
 } else {
-box.innerHTML = thread.map(m => {
+box.innerHTML = renderMessageBubblesWithDayDividers(thread, m => {
 const align = m.fromInstructor ? 'flex-start' : 'flex-end';
 const bg = m.fromInstructor ? '#f3f4f6' : '#2563eb';
 const color = m.fromInstructor ? 'var(--ink)' : 'white';
 const fromLabel = m.fromInstructor ? 'Teacher' : 'You';
-return `<div style="display:flex;justify-content:${align};margin-bottom:8px"><div style="max-width:75%;background:${bg};color:${color};padding:8px 12px;border-radius:12px;font-size:14px"><div style="font-size:11px;opacity:0.75;margin-bottom:2px">${fromLabel}</div>${m.text}</div></div>`;
-}).join('');
+return `<div style="display:flex;justify-content:${align};margin-bottom:8px"><div style="max-width:75%;background:${bg};color:${color};padding:8px 12px;border-radius:12px;font-size:14px"><div style="font-size:11px;opacity:0.75;margin-bottom:2px">${fromLabel}</div>${m.text}<div style="font-size:10px;opacity:0.65;margin-top:4px;text-align:right">${formatMessageTime(m.timestamp)}</div></div></div>`;
+});
 box.scrollTop = box.scrollHeight;
 }
 document.getElementById('student-messages-send-btn').onclick = async () => {
@@ -3899,12 +4060,18 @@ ringFg.style.strokeDasharray = circumference;
 ringFg.style.strokeDashoffset = circumference - (percent/100)*circumference;
 document.getElementById('revision-ring-fire').classList.toggle('complete', percent >= 100);
 
-const consecutive = getConsecutiveMissed(code);
-const streak = consecutive >= 2 ? 0 : getStreak(code);
+const streak = getEffectiveStreak(code);
 document.getElementById('revision-streak-text').textContent = `🔥 ${streak} day streak`;
 
 const ranked = getRankedStudents();
 document.getElementById('revision-rank-num').textContent = `#${ranked.indexOf(code)+1}`;
+if (!isInstructor && !rankingDataLoaded) {
+ensureRankingDataLoaded().then(() => {
+const freshRanked = getRankedStudents();
+const rankEl = document.getElementById('revision-rank-num');
+if (rankEl) rankEl.textContent = `#${freshRanked.indexOf(code)+1}`;
+});
+}
 updateProgressBanner();
 
 const checkinWrap = document.getElementById('homework-checkin-wrap');
@@ -3918,16 +4085,16 @@ checkinBox.disabled = doneToday;
 
 const lessonWrap = document.getElementById('revision-lesson-wrap');
 const lesson = studentLesson[code] || 1;
-const progressPct = Math.round((window.getLessonProgressSum(lesson)/5)*100);
+const progressPct = window.getLessonItemProgress(lesson);
 document.getElementById('lesson-progress-fill').style.width = progressPct + '%';
-document.getElementById('lesson-progress-text').textContent = progressPct + '% complete';
+document.getElementById('lesson-progress-text').textContent = progressPct + '% until lesson complete';
 if (isInstructor && !isStudentView) {
 const options = Array.from({length:16}, (_,i) => i+1)
 .map(n => `<option value="${n}" ${n===lesson?'selected':''}>Lesson ${n}</option>`).join('');
 lessonWrap.innerHTML = `<select id="revision-lesson-select" style="background:rgba(255,255,255,0.15);color:white;border:none;border-radius:6px;padding:2px 6px;font-size:12px;font-weight:600">${options}</select>`;
 document.getElementById('revision-lesson-select').onchange = (e) => setStudentLesson(code, parseInt(e.target.value));
 } else {
-lessonWrap.textContent = `Lesson ${lesson}`;
+lessonWrap.innerHTML = `<span style="background:rgba(255,255,255,0.15);color:white;border-radius:6px;padding:2px 8px;font-size:12px;font-weight:600;display:inline-block">Lesson ${lesson}</span>`;
 }
 }
 
@@ -4640,7 +4807,7 @@ function renderPrinciple() {
   const nextBtn = document.getElementById('principle-next-btn');
   const p = activePrinciples[principleIdx];
 
-  qEl.innerHTML = p.q;
+  qEl.innerHTML = '<strong>Question:</strong> ' + p.q;
   let answerHtml = p.a;
   if (p.quote) {
     answerHtml += `<div class="principle-quote"><div class="principle-quote-ar">${p.quote}</div></div>`;
@@ -4648,7 +4815,7 @@ function renderPrinciple() {
   aEl.innerHTML = answerHtml;
   qEl.style.display = principleRevealed ? 'none' : 'block';
   aEl.style.display = principleRevealed ? 'block' : 'none';
-  hintEl.textContent = principleRevealed ? "Tap to see the question again" : "Tap when you've found it";
+  hintEl.textContent = principleRevealed ? "Click card to see the question again" : "Click card to see answer";
 
   progEl.textContent = (principleIdx + 1) + ' / ' + activePrinciples.length;
 
@@ -4847,12 +5014,6 @@ document.getElementById('login-btn').addEventListener('click',handleLogin);
 document.getElementById('guest-start-btn').addEventListener('click', () => {
 document.getElementById('login-screen').style.display = 'none';
 document.getElementById('guest-setup-screen').style.display = 'flex';
-});
-document.getElementById('leaderboard-btn').addEventListener('click', () => {
-document.getElementById('login-screen').style.display = 'none';
-document.getElementById('app').style.display = 'block';
-document.getElementById('tabs-bar').style.display = 'none';
-switchTab('leaderboard');
 });
 document.getElementById('guest-setup-back-row').addEventListener('click', () => {
 document.getElementById('guest-setup-screen').style.display = 'none';
@@ -5124,6 +5285,7 @@ comprehension7: 7, comprehension8: 8, comprehension9: 9, comprehension10: 10, co
 comprehension1listen: 1, comprehension2listen: 2, comprehension3listen: 3, comprehension4listen: 4, comprehension5listen: 5, comprehension6listen: 6,
 comprehension7listen: 7, comprehension8listen: 8, comprehension9listen: 9, comprehension10listen: 10, comprehension11listen: 11, comprehension12listen: 12, comprehension13listen: 13, comprehension14listen: 14, comprehension15listen: 15, comprehension16listen: 16
 };
+window.EX_LESSON_MAP = EX_LESSON_MAP;
 const EX_MAX_LESSON = 16;
 let exPickerLesson = null;
 
@@ -5555,7 +5717,8 @@ let html = `
 <div style="font-size:14px;color:#6b7280;margin-bottom:20px;line-height:1.6">Write your own Arabic sentence using the word below. Don't worry about getting it perfect — we'll go over these together in your next lesson.</div>
 <div style="margin-bottom:18px">
 <div style="font-family:'Scheherazade New', serif;font-size:1.4em;direction:rtl;text-align:right;color:#8b2035;font-weight:700">${w.ar}</div>
-<div style="font-size:12px;color:#6b7280;margin-bottom:6px">${w.en}</div>
+<button id="ch1-show-en-btn" style="background:#2563eb;color:white;border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;margin:6px 0">Show English translation</button>
+<div id="ch1-en-text" style="display:none;font-size:12px;color:#6b7280;margin-bottom:6px">${w.en}</div>
 <button id="ch1-report-btn" style="background:none;border:none;cursor:pointer;font-size:16px;padding:4px 0;margin-bottom:4px">⚠️</button>
 <textarea id="ch1-input" placeholder="Write your sentence..." style="width:100%;padding:10px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:1.1em;direction:rtl;text-align:right;font-family:inherit;min-height:50px;outline:none;box-sizing:border-box">${(ch1Answers[ch1Index] && ch1Answers[ch1Index].answer) || ''}</textarea>
 </div>
@@ -5566,6 +5729,10 @@ document.getElementById('challenges-root').innerHTML = html;
 document.getElementById('ch1-next-btn').onclick = () => window.exAdvanceChallenge1(mode);
 document.getElementById('ch1-back-btn').onclick = () => window.exGoBackChallenge1(mode);
 document.getElementById('ch1-report-btn').onclick = () => window.addToReadLater('challenge', w.ar, w.en, EX_LESSON_MAP[mode], 'Challenge 1 — Make a sentence');
+document.getElementById('ch1-show-en-btn').onclick = () => {
+document.getElementById('ch1-en-text').style.display = 'block';
+document.getElementById('ch1-show-en-btn').style.display = 'none';
+};
 }
 
 const COMPREHENSION_QUESTIONS_BY_MODE = {
@@ -5613,7 +5780,8 @@ const instructionsText = isListening ? "Tap the play button to listen to the que
 const questionAreaHtml = isListening
 ? `<button onclick="window.speakArabic('${q.ar.replace(/'/g, "\\'")}')" style="background:#8b2035;color:white;border:none;border-radius:50%;width:56px;height:56px;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-bottom:14px">🔊</button>`
 : `<div style="font-family:'Scheherazade New', serif;font-size:1.3em;direction:rtl;text-align:right;color:#8b2035;font-weight:700">${q.ar}</div>
-<div style="font-size:12px;color:#6b7280;margin-bottom:6px">${q.en}</div>`;
+<button id="comp-show-en-btn" style="background:#2563eb;color:white;border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;margin:6px 0">Show English translation</button>
+<div id="comp-en-text" style="display:none;font-size:12px;color:#6b7280;margin-bottom:6px">${q.en}</div>`;
 let html = `
 <div class="section-label">${headerLabel}</div>
 <div style="background:var(--grey-light);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px">
@@ -5631,6 +5799,13 @@ document.getElementById('challenges-root').innerHTML = html;
 document.getElementById('comp-next-btn').onclick = () => window.exAdvanceComprehension(mode);
 document.getElementById('comp-back-btn').onclick = () => window.exGoBackComprehension(mode);
 document.getElementById('comp-report-btn').onclick = () => window.addToReadLater('challenge', q.ar, q.en, EX_LESSON_MAP[mode], isListening ? 'Comprehension — Listening' : 'Comprehension');
+const compShowEnBtn = document.getElementById('comp-show-en-btn');
+if (compShowEnBtn) {
+compShowEnBtn.onclick = () => {
+document.getElementById('comp-en-text').style.display = 'block';
+compShowEnBtn.style.display = 'none';
+};
+}
 }
 
 window.exGoBackComprehension = function(mode) {
@@ -5839,9 +6014,27 @@ return mode === 'fillgap' ? FILL_GAP_QUESTIONS.map((q,i) => ({ ...q, __idx: i })
 : TRUE_FALSE_QUESTIONS.map((q,i) => ({ ...q, __idx: i }));
 }
 
-// Questions stay in their original, fixed order (no shuffling) so they load
-// the same way every time — an already-mastered ("Easy") question is still
-// slotted in after every 5, just without randomizing the order first.
+// Deterministic "random-looking" shuffle: the same mode name always produces
+// the exact same order, for every student, every time — a fixed shuffle baked
+// in once, rather than a fresh random reshuffle on every session.
+function exSeededShuffle(arr, seedStr) {
+let seed = 0;
+for (let i = 0; i < seedStr.length; i++) seed = (seed * 31 + seedStr.charCodeAt(i)) >>> 0;
+function rand() {
+seed = (seed * 1103515245 + 12345) >>> 0;
+return seed / 4294967296;
+}
+const a = [...arr];
+for (let i = a.length - 1; i > 0; i--) {
+const j = Math.floor(rand() * (i + 1));
+[a[i], a[j]] = [a[j], a[i]];
+}
+return a;
+}
+
+// Each question keeps its original __idx (so saved ratings in exProgress still
+// point to the right question) — only the display ORDER changes, and always
+// the same way for a given mode, so it isn't randomized fresh each session.
 function buildExerciseQueue(mode, pool) {
 const notEasy = [];
 const easy = [];
@@ -5849,9 +6042,10 @@ pool.forEach(q => {
 const rating = window.getExerciseQuestionRating(mode, q.__idx);
 (rating === 3 ? easy : notEasy).push(q);
 });
+const shuffledNotEasy = exSeededShuffle(notEasy, mode);
 const queue = [];
 let easyPtr = 0;
-notEasy.forEach((q, i) => {
+shuffledNotEasy.forEach((q, i) => {
 queue.push(q);
 if ((i + 1) % 5 === 0 && easy.length) {
 queue.push(easy[easyPtr % easy.length]);
