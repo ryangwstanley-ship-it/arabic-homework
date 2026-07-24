@@ -412,6 +412,11 @@ console.log("THE FILE IS LOADING!");
 </div>
 
 <div id="app">
+<button id="edit-pencil-btn" title="Edit mode" style="display:none;position:fixed;bottom:20px;right:20px;z-index:250;width:52px;height:52px;border-radius:50%;background:#1a1a2e;color:white;border:none;font-size:22px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,0.35)" onclick="window.toggleEditMode()">✏️</button>
+<div id="edit-save-toolbar" style="display:none;position:fixed;bottom:84px;right:20px;z-index:260;gap:8px">
+<button onclick="window.saveActiveEdit()" style="background:#16a34a;color:white;border:none;border-radius:24px;padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,0.3)">✓ Save</button>
+<button onclick="window.cancelActiveEdit()" style="background:#dc2626;color:white;border:none;border-radius:24px;padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,0.3)">✕ Cancel</button>
+</div>
 <button id="contact-tutor-btn" style="display:none;position:fixed;top:70px;right:16px;z-index:150;background:#2563eb;color:white;border:none;border-radius:24px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 2px 10px rgba(37,99,235,0.4)">📞 Contact Tutor</button>
 <div id="challenge-voice-timer" style="display:none;position:fixed;bottom:150px;right:20px;z-index:150;background:#1a1a2e;color:white;padding:4px 10px;border-radius:12px;font-size:12px;font-weight:700">0:00</div>
 <button id="challenge-voice-btn" title="Record your answers" style="display:none;position:fixed;bottom:80px;right:16px;z-index:150;width:60px;height:60px;border-radius:50%;background:#dc2626;color:white;border:none;font-size:26px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,0.3)">🎙️</button>
@@ -3330,6 +3335,193 @@ return submissions[code][date].images;
 window.loadDayImages = loadDayImages;
 
 
+// ── EDIT MODE ── Lets ryan01 click any text inside a tab and rewrite it.
+// Edits are DISPLAY ONLY — they never change what exercises check answers against.
+// Edits are matched to text by a fingerprint of the ORIGINAL content, saved under
+// collection 'textEdits', so they still work correctly even if lessons get reordered.
+let editModeActive = false;
+let editingInProgress = false;
+window.textEditsMap = {};
+let textEditsLoaded = false;
+
+function simpleHash(str) {
+  let hash = 5381;
+  for (let i = 0; i < str.length; i++) { hash = ((hash << 5) + hash) + str.charCodeAt(i); hash = hash & hash; }
+  return Math.abs(hash).toString(36);
+}
+
+async function loadTextEdits() {
+  if (textEditsLoaded) return;
+  textEditsLoaded = true;
+  try {
+    const snap = await getDocs(collection(db, 'textEdits'));
+    snap.forEach(d => { window.textEditsMap[d.id] = d.data().value; });
+  } catch(e) { console.error('Text edits load error', e); }
+  applyTextEdits(document.getElementById('app'));
+  startEditObserver();
+}
+
+// "Block-level" children (DIV, LI, TABLE, etc.) mean an element is a structural wrapper —
+// like a whole card or row — not a single piece of text. We skip those as click targets so
+// clicking on a card only ever edits the actual sentence/word inside it, never the whole card.
+const BLOCK_TAGS = ['DIV','SECTION','UL','OL','LI','TABLE','TR','TD','TH','FORM','HEADER','FOOTER','NAV','ARTICLE'];
+function hasBlockChild(el) {
+  return Array.from(el.children).some(c => BLOCK_TAGS.includes(c.tagName) || hasBlockChild(c));
+}
+
+// An editable target = sits inside a tab, has visible text, and isn't a big structural
+// wrapper. It CAN contain small mixed-in bits like an icon button or a styled word span
+// (e.g. "🔊 Is this correct?") — those get treated as one editable chunk together.
+function isEditableTarget(el) {
+  if (!el || el.nodeType !== 1) return false;
+  if (el.id === 'edit-pencil-btn') return false;
+  if (!el.closest('.content')) return false;
+  if (['SCRIPT','STYLE','SELECT','OPTION','SVG','PATH','TEXTAREA','INPUT'].includes(el.tagName)) return false;
+  if (!el.textContent || !el.textContent.trim()) return false;
+  if (hasBlockChild(el)) return false;
+  return true;
+}
+
+// Walks upward from whatever was actually clicked to find the smallest qualifying
+// editable chunk (e.g. clicking loose text next to a speaker-icon button finds their
+// shared container; clicking directly on a single word-span finds just that word).
+function findEditableTarget(el) {
+  let cur = el;
+  while (cur && cur.tagName !== 'BODY') {
+    if (isEditableTarget(cur)) return cur;
+    cur = cur.parentElement;
+  }
+  return null;
+}
+
+function applyTextEdits(root) {
+  if (!root || editingInProgress) return;
+  root.querySelectorAll('*').forEach(el => {
+    if (!isEditableTarget(el)) return;
+    if (el.isContentEditable) return; // don't touch what's actively being edited
+    if (el.dataset.editOrig === undefined) el.dataset.editOrig = el.innerHTML.trim();
+    const tabEl = el.closest('.content');
+    const key = (tabEl ? tabEl.id : 'global') + '_' + simpleHash(el.dataset.editOrig);
+    if (el.dataset.editApplied === key) return; // already fixed this one — don't touch it again
+    const saved = window.textEditsMap[key];
+    if (saved !== undefined) {
+      el.innerHTML = saved;
+      el.dataset.editApplied = key;
+    }
+  });
+}
+
+// Watches the app for newly-rendered content (new lesson, new exercise, etc.)
+// and re-applies any saved edits automatically, without needing to touch every render function.
+let editObserverStarted = false;
+function startEditObserver() {
+  if (editObserverStarted) return;
+  editObserverStarted = true;
+  const app = document.getElementById('app');
+  let debounceTimer = null;
+  const observer = new MutationObserver(() => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => applyTextEdits(app), 150);
+  });
+  observer.observe(app, { childList: true, subtree: true, characterData: true });
+}
+
+window.toggleEditMode = function() {
+  if (activeEditEl) window.cancelActiveEdit();
+  editModeActive = !editModeActive;
+  const btn = document.getElementById('edit-pencil-btn');
+  btn.style.background = editModeActive ? '#dc2626' : '#1a1a2e';
+  btn.title = editModeActive ? 'Edit mode ON — click any text to change it' : 'Edit mode (off)';
+};
+
+// Tracks whichever single text chunk is currently open for editing, so the
+// Save/Cancel buttons know what to act on.
+let activeEditEl = null;
+let activeEditStartHTML = '';
+let activeEditOldOutline = '';
+
+function closeActiveEdit() {
+  if (!activeEditEl) return;
+  if (activeEditEl._editKeyHandler) activeEditEl.removeEventListener('keydown', activeEditEl._editKeyHandler);
+  activeEditEl.contentEditable = 'false';
+  activeEditEl.style.outline = activeEditOldOutline;
+  editingInProgress = false;
+  activeEditEl = null;
+  document.getElementById('edit-save-toolbar').style.display = 'none';
+}
+
+window.saveActiveEdit = async function() {
+  if (!activeEditEl) return;
+  const el = activeEditEl;
+  const newHTML = el.innerHTML.trim();
+  const tabEl = el.closest('.content');
+  const tabId = tabEl ? tabEl.id : 'global';
+  const key = tabId + '_' + simpleHash(el.dataset.editOrig);
+  window.textEditsMap[key] = newHTML;
+  el.dataset.editApplied = key;
+  closeActiveEdit();
+  try {
+    await setDoc(doc(db, 'textEdits', key), { value: newHTML, tab: tabId, orig: el.dataset.editOrig, updatedAt: Date.now() });
+  } catch(err) { console.error('Text edit save error', err); }
+};
+
+window.cancelActiveEdit = function() {
+  if (!activeEditEl) return;
+  activeEditEl.innerHTML = activeEditStartHTML;
+  closeActiveEdit();
+};
+
+// Capture phase so this runs BEFORE the page's normal click behavior (like answer-checking
+// or navigation), and stopPropagation() below stops that normal behavior while editing.
+document.addEventListener('click', function(e) {
+  if (!editModeActive || !isInstructor) return;
+  if (e.target.closest('#edit-save-toolbar')) return; // Save/Cancel buttons handle themselves
+  if (e.target.closest('[contenteditable="true"]')) return; // repositioning cursor inside active edit
+
+  // Clicking anywhere else while an edit is open cancels it first — so an
+  // accidental tap elsewhere (or the pencil button) can never sneak in a save.
+  if (activeEditEl) { window.cancelActiveEdit(); return; }
+
+  const el = findEditableTarget(e.target);
+  if (!el) return;
+  e.preventDefault();
+  e.stopPropagation();
+
+  if (el.dataset.editOrig === undefined) el.dataset.editOrig = el.innerHTML.trim();
+  activeEditEl = el;
+  activeEditStartHTML = el.innerHTML;
+  editingInProgress = true;
+  // Freeze any nested buttons/links inside this chunk so typing can't break or trigger them.
+  const frozen = el.querySelectorAll('button, a, input, select');
+  frozen.forEach(f => f.setAttribute('contenteditable', 'false'));
+  el.contentEditable = 'true';
+  activeEditOldOutline = el.style.outline;
+  el.style.outline = '2px dashed #2563eb';
+  el.focus();
+  document.getElementById('edit-save-toolbar').style.display = 'flex';
+  // Put the cursor exactly where you clicked, instead of selecting everything —
+  // that way Delete only removes one character, and you can drag-select normally.
+  let caretRange = null;
+  if (document.caretRangeFromPoint) {
+    caretRange = document.caretRangeFromPoint(e.clientX, e.clientY);
+  } else if (document.caretPositionFromPoint) {
+    const pos = document.caretPositionFromPoint(e.clientX, e.clientY);
+    if (pos) { caretRange = document.createRange(); caretRange.setStart(pos.offsetNode, pos.offset); }
+  }
+  if (!caretRange) { caretRange = document.createRange(); caretRange.selectNodeContents(el); }
+  caretRange.collapse(true);
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(caretRange);
+
+  const onKey = (ev) => {
+    if (ev.key === 'Enter' && !ev.shiftKey) { ev.preventDefault(); window.saveActiveEdit(); }
+    if (ev.key === 'Escape') { ev.preventDefault(); window.cancelActiveEdit(); }
+  };
+  el._editKeyHandler = onKey;
+  el.addEventListener('keydown', onKey);
+}, true);
+
 // ── LOGIN ──
 async function handleLogin() {
 window.didMakeProgress = false;
@@ -3526,6 +3718,8 @@ document.getElementById('login-screen').style.display='none';
 document.getElementById('guest-setup-screen').style.display='none';
 const app = document.getElementById('app');
 const now = new Date(); calYear=now.getFullYear(); calMonth=now.getMonth(); selectedDate=todayKey();
+loadTextEdits();
+document.getElementById('edit-pencil-btn').style.display = isInstructor ? 'flex' : 'none';
 if (isInstructor) {
 app.style.display='flex';
 const sidebar = document.getElementById('sidebar');
@@ -6444,7 +6638,7 @@ ansRow.innerHTML = '<span style="color:#9ca3af;font-size:14px">Your answer will 
 function exSubmitFill() {
 const q = exQuestions[exCurrent];
 const reveal = document.getElementById('ex-reveal');
-reveal.innerHTML = '✓ Answer:<br><span style="direction:rtl;display:block;margin-top:6px">' + q.answer + '</span>';
+reveal.textContent = '✓ Answer: ' + q.answer;
 reveal.style.display = 'block';
 document.getElementById('ex-fill-input').style.display = 'none';
 const ratingEl = document.getElementById('ex-rating-area');
@@ -6486,7 +6680,7 @@ function exSubmitChangeWord() {
 console.log('changeword fired');
 const q = exQuestions[exCurrent];
 const reveal = document.getElementById('ex-reveal');
-reveal.innerHTML = `✕ Wrong word:<br><span style="direction:rtl;display:block;margin-top:4px"><strong>${q.wrong}</strong></span><br>✓ Correct word:<br><span style="direction:rtl;display:block;margin-top:4px"><strong>${q.correct}</strong></span>`;
+reveal.innerHTML = `✕ Wrong word: <strong>${q.wrong}</strong><br>✓ Correct word: <strong>${q.correct}</strong>`;
 reveal.style.display = 'block';
 
 document.getElementById('ex-fill-input').style.display = 'none';
@@ -6499,9 +6693,9 @@ function exSubmitPlural(chosenIsPlural) {
 const q = exQuestions[exCurrent];
 const reveal = document.getElementById('ex-reveal');
 if (chosenIsPlural) {
-reveal.innerHTML = '✓ Correct!<br><span style="direction:rtl;display:block;margin-top:6px"><strong>' + q.plural + '</strong> is the plural of <strong>' + q.singular + '</strong></span>';
+reveal.innerHTML = '✓ Correct! <strong>' + q.plural + '</strong> is the plural of <strong>' + q.singular + '</strong>.';
 } else {
-reveal.innerHTML = '✕ Not quite. The plural is:<br><span style="direction:rtl;display:block;margin-top:6px"><strong>' + q.plural + '</strong> (singular: <strong>' + q.singular + '</strong>)</span>';
+reveal.innerHTML = '✕ Not quite. The plural is <strong>' + q.plural + '</strong> (singular: <strong>' + q.singular + '</strong>).';
 }
 reveal.style.background = '#f3f4f6';
 reveal.style.borderColor = '#d1d5db';
@@ -6527,7 +6721,7 @@ else if (isFem && !picked) { tile.style.borderColor = '#16a34a'; allCorrect = fa
 else if (!isFem && picked) { tile.style.background = '#fee2e2', tile.style.color = '#b91c1c', tile.style.borderColor = '#fca5a5'; allCorrect = false; }
 tile.onclick = null;
 });
-reveal.innerHTML = (allCorrect ? '✓ Correct! ' : '✕ Not quite. ') + 'The feminine words are:<br><span style="direction:rtl;display:block;margin-top:6px"><strong>' + femWords.join('</strong> and <strong>') + '</strong></span>';
+reveal.innerHTML = (allCorrect ? '✓ Correct! ' : '✕ Not quite. ') + 'The feminine words are <strong>' + femWords.join('</strong> and <strong>') + '</strong>.';
 reveal.style.background = '#f3f4f6';
 reveal.style.borderColor = '#d1d5db';
 reveal.style.display = 'block';
@@ -6544,9 +6738,9 @@ const typed = document.getElementById('ex-answer-input').value;
 const correct = typed === q.target;
 const reveal = document.getElementById('ex-reveal');
 if (correct) {
-reveal.innerHTML = '✓ Correct!<br><span style="direction:rtl;display:block;margin-top:6px"><strong>' + q.target + '</strong></span>';
+reveal.innerHTML = '✓ Correct! <strong>' + q.target + '</strong>';
 } else {
-reveal.innerHTML = '✕ Not quite.<br>You typed:<br><span style="direction:rtl;display:block;margin-top:4px"><strong>' + (typed || '(nothing)') + '</strong></span><br>Correct answer:<br><span style="direction:rtl;display:block;margin-top:4px"><strong>' + q.target + '</strong></span>';
+reveal.innerHTML = '✕ Not quite.<br>You typed: <strong>' + (typed || '(nothing)') + '</strong><br>Correct answer: <strong>' + q.target + '</strong>';
 }
 reveal.style.background = '#f3f4f6';
 reveal.style.borderColor = '#d1d5db';
@@ -6561,7 +6755,7 @@ function exSubmitSuffixTrans() {
 const q = exQuestions[exCurrent];
 const typed = document.getElementById('ex-answer-input').value;
 const reveal = document.getElementById('ex-reveal');
-reveal.innerHTML = 'Correct answer:<br><span style="direction:rtl;display:block;margin-top:6px"><strong>' + q.ar + '</strong></span>' + (typed ? '<br><span style="font-size:0.85em;color:#6b7280">You wrote:<br><span style="direction:rtl;display:block">' + typed + '</span></span>' : '') + '<br><span style="font-size:0.8em;color:#6b7280">Were you close enough? Grade yourself below.</span>';
+reveal.innerHTML = 'Correct answer: <strong>' + q.ar + '</strong>' + (typed ? '<br><span style="font-size:0.85em;color:#6b7280">You wrote: ' + typed + '</span>' : '') + '<br><span style="font-size:0.8em;color:#6b7280">Were you close enough? Grade yourself below.</span>';
 reveal.style.display = 'block';
 document.getElementById('ex-fill-input').style.display = 'none';
 const ratingEl = document.getElementById('ex-rating-area');
@@ -6587,7 +6781,7 @@ function exSubmitDemoTrans() {
 const q = exQuestions[exCurrent];
 const typed = document.getElementById('ex-answer-input').value;
 const reveal = document.getElementById('ex-reveal');
-reveal.innerHTML = 'Correct answer:<br><span style="direction:rtl;display:block;margin-top:6px"><strong>' + q.ar + '</strong></span>' + (typed ? '<br><span style="font-size:0.85em;color:#6b7280">You wrote:<br><span style="direction:rtl;display:block">' + typed + '</span></span>' : '') + '<br><span style="font-size:0.8em;color:#6b7280">Were you close enough? Grade yourself below.</span>';
+reveal.innerHTML = 'Correct answer: <strong>' + q.ar + '</strong>' + (typed ? '<br><span style="font-size:0.85em;color:#6b7280">You wrote: ' + typed + '</span>' : '') + '<br><span style="font-size:0.8em;color:#6b7280">Were you close enough? Grade yourself below.</span>';
 reveal.style.display = 'block';
 document.getElementById('ex-fill-input').style.display = 'none';
 const ratingEl = document.getElementById('ex-rating-area');
@@ -6599,7 +6793,7 @@ function exSubmitAdjAgreementTrans() {
 const q = exQuestions[exCurrent];
 const typed = document.getElementById('ex-answer-input').value;
 const reveal = document.getElementById('ex-reveal');
-reveal.innerHTML = 'Correct answer:<br><span style="direction:rtl;display:block;margin-top:6px"><strong>' + q.ar + '</strong></span>' + (typed ? '<br><span style="font-size:0.85em;color:#6b7280">You wrote:<br><span style="direction:rtl;display:block">' + typed + '</span></span>' : '') + '<br><span style="font-size:0.8em;color:#6b7280">Were you close enough? Grade yourself below.</span>';
+reveal.innerHTML = 'Correct answer: <strong>' + q.ar + '</strong>' + (typed ? '<br><span style="font-size:0.85em;color:#6b7280">You wrote: ' + typed + '</span>' : '') + '<br><span style="font-size:0.8em;color:#6b7280">Were you close enough? Grade yourself below.</span>';
 reveal.style.display = 'block';
 document.getElementById('ex-fill-input').style.display = 'none';
 const ratingEl = document.getElementById('ex-rating-area');
