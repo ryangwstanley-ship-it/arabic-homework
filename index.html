@@ -758,6 +758,18 @@ I did my homework today
 </div>
 </div>
 
+<!-- AI CHAT PAGE -->
+<div id="tab-content-chat" class="content" style="display:none">
+<div class="back-row" onclick="switchTab('milestones')"><span class="back-btn">‹</span><span class="screen-title">AI Chat</span></div>
+<div style="font-size:13px;color:var(--grey);margin-bottom:10px">Practice Arabic conversation. The AI will try to use words you've already learned (Lessons 1 to your current lesson).</div>
+<div id="chat-messages" style="max-height:420px;overflow-y:auto;padding:10px;margin-bottom:10px;border:1px solid var(--border);border-radius:10px;background:#fafafa"></div>
+<div id="chat-loading" style="display:none;color:var(--grey);font-size:13px;margin-bottom:8px">Thinking...</div>
+<div style="display:flex;gap:8px">
+<input id="chat-input" type="text" placeholder="Type in Arabic or English..." style="flex:1;padding:10px 12px;border:2px solid var(--border);border-radius:10px;font-size:15px">
+<button id="chat-send-btn" style="padding:10px 18px;background:var(--blue);color:white;border:none;border-radius:10px;font-weight:600;cursor:pointer">Send</button>
+</div>
+</div>
+
 <!-- STORY TAB -->
 <div id="tab-content-story" class="content" style="display:none">
 <div class="back-row" id="story-back-row" onclick="switchTab('milestones')"><span class="back-btn">‹</span><span class="screen-title">Save and Return Home</span></div>
@@ -862,7 +874,7 @@ const db = getFirestore(firebaseApp);
 
 
 // ── FLASHCARD DATA (now loaded from GitHub) ──
-let DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, CHANGE_WORD_QUESTIONS_L2, CHANGE_WORD_QUESTIONS_L3, CHANGE_WORD_QUESTIONS_L4, CHANGE_WORD_QUESTIONS_L5, CHANGE_WORD_QUESTIONS_L6, CHANGE_WORD_QUESTIONS_L7, CHANGE_WORD_QUESTIONS_L8, CHANGE_WORD_QUESTIONS_L9, CHANGE_WORD_QUESTIONS_L10, CHANGE_WORD_QUESTIONS_L11, CHANGE_WORD_QUESTIONS_L12, CHANGE_WORD_QUESTIONS_L13, CHANGE_WORD_QUESTIONS_L14, CHANGE_WORD_QUESTIONS_L15, CHANGE_WORD_QUESTIONS_L16, TRUE_FALSE_QUESTIONS, TRUE_FALSE_QUESTIONS_L2, TRUE_FALSE_QUESTIONS_L3, TRUE_FALSE_QUESTIONS_L4, TRUE_FALSE_QUESTIONS_L5, TRUE_FALSE_QUESTIONS_L6, TRUE_FALSE_QUESTIONS_L7, TRUE_FALSE_QUESTIONS_L8, TRUE_FALSE_QUESTIONS_L9, TRUE_FALSE_QUESTIONS_L10, TRUE_FALSE_QUESTIONS_L11, TRUE_FALSE_QUESTIONS_L12, TRUE_FALSE_QUESTIONS_L13, TRUE_FALSE_QUESTIONS_L14, TRUE_FALSE_QUESTIONS_L15, TRUE_FALSE_QUESTIONS_L16, COMPREHENSION_QUESTIONS_L1, COMPREHENSION_QUESTIONS_L2, COMPREHENSION_QUESTIONS_L3, COMPREHENSION_QUESTIONS_L4, COMPREHENSION_QUESTIONS_L5, COMPREHENSION_QUESTIONS_L6, COMPREHENSION_QUESTIONS_L7, COMPREHENSION_QUESTIONS_L8, COMPREHENSION_QUESTIONS_L9, COMPREHENSION_QUESTIONS_L10, COMPREHENSION_QUESTIONS_L11, COMPREHENSION_QUESTIONS_L12, COMPREHENSION_QUESTIONS_L13, COMPREHENSION_QUESTIONS_L14, COMPREHENSION_QUESTIONS_L15, COMPREHENSION_QUESTIONS_L16, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS, PLURAL_QUESTIONS, FEMININE_QUESTIONS, SUFFIX_TRANSLATION_QUESTIONS, DEMO_TRANSLATION_QUESTIONS, ADJECTIVE_AGREEMENT_TRANSLATION_QUESTIONS, PLURAL_TYPE_QUESTIONS, CHALLENGE_1_WORDS, CHALLENGE_1_WORDS_L2, CHALLENGE_1_WORDS_L3, CHALLENGE_1_WORDS_L4, CHALLENGE_1_WORDS_L5, CHALLENGE_1_WORDS_L6, CHALLENGE_1_WORDS_L7, CHALLENGE_1_WORDS_L8, CHALLENGE_1_WORDS_L9, CHALLENGE_1_WORDS_L10, CHALLENGE_1_WORDS_L11, CHALLENGE_1_WORDS_L12, CHALLENGE_1_WORDS_L13, CHALLENGE_1_WORDS_L14, CHALLENGE_1_WORDS_L15, CHALLENGE_1_WORDS_L16, TRANSLATION_1_QUESTIONS, CHALLENGE_2_SENTENCES, CHALLENGE_2_SENTENCES_L2, CHALLENGE_2_SENTENCES_L3, CHALLENGE_2_SENTENCES_L4, CHALLENGE_2_SENTENCES_L5, CHALLENGE_2_SENTENCES_L6, CHALLENGE_2_SENTENCES_L7, CHALLENGE_2_SENTENCES_L8, CHALLENGE_2_SENTENCES_L9, CHALLENGE_2_SENTENCES_L10, CHALLENGE_2_SENTENCES_L11, CHALLENGE_2_SENTENCES_L12, CHALLENGE_2_SENTENCES_L13, CHALLENGE_2_SENTENCES_L14, CHALLENGE_2_SENTENCES_L15, CHALLENGE_2_SENTENCES_L16, NEGATE_AFFIRM_SENTENCES_L1, NEGATE_AFFIRM_SENTENCES_L2, NEGATE_AFFIRM_SENTENCES_L3, NEGATE_AFFIRM_SENTENCES_L4, NEGATE_AFFIRM_SENTENCES_L5, NEGATE_AFFIRM_SENTENCES_L6, NEGATE_AFFIRM_SENTENCES_L7, NEGATE_AFFIRM_SENTENCES_L8, NEGATE_AFFIRM_SENTENCES_L9, NEGATE_AFFIRM_SENTENCES_L10, NEGATE_AFFIRM_SENTENCES_L11, NEGATE_AFFIRM_SENTENCES_L12, NEGATE_AFFIRM_SENTENCES_L13, NEGATE_AFFIRM_SENTENCES_L14, NEGATE_AFFIRM_SENTENCES_L15, NEGATE_AFFIRM_SENTENCES_L16, LESSON_STORIES;
+let DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, CHANGE_WORD_QUESTIONS_L2, CHANGE_WORD_QUESTIONS_L3, CHANGE_WORD_QUESTIONS_L4, CHANGE_WORD_QUESTIONS_L5, CHANGE_WORD_QUESTIONS_L6, CHANGE_WORD_QUESTIONS_L7, CHANGE_WORD_QUESTIONS_L8, CHANGE_WORD_QUESTIONS_L9, CHANGE_WORD_QUESTIONS_L10, CHANGE_WORD_QUESTIONS_L11, CHANGE_WORD_QUESTIONS_L12, CHANGE_WORD_QUESTIONS_L13, CHANGE_WORD_QUESTIONS_L14, CHANGE_WORD_QUESTIONS_L15, CHANGE_WORD_QUESTIONS_L16, TRUE_FALSE_QUESTIONS, TRUE_FALSE_QUESTIONS_L2, TRUE_FALSE_QUESTIONS_L3, TRUE_FALSE_QUESTIONS_L4, TRUE_FALSE_QUESTIONS_L5, TRUE_FALSE_QUESTIONS_L6, TRUE_FALSE_QUESTIONS_L7, TRUE_FALSE_QUESTIONS_L8, TRUE_FALSE_QUESTIONS_L9, TRUE_FALSE_QUESTIONS_L10, TRUE_FALSE_QUESTIONS_L11, TRUE_FALSE_QUESTIONS_L12, TRUE_FALSE_QUESTIONS_L13, TRUE_FALSE_QUESTIONS_L14, TRUE_FALSE_QUESTIONS_L15, TRUE_FALSE_QUESTIONS_L16, COMPREHENSION_QUESTIONS_L1, COMPREHENSION_QUESTIONS_L2, COMPREHENSION_QUESTIONS_L3, COMPREHENSION_QUESTIONS_L4, COMPREHENSION_QUESTIONS_L5, COMPREHENSION_QUESTIONS_L6, COMPREHENSION_QUESTIONS_L7, COMPREHENSION_QUESTIONS_L8, COMPREHENSION_QUESTIONS_L9, COMPREHENSION_QUESTIONS_L10, COMPREHENSION_QUESTIONS_L11, COMPREHENSION_QUESTIONS_L12, COMPREHENSION_QUESTIONS_L13, COMPREHENSION_QUESTIONS_L14, COMPREHENSION_QUESTIONS_L15, COMPREHENSION_QUESTIONS_L16, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS, PLURAL_QUESTIONS, FEMININE_QUESTIONS, SUFFIX_TRANSLATION_QUESTIONS, DEMO_TRANSLATION_QUESTIONS, ADJECTIVE_AGREEMENT_TRANSLATION_QUESTIONS, PASSIVE_VERB_QUESTIONS, DOER_DONETO_QUESTIONS, SUPERLATIVE_QUESTIONS, IDAFA_TRANSLATION_QUESTIONS, VERBAL_NOUN_QUESTIONS, ADVERBIAL_TRANSLATION_QUESTIONS, CAUSATIVE_QUESTIONS, MUTUAL_REFLEXIVE_QUESTIONS, SEEKING_INTRANSITIVE_QUESTIONS, EMPHASIS_TRANSLATION_QUESTIONS, PLURAL_TYPE_QUESTIONS, CHALLENGE_1_WORDS, CHALLENGE_1_WORDS_L2, CHALLENGE_1_WORDS_L3, CHALLENGE_1_WORDS_L4, CHALLENGE_1_WORDS_L5, CHALLENGE_1_WORDS_L6, CHALLENGE_1_WORDS_L7, CHALLENGE_1_WORDS_L8, CHALLENGE_1_WORDS_L9, CHALLENGE_1_WORDS_L10, CHALLENGE_1_WORDS_L11, CHALLENGE_1_WORDS_L12, CHALLENGE_1_WORDS_L13, CHALLENGE_1_WORDS_L14, CHALLENGE_1_WORDS_L15, CHALLENGE_1_WORDS_L16, TRANSLATION_1_QUESTIONS, CHALLENGE_2_SENTENCES, CHALLENGE_2_SENTENCES_L2, CHALLENGE_2_SENTENCES_L3, CHALLENGE_2_SENTENCES_L4, CHALLENGE_2_SENTENCES_L5, CHALLENGE_2_SENTENCES_L6, CHALLENGE_2_SENTENCES_L7, CHALLENGE_2_SENTENCES_L8, CHALLENGE_2_SENTENCES_L9, CHALLENGE_2_SENTENCES_L10, CHALLENGE_2_SENTENCES_L11, CHALLENGE_2_SENTENCES_L12, CHALLENGE_2_SENTENCES_L13, CHALLENGE_2_SENTENCES_L14, CHALLENGE_2_SENTENCES_L15, CHALLENGE_2_SENTENCES_L16, NEGATE_AFFIRM_SENTENCES_L1, NEGATE_AFFIRM_SENTENCES_L2, NEGATE_AFFIRM_SENTENCES_L3, NEGATE_AFFIRM_SENTENCES_L4, NEGATE_AFFIRM_SENTENCES_L5, NEGATE_AFFIRM_SENTENCES_L6, NEGATE_AFFIRM_SENTENCES_L7, NEGATE_AFFIRM_SENTENCES_L8, NEGATE_AFFIRM_SENTENCES_L9, NEGATE_AFFIRM_SENTENCES_L10, NEGATE_AFFIRM_SENTENCES_L11, NEGATE_AFFIRM_SENTENCES_L12, NEGATE_AFFIRM_SENTENCES_L13, NEGATE_AFFIRM_SENTENCES_L14, NEGATE_AFFIRM_SENTENCES_L15, NEGATE_AFFIRM_SENTENCES_L16, LESSON_STORIES;
 async function loadVocabData() {
 
 const url = 'https://raw.githubusercontent.com/ryangwstanley-ship-it/database/main/website%20data%20base?t=' + Date.now();
@@ -874,7 +886,7 @@ if (!res.ok) {
 const code = await res.text();
 const runner = new Function(
 code.replaceAll('export const', 'const') +
-'; return { DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, CHANGE_WORD_QUESTIONS_L2, CHANGE_WORD_QUESTIONS_L3, CHANGE_WORD_QUESTIONS_L4, CHANGE_WORD_QUESTIONS_L5, CHANGE_WORD_QUESTIONS_L6, CHANGE_WORD_QUESTIONS_L7, CHANGE_WORD_QUESTIONS_L8, CHANGE_WORD_QUESTIONS_L9, CHANGE_WORD_QUESTIONS_L10, CHANGE_WORD_QUESTIONS_L11, CHANGE_WORD_QUESTIONS_L12, CHANGE_WORD_QUESTIONS_L13, CHANGE_WORD_QUESTIONS_L14, CHANGE_WORD_QUESTIONS_L15, CHANGE_WORD_QUESTIONS_L16, TRUE_FALSE_QUESTIONS, TRUE_FALSE_QUESTIONS_L2, TRUE_FALSE_QUESTIONS_L3, TRUE_FALSE_QUESTIONS_L4, TRUE_FALSE_QUESTIONS_L5, TRUE_FALSE_QUESTIONS_L6, TRUE_FALSE_QUESTIONS_L7, TRUE_FALSE_QUESTIONS_L8, TRUE_FALSE_QUESTIONS_L9, TRUE_FALSE_QUESTIONS_L10, TRUE_FALSE_QUESTIONS_L11, TRUE_FALSE_QUESTIONS_L12, TRUE_FALSE_QUESTIONS_L13, TRUE_FALSE_QUESTIONS_L14, TRUE_FALSE_QUESTIONS_L15, TRUE_FALSE_QUESTIONS_L16, COMPREHENSION_QUESTIONS_L1, COMPREHENSION_QUESTIONS_L2, COMPREHENSION_QUESTIONS_L3, COMPREHENSION_QUESTIONS_L4, COMPREHENSION_QUESTIONS_L5, COMPREHENSION_QUESTIONS_L6, COMPREHENSION_QUESTIONS_L7, COMPREHENSION_QUESTIONS_L8, COMPREHENSION_QUESTIONS_L9, COMPREHENSION_QUESTIONS_L10, COMPREHENSION_QUESTIONS_L11, COMPREHENSION_QUESTIONS_L12, COMPREHENSION_QUESTIONS_L13, COMPREHENSION_QUESTIONS_L14, COMPREHENSION_QUESTIONS_L15, COMPREHENSION_QUESTIONS_L16, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS, PLURAL_QUESTIONS, FEMININE_QUESTIONS, SUFFIX_TRANSLATION_QUESTIONS, DEMO_TRANSLATION_QUESTIONS, ADJECTIVE_AGREEMENT_TRANSLATION_QUESTIONS, PLURAL_TYPE_QUESTIONS, CHALLENGE_1_WORDS, CHALLENGE_1_WORDS_L2, CHALLENGE_1_WORDS_L3, CHALLENGE_1_WORDS_L4, CHALLENGE_1_WORDS_L5, CHALLENGE_1_WORDS_L6, CHALLENGE_1_WORDS_L7, CHALLENGE_1_WORDS_L8, CHALLENGE_1_WORDS_L9, CHALLENGE_1_WORDS_L10, CHALLENGE_1_WORDS_L11, CHALLENGE_1_WORDS_L12, CHALLENGE_1_WORDS_L13, CHALLENGE_1_WORDS_L14, CHALLENGE_1_WORDS_L15, CHALLENGE_1_WORDS_L16, TRANSLATION_1_QUESTIONS, CHALLENGE_2_SENTENCES, CHALLENGE_2_SENTENCES_L2, CHALLENGE_2_SENTENCES_L3, CHALLENGE_2_SENTENCES_L4, CHALLENGE_2_SENTENCES_L5, CHALLENGE_2_SENTENCES_L6, CHALLENGE_2_SENTENCES_L7, CHALLENGE_2_SENTENCES_L8, CHALLENGE_2_SENTENCES_L9, CHALLENGE_2_SENTENCES_L10, CHALLENGE_2_SENTENCES_L11, CHALLENGE_2_SENTENCES_L12, CHALLENGE_2_SENTENCES_L13, CHALLENGE_2_SENTENCES_L14, CHALLENGE_2_SENTENCES_L15, CHALLENGE_2_SENTENCES_L16, NEGATE_AFFIRM_SENTENCES_L1, NEGATE_AFFIRM_SENTENCES_L2, NEGATE_AFFIRM_SENTENCES_L3, NEGATE_AFFIRM_SENTENCES_L4, NEGATE_AFFIRM_SENTENCES_L5, NEGATE_AFFIRM_SENTENCES_L6, NEGATE_AFFIRM_SENTENCES_L7, NEGATE_AFFIRM_SENTENCES_L8, NEGATE_AFFIRM_SENTENCES_L9, NEGATE_AFFIRM_SENTENCES_L10, NEGATE_AFFIRM_SENTENCES_L11, NEGATE_AFFIRM_SENTENCES_L12, NEGATE_AFFIRM_SENTENCES_L13, NEGATE_AFFIRM_SENTENCES_L14, NEGATE_AFFIRM_SENTENCES_L15, NEGATE_AFFIRM_SENTENCES_L16, LESSON_STORIES };'
+'; return { DEFAULT_LESSONS, FILL_GAP_QUESTIONS, WORD_ORDER_QUESTIONS, CHANGE_WORD_QUESTIONS, CHANGE_WORD_QUESTIONS_L2, CHANGE_WORD_QUESTIONS_L3, CHANGE_WORD_QUESTIONS_L4, CHANGE_WORD_QUESTIONS_L5, CHANGE_WORD_QUESTIONS_L6, CHANGE_WORD_QUESTIONS_L7, CHANGE_WORD_QUESTIONS_L8, CHANGE_WORD_QUESTIONS_L9, CHANGE_WORD_QUESTIONS_L10, CHANGE_WORD_QUESTIONS_L11, CHANGE_WORD_QUESTIONS_L12, CHANGE_WORD_QUESTIONS_L13, CHANGE_WORD_QUESTIONS_L14, CHANGE_WORD_QUESTIONS_L15, CHANGE_WORD_QUESTIONS_L16, TRUE_FALSE_QUESTIONS, TRUE_FALSE_QUESTIONS_L2, TRUE_FALSE_QUESTIONS_L3, TRUE_FALSE_QUESTIONS_L4, TRUE_FALSE_QUESTIONS_L5, TRUE_FALSE_QUESTIONS_L6, TRUE_FALSE_QUESTIONS_L7, TRUE_FALSE_QUESTIONS_L8, TRUE_FALSE_QUESTIONS_L9, TRUE_FALSE_QUESTIONS_L10, TRUE_FALSE_QUESTIONS_L11, TRUE_FALSE_QUESTIONS_L12, TRUE_FALSE_QUESTIONS_L13, TRUE_FALSE_QUESTIONS_L14, TRUE_FALSE_QUESTIONS_L15, TRUE_FALSE_QUESTIONS_L16, COMPREHENSION_QUESTIONS_L1, COMPREHENSION_QUESTIONS_L2, COMPREHENSION_QUESTIONS_L3, COMPREHENSION_QUESTIONS_L4, COMPREHENSION_QUESTIONS_L5, COMPREHENSION_QUESTIONS_L6, COMPREHENSION_QUESTIONS_L7, COMPREHENSION_QUESTIONS_L8, COMPREHENSION_QUESTIONS_L9, COMPREHENSION_QUESTIONS_L10, COMPREHENSION_QUESTIONS_L11, COMPREHENSION_QUESTIONS_L12, COMPREHENSION_QUESTIONS_L13, COMPREHENSION_QUESTIONS_L14, COMPREHENSION_QUESTIONS_L15, COMPREHENSION_QUESTIONS_L16, DEMONSTRATIVE_QUESTIONS, SUFFIX_PRONOUN_QUESTIONS, ADJECTIVE_AGREEMENT_QUESTIONS, PLURAL_QUESTIONS, FEMININE_QUESTIONS, SUFFIX_TRANSLATION_QUESTIONS, DEMO_TRANSLATION_QUESTIONS, ADJECTIVE_AGREEMENT_TRANSLATION_QUESTIONS, PASSIVE_VERB_QUESTIONS, DOER_DONETO_QUESTIONS, SUPERLATIVE_QUESTIONS, IDAFA_TRANSLATION_QUESTIONS, VERBAL_NOUN_QUESTIONS, ADVERBIAL_TRANSLATION_QUESTIONS, CAUSATIVE_QUESTIONS, MUTUAL_REFLEXIVE_QUESTIONS, SEEKING_INTRANSITIVE_QUESTIONS, EMPHASIS_TRANSLATION_QUESTIONS, PLURAL_TYPE_QUESTIONS, CHALLENGE_1_WORDS, CHALLENGE_1_WORDS_L2, CHALLENGE_1_WORDS_L3, CHALLENGE_1_WORDS_L4, CHALLENGE_1_WORDS_L5, CHALLENGE_1_WORDS_L6, CHALLENGE_1_WORDS_L7, CHALLENGE_1_WORDS_L8, CHALLENGE_1_WORDS_L9, CHALLENGE_1_WORDS_L10, CHALLENGE_1_WORDS_L11, CHALLENGE_1_WORDS_L12, CHALLENGE_1_WORDS_L13, CHALLENGE_1_WORDS_L14, CHALLENGE_1_WORDS_L15, CHALLENGE_1_WORDS_L16, TRANSLATION_1_QUESTIONS, CHALLENGE_2_SENTENCES, CHALLENGE_2_SENTENCES_L2, CHALLENGE_2_SENTENCES_L3, CHALLENGE_2_SENTENCES_L4, CHALLENGE_2_SENTENCES_L5, CHALLENGE_2_SENTENCES_L6, CHALLENGE_2_SENTENCES_L7, CHALLENGE_2_SENTENCES_L8, CHALLENGE_2_SENTENCES_L9, CHALLENGE_2_SENTENCES_L10, CHALLENGE_2_SENTENCES_L11, CHALLENGE_2_SENTENCES_L12, CHALLENGE_2_SENTENCES_L13, CHALLENGE_2_SENTENCES_L14, CHALLENGE_2_SENTENCES_L15, CHALLENGE_2_SENTENCES_L16, NEGATE_AFFIRM_SENTENCES_L1, NEGATE_AFFIRM_SENTENCES_L2, NEGATE_AFFIRM_SENTENCES_L3, NEGATE_AFFIRM_SENTENCES_L4, NEGATE_AFFIRM_SENTENCES_L5, NEGATE_AFFIRM_SENTENCES_L6, NEGATE_AFFIRM_SENTENCES_L7, NEGATE_AFFIRM_SENTENCES_L8, NEGATE_AFFIRM_SENTENCES_L9, NEGATE_AFFIRM_SENTENCES_L10, NEGATE_AFFIRM_SENTENCES_L11, NEGATE_AFFIRM_SENTENCES_L12, NEGATE_AFFIRM_SENTENCES_L13, NEGATE_AFFIRM_SENTENCES_L14, NEGATE_AFFIRM_SENTENCES_L15, NEGATE_AFFIRM_SENTENCES_L16, LESSON_STORIES };'
 );
 const data = runner();
 DEFAULT_LESSONS = data.DEFAULT_LESSONS;
@@ -936,6 +948,16 @@ FEMININE_QUESTIONS = data.FEMININE_QUESTIONS;
 SUFFIX_TRANSLATION_QUESTIONS = data.SUFFIX_TRANSLATION_QUESTIONS;
 DEMO_TRANSLATION_QUESTIONS = data.DEMO_TRANSLATION_QUESTIONS;
 ADJECTIVE_AGREEMENT_TRANSLATION_QUESTIONS = data.ADJECTIVE_AGREEMENT_TRANSLATION_QUESTIONS;
+PASSIVE_VERB_QUESTIONS = data.PASSIVE_VERB_QUESTIONS;
+DOER_DONETO_QUESTIONS = data.DOER_DONETO_QUESTIONS;
+SUPERLATIVE_QUESTIONS = data.SUPERLATIVE_QUESTIONS;
+IDAFA_TRANSLATION_QUESTIONS = data.IDAFA_TRANSLATION_QUESTIONS;
+VERBAL_NOUN_QUESTIONS = data.VERBAL_NOUN_QUESTIONS;
+ADVERBIAL_TRANSLATION_QUESTIONS = data.ADVERBIAL_TRANSLATION_QUESTIONS;
+CAUSATIVE_QUESTIONS = data.CAUSATIVE_QUESTIONS;
+MUTUAL_REFLEXIVE_QUESTIONS = data.MUTUAL_REFLEXIVE_QUESTIONS;
+SEEKING_INTRANSITIVE_QUESTIONS = data.SEEKING_INTRANSITIVE_QUESTIONS;
+EMPHASIS_TRANSLATION_QUESTIONS = data.EMPHASIS_TRANSLATION_QUESTIONS;
 PLURAL_TYPE_QUESTIONS = data.PLURAL_TYPE_QUESTIONS;
 CHALLENGE_1_WORDS = data.CHALLENGE_1_WORDS;
 CHALLENGE_1_WORDS_L2 = data.CHALLENGE_1_WORDS_L2;
@@ -1015,6 +1037,16 @@ window.FEMININE_QUESTIONS = FEMININE_QUESTIONS;
 window.SUFFIX_TRANSLATION_QUESTIONS = SUFFIX_TRANSLATION_QUESTIONS;
 window.DEMO_TRANSLATION_QUESTIONS = DEMO_TRANSLATION_QUESTIONS;
 window.ADJECTIVE_AGREEMENT_TRANSLATION_QUESTIONS = ADJECTIVE_AGREEMENT_TRANSLATION_QUESTIONS;
+window.PASSIVE_VERB_QUESTIONS = PASSIVE_VERB_QUESTIONS;
+window.DOER_DONETO_QUESTIONS = DOER_DONETO_QUESTIONS;
+window.SUPERLATIVE_QUESTIONS = SUPERLATIVE_QUESTIONS;
+window.IDAFA_TRANSLATION_QUESTIONS = IDAFA_TRANSLATION_QUESTIONS;
+window.VERBAL_NOUN_QUESTIONS = VERBAL_NOUN_QUESTIONS;
+window.ADVERBIAL_TRANSLATION_QUESTIONS = ADVERBIAL_TRANSLATION_QUESTIONS;
+window.CAUSATIVE_QUESTIONS = CAUSATIVE_QUESTIONS;
+window.MUTUAL_REFLEXIVE_QUESTIONS = MUTUAL_REFLEXIVE_QUESTIONS;
+window.SEEKING_INTRANSITIVE_QUESTIONS = SEEKING_INTRANSITIVE_QUESTIONS;
+window.EMPHASIS_TRANSLATION_QUESTIONS = EMPHASIS_TRANSLATION_QUESTIONS;
 window.PLURAL_TYPE_QUESTIONS = PLURAL_TYPE_QUESTIONS;
 window.CHALLENGE_1_WORDS = CHALLENGE_1_WORDS;
 window.CHALLENGE_1_WORDS_L2 = CHALLENGE_1_WORDS_L2;
@@ -1509,7 +1541,7 @@ return Math.round((done / total) * 100);
 // tap: the first not-yet-finished step (in order) within their current lesson.
 function getNextMilestone(currentLevel) {
 const t = getTorchStates(currentLevel);
-const order = [['reading',0], ['flashcards',1], ['grammar',2], ['exercises',3], ['challenges',4]];
+const order = [['reading',0], ['grammar',1], ['flashcards',2], ['exercises',3], ['challenges',4]];
 for (const [key, idx] of order) {
 if (t[key] !== 1) return { lesson: currentLevel, index: idx };
 }
@@ -1526,15 +1558,15 @@ function msStopX(i) { return i % 2 === 0 ? MS_X_LEFT : MS_X_RIGHT; }
 // Which lesson/torch each "row" in the staircase is, in order: tent, then
 // its 5 torches, then the next lesson's tent, and so on. Because each lesson
 // is exactly 6 rows, the left/right pattern always lines up the same way.
-const MS_TORCH_INDEX = { reading: 0, flashcards: 1, grammar: 2, exercises: 3, challenges: 4 };
+const MS_TORCH_INDEX = { reading: 0, grammar: 1, flashcards: 2, exercises: 3, challenges: 4 };
 const MS_TORCH_ACTIONS = { reading: 'openReadingForLesson', flashcards: 'openFlashcardsForLesson', grammar: 'openGrammarForLesson', exercises: 'openExercisesForLesson', challenges: 'openChallengesForLesson' };
 function buildMilestoneStops() {
 const stops = [];
 for (let n = 1; n < MILESTONE_BUILT_LESSONS; n++) {
 stops.push({ type:'tent', lesson:n });
 stops.push({ type:'torch', lesson:n, key:'reading', label:'Reading' });
-stops.push({ type:'torch', lesson:n, key:'flashcards', label:'Memorise Vocab' });
 stops.push({ type:'torch', lesson:n, key:'grammar', label:'Grammar' });
+stops.push({ type:'torch', lesson:n, key:'flashcards', label:'Memorise Vocab' });
 stops.push({ type:'torch', lesson:n, key:'exercises', label:'Exercises' });
 stops.push({ type:'torch', lesson:n, key:'challenges', label:'Challenges' });
 }
@@ -1925,6 +1957,12 @@ overlay.innerHTML = `<div class="milestone-celebrate-card" style="text-align:lef
 <div class="home-card-text"><div class="home-card-title">Subscription</div><div class="home-card-desc">View your plan</div></div>
 <div class="home-card-arrow">›</div>
 </div>
+<div class="home-card" id="tent-menu-chat">
+<div class="home-card-icon" style="font-size:22px">🤖</div>
+<div class="home-card-divider"></div>
+<div class="home-card-text"><div class="home-card-title">AI Chat</div><div class="home-card-desc">Practice a conversation in Arabic</div></div>
+<div class="home-card-arrow">›</div>
+</div>
 <button class="milestone-review-btn" id="tent-menu-close" style="width:100%;margin-top:16px;background:var(--grey-light);color:var(--grey);border:1.5px solid var(--border)">Close</button>
 </div>`;
 document.body.appendChild(overlay);
@@ -1934,6 +1972,7 @@ document.getElementById('tent-menu-saved').onclick = () => { overlay.remove(); s
 document.getElementById('tent-menu-stats').onclick = () => { overlay.remove(); switchTab('stats'); };
 document.getElementById('tent-menu-subscription').onclick = () => { overlay.remove(); switchTab('subscription'); };
 document.getElementById('tent-menu-messages').onclick = () => { overlay.remove(); switchTab('messages'); };
+document.getElementById('tent-menu-chat').onclick = () => { overlay.remove(); switchTab('chat'); };
 document.getElementById('tent-menu-close').onclick = () => overlay.remove();
 overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
 };
@@ -2148,7 +2187,199 @@ libraryTabs.forEach(tab => {
   };
 });
 };
-  
+
+// ── AI CHAT TAB (wired once — chat page HTML is static, so this won't re-run and lose history) ──
+window.renderChatTab = function() {
+if (window._chatInitialized) return;
+window._chatInitialized = true;
+window._chatHistory = []; // {role:'user'|'model', ...}
+
+function chatBuildVocabWords() {
+const currentLesson = window.getCurrentLesson ? window.getCurrentLesson() : 1;
+const words = [];
+for (let i = 1; i <= currentLesson; i++) {
+const lesson = window.LESSONS && window.LESSONS[i];
+if (lesson && lesson.cards) {
+lesson.cards.forEach(c => words.push(`${c.ar} (${c.en})`));
+}
+}
+return words;
+}
+
+function chatRenderMessages() {
+const box = document.getElementById('chat-messages');
+if (!box) return;
+box.innerHTML = window._chatHistory.map((m, idx) => {
+if (m.role === 'user') {
+return `<div style="margin-bottom:10px;text-align:right">
+<span style="display:inline-block;max-width:80%;padding:8px 12px;border-radius:12px;font-size:14px;line-height:1.6;background:var(--blue);color:white">${m.text}</span>
+</div>`;
+}
+// Plain model messages: clarification requests or error/busy notices — shown as simple English text, no toggle
+if (m.kind === 'clarify' || m.kind === 'plain') {
+return `<div style="margin-bottom:10px;text-align:left">
+<span style="display:inline-block;max-width:85%;padding:8px 12px;border-radius:12px;font-size:14px;line-height:1.6;background:#fff7e6;color:var(--ink);border:1px solid #f0d999">${m.text}</span>
+</div>`;
+}
+// Normal AI reply: each Arabic word is individually clickable to reveal its meaning.
+// Falls back to the plain (non-clickable) Arabic text if the AI didn't send a usable word list.
+const arabicHtml = (m.words && m.words.length)
+? m.words.map((w, wi) => {
+const revealed = m.wordRevealed && m.wordRevealed[wi];
+return `<span class="chat-word" data-msg-idx="${idx}" data-word-idx="${wi}" style="cursor:pointer;${revealed ? 'text-decoration:underline;text-decoration-color:#8b2035' : ''}">${w.ar}</span>${revealed ? `<span style="font-size:12px;color:#8b2035;margin:0 4px">(${w.en})</span>` : ''}`;
+}).join(' ')
+: m.ar;
+const englishBlock = m.showEnglish
+? `<div style="margin-top:8px;padding-top:8px;border-top:1px solid #ddd;font-size:13px;color:#555;line-height:1.6">${m.en}</div>`
+: '';
+return `<div style="margin-bottom:14px;text-align:left">
+<div style="display:inline-block;max-width:88%;padding:10px 14px;border-radius:12px;background:#eee;color:var(--ink)">
+<div style="direction:rtl;unicode-bidi:isolate;font-family:'Scheherazade New', serif;font-size:19px;line-height:2.3;text-align:right">${arabicHtml}</div>
+${englishBlock}
+<button data-toggle-idx="${idx}" style="margin-top:8px;background:none;border:none;color:var(--blue);font-size:12px;font-weight:700;cursor:pointer;padding:0">${m.showEnglish ? 'Hide full English' : 'Show full English'}</button>
+</div>
+</div>`;
+}).join('');
+box.scrollTop = box.scrollHeight;
+box.querySelectorAll('[data-toggle-idx]').forEach(btn => {
+btn.onclick = () => {
+const i = parseInt(btn.dataset.toggleIdx, 10);
+window._chatHistory[i].showEnglish = !window._chatHistory[i].showEnglish;
+chatRenderMessages();
+};
+});
+box.querySelectorAll('.chat-word').forEach(span => {
+span.onclick = () => {
+const mi = parseInt(span.dataset.msgIdx, 10);
+const wi = parseInt(span.dataset.wordIdx, 10);
+const msg = window._chatHistory[mi];
+if (!msg.wordRevealed) msg.wordRevealed = [];
+msg.wordRevealed[wi] = !msg.wordRevealed[wi];
+chatRenderMessages();
+};
+});
+}
+
+// Splits Gemini's raw reply into the right shape based on which format it used.
+// Falls back gracefully if Gemini doesn't follow the format exactly.
+function chatParseReply(raw) {
+const trimmed = raw.trim();
+if (/^CLARIFY:/i.test(trimmed)) {
+return { kind: 'clarify', raw, text: trimmed.replace(/^CLARIFY:\s*/i, '') };
+}
+const arabicIdx = trimmed.search(/ARABIC:/i);
+const wordsIdx = trimmed.search(/WORDS:/i);
+const englishIdx = trimmed.search(/ENGLISH:/i);
+if (arabicIdx !== -1 && wordsIdx !== -1 && englishIdx !== -1 && wordsIdx > arabicIdx && englishIdx > wordsIdx) {
+const ar = trimmed.substring(arabicIdx + 'ARABIC:'.length, wordsIdx).trim();
+const wordsRaw = trimmed.substring(wordsIdx + 'WORDS:'.length, englishIdx).trim();
+const en = trimmed.substring(englishIdx + 'ENGLISH:'.length).trim();
+const words = wordsRaw.split(';').map(pair => {
+const eqIdx = pair.indexOf('=');
+if (eqIdx === -1) return null;
+return { ar: pair.substring(0, eqIdx).trim(), en: pair.substring(eqIdx + 1).trim() };
+}).filter(Boolean);
+return { kind: 'normal', raw, ar, words: words.length ? words : null, wordRevealed: words.length ? words.map(() => false) : [], en, showEnglish: false };
+}
+// Fallback: AI sent ARABIC/ENGLISH but no usable WORDS list — words just won't be individually clickable
+if (arabicIdx !== -1 && englishIdx !== -1 && englishIdx > arabicIdx) {
+const ar = trimmed.substring(arabicIdx + 'ARABIC:'.length, englishIdx).trim();
+const en = trimmed.substring(englishIdx + 'ENGLISH:'.length).trim();
+return { kind: 'normal', raw, ar, words: null, wordRevealed: [], en, showEnglish: false };
+}
+return { kind: 'normal', raw, ar: trimmed, words: null, wordRevealed: [], en: '', showEnglish: false };
+}
+
+async function chatSend() {
+// Cooldown check: block sending if less than 30 seconds since the last message
+const now = Date.now();
+const secondsSinceLast = (now - (window._chatLastSent || 0)) / 1000;
+if (secondsSinceLast < 30) {
+const secondsLeft = Math.ceil(30 - secondsSinceLast);
+const loading = document.getElementById('chat-loading');
+if (loading) { loading.style.display = 'block'; loading.textContent = `Please wait ${secondsLeft}s before sending another message...`; }
+return;
+}
+
+const input = document.getElementById('chat-input');
+const text = input.value.trim();
+if (!text) return;
+window._chatLastSent = now;
+input.value = '';
+window._chatHistory.push({ role: 'user', text });
+chatRenderMessages();
+
+const loading = document.getElementById('chat-loading');
+if (loading) { loading.style.display = 'block'; loading.textContent = 'Thinking...'; }
+
+const vocabWords = chatBuildVocabWords();
+const systemText = `You are a friendly Arabic conversation partner for a beginner Arabic student.
+
+VOCABULARY RULE: The student has learned this list of words so far: ${vocabWords.join(', ')}. Prefer these words when they fit naturally, but your top priority is always to sound like natural, fluent spoken Arabic — never distort a sentence's wording, word order, or phrasing just to force in a word from the list. It's fine and expected to use common, simple words outside the list when that's what a native speaker would naturally say; just avoid clearly advanced or obscure vocabulary the student hasn't been exposed to yet.
+
+REPLY LENGTH: Every normal reply's Arabic portion must be at least 50 words long, and must end with an open-ended question in Arabic to keep the conversation going and give the student something to respond to.
+
+RESPONSE FORMAT: Always reply using exactly ONE of these two formats, and nothing else outside them:
+
+Format A (normal reply):
+ARABIC: <Arabic text with harakat, at least 50 words, ending in an open question>
+WORDS: <one entry per space-separated word in your ARABIC line, in the exact same order, formatted as arabicword=english meaning, separated by semicolons — for example: بَيْتٌ=house;كَبِيرٌ=big. Do not skip, merge, or reorder any words. Keep any attached punctuation with its word.>
+ENGLISH: <full English translation of the ARABIC text above>
+
+Format B (use ONLY when the student's most recent message is Arabic that is unclear, ambiguous, or has mistakes serious enough that you cannot confidently tell what they meant):
+CLARIFY: <a short, friendly message in English, asking the student to type in English what they meant to say>
+
+CORRECTION RULE: If your previous turn used Format B and the student has now explained what they meant (in English), your next reply must use Format A. In that reply, the ARABIC text must begin by gently showing the corrected version of their original Arabic sentence with a brief explanation of the fix (in Arabic, still counting toward the 50-word minimum), then continue the conversation naturally and end with your open-ended question.
+
+Be warm and encouraging, like a patient teacher.`;
+
+const contents = window._chatHistory
+.filter(m => m.role === 'user' || m.kind !== 'plain')
+.map(m => ({
+role: m.role === 'user' ? 'user' : 'model',
+parts: [{ text: m.role === 'user' ? m.text : m.raw }]
+}));
+
+async function chatCallGemini(systemText, contents) {
+const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=AQ.Ab8RN6JgOBwhKPAmbmZRl_2fhHAsXeB2zH-aSsO6JCQAsLpe4g', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({
+systemInstruction: { parts: [{ text: systemText }] },
+contents
+})
+});
+return await response.json();
+}
+
+try {
+let data = await chatCallGemini(systemText, contents);
+if (data && data.error && data.error.code === 503) {
+await new Promise(r => setTimeout(r, 2000));
+data = await chatCallGemini(systemText, contents);
+}
+if (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0].text) {
+const raw = data.candidates[0].content.parts[0].text;
+const parsed = chatParseReply(raw);
+window._chatHistory.push({ role: 'model', ...parsed });
+} else if (data && data.error && data.error.code === 503) {
+console.error('Gemini still overloaded after retry. Full response:', data);
+window._chatHistory.push({ role: 'model', kind: 'plain', raw: '', text: "The AI is a bit busy right now — please try sending your message again in a moment." });
+} else {
+console.error('Gemini did not return a normal reply. Full response:', data);
+window._chatHistory.push({ role: 'model', kind: 'plain', raw: '', text: "Sorry, I couldn't reply just now — please try again." });
+}
+} catch (e) {
+console.error('Gemini chat error', e);
+window._chatHistory.push({ role: 'model', kind: 'plain', raw: '', text: "Something went wrong reaching the AI. Please check your connection and try again." });
+}
+if (loading) loading.style.display = 'none';
+chatRenderMessages();
+}
+
+document.getElementById('chat-send-btn').onclick = chatSend;
+document.getElementById('chat-input').addEventListener('keydown', e => { if (e.key === 'Enter') chatSend(); });
+};
 window.openReportPopup = function(context) {
 const overlay = document.createElement('div');
 overlay.className = 'milestone-celebrate-overlay';
@@ -2349,6 +2580,25 @@ await deleteDoc(doc(db, 'guests', code));
 await renderGuestsTab();
 showToast('Guest deleted');
 } catch(e) { console.error('Guest delete error', e); showToast('Error deleting guest'); }
+};
+
+// Small bridge so the plain-script exercise/challenge code (which can't see fcCurrentLesson
+// by name) can still jump the Flashcards view straight to a specific deck.
+window.goToFlashcardDeck = function(deckKey, ar, en) {
+  fcCurrentLesson = deckKey;
+  fcShowLessonPicker = false;
+  buildFcQueue();
+  if (ar) {
+    const foundIdx = fcQueue.findIndex(c => c.ar === ar && (!en || c.en === en));
+    if (foundIdx >= 0) fcCurrentIdx = foundIdx;
+  }
+  renderFlashcards();
+};
+
+// Lets other code (like jumping to a report's exact location) turn edit mode on
+// without accidentally turning it OFF if it's already on.
+window.enableEditMode = function() {
+  if (!editModeActive) window.toggleEditMode();
 };
 
 window.enterStudentAccount = async function(code) {
@@ -2686,13 +2936,13 @@ const bodyHtml = isCardReport
 const bg = r.madeByInstructor ? '#eff6ff' : (r.read ? 'white' : '#fffbeb');
 const border = r.madeByInstructor ? '#2563eb' : (r.read ? 'var(--border)' : '#fcd34d');
 const madeByLabel = r.madeByInstructor ? `<div style="font-size:11px;color:#1d4ed8;font-weight:700;margin-bottom:6px">🎓 You made this report while viewing ${studentName}'s account</div>` : '';
-return `<div style="background:${bg};border:1px solid ${border};border-radius:12px;padding:16px;margin-bottom:12px">
+return `<div onclick="window.jumpToReportPlace('${r.id}')" title="Click to view this in ${studentName}'s account and edit it" style="cursor:pointer;background:${bg};border:1px solid ${border};border-radius:12px;padding:16px;margin-bottom:12px">
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
 <div style="font-weight:600;color:var(--ink)">${studentName}</div>
 <div style="display:flex;gap:6px;align-items:center">
-${r.read ? '' : `<button onclick="window.markReportRead('${r.id}')" style="background:none;border:none;color:var(--blue);font-size:12px;font-weight:600;cursor:pointer;padding:2px 6px">Mark read</button>`}
-<button onclick="window.saveReportToNotepad('${r.id}')" id="notepad-save-${r.id}" title="Save to Notepad for later" style="background:none;border:none;color:#92400e;font-size:12px;font-weight:600;cursor:pointer;padding:2px 6px">📋 Save</button>
-<button onclick="window.deleteReport('${r.id}')" style="background:none;border:none;color:var(--grey);font-size:13px;cursor:pointer;padding:2px 6px">✕ Delete</button>
+${r.read ? '' : `<button onclick="event.stopPropagation();window.markReportRead('${r.id}')" style="background:none;border:none;color:var(--blue);font-size:12px;font-weight:600;cursor:pointer;padding:2px 6px">Mark read</button>`}
+<button onclick="event.stopPropagation();window.saveReportToNotepad('${r.id}')" id="notepad-save-${r.id}" title="Save to Notepad for later" style="background:none;border:none;color:#92400e;font-size:12px;font-weight:600;cursor:pointer;padding:2px 6px">📋 Save</button>
+<button onclick="event.stopPropagation();window.deleteReport('${r.id}')" style="background:none;border:none;color:var(--grey);font-size:13px;cursor:pointer;padding:2px 6px">✕ Delete</button>
 </div>
 </div>
 ${madeByLabel}
@@ -2703,7 +2953,7 @@ ${madeByLabel}
 reportDocs.forEach((r, i) => {
 if (!r.arabic) return;
 const btn = document.getElementById('report-speak-' + i);
-if (btn) btn.onclick = () => window.speakArabic(r.arabic);
+if (btn) btn.onclick = (e) => { e.stopPropagation(); window.speakArabic(r.arabic); };
 });
 }
 
@@ -3439,12 +3689,18 @@ window.toggleEditMode = function() {
 let activeEditEl = null;
 let activeEditStartHTML = '';
 let activeEditOldOutline = '';
+let activeEditDisabled = [];
 
 function closeActiveEdit() {
   if (!activeEditEl) return;
   if (activeEditEl._editKeyHandler) activeEditEl.removeEventListener('keydown', activeEditEl._editKeyHandler);
   activeEditEl.contentEditable = 'false';
   activeEditEl.style.outline = activeEditOldOutline;
+  activeEditDisabled.forEach(d => {
+    d.el.onclick = d.onclick;
+    if (d.el !== activeEditEl) d.el.removeAttribute('contenteditable');
+  });
+  activeEditDisabled = [];
   editingInProgress = false;
   activeEditEl = null;
   document.getElementById('edit-save-toolbar').style.display = 'none';
@@ -3476,7 +3732,13 @@ window.cancelActiveEdit = function() {
 document.addEventListener('click', function(e) {
   if (!editModeActive || !isInstructor) return;
   if (e.target.closest('#edit-save-toolbar')) return; // Save/Cancel buttons handle themselves
-  if (e.target.closest('[contenteditable="true"]')) return; // repositioning cursor inside active edit
+
+  if (e.target.closest('[contenteditable="true"]')) {
+    // Repositioning the cursor inside an active edit — but if you land exactly on a
+    // frozen button/link inside it, don't let that button/link's action fire either.
+    if (e.target.closest('button, a')) e.preventDefault();
+    return;
+  }
 
   // Clicking anywhere else while an edit is open cancels it first — so an
   // accidental tap elsewhere (or the pencil button) can never sneak in a save.
@@ -3486,14 +3748,21 @@ document.addEventListener('click', function(e) {
   if (!el) return;
   e.preventDefault();
   e.stopPropagation();
+  e.stopImmediatePropagation();
 
   if (el.dataset.editOrig === undefined) el.dataset.editOrig = el.innerHTML.trim();
   activeEditEl = el;
   activeEditStartHTML = el.innerHTML;
   editingInProgress = true;
-  // Freeze any nested buttons/links inside this chunk so typing can't break or trigger them.
-  const frozen = el.querySelectorAll('button, a, input, select');
-  frozen.forEach(f => f.setAttribute('contenteditable', 'false'));
+  // Freeze any nested buttons/links inside this chunk AND fully disable their action
+  // (not just visually) so tapping into the text can never accidentally trigger them.
+  activeEditDisabled = [];
+  const toDisable = el.matches('button, a') ? [el, ...el.querySelectorAll('button, a, input, select')] : Array.from(el.querySelectorAll('button, a, input, select'));
+  toDisable.forEach(f => {
+    if (f !== el) f.setAttribute('contenteditable', 'false');
+    activeEditDisabled.push({ el: f, onclick: f.onclick });
+    f.onclick = null;
+  });
   el.contentEditable = 'true';
   activeEditOldOutline = el.style.outline;
   el.style.outline = '2px dashed #2563eb';
@@ -3755,6 +4024,8 @@ document.getElementById('tab-content-exercises').style.display = tab==='exercise
 document.getElementById('tab-content-challenges').style.display = tab==='challenges' ? 'block' : 'none';
 document.getElementById('tab-content-library').style.display = tab==='library' ? 'block' : 'none';
 if (tab==='library' && typeof renderLibrary === 'function') renderLibrary();
+document.getElementById('tab-content-chat').style.display = tab==='chat' ? 'block' : 'none';
+if (tab==='chat' && typeof renderChatTab === 'function') renderChatTab();
 document.getElementById('tab-content-saved').style.display = tab==='saved' ? 'block' : 'none';
 if (tab==='saved' && typeof renderSavedTab === 'function') renderSavedTab();
 document.getElementById('tab-content-subscription').style.display = tab==='subscription' ? 'block' : 'none';
@@ -5094,7 +5365,9 @@ if (storyData) {
       </div>
       <button id="story-full-english-btn" onclick="toggleStoryFullEnglish()" style="display:none;padding:10px 20px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:16px">Show English</button>
       <div id="story-words-container" style="font-family:'Scheherazade New', serif;font-size:28px;line-height:2;direction:rtl;text-align:right"></div>
-      <div id="story-full-container" style="display:none;font-family:'Scheherazade New', serif;font-size:28px;line-height:2;direction:rtl;text-align:right">${fullStoryHtml}</div>`
+      <div id="story-full-container" style="display:none;font-family:'Scheherazade New', serif;font-size:28px;line-height:2;direction:rtl;text-align:right">${fullStoryHtml}
+<button onclick="window.markReadingDone(${lesson})" style="direction:ltr;font-family:-apple-system,sans-serif;width:100%;margin-top:20px;padding:14px;background:#8b2035;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">Done</button>
+</div>`
     : `<div style="font-family:'Scheherazade New', serif;font-size:18px;line-height:2;direction:rtl;text-align:right;white-space:pre-line">${text}</div>`;
   ['story-translation-input','story-reveal','story-ratings','student-reading-done-btn','guest-flashcards-btn','principles-wrap'].forEach(id => {
     const el = document.getElementById(id);
@@ -5458,6 +5731,15 @@ typeharakat: 1, typeenglish: 1,
 suffixpronoun: 1, suffixtrans: 1, aetrans: 1, challenge1: 1, challenge2: 1,
 adjectiveagreement: 2, adjectiveagreementtrans: 2,
 demonstrative: 2, demotrans: 2, feminine: 2,
+passiveverbtrans: 5,
+doerdonetotrans: 6,
+superlativetrans: 7,
+idafatrans: 8,
+verbalnountrans: 9,
+adverbialtrans: 10,
+causativetrans: 11, reflexivetrans: 11,
+seekingtrans: 12,
+emphasistrans: 13,
 typeenglish2: 2, typeenglish3: 3, typeenglish4: 4, typeenglish5: 5, typeenglish6: 6,
 typeenglish7: 7, typeenglish8: 8, typeenglish9: 9, typeenglish10: 10, typeenglish11: 11, typeenglish12: 12, typeenglish13: 13, typeenglish14: 14, typeenglish15: 15, typeenglish16: 16,
 challenge1l2: 2, challenge1l3: 3, challenge1l4: 4, challenge1l5: 5, challenge1l6: 6,
@@ -5656,7 +5938,17 @@ const EX_CARDS = [
 { mode:'demonstrative', icon:'👉', title:'Demonstrative Pronouns', desc:'Practise هذا / هذه / هؤلاء agreement with true/false and correction questions.' },
 { mode:'demotrans', icon:'👉', title:'Demonstrative Pronouns — Translate', desc:'Read the English, write the Arabic demonstrative phrase, then reveal and grade yourself.' },
 { mode:'adjectiveagreement', icon:'✨', title:'Adjective Agreement', desc:'Noun-adjective agreement: is the adjective correctly matched to the noun?' },
-{ mode:'adjectiveagreementtrans', icon:'✨', title:'Adjective Agreement — Translate', desc:'Read the English, write the Arabic noun + adjective, then reveal and grade yourself.' }
+{ mode:'adjectiveagreementtrans', icon:'✨', title:'Adjective Agreement — Translate', desc:'Read the English, write the Arabic noun + adjective, then reveal and grade yourself.' },
+{ mode:'passiveverbtrans', icon:'🔄', title:'Make It Passive', desc:'See an active verb — write its passive form, then reveal and grade yourself.' },
+{ mode:'doerdonetotrans', icon:'🔁', title:'Doer ↔ Done-To', desc:'See one form (doer or done-to) — write the other, then reveal and grade yourself.' },
+{ mode:'superlativetrans', icon:'📈', title:'Make It a Superlative', desc:'See an adjective — write its "most/-est" form, then reveal and grade yourself.' },
+{ mode:'idafatrans', icon:'🔗', title:'Idafa — Translate', desc:'Read the English, write the Arabic idafa phrase, then reveal and grade yourself.' },
+{ mode:'verbalnountrans', icon:'📖', title:'Verb → Verbal Noun', desc:'See a verb — write the matching verbal noun, then reveal and grade yourself.' },
+{ mode:'adverbialtrans', icon:'🎯', title:'Adverbial Accusative — Translate', desc:'Read the English, write the Arabic sentence with the fatha-ending word, then reveal and grade yourself.' },
+{ mode:'causativetrans', icon:'⚡', title:'Causative & Intensive Forms', desc:'See a verb — write its causative or intensive form, then reveal and grade yourself.' },
+{ mode:'reflexivetrans', icon:'🔂', title:'Reflexive & Mutual Forms', desc:'See a verb — write its reflexive or mutual form, then reveal and grade yourself.' },
+{ mode:'seekingtrans', icon:'🙏', title:'Seeking & Self Forms — Translate', desc:'Read the English, write the Arabic verb, then reveal and grade yourself.' },
+{ mode:'emphasistrans', icon:'⭐', title:'Emphasis — Translate', desc:'Read the English, write the Arabic phrase with the front-loaded word, then reveal and grade yourself.' }
 ];
 function exGetQuestionCount(mode) {
 mode = mode.replace(/listen$/, '');
@@ -5700,6 +5992,16 @@ return mode==='fillgap' ? FILL_GAP_QUESTIONS.length
 : mode==='suffixtrans' ? SUFFIX_TRANSLATION_QUESTIONS.length
 : mode==='adjectiveagreement' ? ADJECTIVE_AGREEMENT_QUESTIONS.length
 : mode==='adjectiveagreementtrans' ? ADJECTIVE_AGREEMENT_TRANSLATION_QUESTIONS.length
+: mode==='passiveverbtrans' ? PASSIVE_VERB_QUESTIONS.length
+: mode==='doerdonetotrans' ? DOER_DONETO_QUESTIONS.length
+: mode==='superlativetrans' ? SUPERLATIVE_QUESTIONS.length
+: mode==='idafatrans' ? IDAFA_TRANSLATION_QUESTIONS.length
+: mode==='verbalnountrans' ? VERBAL_NOUN_QUESTIONS.length
+: mode==='adverbialtrans' ? ADVERBIAL_TRANSLATION_QUESTIONS.length
+: mode==='causativetrans' ? CAUSATIVE_QUESTIONS.length
+: mode==='reflexivetrans' ? MUTUAL_REFLEXIVE_QUESTIONS.length
+: mode==='seekingtrans' ? SEEKING_INTRANSITIVE_QUESTIONS.length
+: mode==='emphasistrans' ? EMPHASIS_TRANSLATION_QUESTIONS.length
 : mode==='plural' ? PLURAL_QUESTIONS.length
 : mode==='feminine' ? FEMININE_QUESTIONS.length
 : mode==='pluraltype' ? PLURAL_TYPE_QUESTIONS.length * 2
@@ -5830,6 +6132,82 @@ const backBtn2 = document.getElementById('ch-back-to-current-btn');
 if (backBtn2) backBtn2.onclick = () => { exPickerLesson = null; exShowChallengesPicker(); };
 }
 window.exShowChallengesPicker = exShowChallengesPicker;
+
+// Clicking a report in the Reports tab jumps ryan01 straight to that exact
+// student, tab, lesson, and exercise/challenge — then turns edit mode on
+// automatically so the text can be fixed right there.
+window.jumpToReportPlace = async function(id) {
+  const r = (window.reportsCache || []).find(x => x.id === id);
+  if (!r) return;
+  await window.enterStudentAccount(r.studentCode);
+
+  if (r.type === 'flashcard') {
+    window.switchTab('flashcards');
+    window.goToFlashcardDeck(r.lesson, r.arabic, r.english);
+  } else if (r.type === 'exercise') {
+    window.switchTab('exercises');
+    exPickerLesson = r.lesson;
+    const card = EX_CARDS.find(c => c.title === r.activity && EX_LESSON_MAP[c.mode] === r.lesson && c.mode.indexOf('challenge') !== 0 && c.mode.indexOf('comprehension') !== 0);
+    if (card) {
+      // Skip the "Start" screen and jump straight into the session, landing on the exact
+      // reported question rather than question 1 — same setup exLaunch() does.
+      exMode = card.mode;
+      exAnswered = 0; exDotEarned = false; exHistory = []; exReviewPos = null; exNewEasyStreak = 0;
+      exQuestions = buildExerciseQueue(exMode, exBuildTaggedPool(exMode));
+      if (exMode === 'pluraltype') exQuestions = exFixAdjacency(exQuestions);
+      const foundIdx = exQuestions.findIndex(q => {
+        const p = exGetReportPair(q);
+        return p.ar === r.arabic && (p.en || '') === (r.english || '');
+      });
+      exCurrent = foundIdx >= 0 ? foundIdx : 0;
+      exRenderActive();
+      exShowQuestion();
+    } else {
+      exShowPicker();
+    }
+  } else if (r.type === 'challenge') {
+    window.switchTab('challenges');
+    exPickerLesson = r.lesson;
+    let mode = null;
+    if (r.activity === 'Negate and Affirm') {
+      mode = (EX_CARDS.find(c => c.mode.indexOf('challenge3') === 0 && EX_LESSON_MAP[c.mode] === r.lesson) || {}).mode;
+    } else if (r.activity && r.activity.indexOf('Comprehension') === 0) {
+      const wantListen = r.activity.indexOf('Listening') > -1;
+      mode = (EX_CARDS.find(c => c.mode.indexOf('comprehension') === 0 && (c.mode.indexOf('listen') > -1) === wantListen && EX_LESSON_MAP[c.mode] === r.lesson) || {}).mode;
+    } else if (r.activity && r.activity.indexOf('Challenge 1') === 0) {
+      mode = (EX_CARDS.find(c => c.mode.indexOf('challenge1') === 0 && EX_LESSON_MAP[c.mode] === r.lesson) || {}).mode;
+    } else if (r.activity && r.activity.indexOf('Challenge 2') === 0) {
+      mode = (EX_CARDS.find(c => c.mode.indexOf('challenge2') === 0 && EX_LESSON_MAP[c.mode] === r.lesson) || {}).mode;
+    }
+    if (mode && mode.indexOf('comprehension') === 0) {
+      const questions = (COMPREHENSION_QUESTIONS_BY_MODE[mode] && COMPREHENSION_QUESTIONS_BY_MODE[mode]()) || [];
+      const foundIdx = questions.findIndex(q => q.ar === r.arabic && (q.en || '') === (r.english || ''));
+      compIndex = foundIdx >= 0 ? foundIdx : 0;
+      compAnswers = [];
+      exShowComprehension(mode);
+    } else if (mode && (mode.indexOf('challenge2') === 0 || mode.indexOf('challenge3') === 0)) {
+      const sentences = (CHALLENGE2_SENTENCES_BY_MODE[mode] && CHALLENGE2_SENTENCES_BY_MODE[mode]()) || [];
+      const foundIdx = sentences.findIndex(s => s.ar === r.arabic && (s.en || '') === (r.english || ''));
+      const draft2 = exChallengeDraft[mode];
+      ch2Index = foundIdx >= 0 ? foundIdx : (draft2 ? draft2.index : 0);
+      ch2Answers = draft2 ? draft2.answers.slice() : [];
+      exShowChallenge2(mode);
+    } else if (mode) {
+      const words = (CHALLENGE1_WORDS_BY_MODE[mode] && CHALLENGE1_WORDS_BY_MODE[mode]()) || [];
+      const foundIdx = words.findIndex(w => w.ar === r.arabic && (w.en || '') === (r.english || ''));
+      const draft1 = exChallengeDraft[mode];
+      ch1Index = foundIdx >= 0 ? foundIdx : (draft1 ? draft1.index : 0);
+      ch1Answers = draft1 ? draft1.answers.slice() : [];
+      exShowChallenge1(mode);
+    } else {
+      exShowChallengesPicker();
+    }
+  } else {
+    // A generic app/page report (not tied to one specific exercise) — just land on their home screen.
+    window.switchTab('milestones');
+  }
+  window.enableEditMode();
+};
   
 function exShowLessonPicker() {
 const defaultLesson = Math.min(window.getCurrentLesson(), EX_MAX_LESSON);
@@ -6124,6 +6502,16 @@ const title = mode === 'fillgap' ? '📝 Fill the Gap'
 : mode === 'suffixtrans' ? '✍️ Suffix Pronouns — Translate'
 : mode === 'demotrans' ? '👉 Demonstrative Pronouns — Translate'
 : mode === 'adjectiveagreementtrans' ? '✨ Adjective Agreement — Translate'
+: mode === 'passiveverbtrans' ? '🔄 Make It Passive'
+: mode === 'doerdonetotrans' ? '🔁 Doer ↔ Done-To'
+: mode === 'superlativetrans' ? '📈 Make It a Superlative'
+: mode === 'idafatrans' ? '🔗 Idafa — Translate'
+: mode === 'verbalnountrans' ? '📖 Verb → Verbal Noun'
+: mode === 'adverbialtrans' ? '🎯 Adverbial Accusative — Translate'
+: mode === 'causativetrans' ? '⚡ Causative & Intensive Forms'
+: mode === 'reflexivetrans' ? '🔂 Reflexive & Mutual Forms'
+: mode === 'seekingtrans' ? '🙏 Seeking & Self Forms — Translate'
+: mode === 'emphasistrans' ? '⭐ Emphasis — Translate'
 : mode === 'pluraltype' ? '🧩 Spot the Pattern'
 : mode === 'aetrans' ? '🔁 Arabic → English'
 : '✅ True or False';
@@ -6188,6 +6576,16 @@ return mode === 'fillgap' ? FILL_GAP_QUESTIONS.map((q,i) => ({ ...q, __idx: i })
 : mode === 'suffixtrans' ? SUFFIX_TRANSLATION_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
 : mode === 'demotrans' ? DEMO_TRANSLATION_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
 : mode === 'adjectiveagreementtrans' ? ADJECTIVE_AGREEMENT_TRANSLATION_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
+: mode === 'passiveverbtrans' ? PASSIVE_VERB_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
+: mode === 'doerdonetotrans' ? DOER_DONETO_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
+: mode === 'superlativetrans' ? SUPERLATIVE_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
+: mode === 'idafatrans' ? IDAFA_TRANSLATION_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
+: mode === 'verbalnountrans' ? VERBAL_NOUN_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
+: mode === 'adverbialtrans' ? ADVERBIAL_TRANSLATION_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
+: mode === 'causativetrans' ? CAUSATIVE_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
+: mode === 'reflexivetrans' ? MUTUAL_REFLEXIVE_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
+: mode === 'seekingtrans' ? SEEKING_INTRANSITIVE_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
+: mode === 'emphasistrans' ? EMPHASIS_TRANSLATION_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
 : mode === 'pluraltype' ? exBuildPluralTypeDeck().map((q,i) => ({ ...q, __idx: i }))
 : mode === 'aetrans' ? TRANSLATION_1_QUESTIONS.map((q,i) => ({ ...q, __idx: i }))
 : mode === 'truefalse2' ? TRUE_FALSE_QUESTIONS_L2.map((q,i) => ({ ...q, __idx: i }))
@@ -6513,7 +6911,7 @@ freshBtn.textContent = 'Reveal ←';
 freshBtn.onclick = exSubmitDemoTrans;
 inp.onkeydown = e => { if (e.key === 'Enter') exSubmitDemoTrans(); };
 }
-else if (exMode === 'adjectiveagreementtrans' || exMode.indexOf('typeenglish') === 0) {
+else if (exMode === 'adjectiveagreementtrans' || exMode === 'idafatrans' || exMode === 'adverbialtrans' || exMode === 'seekingtrans' || exMode === 'emphasistrans' || exMode.indexOf('typeenglish') === 0) {
 const q = exQuestions[exCurrent];
 const existingType = document.getElementById('ex-tf-btns');
 if (existingType) existingType.remove();
@@ -6534,6 +6932,36 @@ const freshBtn = document.getElementById('ex-check-btn');
 freshBtn.textContent = 'Reveal ←';
 freshBtn.onclick = exSubmitAdjAgreementTrans;
 inp.onkeydown = e => { if (e.key === 'Enter') exSubmitAdjAgreementTrans(); };
+}
+else if (exMode === 'passiveverbtrans' || exMode === 'doerdonetotrans' || exMode === 'superlativetrans' || exMode === 'verbalnountrans' || exMode === 'causativetrans' || exMode === 'reflexivetrans') {
+const q = exQuestions[exCurrent];
+const existingType = document.getElementById('ex-tf-btns');
+if (existingType) existingType.remove();
+const flipInstructions = {
+  passiveverbtrans: 'Make this verb passive, then reveal',
+  doerdonetotrans: 'Write the other form (doer or done-to), then reveal',
+  superlativetrans: 'Write the superlative ("most/-est") form, then reveal',
+  verbalnountrans: 'Write the verbal noun, then reveal',
+  causativetrans: 'Write the causative or intensive form, then reveal',
+  reflexivetrans: 'Write the reflexive or mutual form, then reveal'
+};
+document.getElementById('ex-instruction').textContent = flipInstructions[exMode];
+document.getElementById('ex-sentence').innerHTML = '<span style="direction:rtl;unicode-bidi:isolate">' + q.active + '</span> (' + q.meaning + ')';
+document.getElementById('ex-sentence').style.display = 'block';
+document.getElementById('ex-sentence').style.direction = 'ltr';
+const fillDiv = document.getElementById('ex-fill-input');
+fillDiv.style.display = 'flex';
+document.getElementById('ex-word-order').style.display = 'none';
+const inp = document.getElementById('ex-answer-input');
+inp.value = '';
+inp.placeholder = 'Write your answer here...';
+setTimeout(() => inp.focus(), 50);
+const checkBtn = document.getElementById('ex-check-btn');
+checkBtn.replaceWith(checkBtn.cloneNode(true));
+const freshBtn = document.getElementById('ex-check-btn');
+freshBtn.textContent = 'Reveal ←';
+freshBtn.onclick = exSubmitPassiveVerb;
+inp.onkeydown = e => { if (e.key === 'Enter') exSubmitPassiveVerb(); };
 }
 else if (exMode === 'typeharakat') {
 const q = exQuestions[exCurrent];
@@ -6790,6 +7218,18 @@ wireRatingButtons();
 }
 
 function exSubmitAdjAgreementTrans() {
+const q = exQuestions[exCurrent];
+const typed = document.getElementById('ex-answer-input').value;
+const reveal = document.getElementById('ex-reveal');
+reveal.innerHTML = 'Correct answer: <strong>' + q.ar + '</strong>' + (typed ? '<br><span style="font-size:0.85em;color:#6b7280">You wrote: ' + typed + '</span>' : '') + '<br><span style="font-size:0.8em;color:#6b7280">Were you close enough? Grade yourself below.</span>';
+reveal.style.display = 'block';
+document.getElementById('ex-fill-input').style.display = 'none';
+const ratingEl = document.getElementById('ex-rating-area');
+ratingEl.style.display = 'flex';
+wireRatingButtons();
+}
+
+function exSubmitPassiveVerb() {
 const q = exQuestions[exCurrent];
 const typed = document.getElementById('ex-answer-input').value;
 const reveal = document.getElementById('ex-reveal');
